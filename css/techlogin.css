@@ -1,0 +1,451 @@
+/* General Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-primary);
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header Styling */
+.admin-header {
+    text-align: center;
+    margin-bottom: var(--spacing-medium);
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--color-primary);
+    background-color: var(--color-background);
+    padding: var(--spacing-medium) 0;
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-medium);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Header Actions Styling */
+.header-actions {
+    display: flex;
+    justify-content: center;
+    margin: var(--spacing-small) 0;
+}
+
+/* Button Styling */
+.button {
+    display: inline-block;
+    padding: var(--spacing-small) var(--spacing-medium);
+    margin-top: var(--spacing-small);
+    background-color: var(--color-primary);
+    color: var(--color-text-dark);
+    text-decoration: none;
+    border-radius: var(--radius-small);
+    transition: background-color var(--transition-speed);
+    border: none;
+    font-size: 1rem;
+}
+
+.button:hover {
+    background-color: var(--color-hover);
+}
+
+/* Search Container Styling */
+.search-container {
+    text-align: center;
+    background-color: var(--color-background);
+    border-radius: 8px; 
+}
+
+#search-bar {
+    padding: var(--spacing-small);
+    border: 1px solid var(--color-secondary);
+    border-radius: var(--radius-small);
+    background-color: var(--color-secondary);
+    color: var(--color-text-light);
+    width: 300px;
+}
+
+/* Table Styling */
+#customer-table {
+    width: 98%;
+    min-width: 300px;
+    border-collapse: collapse;
+    margin: var(--spacing-small) auto;
+    padding: var(--spacing-medium);
+    border-radius: var(--radius-medium);
+    background-color: var(--color-secondary);
+    box-shadow: var(--shadow-medium);
+    overflow: hidden;
+}
+
+#customer-table th, #customer-table td {
+    padding: var(--spacing-medium);
+    height: 40px;
+    text-align: left;
+    border: 1px solid var(--color-secondary);
+}
+
+#customer-table th {
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+}
+
+/* Footer Styling */
+.admin-footer {
+    min-height: 50px;
+    text-align: center;
+    padding: var(--spacing-medium);
+    color: var(--color-text-light);
+    background-color: var(--color-background);
+    width: 100%;
+    margin-top: auto;
+    border-top: 2px solid var(--color-secondary);
+}
+
+.admin-footer p {
+    margin: 0;
+}
+
+/* Row Hover Effect */
+#customer-table tr {
+    transition: background-color var(--transition-speed);
+}
+
+#customer-table tr:hover {
+    background-color: var(--color-hover);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .admin-header {
+        font-size: 2rem;
+    }
+
+    #search-bar {
+        width: 100%;
+        margin: var(--spacing-small) 0;
+    }
+}
+
+
+/* Modal Background */
+.add-user-modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: var(--z-index-modal);
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent overlay */
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Modal Content */
+.add-user-modal-content {
+    background-color: var(--color-secondary);
+    padding: var(--spacing-large);
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-medium);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    animation: fade-in 0.3s ease-in-out;
+}
+
+/* Close Button */
+.add-user-modal .close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    color: var(--color-text-light);
+    cursor: pointer;
+    transition: color var(--transition-speed);
+}
+
+.add-user-modal .close:hover {
+    color: var(--color-hover);
+}
+
+/* Form Styles */
+.add-user-modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-medium);
+}
+
+/* Labels */
+.add-user-modal-content label {
+    font-size: var(--font-size-base);
+    color: var(--color-text-light);
+    text-align: left;
+}
+
+/* Inputs */
+.add-user-modal-content input {
+    width: 100%;
+    padding: var(--spacing-small);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small);
+    background-color: var(--input-bg);
+    color: var(--color-text-light);
+    font-size: var(--font-size-base);
+}
+
+/* Input Focus */
+.add-user-modal-content input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 5px var(--color-primary);
+}
+
+/* Submit Button */
+.add-user-modal-content .button {
+    background-color: var(--btn-bg);
+    color: var(--color-text-light);
+    padding: var(--spacing-medium);
+    border: none;
+    border-radius: var(--radius-medium);
+    font-size: var(--font-size-large);
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+
+.add-user-modal-content .button:hover {
+    background-color: var(--color-hover);
+}
+
+/* Modal Animation */
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 500px) {
+    .add-user-modal-content {
+        max-width: 90%;
+        padding: var(--spacing-medium);
+    }
+}
+
+.user-role {
+    width: 100%; /* Full-width for responsiveness */
+    padding: var(--spacing-small); /* Consistent padding */
+    font-size: var(--font-size-base);
+    font-family: var(--font-primary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-medium);
+    background-color: var(--input-bg);
+    color: var(--color-text-light);
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Hover Effect */
+.user-role:hover {
+    border-color: var(--color-hover);
+}
+
+/* Focus Effect */
+.user-role:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 5px var(--color-primary-fade);
+}
+
+/* Dropdown Arrow Customization */
+.user-role::-ms-expand {
+    display: none; /* Hide default arrow in IE/Edge */
+}
+
+.user-role option {
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+}
+
+/* Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: var(--z-index-modal);
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: var(--color-secondary);
+    margin: 5% auto;
+    padding: var(--spacing-large);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-medium);
+    width: 40%;
+    max-height: 80%;
+    overflow-y: auto;
+    box-shadow: var(--shadow-medium);
+    transition: all var(--transition-speed);
+}
+
+.tabs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.tab-button {
+    flex: 1;
+    padding: 10px;
+    background-color: var(--color-primary);
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    border-radius: var(--radius-small);
+}
+.tab-button.active {
+    background-color: var(--color-hover);
+    font-weight: bold;
+}
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: block;
+}
+
+.checkbox-group input[type="checkbox" i ]::before {
+    appearance: none;
+}  
+
+
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.checkbox-group label {
+    flex: 1 1 45%;
+}
+
+.checkbox-group input[type="checkbox"] {
+    position: relative;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: var(--color-secondary);
+    border: 2-x solid var(--color-primary);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+
+.checkbox-group input[type="checkbox"] ::before{
+    content: '✔';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    color: var(--color-primary);
+}
+
+.checkbox-group input[type="checkbox"] :hover {
+    color: var(--color-hover);
+}
+
+.checkbox-group input[type="checkbox"]:checked {
+    color: var(--color-hover);
+}
+
+input[type="date" i] {
+    width: calc(100% - 20px);
+    padding: var(--spacing-small);
+    margin-bottom: var(--spacing-medium);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-small);
+    background-color: var(--color-secondary);
+    color: var(--color-text-light);
+    font-size: var(--font-size-base);
+    transition: border-color var(--transition-speed);
+}
+
+.contact-notes{
+    width: calc(100% - 20px);
+    padding: var(--spacing-small);
+    margin-bottom: var(--spacing-medium);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-small);
+    background-color: var(--color-secondary);
+    color: var(--color-text-light);
+    font-size: var(--font-size-base);
+    transition: border-color var(--transition-speed);
+}
+.customer-notes{
+    width: calc(100% - 20px);
+    padding: var(--spacing-small);
+    margin-bottom: var(--spacing-medium);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-small);
+    background-color: var(--color-secondary);
+    color: var(--color-text-light);
+    font-size: var(--font-size-base);
+    transition: border-color var(--transition-speed);
+}
+
+.label {
+    color: var(--color-primary);
+    font-weight: bold;
+    margin-bottom: var(--spacing-small);
+    display: block;
+}
+
+.close {
+    color: var(--color-primary);
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: var(--color-hover);
+    text-decoration: none;
+}
+
+input[type="text"],
+input[type="email"] {
+    padding: var(--spacing-small);
+    margin-bottom: var(--spacing-medium);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-small);
+    background-color: var(--color-secondary);
+    color: var(--color-text-light);
+    font-size: var(--font-size-base);
+    transition: border-color var(--transition-speed);
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus {
+    border-color: var(--color-hover);
+    outline: none;
+}

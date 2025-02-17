@@ -1,0 +1,17 @@
+<div class="sidebar">
+            <div class="logo">
+                <h2>Billing System</h2>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" class="active">Dashboard</a></li>
+                <li><a href="invoicing/invoices.php">Invoices</a></li>
+                <li><a href="invoicing/invoice-products.php">Products</a></li> <!-- New -->
+                <li><a href="invoicing/clients.php">Clients</a></li>
+                <li><a href="invoicing/suppliers.php">Suppliers</a></li>
+                <li><a href="invoicing/payments.php">Payments</a></li>
+                <li><a href="#">Reports</a></li>
+                <li><a href="#">Expense Tracking</a></li> <!-- New -->
+                <li><a href="#">Tax Management</a></li> <!-- New -->
+                <li><a href="invoicing/settings.php">Settings</a></li>
+            </ul>
+        </div>

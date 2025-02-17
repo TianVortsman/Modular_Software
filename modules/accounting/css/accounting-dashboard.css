@@ -1,0 +1,185 @@
+/* Accounting Dashboard CSS */
+
+/* General Layout */
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+    font-family: var(--font-primary);
+}
+
+.dashboard-main {
+    flex-grow: 1;
+    padding: var(--spacing-medium);
+    max-width: var(--max-width);
+    margin: auto;
+}
+
+/* Header Section */
+.dashboard-header {
+    margin-bottom: var(--spacing-large);
+    text-align: center;
+}
+
+.dashboard-header h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--color-primary);
+}
+
+/* Key Metrics Section */
+.key-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-medium);
+    margin-bottom: var(--spacing-large);
+}
+
+.metric-card {
+    background-color: var(--color-secondary);
+    border-radius: var(--radius-medium);
+    padding: var(--spacing-medium);
+    box-shadow: var(--shadow-medium);
+    text-align: center;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.metric-card h3 {
+    font-size: var(--font-size-large);
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-small);
+}
+
+.metric-card p {
+    font-size: var(--font-size-base);
+    font-weight: bold;
+    color: var(--color-primary);
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-dark);
+}
+
+/* Graphs Section */
+.graphs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-medium);
+    margin-bottom: var(--spacing-large);
+}
+
+.graph-container {
+    background-color: var(--color-secondary);
+    border-radius: var(--radius-medium);
+    padding: var(--spacing-medium);
+    box-shadow: var(--shadow-medium);
+}
+
+.graph-container h2 {
+    font-size: var(--font-size-large);
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-medium);
+}
+
+.chart-placeholder {
+    height: 200px;
+    background-color: var(--color-background);
+    border: 1px dashed var(--color-hover);
+    border-radius: var(--radius-small);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--color-text-light);
+}
+
+/* Tables Section */
+.transactions-table,
+.accounts-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: var(--spacing-large);
+    background-color: var(--color-secondary);
+    border-radius: var(--radius-small);
+    overflow: hidden;
+    box-shadow: var(--shadow-medium);
+}
+
+.transactions-table thead,
+.accounts-table thead {
+    background-color: var(--color-hover);
+}
+
+.transactions-table th,
+.accounts-table th {
+    padding: var(--spacing-small);
+    font-size: var(--font-size-small);
+    color: var(--color-text-light);
+    text-align: left;
+}
+
+.transactions-table td,
+.accounts-table td {
+    padding: var(--spacing-small);
+    font-size: var(--font-size-small);
+    color: var(--color-text-light);
+    border-bottom: 1px solid var(--color-background);
+}
+
+.transactions-table tr:last-child td,
+.accounts-table tr:last-child td {
+    border-bottom: none;
+}
+
+.transactions-table tbody tr:hover,
+.accounts-table tbody tr:hover {
+    background-color: var(--color-hover);
+    color: var(--color-text-dark);
+}
+
+/* To-Do List Section */
+.to-do {
+    background-color: var(--color-secondary);
+    border-radius: var(--radius-medium);
+    padding: var(--spacing-medium);
+    box-shadow: var(--shadow-medium);
+}
+
+.to-do h2 {
+    font-size: var(--font-size-large);
+    margin-bottom: var(--spacing-medium);
+    color: var(--color-text-light);
+}
+
+.to-do-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.to-do-list li {
+    font-size: var(--font-size-base);
+    padding: var(--spacing-small) 0;
+    border-bottom: 1px solid var(--color-background);
+    color: var(--color-text-light);
+}
+
+.to-do-list li:last-child {
+    border-bottom: none;
+}
+
+.to-do-list li:hover {
+    color: var(--color-primary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .key-metrics {
+        grid-template-columns: 1fr;
+    }
+
+    .graphs {
+        grid-template-columns: 1fr;
+    }
+}

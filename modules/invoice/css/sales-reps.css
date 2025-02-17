@@ -1,0 +1,206 @@
+/* Root variables are preloaded */
+body {
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height);
+    margin: 0;
+    padding: 0;
+}
+
+.sales-content{
+    margin-left: var(--sidebar-width);
+    transition: margin-left var(--transition-speed);
+
+}
+
+header.header {
+    display: flex;
+    align-items: center;
+    background: var(--color-secondary);
+    padding: 0 var(--spacing-medium);
+    height: var(--header-height);
+    border-radius: var(--radius-medium);
+    margin-left: 15px;
+    box-shadow: 0px -4px 8px var(--shadow-dark), 0px 4px 15px var(--shadow-medium);
+}
+
+header .logo {
+    font-size: 2rem;
+    margin-right: var(--spacing-medium);
+}
+
+
+h2{
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0px 4px 15px var(--shadow-medium);
+    color: var(--color-primary);
+    padding-left: 10px;
+}
+header h1 {
+    font-size: 1.5rem;
+    color: var(--color-primary);
+}
+
+main {
+    padding: var(--spacing-medium);
+}
+
+section {
+    margin-bottom: var(--spacing-large);
+}
+
+.key-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-medium);
+}
+
+.metric-card {
+    background: var(--color-secondary);
+    padding: var(--module-card-padding);
+    border-radius: var(--module-card-border-radius);
+    box-shadow: 0px 4px 8px var(--shadow-light), 0px 4px 15px var(--shadow-medium);
+    text-align: center;
+    transition: box-shadow var(--transition-speed);
+}
+
+.metric-card:hover {
+    box-shadow: var(--shadow-medium);
+}
+
+.metric-card h2 {
+    font-size: var(--font-size-large);
+}
+
+.metric-value {
+    font-size: 4rem;
+}
+
+.metric-percentage {
+    font-size: 4rem;
+}
+
+.leaderboard {
+    display: grid;
+    gap: var(--spacing-medium);
+    width: 50%;
+}
+
+.leaderboard-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-items: baseline;
+}
+
+.rep-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-small);
+    padding: var(--spacing-medium);
+    background: var(--color-secondary);
+    border-radius: var(--radius-medium);
+    box-shadow: 0px 2px 4px var(--shadow-light), 0px -2px 4px var(--shadow-dark), 0px 2px 7px var(--shadow-medium);}
+
+.rep-photo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--color-secondary);
+}
+
+.gold-border {
+    border: 3px solid gold;
+}
+
+.silver-border {
+    border: 3px solid silver;
+}
+
+.bronze-border {
+    border: 3px solid #cd7f32;
+}
+
+.rep-rank {
+    color: var(--color-text-dark);
+}
+
+.one {
+    color: gold;
+}
+
+.two {
+    color: silver;
+}
+
+.three {
+    color: #cd7f32;
+}
+
+.bar-chart {
+    display: grid;
+    align-items: center;
+    gap: var(--spacing-medium);
+    width: 50%;
+    padding-left: 10px;
+}
+
+.chart-container{
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.bar-chart-placeholder {
+    width: 100%;
+    height: 100%;
+
+}
+
+.employee-table table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0px 4px 8px var(--shadow-light), 0px -4px 8px var(--shadow-dark), 0px 4px 15px var(--shadow-medium);}
+
+.employee-table th, .employee-table td {
+    padding: var(--spacing-small);
+    text-align: left;
+    border-bottom: 1px solid var(--color-secondary);
+}
+
+.employee-table th {
+    background: var(--color-secondary);
+}
+
+.bar-chart-placeholder {
+    width: 100%;
+    height: 200px;
+    background: var(--color-secondary);
+    border-radius: var(--radius-medium);
+    box-shadow: 0px 4px 8px var(--shadow-light), 0px -4px 8px var(--shadow-dark), 0px 4px 15px var(--shadow-medium);}
+
+
+.radial-gauge {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem auto;
+    filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.2));
+}
+
+.chart-legend{
+    display:none;
+}
+
+.apexcharts-menu-item{
+    color: var(--color-text-light);
+    background-color: var(--color-background);
+}
+
+.apexcharts-menu-open {
+    border-radius:4px;
+}

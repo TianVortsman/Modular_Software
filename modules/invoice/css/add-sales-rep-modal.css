@@ -1,0 +1,113 @@
+/* Modal Container */
+.add-sales-rep-modal {
+    display: none; /* Hidden by default, will be shown via JavaScript */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    justify-content: center;
+    align-items: center;
+    z-index: var(--z-index-modal);
+}
+
+/* Modal Content */
+.add-sales-rep-modal-content {
+    background-color: var(--color-background);
+    padding: var(--spacing-medium);
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-medium);
+    position: relative;
+}
+
+.add-sales-rep-form{
+    width: 90%;
+}
+
+/* Modal Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    font-size: var(--font-size-large);
+    color: var(--color-text-light);
+}
+
+.modal-close-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    cursor: pointer;
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: var(--spacing-medium);
+}
+
+.form-label {
+    font-size: var(--font-size-base);
+    color: var(--color-text-light);
+    margin-bottom: 0.3rem;
+}
+
+.form-input, .form-select, .form-textarea {
+    width: 90%;
+    padding: 0.8rem;
+    margin-top: 0.3rem;
+    border-radius: var(--radius-small);
+    border: 1px solid var(--border-color);
+    background-color: var(--input-bg);
+    color: var(--color-text-light);
+}
+
+/* Image Upload Container */
+.image-upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.image-preview {
+    margin-top: 1rem;
+    max-width: 150px;
+    max-height: 150px;
+    object-fit: cover;
+    border-radius: var(--radius-small);
+}
+
+/* Textarea */
+.form-textarea {
+    resize: vertical;
+    
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--spacing-large);
+}
+
+.btn-submit, .btn-cancel {
+    padding: 0.8rem 1.5rem;
+    font-size: var(--font-size-base);
+    border: none;
+    border-radius: var(--radius-small);
+    cursor: pointer;
+}
+
+.btn-submit {
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+}
+
+.btn-cancel {
+    background-color: var(--color-secondary);
+    color: var(--color-text-light);
+}

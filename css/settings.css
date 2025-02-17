@@ -1,0 +1,391 @@
+html{
+    height: 100vh;
+}
+
+body {
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+    font-family: var(--font-primary);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    width: 100vw;  /* Make the body full width of the viewport */
+    height: 100vh; /* Make the body full height of the viewport */
+}
+
+
+h2 {
+    color: var(--color-h2);
+    text-align: center;
+    margin-top: var(--spacing-medium);
+    font-size: var(--font-size-large);
+}
+
+.settings-container {
+    display: flex;
+    flex: 1;
+    margin: var(--spacing-medium);
+    gap: var(--spacing-medium);
+    margin-left: var(--sidebar-width);  /* Adjust the body’s left margin to create space for the sidebar */
+    transition: margin-left var(--transition-speed) ease-in-out;  /* Smooth transition for sidebar */
+    
+}
+.settings-container.collapsed {
+    margin-left: 70px; /* Adjust for collapsed sidebar */
+    transition: margin-left var(--transition-speed) ease-in-out; /* Smooth transition for sidebar */}
+
+.settings-content {
+    flex: 1;
+    background-color: var(--color-secondary);
+    border-radius: var(--radius-medium);
+    padding: var(--spacing-medium);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-medium);
+    position: relative;
+    height: fit-content;
+}
+
+.setting-section {
+    display: none;
+}
+
+.setting-section.active {
+    display: block;
+}
+
+label {
+    display: block;
+    font-size: var(--font-size-small);
+    color: var(--color-text-dark);
+    margin-bottom: var(--spacing-small);
+}
+
+input,
+select {
+    width: 50%;
+    padding: var(--spacing-small);
+    margin-bottom: var(--spacing-medium);
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+    border: 1px solid var(--color-secondary);
+    border-radius: var(--radius-small);
+}
+
+button {
+    padding: var(--spacing-small) var(--spacing-medium);
+    background-color: var(--color-primary);
+    color: var(--color-text-dark);
+    border: none;
+    border-radius: var(--radius-small);
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+    
+    position: absolute;
+    bottom: var(--spacing-small);  /* Adjust for spacing from the bottom */
+    right: var(--spacing-small);   /* Adjust for spacing from the right */
+}
+
+
+button:hover {
+    background-color: var(--color-hover);
+    color: var(--color-primary);
+}
+
+.preview-area {
+    margin-top: var(--spacing-medium);
+    background-color: var(--color-secondary);
+    border-radius: var(--radius-medium);
+    padding: var(--spacing-medium);
+    color: var(--color-text-light);
+    height: 50%;
+    width: 40%;
+}
+
+.preview-content {
+    text-align: center;
+    color: var(--color-text-dark);
+}
+
+/* Unique Root Variables for Invoice Templates */
+:root {
+    --invoice-primary-color: #333333;
+    --invoice-secondary-color: #ffffff;
+    --invoice-highlight-color: #1a73e8;
+    --invoice-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --invoice-font-size-base: 16px;
+    --invoice-font-size-heading: 1.5em;
+    --invoice-spacing-unit: 20px;
+    --invoice-border-radius: 6px;
+    --invoice-table-border-color: #ddd;
+    --invoice-table-header-bg: #f5f5f5;
+    --invoice-accent-color: #e74c3c; /* Template 3 Accent */
+    --invoice-highlight-color-template2: #3498db;
+    
+    /* A4 Size in Pixels (scaled) */
+    --invoice-a4-width: 800px;
+    --invoice-a4-height: calc(var(--invoice-a4-width) * 1.414); /* 297mm / 210mm = ~1.414 */
+    
+    /* Page Margins */
+    --invoice-margin-top: 30px;
+    --invoice-margin-bottom: 30px;
+    --invoice-margin-left: 40px;
+    --invoice-margin-right: 40px;
+    
+    /* Font Sizes */
+    --invoice-font-size-large: 1.4em;
+    --invoice-font-size-medium: 1.1em;
+    --invoice-font-size-small: 0.9em;
+}
+
+/* Container for A4-like Page */
+.invoice-template {
+    width: var(--invoice-a4-width);
+    height: var(--invoice-a4-height);
+    margin: 0 auto;
+    padding: var(--invoice-margin-top) var(--invoice-margin-right) var(--invoice-margin-bottom) var(--invoice-margin-left);
+    background-color: var(--invoice-secondary-color); /* White background */
+    border: 1px solid #ddd;
+    border-radius: var(--invoice-border-radius);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Header Styling */
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.company-info {
+    flex: 1;
+}
+
+.company-info h1 {
+    font-size: 2em;
+    margin: 0;
+    color: var(--invoice-primary-color);
+}
+
+.company-info p {
+    font-size: var(--invoice-font-size-small);
+    margin: 2px 0;
+}
+
+.invoice-logo img {
+    max-width: 150px;
+    max-height: 100px;
+}
+
+/* Invoice Metadata (Number, Date, etc.) */
+.invoice-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.invoice-meta .invoice-details {
+    flex: 1;
+}
+
+.invoice-meta p {
+    font-size: var(--invoice-font-size-medium);
+    margin: 5px 0;
+}
+
+/* Table Styling for Invoice Items */
+.invoice-items table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.invoice-items th, .invoice-items td {
+    padding: 12px;
+    border: 1px solid var(--invoice-table-border-color);
+    font-size: var(--invoice-font-size-small);
+    text-align: left;
+}
+
+.invoice-items th {
+    background-color: var(--invoice-highlight-color);
+    color: #fff;
+}
+
+.invoice-items td {
+    background-color: #fff;
+}
+
+/* Custom Table for Template 2 */
+.invoice-items-template2 th {
+    background-color: var(--invoice-highlight-color-template2);
+    color: white;
+}
+
+.invoice-items-template2 td {
+    background-color: #f9f9f9;
+}
+
+/* Footer and Additional Notes */
+.footer-message {
+    text-align: center;
+    margin-top: 30px;
+    font-size: var(--invoice-font-size-small);
+    color: var(--invoice-accent-color);
+}
+
+.invoice-footer {
+    margin-top: 30px;
+    text-align: center;
+    font-size: var(--invoice-font-size-small);
+    color: #777;
+    border-top: 1px solid var(--invoice-table-border-color);
+    padding-top: 20px;
+}
+
+/* Invoice Totals Section */
+.invoice-totals {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--invoice-font-size-medium);
+}
+
+.invoice-totals p {
+    margin: 5px 0;
+}
+
+.invoice-totals .total-label {
+    font-weight: bold;
+}
+
+/* Payment Instructions Section */
+.payment-instructions {
+    margin-top: 30px;
+    font-size: var(--invoice-font-size-small);
+    text-align: center;
+    color: #888;
+}
+
+/* Invoice Notes */
+.invoice-notes {
+    margin-top: 20px;
+    font-size: var(--invoice-font-size-small);
+    line-height: 1.6;
+    color: #666;
+    background-color: #f8f8f8;
+    padding: 15px;
+    border-radius: var(--invoice-border-radius);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .invoice-template {
+        width: 100%;
+        height: auto;
+        padding: 15px;
+        margin: 20px 10px;
+    }
+    
+    .invoice-header {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .invoice-logo img {
+        max-width: 120px;
+    }
+    
+    .invoice-items th, .invoice-items td {
+        font-size: 0.85em;
+        padding: 8px;
+    }
+
+    .footer-message {
+        font-size: 0.85em;
+    }
+}
+
+/* Adjustments for Template 1 */
+.invoice-template-1 .company-info h1 {
+    color: var(--invoice-primary-color);
+}
+
+/* Template 2: Accent Styles */
+.invoice-template-2 .invoice-items td,
+.invoice-template-2 .invoice-items th {
+    font-size: var(--invoice-font-size-small);
+    padding: 12px;
+}
+
+.invoice-template-2 .invoice-header {
+    background-color: var(--invoice-highlight-color-template2);
+    color: #fff;
+}
+
+/* Template 3: Accent Styles */
+.invoice-template-3 .invoice-header {
+    background-color: var(--invoice-accent-color);
+    color: #fff;
+}
+
+.invoice-template-3 .invoice-footer {
+    border-top: 2px solid var(--invoice-accent-color);
+}
+
+/* Template 3 Custom Styling */
+.invoice-template-3 .invoice-items th {
+    background-color: var(--invoice-accent-color);
+    color: #fff;
+}
+
+.invoice-template-3 .invoice-items td {
+    background-color: #f7f7f7;
+}
+
+/* Table for Item List */
+.invoice-template .invoice-items {
+    margin-bottom: 20px;
+}
+
+/* Payment Method Section */
+.payment-method {
+    font-size: var(--invoice-font-size-small);
+    font-style: italic;
+    margin-top: 20px;
+}
+
+/* Margins and Paddings for Consistency */
+.invoice-template .invoice-meta p,
+.invoice-template .invoice-items td,
+.invoice-template .invoice-items th {
+    margin: 0;
+    padding: 10px;
+}
+
+/* Fix spacing issues */
+.invoice-template .invoice-footer {
+    margin-top: 30px;
+}
+
+/* Section Headers (e.g., 'Total', 'Terms', etc.) */
+.section-header {
+    font-size: var(--invoice-font-size-large);
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--invoice-table-border-color);
+    padding-bottom: 10px;
+}
+
+/* Invoice Terms and Conditions Section */
+.invoice-terms {
+    font-size: var(--invoice-font-size-small);
+    color: #666;
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: var(--invoice-border-radius);
+}
+
