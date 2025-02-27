@@ -1,0 +1,123 @@
+/* ========================= */
+/* Product Details Modal CSS */
+/* ========================= */
+
+.modal-product-details {
+    display: none; /* Hidden by default */
+    position: fixed; 
+    z-index: 999; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0, 0, 0, 0.4); 
+  }
+  
+  /* Modal Content */
+  .modal-product-details-content {
+    background-color: var(--modal-bg-color, #fff);
+    margin: 5% auto;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 50%;
+    max-width: 800px;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    color: var(--primary-text-color, #333);
+    font-family: var(--primary-font, Arial, sans-serif);
+  }
+  
+  /* Close (X) */
+  .modal-product-details-close {
+    color: var(--close-icon-color, #aaa);
+    float: right;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .modal-product-details-close:hover,
+  .modal-product-details-close:focus {
+    color: var(--close-icon-hover-color, #000);
+    text-decoration: none;
+  }
+  
+  /* Title */
+  .modal-product-details-title {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+    font-weight: bold;
+    text-align: center;
+    color: var(--heading-text-color, #444);
+  }
+  
+  /* Form */
+  .modal-product-details-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  /* Fields */
+  .modal-product-details-field {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .modal-product-details-field label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  
+  .modal-product-details-field input,
+  .modal-product-details-field textarea,
+  .modal-product-details-field select {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: var(--primary-font, Arial, sans-serif);
+    color: var(--input-text-color, #333);
+  }
+  
+  /* Buttons */
+  .modal-product-details-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+  }
+  
+  .btn-modal-product-save,
+  .btn-modal-product-cancel {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    font-family: var(--primary-font, Arial, sans-serif);
+  }
+  
+  /* Save Button */
+  .btn-modal-product-save {
+    background-color: var(--primary-button-bg, #007bff);
+    color: var(--button-text-color, #fff);
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-modal-product-save:hover {
+    background-color: var(--primary-button-hover-bg, #0069d9);
+  }
+  
+  /* Cancel Button */
+  .btn-modal-product-cancel {
+    background-color: var(--secondary-button-bg, #6c757d);
+    color: var(--button-text-color, #fff);
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-modal-product-cancel:hover {
+    background-color: var(--secondary-button-hover-bg, #5a6268);
+  }
+  

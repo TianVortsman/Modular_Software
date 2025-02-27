@@ -52,7 +52,7 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
         </header>
 
         <div class="module-container">
-            <a href="#" class="module-card">
+            <a href="../modules/timeandatt/dashboard-TA.php" class="module-card">
                 <h2>Time & Attendance</h2>
                 <p>Track employee attendance and manage shifts.</p>
             </a>
@@ -110,15 +110,6 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
 
     <script src="../js/sidebar.js"></script>
     <script src="/modular1/js/page-transitions.js"></script>
-    <script>
-    // Store PHP session value in JavaScript
-    var multipleAccounts = <?= json_encode($multiple_accounts); ?>; 
-
-    function checkMultipleAccounts() {
-        if (multipleAccounts) {
-            window.location.href = "choose-account.php"; // Redirect if session variable is set
-        }
-    }
-</script>
+    <script>var multipleAccounts = <?= json_encode($multiple_accounts); ?>; </script>
 </body>
 </html>

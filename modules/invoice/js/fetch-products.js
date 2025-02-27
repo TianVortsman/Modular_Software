@@ -1,108 +1,179 @@
-document.addEventListener("DOMContentLoaded", () => {
-    fetchProducts();
-});
 
-async function fetchProducts() {
+
+let category = 'products'; // Default category
+
+function updateQueryParams(params) {
+    const url = new URL(window.location);
+    Object.keys(params).forEach(key => url.searchParams.set(key, params[key]));
+    window.history.pushState({}, '', url);
+}
+
+async function fetchProducts(category) {
+    console.log("Fetching products for category:", category);
     try {
-        const response = await fetch("fetch-products.php");
+        const params = new URLSearchParams(window.location.search);
+        const searchTerm = params.get('searchTerm') || '';
+        const limit = parseInt(params.get('limit')) || 10;
+        const page = parseInt(params.get('page')) || 1;
+        
+        // Construct the query string for the request
+        const queryString = new URLSearchParams({
+            category: category,
+            searchTerm: searchTerm,
+            limit: limit,
+            page: page
+        }).toString();
+
+        // Fetch products from the server with the correct category
+        const response = await fetch(`../php/fetch-products.php?${queryString}`);
         const data = await response.json();
 
-        if (!Array.isArray(data)) {
+        if (!data.results || !Array.isArray(data.results)) {
             console.error("Invalid product data:", data);
             return;
         }
 
-        // Clear previous products before inserting new ones
+        // Clear existing product grid
         document.getElementById("products-grid").innerHTML = "";
         document.getElementById("vehicles-grid").innerHTML = "";
         document.getElementById("parts-grid").innerHTML = "";
         document.getElementById("extras-grid").innerHTML = "";
-        document.getElementById("tax-free-grid").innerHTML = "";
+        document.getElementById("services-grid").innerHTML = "";
 
-        data.forEach(product => {
-            const productCard = createProductCard(product);
+        // Populate the appropriate grid based on category
+        data.results.forEach(item => {
+            const productCard = createProductCard(item);
 
-            switch (product.category) {
-            case "Vehicle":
-                document.getElementById("vehicles-grid").appendChild(productCard);
-                break;
-            case "Part":
-                document.getElementById("parts-grid").appendChild(productCard);
-                break;
-            case "Extra":
-                document.getElementById("extras-grid").appendChild(productCard);
-                break;
-            case "Service":
-                document.getElementById("tax-free-grid").appendChild(productCard);
-                break;
-            case "Product":
+            // Add the product to the correct grid based on category
+            if (category === 'products') {
+                console.log("Appending product card to products grid");
                 document.getElementById("products-grid").appendChild(productCard);
-                break;
-            default:
-                console.warn("Unknown product category:", product.category);
+            } else if (category === 'vehicles') {
+                document.getElementById("vehicles-grid").appendChild(productCard);
+            } else if (category === 'parts') {
+                document.getElementById("parts-grid").appendChild(productCard);
+            } else if (category === 'extras') {
+                document.getElementById("extras-grid").appendChild(productCard);
+            } else if (category === 'services') {
+                document.getElementById("services-grid").appendChild(productCard);
             }
         });
-
     } catch (error) {
         console.error("Error fetching products:", error);
     }
 }
 
+
+    // Function to open the Product Details Modal
+    function openProductDetailsModal(product) {
+        const modal = document.getElementById('modalProductDetails');
+        if (modal) {
+          modal.classList.add('active');
+        }
+      }
+    
+      // Function to close the Product Details Modal
+      function closeProductDetailsModal() {
+        const modal = document.getElementById('modalProductDetails');
+        if (modal) {
+          modal.classList.remove('active');
+        }
+      }
+    
+      // Close button event listener
+      const closeBtn = document.querySelector('.modal-close-product-details');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', closeProductDetailsModal);
+      }
+    
+      // Overlay click event listener to also close the modal when clicking outside the content
+      const overlay = document.querySelector('.modal-overlay-product-details');
+      if (overlay) {
+        overlay.addEventListener('click', closeProductDetailsModal);
+      }
+    
+      // Example: Open the modal when clicking a designated button
+      const openBtn = document.getElementById('openProductModalBtn');
+      if (openBtn) {
+        openBtn.addEventListener('click', openProductDetailsModal);
+      }
+
 function createProductCard(product) {
     const card = document.createElement("div");
+    card.classList.add("product-card");
 
-    if (product.category === "Vehicle") {
-        card.classList.add("product-card", "vehicle-card");
-        card.innerHTML = `
-            <img id="mainImage-${product.id}" class="image-large" src="${product.image}" alt="${product.name}" />
-            <div class="small-image-thumbnails">
-                ${product.thumbnails.map((thumb, index) => `
-                    <img src="${thumb}" alt="Thumbnail ${index + 1}" onclick="changeImage('${thumb}', 'mainImage-${product.id}')" />
-                `).join("")}
-            </div>
-            <h2 class="product-title">${product.name}</h2>
-            <p class="product-description">${product.description}</p>
-            <p class="product-price">R${product.price}</p>
-            <button class="open-vehicle-modal" data-vehicle-id="${product.id}">View Details</button>
-        `;
-    } else if (product.category === "Part") {
-        card.classList.add("product-card", "part-card");
-        card.innerHTML = `
-            <img src="${product.image}" alt="${product.name}" class="product-image-small">
-            <h2 class="product-title">${product.name}</h2>
-            <p class="product-price">R${product.price}</p>
-            <button class="view-part-details">View Details</button>
-        `;
-    } else if (product.category === "Extra") {
-        card.classList.add("product-card", "extra-card");
-        card.innerHTML = `
-            <img src="${product.image}" alt="${product.name}" class="product-image-medium">
-            <h2 class="product-title">${product.name}</h2>
-            <p class="product-price">R${product.price}</p>
-            <button class="view-extra-details">View Details</button>
-        `;
-    } else if (product.category === "Service") {
-        card.classList.add("product-card", "service-card");
-        card.innerHTML = `
-            <div class="service-icon"><img src="${product.image}" alt="${product.name}"></div>
-            <h2 class="product-title">${product.name}</h2>
-            <p class="product-price">R${product.price}</p>
-            <button class="view-service-details">View Details</button>
-        `;
-    } else if (product.category === "Product") {
-        card.classList.add("product-card", "product-card");
-        card.innerHTML = `
-            <img src="${product.image}" alt="${product.name}" class="product-image">
-            <h2 class="product-title">${product.name}</h2>
-            <p class="product-description">${product.description}</p>
-            <p class="product-price">R${product.price}</p>
-            <button class="view-product-details">View Details</button>
-        `;
-    }
+    let imageUrl;
+    let cardContent;
 
-    return card;
+    switch (category) {
+          case 'products':
+                imageUrl = product.imageUrl || 'https://placehold.co/300x300?text=No+Product+Image';
+                cardContent = `
+                     <img src="${imageUrl}" alt="${product.prod_name || 'No name'}" class="product-image">
+                     <h2 class="product-title">${product.prod_name || 'No name'}</h2>
+                     <p class="product-description">${product.prod_descr || 'No description available'}</p>
+                     <p class="product-price">R${product.prod_price || 'N/A'}</p>
+                `;
+                card.onclick = () => openProductDetailsModal(product);
+                break;
+          case 'vehicles':
+                imageUrl = product.imageUrl || 'https://placehold.co/300x300?text=No+Vehicle+Image';
+                cardContent = `
+                     <img src="${imageUrl}" alt="${product.vehicle_name || 'No name'}" class="product-image">
+                     <h2 class="product-title">${product.vehicle_name || 'No name'}</h2>
+                     <p class="product-description">${product.vehicle_descr || 'No description available'}</p>
+                     <p class="product-price">R${product.vehicle_price || 'N/A'}</p>
+                `;
+                card.onclick = () => openVehicleDetailsModal(product);
+                break;
+          case 'parts':
+                imageUrl = product.imageUrl || 'https://placehold.co/300x300?text=No+Part+Image';
+                cardContent = `
+                     <img src="${imageUrl}" alt="${product.part_name || 'No name'}" class="product-image">
+                     <h2 class="product-title">${product.part_name || 'No name'}</h2>
+                     <p class="product-description">${product.part_descr || 'No description available'}</p>
+                     <p class="product-price">R${product.part_price || 'N/A'}</p>
+                `;
+                card.onclick = () => openPartDetailsModal(product);
+                break;
+          case 'extras':
+                imageUrl = product.imageUrl || 'https://placehold.co/300x300?text=No+Extras+Image';
+                cardContent = `
+                     <img src="${imageUrl}" alt="${product.extra_name || 'No name'}" class="product-image">
+                     <h2 class="product-title">${product.extra_name || 'No name'}</h2>
+                     <p class="product-description">${product.extra_descr || 'No description available'}</p>
+                     <p class="product-price">R${product.extra_price || 'N/A'}</p>
+                `;
+                card.onclick = () => openExtraDetailsModal(product);
+                break;
+          case 'services':
+                imageUrl = product.imageUrl || 'https://placehold.co/300x300?text=No+Service+Image';
+                cardContent = `
+                     <img src="${imageUrl}" alt="${product.service_name || 'No name'}" class="product-image">
+                     <h2 class="product-title">${product.service_name || 'No name'}</h2>
+                     <p class="product-description">${product.service_descr || 'No description available'}</p>
+                     <p class="product-price">R${product.service_price || 'N/A'}</p>
+                `;
+                card.onclick = () => openServiceDetailsModal(product);
+                break;
+          default:
+                imageUrl = product.imageUrl || 'https://placehold.co/300x300?text=No+Image';
+                cardContent = `
+                     <img src="${imageUrl}" alt="${product.name || 'No name'}" class="product-image">
+                     <h2 class="product-title">${product.name || 'No name'}</h2>
+                     <p class="product-description">${product.descr || 'No description available'}</p>
+                     <p class="product-price">R${product.price || 'N/A'}</p>
+                `;
+                card.onclick = () => openDefaultDetailsModal(product);
+     }
+
+     card.innerHTML = cardContent;
+     return card;
 }
 
-function changeImage(newImage, imageId) {
-    document.getElementById(imageId).src = newImage;
-}
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // Fetch products when the page loads
+        fetchProducts(category);
+    });
+

@@ -38,6 +38,7 @@ include('../../../php/db.php');
     <link rel="stylesheet" href="../css/invoice-products.css">
     <link rel="stylesheet" href="../css/vehicle-details.css">
     <link rel="stylesheet" href="../css/add-vehicle.css">
+    <link rel="stylesheet" href="../css/product-modals.css">
     <script src="../../../js/toggle-theme.js" type="module"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="../../../js/sidebar.js"></script>
@@ -55,38 +56,52 @@ include('../../../php/db.php');
             <div class="header-right">
                 <span class="material-icons search-icon">search</span>
                 <input type="text" placeholder="Search for products..." class="search-input" id="search-input">
-                <button onclick="toggleAddVehicleModal()" class="add-vehicle-open-btn">Add Vehicle</button>
                 <button id="openProductsInvoicesModalButton" class="modal-products-invoices-open-button">Products Invoices</button>
             </div>
 
             <!-- Products Section -->
             <div class="tab-content active" id="products">
+            <button onclick="toggleAddProductsModal()" class="add-products-open-btn">Add Products</button>
                 <h2>Products</h2>
-                <div class="products-grid" id="products-grid"></div>
+                <div class="products-grid" id="products-grid">
+
+                </div>
             </div>
 
             <!-- Vehicles Section -->
             <div class="tab-content" id="vehicles">
+            <button onclick="toggleAddVehicleModal()" class="add-vehicle-open-btn">Add Vehicle</button>
                 <h2>Vehicles</h2>
-                <div class="products-grid" id="vehicles-grid"></div>
+                <div class="products-grid" id="vehicles-grid">
+
+                </div>
             </div>
 
             <!-- Parts Section -->
             <div class="tab-content" id="parts">
+            <button onclick="toggleAddPartsModal()" class="add-parts-open-btn">Add Parts</button>
                 <h2>Parts</h2>
-                <div class="products-grid" id="parts-grid"></div>
+                <div class="products-grid" id="parts-grid">
+
+                </div>
             </div>
 
             <!-- Extras Section -->
             <div class="tab-content" id="extras">
+            <button onclick="toggleAddExtrasModal()" class="add-extras-open-btn">Add Extras</button>
                 <h2>Extras</h2>
-                <div class="products-grid" id="extras-grid"></div>
+                <div class="products-grid" id="extras-grid">
+
+                </div>
             </div>
 
             <!-- Services Section -->
-            <div class="tab-content" id="tax-free">
+            <div class="tab-content" id="services">
+            <button onclick="toggleAddServicesModal()" class="add-services-open-btn">Add Services</button>
                 <h2>Services</h2>
-                <div class="products-grid" id="tax-free-grid"></div>
+                <div class="products-grid" id="services-grid">
+                    
+                </div>
             </div>
         </div>
     </div>
@@ -133,8 +148,10 @@ include('../../../php/db.php');
 <?php include('../modals/add-vehicle-modal.php') ?>
 <?php include('../../../php/loading-modal.php') ?>
 <?php include('../../../php/response-modal.php') ?>
+<?php include('../modals/product-modals.php') ?>
 <script src="../js/vehicle-modal.js"></script>
 <script src="../js/add-vehicle.js"></script>
+<script src="../js/product-modals.js"></script>
 <script src="../js/fetch-products.js"></script>
 </body>
 </html>

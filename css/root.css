@@ -253,9 +253,6 @@ html, body {
     overflow-x: hidden; /* Prevent horizontal scrolling */
   }
   
-  Apply the animation to the entire page
-
-  
   .material-icons{
     text-shadow: 1px 2px 5px 3px var(--shadow-dark);
    }

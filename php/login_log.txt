@@ -418,3 +418,66 @@
 [2025-02-16 14:49:36] Login attempt for email: tianryno01@gmail.com
 [2025-02-16 14:49:36] Technician check query executed successfully.
 [2025-02-16 14:49:36] Technician login successful: tianryno01@gmail.com
+[2025-02-18 11:06:15] Login attempt for email: tianryno01@gmail.com
+[2025-02-18 11:06:15] Technician check query executed successfully.
+[2025-02-18 11:06:15] Technician login successful: tianryno01@gmail.com
+[2025-02-19 11:16:37] Login attempt for email: tianryno01@gmail.com
+[2025-02-19 11:16:38] Technician check query executed successfully.
+[2025-02-19 11:16:38] Technician login successful: tianryno01@gmail.com
+[2025-02-19 11:18:52] Login attempt for email: tianryno01@gmail.com
+[2025-02-19 11:18:52] Technician check query executed successfully.
+[2025-02-19 11:18:52] Technician login successful: tianryno01@gmail.com
+[2025-02-21 10:59:40] Login attempt for email: tianryno01@gmail.com
+[2025-02-21 10:59:40] Technician check query executed successfully.
+[2025-02-21 10:59:40] Technician login successful: tianryno01@gmail.com
+[2025-02-21 11:03:00] Login attempt for email: tian@uniclox.com
+[2025-02-21 11:03:00] Technician check query executed successfully.
+[2025-02-21 11:03:00] No technician found with email: tian@uniclox.com
+[2025-02-21 11:03:00] Customer check query executed successfully.
+[2025-02-21 11:03:00] Account number query executed successfully.
+[2025-02-21 11:03:00] Multiple accounts found for user: tian@uniclox.com
+[2025-02-21 11:03:00] Login failed for email: tian@uniclox.com
+[2025-02-21 11:06:33] Login attempt for email: tianryno01@gmail.com
+[2025-02-21 11:06:33] Technician check query executed successfully.
+[2025-02-21 11:06:33] Technician login successful: tianryno01@gmail.com
+[2025-02-22 11:25:22] Login attempt for email: tianryno01@gmail.com
+[2025-02-22 11:25:22] Technician check query executed successfully.
+[2025-02-22 11:25:22] Technician login successful: tianryno01@gmail.com
+[2025-02-22 11:27:58] Login attempt for email: tianryno01@gmail.com
+[2025-02-22 11:27:58] Technician check query executed successfully.
+[2025-02-22 11:27:58] Technician login successful: tianryno01@gmail.com
+[2025-02-23 09:42:40] Login attempt for email: tianryno01@gmail.com
+[2025-02-23 09:42:40] Technician check query executed successfully.
+[2025-02-23 09:42:40] Technician login successful: tianryno01@gmail.com
+[2025-02-23 11:04:40] Login attempt for email: tian@uniclox.com
+[2025-02-23 11:04:40] Technician check query executed successfully.
+[2025-02-23 11:04:40] No technician found with email: tian@uniclox.com
+[2025-02-23 11:04:40] Customer check query executed successfully.
+[2025-02-23 11:04:41] Account number query executed successfully.
+[2025-02-23 11:04:41] Multiple accounts found for user: tian@uniclox.com
+[2025-02-23 11:04:41] Login failed for email: tian@uniclox.com
+[2025-02-23 17:00:39] Login attempt for email: tianryno01@gmail.com
+[2025-02-23 17:00:39] Technician check query executed successfully.
+[2025-02-23 17:00:39] Technician login successful: tianryno01@gmail.com
+[2025-02-24 19:58:04] Login attempt for email: tianryno01@gmail.com
+[2025-02-24 19:58:04] Technician check query executed successfully.
+[2025-02-24 19:58:04] Technician login successful: tianryno01@gmail.com
+[2025-02-25 18:08:39] Login attempt for email: tianryno01@gmail.com
+[2025-02-25 18:08:39] Technician check query executed successfully.
+[2025-02-25 18:08:39] Invalid password for technician: tianryno01@gmail.com
+[2025-02-25 18:08:48] Login attempt for email: tianryno01@gmail.com
+[2025-02-25 18:08:48] Technician check query executed successfully.
+[2025-02-25 18:08:48] Technician login successful: tianryno01@gmail.com
+[2025-02-25 18:12:30] Login attempt for email: tian@uniclox.com
+[2025-02-25 18:12:30] Technician check query executed successfully.
+[2025-02-25 18:12:30] No technician found with email: tian@uniclox.com
+[2025-02-25 18:12:30] Customer check query executed successfully.
+[2025-02-25 18:12:30] Account number query executed successfully.
+[2025-02-25 18:12:30] Multiple accounts found for user: tian@uniclox.com
+[2025-02-25 18:12:30] Login failed for email: tian@uniclox.com
+[2025-02-25 18:27:08] Login attempt for email: tianryno01@gmail.com
+[2025-02-25 18:27:08] Technician check query executed successfully.
+[2025-02-25 18:27:08] Technician login successful: tianryno01@gmail.com
+[2025-02-26 11:40:36] Login attempt for email: tianryno01@gmail.com
+[2025-02-26 11:40:36] Technician check query executed successfully.
+[2025-02-26 11:40:36] Technician login successful: tianryno01@gmail.com

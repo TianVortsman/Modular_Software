@@ -194,6 +194,7 @@ footer {
     color: var(--color-primary);
     border-top: 2px solid var(--color-primary);
     width: 100%;
+    margin-top: 200px;
 }
 
 .invoice-analytics {

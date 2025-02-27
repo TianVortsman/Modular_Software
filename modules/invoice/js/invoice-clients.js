@@ -187,10 +187,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to fetch client data
     async function fetchClientData(customerType, searchTerm = '') {
         try {
-            showLoadingModal();
             const response = await fetch(`../php/get-invoice-customers.php?customerType=${customerType}&searchTerm=${searchTerm}&limit=${rowsPerPage}&page=${currentPage}`);
             const data = await response.json();
-            hideLoadingModal();
 
             if (data.error) {
                 console.error('Error:', data.error);

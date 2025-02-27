@@ -182,7 +182,6 @@ ul.modular-nav-items li a {
     display: flex; /* Make the anchor a flex container */
     align-items: center; /* Align icon and text vertically */
     text-decoration: none; /* Remove underline */
-    color: inherit; /* Inherit text color */
 }
 
 /* Optional: Make sure the material icons are also aligned */
@@ -270,6 +269,11 @@ ul.modular-nav-items li a .material-icons {
 }
 
 .collapsed + .screen-container{
+    margin-left: 70px; /* Adjust for collapsed sidebar */
+    transition: margin-left var(--transition-speed) ease-in-out; /* Smooth transition for sidebar */
+}
+
+.collapsed + .dashboard-container{
     margin-left: 70px; /* Adjust for collapsed sidebar */
     transition: margin-left var(--transition-speed) ease-in-out; /* Smooth transition for sidebar */
 }

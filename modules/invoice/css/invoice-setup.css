@@ -1,9 +1,14 @@
 body {
     font-family: 'Arial', sans-serif;
-    margin: 20px;
     background-color: var(--color-background);
     color: var(--color-secondary);
 }
+
+.container{
+    margin-left: var(--sidebar-width);
+    transition: margin-left var(--transition-speed);
+}
+
 
 h1 {
     color: var(--color-primary);
@@ -19,6 +24,7 @@ form {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 
 input[type="file"] {
     margin-bottom: 15px;
@@ -42,6 +48,42 @@ button {
 
 button:hover {
     background-color: #357ab8;
+}
+
+.success-log {
+    margin-top: 30px;
+    background-color: var(--color-success);
+    color: var(--color-text-light);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px var(--shadow-dark);
+}
+
+.success-log h2 {
+    margin-top: 0;
+    color: var(--color-text-light);
+    text-align: center;
+}
+
+.success-log table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.success-log th, .success-log td {
+    padding: 10px;
+    border: 1px solid var(--color-text-light);
+    text-align: left;
+}
+
+.success-log th {
+    background-color: var(--color-danger);
+    color: var(--color-text-light);
+}
+
+.success-log tr:nth-child(even) {
+    background-color: var(--color-warning);
 }
 
 .error-log {

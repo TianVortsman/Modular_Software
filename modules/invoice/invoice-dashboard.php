@@ -23,6 +23,7 @@ if (isset($_SESSION['account_number'])) {
 }
 
 $userName = $_SESSION['user_name'] ?? ($_SESSION['tech_logged_in'] ? $_SESSION['tech_name'] : 'Guest');
+$multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple_accounts'] : false;
 
 // Include the database connection
 include('../../php/db.php');
@@ -222,5 +223,6 @@ include('../../php/db.php');
     <script src="../../js/sidebar.js"></script>
     <script src="js/invoice-charts.js" type="module"></script>
     <script src="js/invoice-data.js"></script>
+    <script>var multipleAccounts = <?= json_encode($multiple_accounts); ?>; </script>
 </body>
 </html>

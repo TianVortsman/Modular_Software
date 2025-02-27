@@ -1,0 +1,201 @@
+/* dashboard.css */
+
+body {
+    background-color: var(--color-background);
+    font-family: var(--font-primary);
+    color: var(--color-text);
+    margin: 0;
+    padding: 0;
+}
+
+/* Container for the entire dashboard */
+.dashboard-container {
+    margin-left: 250px; /* Adjust based on your sidebar width */
+    transition: margin-left var(--transition-speed) ease-in-out;
+    padding: var(--spacing-large);
+    background-color: var(--color-secondary);
+}
+
+/* General section styling */
+.dashboard-container section {
+    background-color: var(--color-background);
+    margin-bottom: var(--spacing-large);
+    padding: var(--spacing-large);
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-medium);
+}
+
+/* Section headings */
+.dashboard-container section h2 {
+    margin-top: 0;
+    font-size: 1.75em;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+    color: var(--color-h2);
+}
+
+/* KPI Summary Cards Layout */
+.kpi-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-large);
+}
+
+.kpi-cards .card {
+    flex: 1;
+    min-width: 220px;
+    background-color: var(--color-primary-fade);
+    padding: var(--spacing-medium);
+    border-radius: var(--radius-medium);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+    transition: transform 0.3s ease;
+}
+
+.kpi-cards .card:hover {
+    transform: translateY(-5px);
+}
+
+.kpi-cards .card .card-icon {
+    font-size: 2.5em;
+    margin-bottom: var(--spacing-small);
+    color: var(--color-primary);
+}
+
+.kpi-cards .card .card-info h3 {
+    font-size: 1.2em;
+    margin: var(--spacing-small) 0 5px;
+}
+
+.kpi-cards .card .card-info .value {
+    font-size: 2.5em;
+    font-weight: bold;
+}
+
+/* Chart Containers for graphs */
+.chart-container,
+.historical-chart {
+    position: relative;
+    height: 350px;
+    margin-bottom: var(--spacing-large);
+}
+
+/* Real-Time Activity Feed */
+#real-time-activity ul#activity-feed {
+    list-style: none;
+    padding: 0;
+    max-height: 250px;
+    overflow-y: auto;
+    background-color: var(--color-background);
+    border-radius: var(--radius-small);
+    box-shadow: var(--shadow-light);
+}
+
+#real-time-activity ul#activity-feed li {
+    padding: var(--spacing-small) 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Devices Status Table */
+#devices-status table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--color-background);
+    border-radius: var(--radius-small);
+    box-shadow: var(--shadow-light);
+}
+
+#devices-status table th,
+#devices-status table td {
+    padding: var(--spacing-small);
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Historical Data Filters */
+.data-filters {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-small);
+}
+
+.data-filters label {
+    font-weight: bold;
+}
+
+.data-filters input,
+.data-filters button {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+/* Interactive Filters */
+#interactive-filters .filters {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#interactive-filters .filters label {
+    font-weight: bold;
+}
+
+#interactive-filters .filters select {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+/* Mobile Clocking Metrics */
+#mobile-clocking .mobile-metrics {
+    display: flex;
+    gap: var(--spacing-large);
+}
+
+#mobile-clocking .mobile-metrics .metric {
+    flex: 1;
+    background-color: var(--color-primary-fade);
+    padding: var(--spacing-medium);
+    border-radius: var(--radius-medium);
+    text-align: center;
+    box-shadow: var(--shadow-light);
+}
+
+#mobile-clocking .mobile-metrics .metric h3 {
+    font-size: 1.2em;
+    margin-bottom: var(--spacing-small);
+}
+
+#mobile-clocking .mobile-metrics .metric .value {
+    font-size: 2.5em;
+    font-weight: bold;
+}
+
+/* Alerts and Notifications Panel */
+#alerts-notifications ul#alerts-list {
+    list-style: none;
+    padding: 0;
+    background-color: var(--color-background);
+    border-radius: var(--radius-small);
+    box-shadow: var(--shadow-light);
+}
+
+#alerts-notifications ul#alerts-list li {
+    padding: var(--spacing-small);
+    border-left: 5px solid;
+    margin-bottom: var(--spacing-medium);
+}
+
+/* Example color coding for alerts */
+#alerts-notifications ul#alerts-list li.critical {
+    border-color: var(--color-danger);
+    background-color: var(--color-error);
+}
+
+#alerts-notifications ul#alerts-list li.warning {
+    border-color: var(--color-warning);
+    background-color: var(--color-warning);
+}

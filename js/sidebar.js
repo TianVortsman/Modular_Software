@@ -42,22 +42,22 @@ document.addEventListener('DOMContentLoaded', function () {
             { href: "/modular1/modules/invoice/pages/invoice-payments.php", icon: "payment", text: "Payment Reminder" }
         ],
         "invoice-products": [
-            { href: "/modular1/modules/invoice/invoice-dashboard.php", icon: "dashboard", text: "Dashboard", },
-            { href: "#", icon: "category", text: "Products", tab: "products" },
-            { href: "#", icon: "build", text: "Parts", tab: "parts" },
-            { href: "#", icon: "directions_car", text: "Vehicles", tab: "vehicles" },
-            { href: "#", icon: "add_circle_outline", text: "Extras", tab: "extras" },
-            { href: "#", icon: "remove_circle_outline", text: "Tax Free", tab: "tax-free" }
+            { href: "/modular1/modules/invoice/invoice-dashboard.php", icon: "dashboard", text: "Dashboard"},
+            { href: "#", icon: "category", text: "Products", tab: "products", class: "sidebar-button", onclick: "fetchProducts('products')" },
+            { href: "#", icon: "build", text: "Parts", tab: "parts", class: "sidebar-button", onclick: "fetchProducts('parts')" },
+            { href: "#", icon: "directions_car", text: "Vehicles", tab: "vehicles", class: "sidebar-button", onclick: "fetchProducts('vehicles')" },
+            { href: "#", icon: "add_circle_outline", text: "Extras", tab: "extras", class: "sidebar-button", onclick: "fetchProducts('extras')" },
+            { href: "#", icon: "remove_circle_outline", text: "Services", tab: "services", class: "sidebar-button", onclick: "fetchProducts('services')" }
         ],
         "payments":[
-            { href: "/modular1/modules/invoice/invoice-dashboard.php", icon: "dashboard", text: "Dashboard", },
+            { href: "/modular1/modules/invoice/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
         ],
         "sales-reps":[
-            { href: "/modular1/modules/invoice/invoice-dashboard.php", icon: "dashboard", text: "Dashboard", },
+            { href: "/modular1/modules/invoice/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
             { href: "#", icon: "person_add", text: "Add Sales Rep", onclick: "openAddSalesRepModal()" }
         ],
         "invoice-reports":[
-            { href: "/modular1/modules/invoice/invoice-dashboard.php", icon: "dashboard", text: "Dashboard", },
+            { href: "/modular1/modules/invoice/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
             { href: "#sales-reports", icon: "bar_chart", text: "Sales Reports", onclick: "activateSection('sales-reports')" },
             { href: "#tax-reports", icon: "receipt", text: "Tax Reports", onclick: "activateSection('tax-reports')" },
             { href: "#income-reports", icon: "attach_money", text: "Income Reports", onclick: "activateSection('income-reports')" },
@@ -77,6 +77,18 @@ document.addEventListener('DOMContentLoaded', function () {
         ],
         "invoices": [
             { href: "/modular1/modules/invoice/invoice-dashboard.php", icon: "dashboard", text: "Dashboard", },
+        ],
+        "invoice-setup": [
+            { href: "/modular1/modules/invoice/invoice-dashboard.php", icon: "dashboard", text: "Dashboard", },
+        ],
+        "TandA": [
+            { href: "/modular1/main/dashboard.php", icon: "home", text: "Home" },
+            { href: "/modular1/modules/time-and-attendance/pages/employees.php", icon: "people", text: "Employees" },
+            { href: "/modular1/modules/time-and-attendance/pages/timecards.php", icon: "access_time", text: "Timecards" },
+            { href: "/modular1/modules/time-and-attendance/pages/mobile-clocking.php", icon: "phone_android", text: "Mobile Clocking" },
+            { href: "/modular1/modules/time-and-attendance/pages/reports.php", icon: "bar_chart", text: "Reports" },
+            { href: "/modular1/modules/time-and-attendance/pages/devices.php", icon: "devices", text: "Devices" }
+            
         ],
     };
     
@@ -130,7 +142,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
-
     /**
      * Sidebar toggle functionality
      */
@@ -168,6 +179,14 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         'invoices':{
             targetId: 'screen-container',
+            toggleClasses: ['collapsed']
+        },
+        'TandA':{
+            targetId: '.dashboard-container',
+            toggleClasses: ['collapsed']
+        },
+        'invoice-setup':{
+            targetId: '.container',
             toggleClasses: ['collapsed']
         }
     };
@@ -215,7 +234,14 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize sidebar and page-specific logic
     initializeSidebar();
     setupTabs();
+
 });
+
+function checkMultipleAccounts() {
+    if (multipleAccounts) {
+        window.location.href = "/modular1/main/choose-account.php"; // Redirect if session variable is set
+    }
+}
 
 
 

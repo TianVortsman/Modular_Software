@@ -54,7 +54,7 @@ body {
     border-radius: var(--radius-small);
     cursor: pointer;
     transition: background-color var(--transition-speed), transform 0.1s;
-    box-shadow: 0px 4px 8px var(--shadow-light), 0px -4px 8px var(--shadow-dark), 0px 4px 15px var(--shadow-medium);
+    box-shadow: 0px 4px 8px var(--shadow-light);
     position: relative;
     transform: translateZ(0);
 }
@@ -62,7 +62,27 @@ body {
 .header-right button:hover {
     background-color: var(--btn-hover-bg);
     transform: scale(1.05);
-    box-shadow: var(--shadow-medium);
+    box-shadow: 0px 4px 8px var(--shadow-light), 0px -4px 8px var(--shadow-dark), 0px 4px 15px var(--shadow-medium);
+}
+
+.tab-content button {
+    margin-top: 10px;
+    background-color: var(--btn-bg);
+    color: var(--color-text-light);
+    border: none;
+    padding: var(--spacing-small) var(--spacing-medium);
+    border-radius: var(--radius-small);
+    cursor: pointer;
+    transition: background-color var(--transition-speed), transform 0.1s;
+    box-shadow: 0px 4px 8px var(--shadow-light);
+    position: relative;
+    transform: translateZ(0);
+}
+
+.tab-content button:hover {
+    background-color: var(--btn-hover-bg);
+    transform: scale(1.05);
+    box-shadow: 0px 4px 8px var(--shadow-light), 0px -4px 8px var(--shadow-dark);
 }
 
 .search-input {
@@ -71,7 +91,7 @@ body {
     border: 1px solid var(--border-color);
     background-color: var(--input-bg);
     color: var(--color-text-light);
-    box-shadow: 0px 4px 8px var(--shadow-light), 0px -4px 8px var(--shadow-dark), 0px 4px 15px var(--shadow-medium);
+    box-shadow: 0px 4px 8px var(--shadow-light);
     position: relative;
     transform: translateZ(0);
 }
@@ -138,24 +158,26 @@ body {
 
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(5, minmax(350px, 1fr));
-    gap: var(--spacing-large);
+    grid-template-columns: repeat(6, minmax(50px, 1fr));
+    gap: var(--spacing-medium);
 }
 
 .product-card {
     background-color: var(--color-secondary);
     border-radius: var(--radius-medium);
     padding: var(--spacing-large);
+    max-width: 200px;
     text-align: center;
     transition: transform var(--transition-speed);
-    box-shadow: 
-        4px 8px 12px var(--shadow-light),   /* Lighter, smaller shadow */
-        6px 12px 24px var(--shadow-medium), /* Medium shadow for more depth */
-        8px 16px 32px var(--shadow-dark);   /* Darker shadow for added realism */}
+    box-shadow: 0px 6px 10px var(--shadow-medium);
+    }
 
 .product-card:hover {
     transform: scale(1.05);
-    box-shadow: var(--shadow-medium);
+    box-shadow: 
+    4px 8px 12px var(--shadow-light),   /* Lighter, smaller shadow */
+    6px 12px 24px var(--shadow-medium), /* Medium shadow for more depth */
+    8px 16px 32px var(--shadow-dark);   /* Darker shadow for added realism */
 }
 
 .product-image {
