@@ -15,10 +15,10 @@ $offset = ($page - 1) * $limit;
 // Map category to the correct table and column names
 $categoryMapping = [
     'products' => 'product',
-    'parts' => 'parts',
-    'services' => 'services',
+    'parts' => 'product',
+    'services' => 'product',
     'vehicles' => 'vehicles',
-    'extras' => 'extras'
+    'extras' => 'product'
 ];
 
 // Ensure the category is valid
@@ -27,7 +27,7 @@ if (!array_key_exists($category, $categoryMapping)) {
     exit;
 }
 
-$tableName = 'product';
+$tableName = $categoryMapping[$category];
 
 // Try-catch block to safely query the database
 try {
@@ -40,24 +40,25 @@ try {
                 WHERE (make ILIKE :search OR model ILIKE :search) LIMIT :limit OFFSET :offset";
     } else {
         $sql = "SELECT 
-    prod_id, 
-    prod_name, 
-    prod_descr, 
-    prod_price,
-    sku,
-    barcode,
-    brand,
-    manufacturer,
-    weight,
-    dimensions,
-    warranty_period,
-    tax_rate,
-    discount,
-    status
-FROM product
-WHERE product_type = :category 
-AND (prod_name ILIKE :search OR prod_descr ILIKE :search) 
-LIMIT :limit OFFSET :offset";
+            prod_id, 
+            prod_name, 
+            prod_descr, 
+            prod_price,
+            sku,
+            barcode,
+            brand,
+            manufacturer,
+            weight,
+            dimensions,
+            warranty_period,
+            tax_rate,
+            discount,
+            image_url,
+            status
+        FROM product
+        WHERE product_type = :category 
+        AND (prod_name ILIKE :search OR prod_descr ILIKE :search) 
+        LIMIT :limit OFFSET :offset";
     }
     
     $stmt = $conn->prepare($sql);
@@ -75,8 +76,19 @@ LIMIT :limit OFFSET :offset";
     echo json_encode(['category' => $category, 'results' => $results]);
 } catch (PDOException $e) {
     $conn->rollBack();
-    http_response_code(500);
-    echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+    
+    // Check for duplicate key violation
+    if ($e->getCode() == '23505' && strpos($e->getMessage(), 'product_barcode_key') !== false) {
+        echo json_encode([
+            "success" => false,
+            "message" => "A product with this barcode already exists."
+        ]);
+    } else {
+        echo json_encode([
+            "success" => false,
+            "message" => "Error: " . $e->getMessage()
+        ]);
+    }
     exit;
 }
 ?>

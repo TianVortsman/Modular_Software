@@ -35,6 +35,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $productTaxRate     = !empty($input['tax_rate']) ? $input['tax_rate'] : null;
         $productDiscount    = !empty($input['discount']) ? $input['discount'] : null;
         $productStatus      = !empty($input['status']) ? $input['status'] : 'active';
+        $productType        = !empty($input['prod_type']) ? $input['prod_type'] : 'products';
+
+        // Validate required fields
+        if (empty($productName) || empty($productPrice)) {
+            throw new Exception("Product name and price are required fields.");
+        }
 
         $updatedAt = date('Y-m-d H:i:s');
         
@@ -80,6 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     tax_rate         = :productTaxRate,
                     discount         = :productDiscount,
                     status           = :productStatus,
+                    product_type     = :productType,
                     updated_at       = :updatedAt
             ";
             
@@ -105,6 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 ':productTaxRate'   => $productTaxRate,
                 ':productDiscount'  => $productDiscount,
                 ':productStatus'    => $productStatus,
+                ':productType'      => $productType,
                 ':updatedAt'        => $updatedAt,
                 ':productId'        => $productId
             ];
@@ -137,6 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     tax_rate,
                     discount,
                     status,
+                    product_type,
                     created_at,
                     updated_at
             ";
@@ -160,6 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     :productTaxRate,
                     :productDiscount,
                     :productStatus,
+                    :productType,
                     :createdAt,
                     :updatedAt
             ";
@@ -186,6 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 ':productTaxRate'      => $productTaxRate,
                 ':productDiscount'     => $productDiscount,
                 ':productStatus'       => $productStatus,
+                ':productType'         => $productType,
                 ':createdAt'           => $updatedAt,
                 ':updatedAt'           => $updatedAt
             ];
