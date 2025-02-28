@@ -3,14 +3,24 @@ session_start();
 header('Content-Type: application/json');
 include('../../../php/db.php');
 
-// Decode JSON input
-$input = json_decode(file_get_contents('php://input'), true);
-
+// Check if the request is a POST request
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     try {
         $conn->beginTransaction();
+        
+        // Determine if this is a JSON request or a form with file upload
+        $isJsonRequest = isset($_SERVER['CONTENT_TYPE']) && 
+                         strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false;
+        
+        if ($isJsonRequest) {
+            // Handle JSON input (for product updates without image)
+            $input = json_decode(file_get_contents('php://input'), true);
+        } else {
+            // Handle form data (for new products with image)
+            $input = $_POST;
+        }
 
-        // Collect POST data from JSON input
+        // Collect data
         $productId          = !empty($input['prod_id']) ? $input['prod_id'] : null;
         $productName        = !empty($input['prod_name']) ? $input['prod_name'] : null;
         $productDescr       = !empty($input['prod_descr']) ? $input['prod_descr'] : null;
@@ -27,6 +37,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $productStatus      = !empty($input['status']) ? $input['status'] : 'active';
 
         $updatedAt = date('Y-m-d H:i:s');
+        
+        // Handle image upload
+        $imagePath = null;
+        if (isset($_FILES['product_image']) && $_FILES['product_image']['error'] == 0) {
+            // Create upload directory if it doesn't exist
+            $uploadDir = '../../../uploads/products/';
+            if (!file_exists($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            
+            // Generate unique filename
+            $fileExtension = pathinfo($_FILES['product_image']['name'], PATHINFO_EXTENSION);
+            $uniqueId = uniqid();
+            $fileName = $uniqueId . '.' . $fileExtension;
+            $targetFilePath = $uploadDir . $fileName;
+            
+            // Move uploaded file
+            if (move_uploaded_file($_FILES['product_image']['tmp_name'], $targetFilePath)) {
+                // Store relative path in database
+                $imagePath = 'uploads/products/' . $fileName;
+            } else {
+                throw new Exception("Failed to upload image");
+            }
+        }
 
         if ($productId) {
             // Update existing product
@@ -47,11 +81,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     discount         = :productDiscount,
                     status           = :productStatus,
                     updated_at       = :updatedAt
-                WHERE prod_id = :productId
             ";
+            
+            // Only update image if a new one was uploaded
+            if ($imagePath) {
+                $sql .= ", image_url = :imagePath";
+            }
+            
+            $sql .= " WHERE prod_id = :productId";
 
             $stmt = $conn->prepare($sql);
-            $stmt->execute([
+            $params = [
                 ':productName'      => $productName,
                 ':productDescr'     => $productDescr,
                 ':productPrice'     => $productPrice,
@@ -67,7 +107,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 ':productStatus'    => $productStatus,
                 ':updatedAt'        => $updatedAt,
                 ':productId'        => $productId
-            ]);
+            ];
+            
+            if ($imagePath) {
+                $params[':imagePath'] = $imagePath;
+            }
+            
+            $stmt->execute($params);
 
             $responseMessage = [
                 "success"   => true,
@@ -93,7 +139,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     status,
                     created_at,
                     updated_at
-                ) VALUES (
+            ";
+            
+            // Add image_url column if an image was uploaded
+            if ($imagePath) {
+                $sql .= ", image_url";
+            }
+            
+            $sql .= ") VALUES (
                     :productName,
                     :productDescr,
                     :productPrice,
@@ -109,12 +162,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     :productStatus,
                     :createdAt,
                     :updatedAt
-                )
-                RETURNING prod_id
             ";
+            
+            // Add image path value if an image was uploaded
+            if ($imagePath) {
+                $sql .= ", :imagePath";
+            }
+            
+            $sql .= ") RETURNING prod_id";
 
             $stmt = $conn->prepare($sql);
-            $stmt->execute([
+            $params = [
                 ':productName'         => $productName,
                 ':productDescr'        => $productDescr,
                 ':productPrice'        => $productPrice,
@@ -130,14 +188,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 ':productStatus'       => $productStatus,
                 ':createdAt'           => $updatedAt,
                 ':updatedAt'           => $updatedAt
-            ]);
-
+            ];
+            
+            if ($imagePath) {
+                $params[':imagePath'] = $imagePath;
+            }
+            
+            $stmt->execute($params);
             $newProductId = $stmt->fetchColumn();
 
             $responseMessage = [
                 "success"   => true,
                 "message"   => "Product created successfully",
-                "productId" => $newProductId
+                "productId" => $newProductId,
+                "imagePath" => $imagePath
             ];
         }
 

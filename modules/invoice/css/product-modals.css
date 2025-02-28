@@ -260,3 +260,27 @@
 .btn-modal-add-product-cancel:hover {
     background-color: var(--btn-hover-bg);
 }
+
+/* Image preview styling */
+.image-preview-container {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.image-preview {
+    max-width: 200px;
+    max-height: 200px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small, 4px);
+    object-fit: contain;
+}
+
+/* File input styling */
+input[type="file"] {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small, 4px);
+    background-color: var(--input-bg);
+    color: var(--color-text-light);
+    width: 100%;
+}

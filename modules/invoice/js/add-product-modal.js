@@ -33,38 +33,61 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   
     // Handle form submission
-    const productForm = modalAddProduct.querySelector(".modal-add-product-form");
-    productForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
+const productForm = modalAddProduct.querySelector(".modal-add-product-form");
+productForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  // Create FormData object for handling file uploads
+  const formData = new FormData(productForm);
   
-      // Gather data from the form
-      const formData = new FormData(productForm);
-      const productData = Object.fromEntries(formData.entries());
-  
-      try {
-        const response = await fetch("../handlers/product-handler.php", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(productData),
-        });
-  
-        if (!response.ok) {
-          throw new Error("Failed to add product");
-        }
-  
-        // Close the modal on success
-        closeAddProductModal();
-        
-        // Optionally refresh the product list
-        if (typeof fetchProducts === 'function') {
-          fetchProducts(category);
-        }
-        
-      } catch (error) {
-        console.error("Error adding product:", error);
-        showResponseModal(data.status, data.message);
-          }
+  try {
+    const response = await fetch("../handlers/product-handler.php", {
+      method: "POST",
+      body: formData, // Send FormData directly (don't set Content-Type header)
     });
+
+    if (!response.ok) {
+      throw new Error("Failed to add product");
+    }
+
+    const data = await response.json();
+    
+    // Close the modal on success
+    closeAddProductModal();
+    
+    // Optionally refresh the product list
+    if (typeof fetchProducts === 'function') {
+      fetchProducts(category);
+    }
+    
+    // Show success message if available
+    if (data.message) {
+      showResponseModal(data.success ? "success" : "error", data.message);
+    }
+    
+  } catch (error) {
+    console.error("Error adding product:", error);
+    showResponseModal("error", "Failed to add product: " + error.message);
+  }
+});
+
+// Add image preview functionality
+const imageInput = document.getElementById("addProductImage");
+const imagePreview = document.getElementById("addProductImagePreview");
+
+if (imageInput && imagePreview) {
+  imageInput.addEventListener("change", function() {
+    if (this.files && this.files[0]) {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        imagePreview.src = e.target.result;
+      };
+      
+      reader.readAsDataURL(this.files[0]);
+    } else {
+      imagePreview.src = "https://placehold.co/300x300?text=No+Image";
+    }
+  });
+}
   });

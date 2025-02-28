@@ -106,6 +106,16 @@ function openProductDetailsModal(product) {
         if (document.getElementById('modalProductStatus')) {
             document.getElementById('modalProductStatus').value = product.status || 'active';
         }
+
+                // Set image preview if available
+                const imagePreview = document.getElementById('modalProductImagePreview');
+                if (imagePreview) {
+                    if (product.image_url) {
+                        imagePreview.src = '../../../' + product.image_url;
+                    } else {
+                        imagePreview.src = 'https://placehold.co/300x300?text=No+Image';
+                    }
+                }
         
         // Show the modal - use classList for consistency
         modal.classList.add('active');
@@ -157,8 +167,8 @@ function createProductCard(product) {
 
     switch (category) {
           case 'products':
-                imageUrl = product.imageUrl || 'https://placehold.co/300x300?text=No+Product+Image';
-                cardContent = `
+            imageUrl = product.image_url ? '../../../' + product.image_url : 'https://placehold.co/300x300?text=No+Product+Image';
+            cardContent = `
                      <img src="${imageUrl}" alt="${product.prod_name || 'No name'}" class="product-image">
                      <h2 class="product-title">${product.prod_name || 'No name'}</h2>
                      <p class="product-description">${product.prod_descr || 'No description available'}</p>

@@ -7,6 +7,8 @@
     <form class="modal-product-details-form">
       <!-- Hidden field (for internal reference, e.g. updating existing product) -->
       <input type="hidden" name="prod_id" id="modalProductId" />
+      <!-- Product Type -->
+      <input type="hidden" name="prod_type" id="modalProductType" value="products">
 
       <!-- Product Name -->
       <div class="modal-product-details-field">
@@ -88,6 +90,15 @@
           <option value="inactive">Inactive</option>
           <option value="discontinued">Discontinued</option>
         </select>
+      </div>
+
+            <!-- Product Image -->
+      <div class="modal-product-details-field">
+        <label for="modalProductImage">Product Image:</label>
+        <input type="file" name="product_image" id="modalProductImage" accept="image/*">
+        <div class="image-preview-container">
+          <img id="modalProductImagePreview" src="https://placehold.co/300x300?text=No+Image" alt="Image preview" class="image-preview">
+        </div>
       </div>
 
       <!-- Submit Button -->
@@ -188,6 +199,15 @@
           <option value="inactive">Inactive</option>
           <option value="discontinued">Discontinued</option>
         </select>
+      </div>
+
+      <!-- Product Image Upload -->
+      <div class="modal-add-product-field">
+        <label for="addProductImage">Product Image:</label>
+        <input type="file" name="product_image" id="addProductImage" accept="image/*">
+        <div class="image-preview-container">
+          <img id="addProductImagePreview" src="https://placehold.co/300x300?text=No+Image" alt="Image preview" class="image-preview">
+        </div>
       </div>
 
       <!-- Submit Button -->
