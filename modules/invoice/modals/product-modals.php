@@ -98,3 +98,103 @@
     </form>
   </div>
 </div>
+
+
+
+<!-- Add Product Modal -->
+<div class="modal-add-product" id="modalAddProduct">
+  <div class="modal-add-product-content">
+    <span class="modal-add-product-close">&times;</span>
+    <h2 class="modal-add-product-title">Add New Product</h2>
+
+    <form class="modal-add-product-form" id="modal-add-product-form">
+      <!-- Product Name -->
+      <div class="modal-add-product-field">
+        <label for="addProductName">Product Name:</label>
+        <input type="text" name="prod_name" id="addProductName" placeholder="Enter product name" required>
+      </div>
+
+      <!-- Product Description -->
+      <div class="modal-add-product-field">
+        <label for="addProductDescr">Description:</label>
+        <textarea name="prod_descr" id="addProductDescr" placeholder="Short description here..."></textarea>
+      </div>
+
+      <!-- Price -->
+      <div class="modal-add-product-field">
+        <label for="addProductPrice">Price:</label>
+        <input type="number" step="0.01" name="prod_price" id="addProductPrice" placeholder="0.00" required>
+      </div>
+
+      <!-- SKU -->
+      <div class="modal-add-product-field">
+        <label for="addProductSKU">SKU:</label>
+        <input type="text" name="sku" id="addProductSKU" placeholder="Stock Keeping Unit">
+      </div>
+
+      <!-- Barcode -->
+      <div class="modal-add-product-field">
+        <label for="addProductBarcode">Barcode:</label>
+        <input type="text" name="barcode" id="addProductBarcode" placeholder="Barcode">
+      </div>
+
+      <!-- Brand -->
+      <div class="modal-add-product-field">
+        <label for="addProductBrand">Brand:</label>
+        <input type="text" name="brand" id="addProductBrand" placeholder="Brand name">
+      </div>
+
+      <!-- Manufacturer -->
+      <div class="modal-add-product-field">
+        <label for="addProductManufacturer">Manufacturer:</label>
+        <input type="text" name="manufacturer" id="addProductManufacturer" placeholder="Manufacturer">
+      </div>
+
+      <!-- Weight -->
+      <div class="modal-add-product-field">
+        <label for="addProductWeight">Weight:</label>
+        <input type="number" step="0.01" name="weight" id="addProductWeight" placeholder="Weight in kg/lbs">
+      </div>
+
+      <!-- Dimensions -->
+      <div class="modal-add-product-field">
+        <label for="addProductDimensions">Dimensions:</label>
+        <input type="text" name="dimensions" id="addProductDimensions" placeholder="e.g., 10x5x3">
+      </div>
+
+      <!-- Warranty Period -->
+      <div class="modal-add-product-field">
+        <label for="addProductWarranty">Warranty Period:</label>
+        <input type="text" name="warranty_period" id="addProductWarranty" placeholder="e.g., 1 year, 2 years...">
+      </div>
+
+      <!-- Tax Rate -->
+      <div class="modal-add-product-field">
+        <label for="addProductTaxRate">Tax Rate:</label>
+        <input type="number" step="0.01" name="tax_rate" id="addProductTaxRate" placeholder="Tax %">
+      </div>
+
+      <!-- Discount -->
+      <div class="modal-add-product-field">
+        <label for="addProductDiscount">Discount:</label>
+        <input type="number" step="0.01" name="discount" id="addProductDiscount" placeholder="Discount amount">
+      </div>
+
+      <!-- Status -->
+      <div class="modal-add-product-field">
+        <label for="addProductStatus">Status:</label>
+        <select name="status" id="addProductStatus">
+          <option value="active" selected>Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="discontinued">Discontinued</option>
+        </select>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="modal-add-product-buttons">
+        <button type="submit" class="btn-modal-add-product-save">Add Product</button>
+        <button type="button" class="btn-modal-add-product-cancel modal-add-product-close">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>

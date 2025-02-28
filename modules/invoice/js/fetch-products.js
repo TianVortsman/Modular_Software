@@ -1,5 +1,3 @@
-
-
 let category = 'products'; // Default category
 
 function updateQueryParams(params) {
@@ -8,7 +6,9 @@ function updateQueryParams(params) {
     window.history.pushState({}, '', url);
 }
 
-async function fetchProducts(category) {
+async function fetchProducts(categoryParam) {
+    // Update the global category variable
+    category = categoryParam;
     console.log("Fetching products for category:", category);
     try {
         const params = new URLSearchParams(window.location.search);
@@ -63,40 +63,90 @@ async function fetchProducts(category) {
     }
 }
 
+// Function to open the Product Details Modal
+function openProductDetailsModal(product) {
+    console.log("Opening product modal with data:", product);
+    const modal = document.getElementById('modalProductDetails');
+    
+    if (modal) {
+        // Populate form fields with product data
+        document.getElementById('modalProductId').value = product.prod_id || '';
+        document.getElementById('modalProductName').value = product.prod_name || '';
+        document.getElementById('modalProductDescr').value = product.prod_descr || '';
+        document.getElementById('modalProductPrice').value = product.prod_price || '';
+        
+        // Check if other fields exist before trying to set their values
+        if (document.getElementById('modalProductSKU')) {
+            document.getElementById('modalProductSKU').value = product.sku || '';
+        }
+        if (document.getElementById('modalProductBarcode')) {
+            document.getElementById('modalProductBarcode').value = product.barcode || '';
+        }
+        if (document.getElementById('modalProductBrand')) {
+            document.getElementById('modalProductBrand').value = product.brand || '';
+        }
+        if (document.getElementById('modalProductManufacturer')) {
+            document.getElementById('modalProductManufacturer').value = product.manufacturer || '';
+        }
+        if (document.getElementById('modalProductWeight')) {
+            document.getElementById('modalProductWeight').value = product.weight || '';
+        }
+        if (document.getElementById('modalProductDimensions')) {
+            document.getElementById('modalProductDimensions').value = product.dimensions || '';
+        }
+        if (document.getElementById('modalProductWarranty')) {
+            document.getElementById('modalProductWarranty').value = product.warranty_period || '';
+        }
+        if (document.getElementById('modalProductTaxRate')) {
+            document.getElementById('modalProductTaxRate').value = product.tax_rate || '';
+        }
+        if (document.getElementById('modalProductDiscount')) {
+            document.getElementById('modalProductDiscount').value = product.discount || '';
+        }
+        if (document.getElementById('modalProductStatus')) {
+            document.getElementById('modalProductStatus').value = product.status || 'active';
+        }
+        
+        // Show the modal - use classList for consistency
+        modal.classList.add('active');
+    } else {
+        console.error("Product modal element not found");
+    }
+}
 
-    // Function to open the Product Details Modal
-    function openProductDetailsModal(product) {
-        const modal = document.getElementById('modalProductDetails');
-        if (modal) {
-          modal.classList.add('active');
-        }
-      }
-    
-      // Function to close the Product Details Modal
-      function closeProductDetailsModal() {
-        const modal = document.getElementById('modalProductDetails');
-        if (modal) {
-          modal.classList.remove('active');
-        }
-      }
-    
-      // Close button event listener
-      const closeBtn = document.querySelector('.modal-close-product-details');
-      if (closeBtn) {
-        closeBtn.addEventListener('click', closeProductDetailsModal);
-      }
-    
-      // Overlay click event listener to also close the modal when clicking outside the content
-      const overlay = document.querySelector('.modal-overlay-product-details');
-      if (overlay) {
-        overlay.addEventListener('click', closeProductDetailsModal);
-      }
-    
-      // Example: Open the modal when clicking a designated button
-      const openBtn = document.getElementById('openProductModalBtn');
-      if (openBtn) {
-        openBtn.addEventListener('click', openProductDetailsModal);
-      }
+// Function to close the Product Details Modal
+function closeProductDetailsModal() {
+    const modal = document.getElementById('modalProductDetails');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
+// Placeholder functions for other modal types
+function openVehicleDetailsModal(product) {
+    console.log("Vehicle modal not implemented yet", product);
+    // Implement similar to product modal
+}
+
+function openPartDetailsModal(product) {
+    console.log("Part modal not implemented yet", product);
+    // Implement similar to product modal
+}
+
+function openExtraDetailsModal(product) {
+    console.log("Extra modal not implemented yet", product);
+    // Implement similar to product modal
+}
+
+function openServiceDetailsModal(product) {
+    console.log("Service modal not implemented yet", product);
+    // Implement similar to product modal
+}
+
+function openDefaultDetailsModal(product) {
+    console.log("Default modal not implemented yet", product);
+    // Implement similar to product modal
+}
 
 function createProductCard(product) {
     const card = document.createElement("div");
@@ -129,40 +179,40 @@ function createProductCard(product) {
           case 'parts':
                 imageUrl = product.imageUrl || 'https://placehold.co/300x300?text=No+Part+Image';
                 cardContent = `
-                     <img src="${imageUrl}" alt="${product.part_name || 'No name'}" class="product-image">
-                     <h2 class="product-title">${product.part_name || 'No name'}</h2>
-                     <p class="product-description">${product.part_descr || 'No description available'}</p>
-                     <p class="product-price">R${product.part_price || 'N/A'}</p>
+                     <img src="${imageUrl}" alt="${product.prod_name || 'No name'}" class="product-image">
+                     <h2 class="product-title">${product.prod_name || 'No name'}</h2>
+                     <p class="product-description">${product.prod_descr || 'No description available'}</p>
+                     <p class="product-price">R${product.prod_price || 'N/A'}</p>
                 `;
                 card.onclick = () => openPartDetailsModal(product);
                 break;
           case 'extras':
                 imageUrl = product.imageUrl || 'https://placehold.co/300x300?text=No+Extras+Image';
                 cardContent = `
-                     <img src="${imageUrl}" alt="${product.extra_name || 'No name'}" class="product-image">
-                     <h2 class="product-title">${product.extra_name || 'No name'}</h2>
-                     <p class="product-description">${product.extra_descr || 'No description available'}</p>
-                     <p class="product-price">R${product.extra_price || 'N/A'}</p>
+                     <img src="${imageUrl}" alt="${product.prod_name || 'No name'}" class="product-image">
+                     <h2 class="product-title">${product.prod_name || 'No name'}</h2>
+                     <p class="product-description">${product.prod_descr || 'No description available'}</p>
+                     <p class="product-price">R${product.prod_price || 'N/A'}</p>
                 `;
                 card.onclick = () => openExtraDetailsModal(product);
                 break;
           case 'services':
                 imageUrl = product.imageUrl || 'https://placehold.co/300x300?text=No+Service+Image';
                 cardContent = `
-                     <img src="${imageUrl}" alt="${product.service_name || 'No name'}" class="product-image">
-                     <h2 class="product-title">${product.service_name || 'No name'}</h2>
-                     <p class="product-description">${product.service_descr || 'No description available'}</p>
-                     <p class="product-price">R${product.service_price || 'N/A'}</p>
+                     <img src="${imageUrl}" alt="${product.prod_name || 'No name'}" class="product-image">
+                     <h2 class="product-title">${product.prod_name || 'No name'}</h2>
+                     <p class="product-description">${product.prod_descr || 'No description available'}</p>
+                     <p class="product-price">R${product.prod_price || 'N/A'}</p>
                 `;
                 card.onclick = () => openServiceDetailsModal(product);
                 break;
           default:
                 imageUrl = product.imageUrl || 'https://placehold.co/300x300?text=No+Image';
                 cardContent = `
-                     <img src="${imageUrl}" alt="${product.name || 'No name'}" class="product-image">
-                     <h2 class="product-title">${product.name || 'No name'}</h2>
-                     <p class="product-description">${product.descr || 'No description available'}</p>
-                     <p class="product-price">R${product.price || 'N/A'}</p>
+                     <img src="${imageUrl}" alt="${product.prod_name || 'No name'}" class="product-image">
+                     <h2 class="product-title">${product.prod_name || 'No name'}</h2>
+                     <p class="product-description">${product.prod_descr || 'No description available'}</p>
+                     <p class="product-price">R${product.prod_price || 'N/A'}</p>
                 `;
                 card.onclick = () => openDefaultDetailsModal(product);
      }
@@ -171,9 +221,64 @@ function createProductCard(product) {
      return card;
 }
 
-
-    document.addEventListener("DOMContentLoaded", () => {
-        // Fetch products when the page loads
-        fetchProducts(category);
+// Initialize everything when the DOM is fully loaded
+document.addEventListener("DOMContentLoaded", () => {
+    // Fetch products when the page loads
+    fetchProducts(category);
+    
+    // Set up modal close buttons
+    const modalCloseButtons = document.querySelectorAll('.modal-product-details-close');
+    if (modalCloseButtons) {
+        modalCloseButtons.forEach(button => {
+            button.addEventListener('click', closeProductDetailsModal);
+        });
+    }
+    
+    // Set up form submission
+    const productForm = document.querySelector('.modal-product-details-form');
+    if (productForm) {
+        productForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(productForm);
+            const productData = Object.fromEntries(formData.entries());
+            
+            // AJAX request to save product
+            fetch('../handlers/product-handler.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(productData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    showResponseModal(data.status, data.message);                  
+                    // Close modal
+                    closeProductDetailsModal();
+                    
+                    // Refresh product list
+                    fetchProducts(category);
+                } else {
+                    // Show error message
+                    showResponseModal(data.status, data.message);                  
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while saving the product');
+            });
+        });
+    }
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('modalProductDetails');
+        if (event.target === modal) {
+            closeProductDetailsModal();
+        }
     });
-
+});

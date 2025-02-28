@@ -130,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     ':contactId' => $contactId
                 ]);
         
-                $responseMessage = ["status" => "success", "message" => "Contact updated successfully"];
+                $responseMessage = ["status" => "success", "message" => "Company updated successfully"];
             } else {
                 // Insert new contact
                 $sqlInsert = "INSERT INTO company_contacts (

@@ -39,10 +39,27 @@ try {
         $sql = "SELECT veh_id AS id, make || ' ' || model AS name, year, vin, status FROM vehicles 
                 WHERE (make ILIKE :search OR model ILIKE :search) LIMIT :limit OFFSET :offset";
     } else {
-        $sql = "SELECT prod_id, prod_name, prod_descr, prod_price
-                FROM product
-                WHERE product_type = :category AND (prod_name ILIKE :search OR prod_descr ILIKE :search) LIMIT :limit OFFSET :offset";
+        $sql = "SELECT 
+    prod_id, 
+    prod_name, 
+    prod_descr, 
+    prod_price,
+    sku,
+    barcode,
+    brand,
+    manufacturer,
+    weight,
+    dimensions,
+    warranty_period,
+    tax_rate,
+    discount,
+    status
+FROM product
+WHERE product_type = :category 
+AND (prod_name ILIKE :search OR prod_descr ILIKE :search) 
+LIMIT :limit OFFSET :offset";
     }
+    
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':category', $category, PDO::PARAM_STR);
     $stmt->bindParam(':search', $searchTerm, PDO::PARAM_STR);

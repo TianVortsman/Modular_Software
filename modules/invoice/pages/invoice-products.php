@@ -61,7 +61,7 @@ include('../../../php/db.php');
 
             <!-- Products Section -->
             <div class="tab-content active" id="products">
-            <button onclick="toggleAddProductsModal()" class="add-products-open-btn">Add Products</button>
+            <button onclick="openAddProductModal()" class="add-products-open-btn">Add Products</button>
                 <h2>Products</h2>
                 <div class="products-grid" id="products-grid">
 
@@ -153,5 +153,6 @@ include('../../../php/db.php');
 <script src="../js/add-vehicle.js"></script>
 <script src="../js/product-modals.js"></script>
 <script src="../js/fetch-products.js"></script>
+<script src="../js/add-product-modal.js"></script>
 </body>
 </html>
