@@ -250,17 +250,13 @@ document.addEventListener("DOMContentLoaded", () => {
         productForm.addEventListener('submit', function(event) {
             event.preventDefault();
             
-            // Get form data
+            // Use FormData for file uploads
             const formData = new FormData(productForm);
-            const productData = Object.fromEntries(formData.entries());
             
             // AJAX request to save product
             fetch('../handlers/product-handler.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(productData)
+                body: formData // Don't set Content-Type header when using FormData
             })
             .then(response => response.json())
             .then(data => {
@@ -291,4 +287,25 @@ document.addEventListener("DOMContentLoaded", () => {
             closeProductDetailsModal();
         }
     });
+
+    // Add image preview functionality for Product Details Modal
+const modalProductImage = document.getElementById("modalProductImage");
+const modalProductImagePreview = document.getElementById("modalProductImagePreview");
+
+if (modalProductImage && modalProductImagePreview) {
+    modalProductImage.addEventListener("change", function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                modalProductImagePreview.src = e.target.result;
+            };
+            
+            reader.readAsDataURL(this.files[0]);
+        } else {
+            modalProductImagePreview.src = "https://placehold.co/300x300?text=No+Image";
+        }
+    });
+}
 });
+
