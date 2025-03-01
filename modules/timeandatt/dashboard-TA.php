@@ -38,6 +38,7 @@ include('../../php/db.php');
   <link rel="stylesheet" href="../../css/root.css">
   <link rel="stylesheet" href="../../css/sidebar.css">
   <link rel="stylesheet" href="css/TandA.css">
+  <link rel="stylesheet" href="css/modals.css">
   <script src="../../js/sidebar.js"></script>
   <script src="../../js/toggle-theme.js"></script>
 </head>

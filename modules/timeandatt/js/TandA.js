@@ -768,6 +768,7 @@ function createActivityModalContent() {
     `;
 }
 
+// Complete the createAlertsModalContent function that was truncated
 function createAlertsModalContent() {
     return `
         <div class="modal-section">
@@ -813,10 +814,10 @@ function createAlertsModalContent() {
                         <button class="alert-action">Ignore</button>
                     </div>
                 </div>
-                <div class="alert-item medium-priority">
+                <div class="alert-item low-priority">
                     <div class="alert-header">
                         <span class="alert-type">Overtime Alert</span>
-                        <span class="alert-priority-indicator">Medium</span>
+                        <span class="alert-priority-indicator">Low</span>
                     </div>
                     <div class="alert-content">
                         <p>Employee 7 (David Clark) has accumulated 2 hours of overtime this week.</p>
@@ -826,13 +827,631 @@ function createAlertsModalContent() {
                         <button class="alert-action">Ignore</button>
                     </div>
                 </div>
-                <div class="alert-item low-priority">
-                    <div class="alert-header">
-                        <span class="alert-type">Early Departure</span>
-                        <span class="alert-priority-indicator">Low</span>
+            </div>
+        </div>
+    `;
+}
+
+function createMobileMetricsModalContent() {
+    return `
+        <div class="modal-section">
+            <h3>Mobile Clocking Metrics</h3>
+            <div class="chart-container-large">
+                <canvas id="mobileUsageChart"></canvas>
+            </div>
+        </div>
+        <div class="modal-section">
+            <h3>Mobile App Usage Statistics</h3>
+            <table class="modal-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Current</th>
+                        <th>Previous Period</th>
+                        <th>Change</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mobile Usage</td>
+                        <td>68%</td>
+                        <td>62%</td>
+                        <td class="positive-change">+6%</td>
+                    </tr>
+                    <tr>
+                        <td>Success Rate</td>
+                        <td>94%</td>
+                        <td>91%</td>
+                        <td class="positive-change">+3%</td>
+                    </tr>
+                    <tr>
+                        <td>Average Response Time</td>
+                        <td>1.2s</td>
+                        <td>1.5s</td>
+                        <td class="positive-change">-0.3s</td>
+                    </tr>
+                    <tr>
+                        <td>Daily Active Users</td>
+                        <td>35</td>
+                        <td>30</td>
+                        <td class="positive-change">+5</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+function createDevicesModalContent() {
+    return `
+        <div class="modal-section">
+            <h3>Device Status Overview</h3>
+            <div class="chart-container-medium">
+                <canvas id="deviceStatusChart"></canvas>
+            </div>
+        </div>
+        <div class="modal-section">
+            <h3>Device Details</h3>
+            <div class="modal-filters">
+                <select id="device-filter">
+                    <option value="all">All Devices</option>
+                    <option value="online">Online</option>
+                    <option value="offline">Offline</option>
+                    <option value="warning">Warning</option>
+                </select>
+            </div>
+            <table class="modal-table">
+                <thead>
+                    <tr>
+                        <th>Device Name</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Last Check</th>
+                        <th>Uptime</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Main Entrance Terminal</td>
+                        <td>Front Office</td>
+                        <td><span class="status-indicator status-online"></span>Online</td>
+                        <td>2 minutes ago</td>
+                        <td>99.8%</td>
+                    </tr>
+                    <tr>
+                        <td>Warehouse Scanner</td>
+                        <td>Warehouse</td>
+                        <td><span class="status-indicator status-offline"></span>Offline</td>
+                        <td>3 hours ago</td>
+                        <td>85.2%</td>
+                    </tr>
+                    <tr>
+                        <td>Office Biometric</td>
+                        <td>HR Department</td>
+                        <td><span class="status-indicator status-online"></span>Online</td>
+                        <td>5 minutes ago</td>
+                        <td>98.5%</td>
+                    </tr>
+                    <tr>
+                        <td>Mobile App Server</td>
+                        <td>Server Room</td>
+                        <td><span class="status-indicator status-warning"></span>Warning</td>
+                        <td>15 minutes ago</td>
+                        <td>97.1%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+function createHistoricalModalContent() {
+    return `
+        <div class="modal-section">
+            <h3>Historical Data Analysis</h3>
+            <div class="modal-filters">
+                <div class="filter-group">
+                    <label for="modal-start-date">Start Date:</label>
+                    <input type="date" id="modal-start-date" class="filter-input">
+                </div>
+                <div class="filter-group">
+                    <label for="modal-end-date">End Date:</label>
+                    <input type="date" id="modal-end-date" class="filter-input">
+                </div>
+                <div class="filter-group">
+                    <label for="modal-metric">Metric:</label>
+                    <select id="modal-metric" class="filter-select">
+                        <option value="attendance">Attendance</option>
+                        <option value="overtime">Overtime</option>
+                        <option value="late">Late Arrivals</option>
+                    </select>
+                </div>
+                <button id="modal-filter-data" class="filter-button">Apply Filter</button>
+            </div>
+            <div class="chart-container-large">
+                <canvas id="modalHistoricalChart"></canvas>
+            </div>
+        </div>
+        <div class="modal-section">
+            <h3>Comparative Analysis</h3>
+            <table class="modal-table">
+                <thead>
+                    <tr>
+                        <th>Period</th>
+                        <th>Attendance Rate</th>
+                        <th>Avg. Hours</th>
+                        <th>Overtime</th>
+                        <th>Late Arrivals</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Current Month</td>
+                        <td>95%</td>
+                        <td>7.8</td>
+                        <td>42</td>
+                        <td>15</td>
+                    </tr>
+                    <tr>
+                        <td>Previous Month</td>
+                        <td>93%</td>
+                        <td>7.6</td>
+                        <td>38</td>
+                        <td>18</td>
+                    </tr>
+                    <tr>
+                        <td>3 Months Ago</td>
+                        <td>91%</td>
+                        <td>7.5</td>
+                        <td>45</td>
+                        <td>22</td>
+                    </tr>
+                    <tr>
+                        <td>6 Months Ago</td>
+                        <td>89%</td>
+                        <td>7.4</td>
+                        <td>50</td>
+                        <td>25</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+function createFiltersModalContent() {
+    return `
+        <div class="modal-section">
+            <h3>Advanced Filtering Options</h3>
+            <div class="advanced-filters">
+                <div class="filter-column">
+                    <h4>Time Period</h4>
+                    <div class="filter-group">
+                        <label for="adv-start-date">Start Date:</label>
+                        <input type="date" id="adv-start-date" class="filter-input">
                     </div>
-                    <div class="alert-content">
-                        <p>Employee 23 (Emily Davis) left 15 minutes early yesterday.</p>
+                    <div class="filter-group">
+                        <label for="adv-end-date">End Date:</label>
+                        <input type="date" id="adv-end-date" class="filter-input">
                     </div>
-                    <div class="alert-actions">
-                        <button class="alert-
+                    <div class="filter-group">
+                        <label for="adv-time-period">Preset Periods:</label>
+                        <select id="adv-time-period" class="filter-select">
+                            <option value="today">Today</option>
+                            <option value="yesterday">Yesterday</option>
+                            <option value="this-week">This Week</option>
+                            <option value="last-week">Last Week</option>
+                            <option value="this-month">This Month</option>
+                            <option value="last-month">Last Month</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-column">
+                    <h4>Employee Filters</h4>
+                    <div class="filter-group">
+                        <label for="adv-department">Department:</label>
+                        <select id="adv-department" class="filter-select">
+                            <option value="all">All Departments</option>
+                            <option value="admin">Administration</option>
+                            <option value="sales">Sales</option>
+                            <option value="warehouse">Warehouse</option>
+                            <option value="it">IT</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="adv-shift">Shift:</label>
+                        <select id="adv-shift" class="filter-select">
+                            <option value="all">All Shifts</option>
+                            <option value="morning">Morning</option>
+                            <option value="afternoon">Afternoon</option>
+                            <option value="night">Night</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="adv-employee-search">Employee Search:</label>
+                        <input type="text" id="adv-employee-search" class="filter-input" placeholder="Search by name or ID...">
+                    </div>
+                </div>
+                <div class="filter-column">
+                    <h4>Data Filters</h4>
+                    <div class="filter-group">
+                        <label for="adv-metric">Metric:</label>
+                        <select id="adv-metric" class="filter-select">
+                            <option value="attendance">Attendance</option>
+                            <option value="hours">Hours Worked</option>
+                            <option value="overtime">Overtime</option>
+                            <option value="late">Late Arrivals</option>
+                            <option value="early-departure">Early Departures</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="adv-threshold">Threshold:</label>
+                        <input type="number" id="adv-threshold" class="filter-input" placeholder="Enter threshold value">
+                    </div>
+                    <div class="filter-group">
+                        <label for="adv-comparison">Comparison:</label>
+                        <select id="adv-comparison" class="filter-select">
+                            <option value="greater">Greater Than</option>
+                            <option value="less">Less Than</option>
+                            <option value="equal">Equal To</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-actions">
+                <button id="apply-advanced-filters" class="primary-button">Apply Filters</button>
+                <button id="reset-advanced-filters" class="secondary-button">Reset</button>
+                <button id="save-filter-preset" class="tertiary-button">Save as Preset</button>
+            </div>
+        </div>
+        <div class="modal-section">
+            <h3>Saved Filter Presets</h3>
+            <table class="modal-table">
+                <thead>
+                    <tr>
+                        <th>Preset Name</th>
+                        <th>Description</th>
+                        <th>Last Used</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Late Arrivals - Sales</td>
+                        <td>Shows late arrivals in Sales department</td>
+                        <td>Yesterday</td>
+                        <td>
+                            <button class="action-button">Load</button>
+                            <button class="action-button">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Overtime Report</td>
+                        <td>Shows overtime hours for all departments</td>
+                        <td>3 days ago</td>
+                        <td>
+                            <button class="action-button">Load</button>
+                            <button class="action-button">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Monthly Attendance</td>
+                        <td>Shows attendance rates for current month</td>
+                        <td>1 week ago</td>
+                        <td>
+                            <button class="action-button">Load</button>
+                            <button class="action-button">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+// Function to initialize special elements in modals (charts, etc.)
+function initModalSpecialElements(widgetType) {
+    switch(widgetType) {
+        case 'checkin':
+            initCheckinTimeChart();
+            break;
+        case 'overtime':
+            initOvertimeDistributionChart();
+            break;
+        case 'late':
+            initLateArrivalsChart();
+            break;
+        case 'attendance-chart':
+            initDetailedAttendanceChart();
+            initDeptAttendanceChart();
+            break;
+        case 'dept-chart':
+            initDetailedDeptShiftChart();
+            break;
+        case 'activity':
+            initActivitySummaryChart();
+            break;
+        case 'mobile-metrics':
+            initMobileUsageChart();
+            break;
+        case 'devices':
+            initDeviceStatusChart();
+            break;
+        case 'historical':
+            initModalHistoricalChart();
+            // Add event listener for the modal filter button
+            document.getElementById('modal-filter-data')?.addEventListener('click', function() {
+                updateModalHistoricalChart();
+            });
+            break;
+    }
+}
+
+// Chart initialization functions for modals
+function initCheckinTimeChart() {
+    const ctx = document.getElementById('checkinTimeChart')?.getContext('2d');
+    if (!ctx) return;
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['8:00 AM', '8:15 AM', '8:30 AM', '8:45 AM', '9:00 AM', '9:15 AM', '9:30 AM'],
+            datasets: [{
+                label: 'Check-in Count',
+                data: [2, 5, 10, 15, 8, 3, 1],
+                borderColor: getComputedStyle(document.documentElement).getPropertyValue('--color-primary'),
+                backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-primary-fade'),
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+
+function initOvertimeDistributionChart() {
+    const ctx = document.getElementById('overtimeDistributionChart')?.getContext('2d');
+    if (!ctx) return;
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['0-1h', '1-2h', '2-3h', '3-4h', '4-5h', '5h+'],
+            datasets: [{
+                label: 'Number of Employees',
+                data: [15, 10, 8, 5, 3, 2],
+                backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-primary')
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+
+function initLateArrivalsChart() {
+    const ctx = document.getElementById('lateArrivalsChart')?.getContext('2d');
+    if (!ctx) return;
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+            datasets: [{
+                label: 'Late Arrivals',
+                data: [5, 3, 4, 2, 6],
+                borderColor: getComputedStyle(document.documentElement).getPropertyValue('--color-secondary'),
+                backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-secondary-fade'),
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+
+function initDetailedAttendanceChart() {
+    const ctx = document.getElementById('detailedAttendanceChart')?.getContext('2d');
+    if (!ctx) return;
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            datasets: [{
+                label: 'Present',
+                data: [42, 40, 38, 41],
+                borderColor: getComputedStyle(document.documentElement).getPropertyValue('--color-primary'),
+                backgroundColor: 'transparent'
+            }, {
+                label: 'Absent',
+                data: [3, 5, 7, 4],
+                borderColor: getComputedStyle(document.documentElement).getPropertyValue('--color-secondary'),
+                backgroundColor: 'transparent'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+
+function initDeptAttendanceChart() {
+    const ctx = document.getElementById('deptAttendanceChart')?.getContext('2d');
+    if (!ctx) return;
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Administration', 'Sales', 'Warehouse', 'IT'],
+            datasets: [{
+                label: 'Attendance Rate (%)',
+                data: [95, 92, 90, 94],
+                backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-primary')
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+}
+
+function initDetailedDeptShiftChart() {
+    const ctx = document.getElementById('detailedDeptShiftChart')?.getContext('2d');
+    if (!ctx) return;
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Administration', 'Sales', 'Warehouse', 'IT'],
+            datasets: [{
+                label: 'Morning Shift',
+                data: [8, 10, 12, 5],
+                backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-primary')
+            }, {
+                label: 'Afternoon Shift',
+                data: [4, 8, 3, 7],
+                backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-secondary')
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    stacked: true
+                },
+                y: {
+                    stacked: true
+                }
+            }
+        }
+    });
+}
+
+function initActivitySummaryChart() {
+    const ctx = document.getElementById('activitySummaryChart')?.getContext('2d');
+    if (!ctx) return;
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Clock In', 'Clock Out', 'Break Start', 'Break End'],
+            datasets: [{
+                data: [35, 30, 20, 15],
+                backgroundColor: [
+                    getComputedStyle(document.documentElement).getPropertyValue('--color-primary'),
+                    getComputedStyle(document.documentElement).getPropertyValue('--color-secondary'),
+                    getComputedStyle(document.documentElement).getPropertyValue('--color-hover'),
+                    getComputedStyle(document.documentElement).getPropertyValue('--color-background-alt')
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+
+function initMobileUsageChart() {
+    const ctx = document.getElementById('mobileUsageChart')?.getContext('2d');
+    if (!ctx) return;
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Mobile Usage (%)',
+                data: [45, 52, 58, 63, 65, 68],
+                borderColor: getComputedStyle(document.documentElement).getPropertyValue('--color-primary'),
+                backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-primary-fade'),
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+}
+
+function initDeviceStatusChart() {
+    const ctx = document.getElementById('deviceStatusChart')?.getContext('2d');
+    if (!ctx) return;
+    
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Online', 'Offline', 'Warning'],
+            datasets: [{
+                data: [12, 3, 2],
+                backgroundColor: [
+                    '#4CAF50', // Green for online
+                    '#F44336', // Red for offline
+                    '#FFC107'  // Yellow for warning
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+
+function initModalHistoricalChart() {
+    const ctx = document.getElementById('modalHistoricalChart')?.getContext('2d');
+    if (!ctx) return;
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [{
+                label: 'Attendance Rate (%)',
+                data: [88, 89, 90, 91, 92, 93, 94, 93, 92, 93, 94, 95],
+                borderColor: getComputedStyle(document.documentElement).getPropertyValue('--color-primary'),
+                backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-primary-fade'),
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+
+function updateModalHistoricalChart() {
+    const startDate = document.getElementById('modal-start-date')?.value;
+    const endDate = document.getElementById('modal-end-date')?.value;
+    const metric = document.getElementById('modal-metric')?.value;
+    
+    // For demonstration, simply log the filter values
+    console.log(`Filtering modal historical chart: Start=${startDate}, End=${endDate}, Metric=${metric}`);
+    
+    // In a real implementation, you would fetch data based on these filters
+    // and update the chart accordingly
+}
