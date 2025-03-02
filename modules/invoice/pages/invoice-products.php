@@ -153,6 +153,5 @@ include('../../../php/db.php');
 <script src="../js/add-vehicle.js"></script>
 <script src="../js/product-modals.js"></script>
 <script src="../js/fetch-products.js"></script>
-<script src="../js/add-product-modal.js"></script>
 </body>
 </html>

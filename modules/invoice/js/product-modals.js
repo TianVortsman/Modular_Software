@@ -1,5 +1,6 @@
 // Universal Product Modal Controller
 class UniversalProductModal {
+  // Add this method to the UniversalProductModal class constructor
   constructor() {
     // Modal elements
     this.modal = document.getElementById('universalProductModal');
@@ -24,10 +25,68 @@ class UniversalProductModal {
     this.imagePreview = document.getElementById('universalItemImagePreview');
     this.imageUrlField = document.getElementById('universalItemImageUrl');
     
+    // Check for missing elements
+    this.checkRequiredElements();
+    
     this.setupEventListeners();
   }
+
+checkRequiredElements() {
+  const requiredElements = [
+    { id: 'universalProductModal', name: 'Modal Container' },
+    { id: 'universalProductForm', name: 'Form Element' },
+    { id: 'universalProductModalTitle', name: 'Modal Title' },
+    { id: 'universalProductSaveBtn', name: 'Save Button' },
+    { id: 'universalProductDeleteBtn', name: 'Delete Button' },
+    { id: 'universalItemId', name: 'Item ID Field' },
+    { id: 'universalItemType', name: 'Item Type Field' },
+    { id: 'universalModalMode', name: 'Modal Mode Field' },
+    { id: 'universalItemImage', name: 'Image Input' },
+    { id: 'universalItemImagePreview', name: 'Image Preview' },
+    { id: 'universalItemImageUrl', name: 'Image URL Field' }
+  ];
+  
+  let missingElements = [];
+  
+  requiredElements.forEach(element => {
+    if (!document.getElementById(element.id)) {
+      missingElements.push(element.name);
+      console.error(`Missing required element: ${element.name} (ID: ${element.id})`);
+    }
+  });
+  
+  if (missingElements.length > 0) {
+    console.error('The following required elements are missing:', missingElements.join(', '));
+  }
+}
   
   setupEventListeners() {
+    // Existing event listeners...
+    
+    // Setup drag and drop for image upload
+    this.setupImageDragAndDrop();
+    
+    // Tab navigation
+    document.querySelectorAll('.upm-tab-btn').forEach(tabBtn => {
+      tabBtn.addEventListener('click', (e) => {
+        // Remove active class from all tabs
+        document.querySelectorAll('.upm-tab-btn').forEach(btn => {
+          btn.classList.remove('upm-active');
+        });
+        
+        // Add active class to clicked tab
+        e.target.classList.add('upm-active');
+        
+        // Hide all tab panes
+        document.querySelectorAll('.upm-tab-pane').forEach(pane => {
+          pane.classList.remove('upm-active');
+        });
+        
+        // Show the corresponding tab pane
+        const tabId = e.target.getAttribute('data-tab');
+        document.getElementById('upm-tab-' + tabId).classList.add('upm-active');
+      });
+    });
     // Close modal when clicking the X or Cancel button
     document.querySelectorAll('.universal-product-modal-close').forEach(closeBtn => {
       closeBtn.addEventListener('click', () => this.close());
@@ -56,6 +115,80 @@ class UniversalProductModal {
     // Handle image preview
     this.imageInput.addEventListener('change', () => {
       this.previewImage(this.imageInput, this.imagePreview);
+    });
+  }
+  
+  setupImageDragAndDrop() {
+    const dropzone = document.getElementById('universalImageDropzone');
+    const imageInput = document.getElementById('universalItemImage');
+    const imagePreview = document.getElementById('universalItemImagePreview');
+    
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    // Highlight drop zone when item is dragged over it
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropzone.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, unhighlight, false);
+    });
+    
+    function highlight() {
+      dropzone.classList.add('drag-over');
+    }
+    
+    function unhighlight() {
+      dropzone.classList.remove('drag-over');
+    }
+    
+    // Handle dropped files
+    dropzone.addEventListener('drop', handleDrop, false);
+    
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      
+      if (files.length) {
+        imageInput.files = files;
+        handleFiles(files);
+      }
+    }
+    
+    // Handle selected files from input
+    imageInput.addEventListener('change', () => {
+      if (imageInput.files.length) {
+        handleFiles(imageInput.files);
+      }
+    });
+    
+    function handleFiles(files) {
+      if (files[0].type.match('image.*')) {
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+          imagePreview.src = e.target.result;
+          dropzone.classList.add('has-image');
+        };
+        
+        reader.readAsDataURL(files[0]);
+      }
+    }
+    
+    // Make the entire dropzone clickable to trigger file input
+    dropzone.addEventListener('click', (e) => {
+      // Prevent click if the actual file input was clicked
+      if (e.target !== imageInput) {
+        imageInput.click();
+      }
     });
   }
   
@@ -116,6 +249,7 @@ class UniversalProductModal {
   resetForm() {
     this.form.reset();
     this.imagePreview.src = 'https://placehold.co/300x300?text=No+Image';
+    document.getElementById('universalImageDropzone').classList.remove('has-image');
   }
   
   // Update modal title and field labels based on item type
@@ -187,8 +321,9 @@ class UniversalProductModal {
     if (input.files && input.files[0]) {
       const reader = new FileReader();
       
-      reader.onload = function(e) {
+      reader.onload = (e) => {
         imgElement.src = e.target.result;
+        document.getElementById('universalImageDropzone').classList.add('has-image');
       };
       
       reader.readAsDataURL(input.files[0]);
@@ -221,6 +356,9 @@ class UniversalProductModal {
     if (data.image_url) {
       this.imagePreview.src = '../../../' + data.image_url;
       this.imageUrlField.value = data.image_url;
+      document.getElementById('universalImageDropzone').classList.add('has-image');
+    } else {
+      document.getElementById('universalImageDropzone').classList.remove('has-image');
     }
     
     // Set type-specific fields
@@ -256,7 +394,7 @@ class UniversalProductModal {
   // Handle form submission
   handleSubmit() {
     // Show loading modal
-    document.getElementById('loading-modal').style.display = 'flex';
+    document.getElementById('unique-loading-modal').style.display = 'flex';
     
     // Create FormData object from the form
     const formData = new FormData(this.form);
@@ -265,14 +403,14 @@ class UniversalProductModal {
     formData.append('mode', this.modalModeField.value);
     
     // Send the data to the server
-    fetch('php/save-product.php', {
+    fetch('../php/save-product.php', {
       method: 'POST',
       body: formData
     })
     .then(response => response.json())
     .then(data => {
       // Hide loading modal
-      document.getElementById('loading-modal').style.display = 'none';
+      document.getElementById('unique-loading-modal').style.display = 'none';
       
       // Show response modal
       const responseModal = document.getElementById('response-modal');
@@ -295,12 +433,12 @@ class UniversalProductModal {
     })
     .catch(error => {
       // Hide loading modal
-      document.getElementById('loading-modal').style.display = 'none';
+      document.getElementById('unique-loading-modal').style.display = 'none';
       
       // Show error in response modal
-      const responseModal = document.getElementById('response-modal');
-      const responseStatus = document.querySelector('.response-status');
-      const responseMessage = document.querySelector('.response-message');
+      const responseModal = document.getElementById('modalResponse');
+      const responseStatus = document.getElementById('modalResponseTitle');
+      const responseMessage = document.getElementById('modalResponseMessage');
       
       responseStatus.textContent = 'ERROR';
       responseMessage.textContent = 'An error occurred while saving the product. Please try again.';
@@ -313,7 +451,7 @@ class UniversalProductModal {
   // Handle item deletion
   handleDelete() {
     // Show loading modal
-    document.getElementById('loading-modal').style.display = 'flex';
+    document.getElementById('unique-loading-modal').style.display = 'flex';
     
     // Create FormData object with the necessary data
     const formData = new FormData();
@@ -329,7 +467,7 @@ class UniversalProductModal {
     .then(response => response.json())
     .then(data => {
       // Hide loading modal
-      document.getElementById('loading-modal').style.display = 'none';
+      document.getElementById('unique-loading-modal').style.display = 'none';
       
       // Show response modal
       const responseModal = document.getElementById('response-modal');
@@ -352,7 +490,7 @@ class UniversalProductModal {
     })
     .catch(error => {
       // Hide loading modal
-      document.getElementById('loading-modal').style.display = 'none';
+      document.getElementById('unique-loading-modal').style.display = 'none';
       
       // Show error in response modal
       const responseModal = document.getElementById('response-modal');
