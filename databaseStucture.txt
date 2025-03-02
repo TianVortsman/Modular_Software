@@ -142,28 +142,44 @@ CREATE TABLE IF NOT EXISTS public.customers
 
 CREATE TABLE IF NOT EXISTS public.product
 (
-    prod_id serial NOT NULL,
-    prod_name character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    prod_descr text COLLATE pg_catalog."default",
-    prod_price numeric(12, 2) NOT NULL,
+    prod_id SERIAL NOT NULL,
+    prod_name varchar(100) NOT NULL,
+    prod_descr text,
+    prod_price numeric(12,2) NOT NULL,
     created_at timestamp without time zone DEFAULT now(),
     updated_at timestamp without time zone DEFAULT now(),
     deleted_at timestamp without time zone,
-    sku character varying(50) COLLATE pg_catalog."default",
-    barcode character varying(50) COLLATE pg_catalog."default",
-    product_type character varying(50) COLLATE pg_catalog."default",
-    brand character varying(100) COLLATE pg_catalog."default",
-    manufacturer character varying(100) COLLATE pg_catalog."default",
-    weight numeric(10, 2),
-    dimensions character varying(100) COLLATE pg_catalog."default",
-    warranty_period character varying(50) COLLATE pg_catalog."default",
-    tax_rate numeric(5, 2),
-    discount numeric(10, 2),
-    image_url character varying(255) COLLATE pg_catalog."default",
-    status character varying(50) COLLATE pg_catalog."default" DEFAULT 'active'::character varying,
-    CONSTRAINT product_pkey PRIMARY KEY (prod_id),
-    CONSTRAINT product_barcode_key UNIQUE (barcode)
+    stock_quantity varchar(50),
+    barcode varchar(50),
+    product_type varchar(50),
+    brand varchar(100),
+    manufacturer varchar(100),
+    weight numeric(10,2),
+    dimensions varchar(100),
+    warranty_period varchar(50),
+    tax_rate numeric(5,2),
+    discount numeric(10,2),
+    image_url varchar(255),
+    status varchar(50) DEFAULT 'active'::character varying,
+    sku varchar(50),
+    category varchar(50),
+    sub_category varchar(50),
+    reorder_level integer DEFAULT 0,
+    lead_time integer,
+    oem_part_number varchar(100),
+    compatible_vehicles text,
+    material varchar(100),
+    labor_cost numeric(12,2),
+    estimated_time interval,
+    service_frequency varchar(50),
+    bundle_items text,
+    installation_required boolean DEFAULT false,
+    PRIMARY KEY(prod_id)
 );
+CREATE UNIQUE INDEX product_barcode_key ON product USING btree ("barcode");
+CREATE UNIQUE INDEX product_sku_key ON product USING btree ("sku");
+CREATE UNIQUE INDEX unique_barcode ON product USING btree ("barcode");
+
 
 CREATE TABLE IF NOT EXISTS public.product_supplier
 (
