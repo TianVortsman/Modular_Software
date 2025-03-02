@@ -400,56 +400,80 @@ include('../../../php/db.php');
       </div>
     </section>
   </div>
+<!-- Employee Overview Modal -->
+<div id="employee-overview-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Employee Overview Details</h2>
+      <span class="modal-close material-icons">close</span>
+    </div>
+    <div class="modal-body">
+      <div class="overview-stats-container">
+        <div class="overview-section">
+          <h3>Employee Statistics</h3>
+          <div class="employee-stats-grid">
+            <div class="stat-item">
+              <span class="stat-label">Total Employees:</span>
+              <span class="stat-value" id="modal-total-employees">247</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">License Limit:</span>
+              <span class="stat-value" id="modal-license-limit">300</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">License Usage:</span>
+              <span class="stat-value" id="modal-license-usage">82%</span>
+              <div class="progress-bar">
+                <div class="progress" style="width: 82%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="overview-section">
+          <h3>Employee Distribution</h3>
+          <div class="distribution-grid">
+            <div class="distribution-item">
+              <span class="distribution-label">By Department</span>
+              <div class="distribution-chart">
+                <div class="chart-bar" style="width: 40%;">
+                  <span class="chart-label">Sales (40%)</span>
+                </div>
+                <div class="chart-bar" style="width: 30%;">
+                  <span class="chart-label">Admin (30%)</span>
+                </div>
+                <div class="chart-bar" style="width: 20%;">
+                  <span class="chart-label">Warehouse (20%)</span>
+                </div>
+                <div class="chart-bar" style="width: 10%;">
+                  <span class="chart-label">IT (10%)</span>
+                </div>
+              </div>
+            </div>
+            <div class="distribution-item">
+              <span class="distribution-label">By Status</span>
+              <div class="status-distribution">
+                <div class="status-item">
+                  <span class="status-badge active">Active</span>
+                  <span class="status-count">210</span>
+                </div>
+                <div class="status-item">
+                  <span class="status-badge temp">Temporary</span>
+                  <span class="status-count">25</span>
+                </div>
+                <div class="status-item">
+                  <span class="status-badge incomplete">Incomplete</span>
+                  <span class="status-count">12</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-  <!-- JavaScript for tab functionality -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Main tabs functionality
-      const tabButtons = document.querySelectorAll('.tab-button');
-      const tabPanes = document.querySelectorAll('.tab-pane');
-      
-      tabButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          // Remove active class from all buttons and panes
-          tabButtons.forEach(btn => btn.classList.remove('active'));
-          tabPanes.forEach(pane => pane.classList.remove('active'));
-          
-          // Add active class to clicked button
-          this.classList.add('active');
-          
-          // Show corresponding tab pane
-          const tabId = this.getAttribute('data-tab');
-          document.getElementById(`${tabId}-tab`).classList.add('active');
-        });
-      });
-      
-      // Sub-tabs functionality
-      const subTabButtons = document.querySelectorAll('.sub-tab-button');
-      const subTabPanes = document.querySelectorAll('.sub-tab-pane');
-      
-      subTabButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          // Remove active class from all sub-tab buttons and panes
-          subTabButtons.forEach(btn => btn.classList.remove('active'));
-          subTabPanes.forEach(pane => pane.classList.remove('active'));
-          
-          // Add active class to clicked button
-          this.classList.add('active');
-          
-          // Show corresponding sub-tab pane
-          const subTabId = this.getAttribute('data-subtab');
-          document.getElementById(`${subTabId}-tab`).classList.add('active');
-        });
-      });
-      
-      // Double-click functionality for employee rows
-      const employeeRows = document.querySelectorAll('.employee-row');
-      
-      employeeRows.forEach(row => {
-        row.addEventListener('dblclick', function() {
-          const employeeId = this.getAttribute('data-employee-id');
-          alert(`Employee details modal for ${employeeId} will be implemented later.`);
-        });
-      });
-    });
-  </script>
+  <script src="../js/employees.js"></script>
+  </body>
+  </html>

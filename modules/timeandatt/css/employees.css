@@ -195,73 +195,83 @@ border-bottom: 1px solid var(--color-border);
 
 /* Table Styling */
 .table-container {
-overflow-x: auto;
+    overflow-y: auto;
+    border-radius: var(--radius-medium);
 }
 
 .employee-table {
-width: 100%;
-border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+    box-shadow: var(--shadow-medium);
+    border-radius: var(--radius-medium);
+    overflow: hidden;
 }
 
-.employee-table th {
-background-color: var(--color-background);
-padding: 12px 15px;
-text-align: left;
-font-weight: 500;
-color: var(--color-text-secondary);
-border-bottom: 1px solid var(--color-border);
+.employee-table thead {
+    background-color: var(--color-primary);
+    color: var(--color-text-dark);
+    text-align: left;
+    font-size: var(--font-size-large);
 }
 
+.employee-table th,
 .employee-table td {
-padding: 12px 15px;
-border-bottom: 1px solid var(--color-border);
-color: var(--color-text-primary);
+    padding: var(--spacing-small) var(--spacing-medium);
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
 }
 
-.employee-table tr:hover {
-background-color: rgba(0,0,0,0.05);
+.employee-table tbody tr:hover {
+    background-color: var(--color-secondary);
 }
 
+.employee-table .action-icons {
+    display: flex;
+    gap: var(--spacing-small);
+    justify-content: center;
+}
+
+.employee-table .icon {
+    cursor: pointer;
+    font-size: var(--font-size-large);
+    color: var(--color-primary);
+    transition: transform 0.2s ease-in-out;
+}
+
+.employee-table .icon:hover {
+    transform: scale(1.2);
+}
+
+/* Status Badge Styling - Keeping from original */
 .status-badge {
-display: inline-block;
-padding: 5px 10px;
-border-radius: var(--radius-small);
-font-size: 12px;
-font-weight: 500;
-text-transform: uppercase;
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: var(--radius-small);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
 }
 
 .status-badge.active {
-background-color: var(--color-success-light);
-color: var(--color-success);
+    background-color: var(--color-success-light);
+    color: var(--color-success);
 }
 
 .status-badge.temp {
-background-color: var(--color-warning-light);
-color: var(--color-warning);
+    background-color: var(--color-warning-light);
+    color: var(--color-warning);
 }
 
 .status-badge.terminated {
-background-color: var(--color-danger-light);
-color: var(--color-danger);
+    background-color: var(--color-danger-light);
+    color: var(--color-danger);
 }
 
 .status-badge.incomplete {
-background-color: var(--color-info-light);
-color: var(--color-info);
-}
-
-.icon-button {
-background: none;
-border: none;
-cursor: pointer;
-color: var(--color-primary);
-padding: 5px;
-transition: color 0.3s;
-}
-
-.icon-button:hover {
-color: var(--color-hover);
+    background-color: var(--color-info-light);
+    color: var(--color-info);
 }
 
 .pagination {
@@ -288,3 +298,174 @@ color: var(--color-hover);
 margin: 0 10px;
 color: var(--color-text-secondary);
 }
+
+
+/* Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .modal.show {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    background-color: var(--color-background);
+    margin: auto;
+    width: 80%;
+    max-width: 900px;
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-medium);
+    animation: modalFadeIn 0.3s;
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-medium);
+    background-color: var(--color-primary);
+    color: var(--color-text-dark);
+    border-radius: var(--radius-medium) var(--radius-medium) 0 0;
+  }
+  
+  .modal-header h2 {
+    margin: 0;
+    font-size: var(--font-size-large);
+  }
+  
+  .modal-close {
+    cursor: pointer;
+    font-size: 24px;
+    transition: transform 0.2s;
+  }
+  
+  .modal-close:hover {
+    transform: scale(1.2);
+  }
+  
+  .modal-body {
+    padding: var(--spacing-medium);
+  }
+  
+  /* Employee Overview Modal Specific Styling */
+  .overview-stats-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-medium);
+  }
+  
+  .overview-section {
+    background-color: var(--color-background-light);
+    padding: var(--spacing-medium);
+    border-radius: var(--radius-small);
+    box-shadow: var(--shadow-light);
+  }
+  
+  .overview-section h3 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-medium);
+    color: var(--color-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: var(--spacing-small);
+  }
+  
+  .employee-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--spacing-medium);
+  }
+  
+  .distribution-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-medium);
+  }
+  
+  .distribution-item {
+    margin-bottom: var(--spacing-medium);
+  }
+  
+  .distribution-label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: var(--spacing-small);
+    color: var(--color-text-secondary);
+  }
+  
+  .distribution-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .chart-bar {
+    height: 24px;
+    background-color: var(--color-primary);
+    border-radius: var(--radius-small);
+    display: flex;
+    align-items: center;
+    padding: 0 var(--spacing-small);
+    color: var(--color-text-dark);
+    font-size: 12px;
+  }
+  
+  .status-distribution {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-small);
+  }
+  
+  .status-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-small);
+    background-color: var(--color-background);
+    border-radius: var(--radius-small);
+  }
+  
+  .status-count {
+    font-weight: bold;
+    color: var(--color-text-primary);
+  }
+  
+  .overview-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-small);
+    margin-top: var(--spacing-medium);
+    justify-content: flex-end;
+  }
+  
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .modal-content {
+      width: 95%;
+    }
+    
+    .distribution-grid {
+      grid-template-columns: 1fr;
+    }
+  }
