@@ -468,3 +468,92 @@ if (modalProductImage && modalProductImagePreview) {
 }
 });
 
+// Add this code to the end of fetch-products.js or in a separate script that runs after both files are loaded
+
+// Override the existing modal open functions to use the universal modal
+function openProductDetailsModal(product) {
+    console.log("Opening product modal with data:", product);
+    // Use the universal product modal instead of the old modal
+    if (window.universalProductModal) {
+        window.universalProductModal.openForEdit('products', product);
+    } else {
+        console.error("Universal product modal not initialized");
+    }
+}
+
+function openVehicleDetailsModal(product) {
+    console.log("Opening vehicle modal with data:", product);
+    if (window.universalProductModal) {
+        window.universalProductModal.openForEdit('vehicles', product);
+    } else {
+        console.error("Universal product modal not initialized");
+    }
+}
+
+function openPartDetailsModal(product) {
+    console.log("Opening part modal with data:", product);
+    if (window.universalProductModal) {
+        window.universalProductModal.openForEdit('parts', product);
+    } else {
+        console.error("Universal product modal not initialized");
+    }
+}
+
+function openExtraDetailsModal(product) {
+    console.log("Opening extra modal with data:", product);
+    if (window.universalProductModal) {
+        window.universalProductModal.openForEdit('extras', product);
+    } else {
+        console.error("Universal product modal not initialized");
+    }
+}
+
+function openServiceDetailsModal(product) {
+    console.log("Opening service modal with data:", product);
+    if (window.universalProductModal) {
+        window.universalProductModal.openForEdit('services', product);
+    } else {
+        console.error("Universal product modal not initialized");
+    }
+}
+
+// Also override the "Add" button functions
+function openAddProductModal() {
+    if (window.universalProductModal) {
+        window.universalProductModal.openForAdd('products');
+    } else {
+        console.error("Universal product modal not initialized");
+    }
+}
+
+function openAddVehicleModal() {
+    if (window.universalProductModal) {
+        window.universalProductModal.openForAdd('vehicles');
+    } else {
+        console.error("Universal product modal not initialized");
+    }
+}
+
+function openAddPartModal() {
+    if (window.universalProductModal) {
+        window.universalProductModal.openForAdd('parts');
+    } else {
+        console.error("Universal product modal not initialized");
+    }
+}
+
+function openAddExtraModal() {
+    if (window.universalProductModal) {
+        window.universalProductModal.openForAdd('extras');
+    } else {
+        console.error("Universal product modal not initialized");
+    }
+}
+
+function openAddServiceModal() {
+    if (window.universalProductModal) {
+        window.universalProductModal.openForAdd('services');
+    } else {
+        console.error("Universal product modal not initialized");
+    }
+}

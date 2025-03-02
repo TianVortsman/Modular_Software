@@ -13,12 +13,6 @@ class UniversalProductModal {
     this.itemTypeField = document.getElementById('universalItemType');
     this.modalModeField = document.getElementById('universalModalMode');
     
-    // Dynamic labels
-    this.itemNameLabel = document.getElementById('universalItemNameLabel');
-    this.itemDescrLabel = document.getElementById('universalItemDescrLabel');
-    this.itemPriceLabel = document.getElementById('universalItemPriceLabel');
-    this.itemImageLabel = document.getElementById('universalItemImageLabel');
-    
     // Type-specific fieldsets
     this.vehicleFields = document.querySelectorAll('.universal-product-fieldset-vehicle, .universal-product-field-vehicle');
     this.serviceFields = document.querySelectorAll('.universal-product-fieldset-service, .universal-product-field-service');
@@ -28,10 +22,7 @@ class UniversalProductModal {
     // Image preview
     this.imageInput = document.getElementById('universalItemImage');
     this.imagePreview = document.getElementById('universalItemImagePreview');
-    
-    // Additional images (for vehicles)
-    this.additionalImagesInput = document.getElementById('universalItemAdditionalImages');
-    this.additionalImagesPreview = document.getElementById('additionalImagesPreview');
+    this.imageUrlField = document.getElementById('universalItemImageUrl');
     
     this.setupEventListeners();
   }
@@ -66,11 +57,6 @@ class UniversalProductModal {
     this.imageInput.addEventListener('change', () => {
       this.previewImage(this.imageInput, this.imagePreview);
     });
-    
-    // Handle additional images preview
-    this.additionalImagesInput.addEventListener('change', () => {
-      this.previewMultipleImages();
-    });
   }
   
   // Open modal for adding a new item
@@ -102,7 +88,7 @@ class UniversalProductModal {
     // Set modal mode and item type
     this.modalModeField.value = 'edit';
     this.itemTypeField.value = itemType;
-    this.itemIdField.value = itemData.id;
+    this.itemIdField.value = itemData.prod_id;
     
     // Update title and button text
     this.updateTitleAndLabels(itemType, 'edit');
@@ -130,7 +116,6 @@ class UniversalProductModal {
   resetForm() {
     this.form.reset();
     this.imagePreview.src = 'https://placehold.co/300x300?text=No+Image';
-    this.additionalImagesPreview.innerHTML = '';
   }
   
   // Update modal title and field labels based on item type
@@ -139,40 +124,6 @@ class UniversalProductModal {
     const typeName = this.getItemTypeName(itemType);
     
     this.title.textContent = `${action} ${typeName}`;
-    
-    // Update field labels
-    switch (itemType) {
-      case 'products':
-        this.itemNameLabel.textContent = 'Product Name:';
-        this.itemDescrLabel.textContent = 'Product Description:';
-        this.itemPriceLabel.textContent = 'Product Price:';
-        this.itemImageLabel.textContent = 'Product Image:';
-        break;
-      case 'parts':
-        this.itemNameLabel.textContent = 'Part Name:';
-        this.itemDescrLabel.textContent = 'Part Description:';
-        this.itemPriceLabel.textContent = 'Part Price:';
-        this.itemImageLabel.textContent = 'Part Image:';
-        break;
-      case 'services':
-        this.itemNameLabel.textContent = 'Service Name:';
-        this.itemDescrLabel.textContent = 'Service Description:';
-        this.itemPriceLabel.textContent = 'Service Price:';
-        this.itemImageLabel.textContent = 'Service Image:';
-        break;
-      case 'extras':
-        this.itemNameLabel.textContent = 'Extra Name:';
-        this.itemDescrLabel.textContent = 'Extra Description:';
-        this.itemPriceLabel.textContent = 'Extra Price:';
-        this.itemImageLabel.textContent = 'Extra Image:';
-        break;
-      case 'vehicles':
-        this.itemNameLabel.textContent = 'Vehicle Model:';
-        this.itemDescrLabel.textContent = 'Vehicle Description:';
-        this.itemPriceLabel.textContent = 'Vehicle Price:';
-        this.itemImageLabel.textContent = 'Vehicle Image:';
-        break;
-    }
   }
   
   // Get human-readable name for item type
@@ -244,52 +195,24 @@ class UniversalProductModal {
     }
   }
   
-  // Preview multiple images
-  previewMultipleImages() {
-    const files = this.additionalImagesInput.files;
-    this.additionalImagesPreview.innerHTML = '';
-    
-    if (files) {
-      for (let i = 0; i < files.length; i++) {
-        const reader = new FileReader();
-        const imgContainer = document.createElement('div');
-        imgContainer.className = 'additional-image-container';
-        
-        const img = document.createElement('img');
-        img.className = 'additional-image-preview';
-        
-        reader.onload = function(e) {
-          img.src = e.target.result;
-        };
-        
-        reader.readAsDataURL(files[i]);
-        imgContainer.appendChild(img);
-        this.additionalImagesPreview.appendChild(imgContainer);
-      }
-    }
-  }
-  
   // Populate form with item data
   populateForm(itemType, data) {
-    // Map field names based on item type
-    const nameField = this.getFieldNameMapping(itemType, 'name');
-    const descrField = this.getFieldNameMapping(itemType, 'descr');
-    const priceField = this.getFieldNameMapping(itemType, 'price');
-    
     // Set basic fields
-    document.getElementById('universalItemName').value = data[nameField] || '';
-    document.getElementById('universalItemDescr').value = data[descrField] || '';
-    document.getElementById('universalItemPrice').value = data[priceField] || '';
+    document.getElementById('universalItemName').value = data.prod_name || '';
+    document.getElementById('universalItemDescr').value = data.prod_descr || '';
+    document.getElementById('universalItemPrice').value = data.prod_price || '';
     
     // Set common fields if they exist in the data
     const commonFields = [
       'sku', 'barcode', 'brand', 'manufacturer', 'weight', 
-      'dimensions', 'warranty_period', 'tax_rate', 'discount', 'status'
+      'dimensions', 'warranty_period', 'tax_rate', 'discount', 'status',
+      'category', 'sub_category', 'stock_quantity', 'reorder_level',
+      'lead_time', 'material', 'labor_cost'
     ];
     
     commonFields.forEach(field => {
       const input = document.getElementById('universalItem' + this.capitalizeFirstLetter(field));
-      if (input && data[field]) {
+      if (input && data[field] !== undefined) {
         input.value = data[field];
       }
     });
@@ -297,73 +220,176 @@ class UniversalProductModal {
     // Set image preview if available
     if (data.image_url) {
       this.imagePreview.src = '../../../' + data.image_url;
+      this.imageUrlField.value = data.image_url;
     }
     
     // Set type-specific fields
     this.populateTypeSpecificFields(itemType, data);
   }
   
-  // Get field name mapping based on item type
-  getFieldNameMapping(itemType, fieldType) {
-    const prefix = itemType.slice(0, -1); // Remove 's' from the end
-    
-    switch (fieldType) {
-      case 'name':
-        return `${prefix}_name`;
-      case 'descr':
-        return `${prefix}_descr`;
-      case 'price':
-        return `${prefix}_price`;
-      default:
-        return fieldType;
-    }
+  // Helper to capitalize first letter
+  capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
   }
   
   // Populate type-specific fields
   populateTypeSpecificFields(itemType, data) {
     switch (itemType) {
-      case 'vehicles':
-        if (data.engine_type) document.getElementById('universalItemEngineType').value = data.engine_type;
-        if (data.license_plate) document.getElementById('universalItemLicensePlate').value = data.license_plate;
-        if (data.registration_number) document.getElementById('universalItemRegistrationNumber').value = data.registration_number;
-        if (data.seat_type) document.getElementById('universalItemSeatType').value = data.seat_type;
-        if (data.previous_owners) document.getElementById('universalItemPreviousOwners').value = data.previous_owners;
-        if (data.extra_features) document.getElementById('universalItemExtraFeatures').value = data.extra_features;
-        if (data.color) document.getElementById('universalItemColor').value = data.color;
+      case 'parts':
+        if (data.compatible_vehicles) document.getElementById('universalItemCompatibleVehicles').value = data.compatible_vehicles;
+        if (data.oem_part_number) document.getElementById('universalItemOEMNumber').value = data.oem_part_number;
         break;
         
       case 'services':
-        if (data.duration) document.getElementById('universalItemDuration').value = data.duration;
-        if (data.service_type) document.getElementById('universalItemServiceType').value = data.service_type;
-        if (data.staff) document.getElementById('universalItemStaff').value = data.staff;
+        if (data.estimated_time) document.getElementById('universalItemEstimatedTime').value = data.estimated_time;
+        if (data.service_frequency) document.getElementById('universalItemServiceFrequency').value = data.service_frequency;
         break;
+    }
+    
+    // Handle bundle items and installation required
+    if (data.bundle_items) document.getElementById('universalItemBundleItems').value = data.bundle_items;
+    if (data.installation_required !== undefined) {
+      document.getElementById('universalItemInstallationRequired').value = data.installation_required ? 'true' : 'false';
+    }
+  }
+  
+  // Handle form submission
+  handleSubmit() {
+    // Show loading modal
+    document.getElementById('loading-modal').style.display = 'flex';
+    
+    // Create FormData object from the form
+    const formData = new FormData(this.form);
+    
+    // Add the mode (add/edit)
+    formData.append('mode', this.modalModeField.value);
+    
+    // Send the data to the server
+    fetch('php/save-product.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Hide loading modal
+      document.getElementById('loading-modal').style.display = 'none';
+      
+      // Show response modal
+      const responseModal = document.getElementById('response-modal');
+      const responseStatus = document.querySelector('.response-status');
+      const responseMessage = document.querySelector('.response-message');
+      
+      responseStatus.textContent = data.success ? 'SUCCESS' : 'ERROR';
+      responseMessage.textContent = data.message;
+      responseModal.style.display = 'block';
+      
+      // Close the modal after successful save
+      if (data.success) {
+        this.close();
         
-            case 'parts':
-        if (data.part_number) document.getElementById('universalItemPartNumber').value = data.part_number;
-        if (data.compatible_vehicles) document.getElementById('universalItemCompatibleVehicles').value = data.compatible_vehicles;
-        break;
-        
-            case 'extras':
-        if (data.extra_type) document.getElementById('universalItemExtraType').value = data.extra_type;
-        if (data.availability) document.getElementById('universalItemAvailability').value = data.availability;
-        break;
-          }
-        }
-        
-        // Handle form submission
-        handleSubmit() {
-          // Implement form submission logic here
-          console.log('Form submitted');
-        }
-        
-        // Handle item deletion
-        handleDelete() {
-          // Implement item deletion logic here
-          console.log('Item deleted');
+        // Refresh the product list if needed
+        if (typeof fetchProducts === 'function') {
+          fetchProducts(this.itemTypeField.value);
         }
       }
+    })
+    .catch(error => {
+      // Hide loading modal
+      document.getElementById('loading-modal').style.display = 'none';
+      
+      // Show error in response modal
+      const responseModal = document.getElementById('response-modal');
+      const responseStatus = document.querySelector('.response-status');
+      const responseMessage = document.querySelector('.response-message');
+      
+      responseStatus.textContent = 'ERROR';
+      responseMessage.textContent = 'An error occurred while saving the product. Please try again.';
+      responseModal.style.display = 'block';
+      
+      console.error('Error:', error);
+    });
+  }
+  
+  // Handle item deletion
+  handleDelete() {
+    // Show loading modal
+    document.getElementById('loading-modal').style.display = 'flex';
+    
+    // Create FormData object with the necessary data
+    const formData = new FormData();
+    formData.append('prod_id', this.itemIdField.value);
+    formData.append('product_type', this.itemTypeField.value);
+    formData.append('mode', 'delete');
+    
+    // Send the data to the server
+    fetch('php/delete-product.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Hide loading modal
+      document.getElementById('loading-modal').style.display = 'none';
+      
+      // Show response modal
+      const responseModal = document.getElementById('response-modal');
+      const responseStatus = document.querySelector('.response-status');
+      const responseMessage = document.querySelector('.response-message');
+      
+      responseStatus.textContent = data.success ? 'SUCCESS' : 'ERROR';
+      responseMessage.textContent = data.message;
+      responseModal.style.display = 'block';
+      
+      // Close the modal after successful delete
+      if (data.success) {
+        this.close();
+        
+        // Refresh the product list if needed
+        if (typeof fetchProducts === 'function') {
+          fetchProducts(this.itemTypeField.value);
+        }
+      }
+    })
+    .catch(error => {
+      // Hide loading modal
+      document.getElementById('loading-modal').style.display = 'none';
+      
+      // Show error in response modal
+      const responseModal = document.getElementById('response-modal');
+      const responseStatus = document.querySelector('.response-status');
+      const responseMessage = document.querySelector('.response-message');
+      
+      responseStatus.textContent = 'ERROR';
+      responseMessage.textContent = 'An error occurred while deleting the product. Please try again.';
+      responseModal.style.display = 'block';
+      
+      console.error('Error:', error);
+    });
+  }
+}
 
-      // Initialize the modal controller
-      document.addEventListener('DOMContentLoaded', () => {
-        const universalProductModal = new UniversalProductModal();
-      });
+// Initialize the modal controller
+document.addEventListener('DOMContentLoaded', () => {
+  const universalProductModal = new UniversalProductModal();
+  
+  // Close response modal when clicking the X
+  const responseModalClose = document.querySelector('.response-modal-close');
+  if (responseModalClose) {
+    responseModalClose.addEventListener('click', () => {
+      document.getElementById('response-modal').style.display = 'none';
+    });
+  }
+  
+  // Close response modal when clicking outside
+  const responseModal = document.getElementById('response-modal');
+  if (responseModal) {
+    responseModal.addEventListener('click', (e) => {
+      if (e.target === responseModal) {
+        responseModal.style.display = 'none';
+      }
+    });
+  }
+  
+  // Expose the modal controller to the global scope for external access
+  window.universalProductModal = universalProductModal;
+});

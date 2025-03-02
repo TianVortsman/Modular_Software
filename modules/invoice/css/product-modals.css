@@ -1,11 +1,8 @@
 /* ========================= */
-/* Product Details Modal CSS */
+/* Universal Product Modal CSS */
 /* ========================= */
 
-.modal-product-details, 
-.modal-part-details,
-.modal-extra-details,
-.modal-service-details {
+.universal-product-modal {
     display: none; /* Hidden by default */
     position: fixed;
     z-index: var(--z-index-modal, 999);
@@ -14,20 +11,17 @@
     width: 100%;
     height: 100%;
     overflow: auto;
-    /* Use a semi-transparent overlay that matches your dark shadow variable */
-    background-color: var(--shadow-dark, rgba(0, 0, 0, 0.4));
+    background-color: var(--shadow-dark, rgba(0, 0, 0, 0.4)); /* Semi-transparent overlay */
 }
 
-.modal-product-details.active, 
-.modal-part-details.active,
-.modal-extra-details.active,
-.modal-service-details.active {
+.universal-product-modal.active {
     display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Modal Content */
-.modal-product-details-content {
-    /* Use modal background variable or fallback to main background color */
+.universal-product-modal-content {
     background-color: var(--modal-bg, var(--color-background));
     margin: 5% auto;
     padding: var(--modal-padding, 2rem);
@@ -36,7 +30,6 @@
     max-width: 800px;
     height: fit-content;
     position: relative;
-    /* Use a darker shadow variable for modals */
     box-shadow: 0 0 20px var(--shadow-dark, rgba(0, 0, 0, 0.7));
     border: 1px solid var(--modal-border, var(--border-color));
     color: var(--color-text-light);
@@ -44,7 +37,7 @@
 }
 
 /* Close (X) */
-.modal-product-details-close {
+.universal-product-modal-close {
     color: var(--color-text-light);
     float: right;
     font-size: 1.5rem;
@@ -53,64 +46,63 @@
     transition: color var(--transition-speed, 0.3s) ease;
 }
 
-.modal-product-details-close:hover,
-.modal-product-details-close:focus {
+.universal-product-modal-close:hover,
+.universal-product-modal-close:focus {
     color: var(--color-hover);
     text-decoration: none;
 }
 
 /* Title */
-.modal-product-details-title {
+.universal-product-modal-title {
     margin-top: 0;
     margin-bottom: var(--spacing-medium, 1rem);
     font-size: 1.4rem;
     font-weight: bold;
     text-align: center;
-    /* Use your H2 color variable */
     color: var(--color-h2);
 }
 
 /* Form */
-.modal-product-details-form {
+.universal-product-modal-form {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-medium, 1rem);
 }
 
 /* Fields */
-.modal-product-details-field {
+.universal-product-field {
     display: flex;
     flex-direction: column;
 }
 
-.modal-product-details-field label {
+.universal-product-field label {
     margin-bottom: var(--spacing-small, 0.5rem);
     font-weight: 600;
 }
 
-.modal-product-details-field input,
-.modal-product-details-field textarea,
-.modal-product-details-field select {
+.universal-product-field input,
+.universal-product-field textarea,
+.universal-product-field select {
     padding: var(--spacing-small, 0.5rem);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-small, 4px);
     font-size: 1rem;
     font-family: var(--font-primary, Arial, sans-serif);
-    /* Text + BG adapt to your theme */
     color: var(--color-text-light);
     background-color: var(--input-bg);
 }
 
 /* Buttons container */
-.modal-product-details-buttons {
+.universal-product-buttons {
     display: flex;
     justify-content: space-between;
     margin-top: var(--spacing-medium, 1rem);
 }
 
 /* Buttons */
-.btn-modal-product-save,
-.btn-modal-product-cancel {
+.btn-universal-product-save,
+.btn-universal-product-cancel,
+.btn-universal-product-delete {
     padding: 0.6rem 1.2rem;
     font-size: 1rem;
     cursor: pointer;
@@ -122,155 +114,27 @@
 }
 
 /* Save Button */
-.btn-modal-product-save {
+.btn-universal-product-save {
     background-color: var(--btn-bg, var(--color-primary));
 }
-.btn-modal-product-save:hover {
+.btn-universal-product-save:hover {
     background-color: var(--btn-hover-bg, var(--color-hover));
 }
 
 /* Cancel Button */
-.btn-modal-product-cancel {
+.btn-universal-product-cancel {
     background-color: var(--color-secondary);
 }
-.btn-modal-product-cancel:hover {
+.btn-universal-product-cancel:hover {
     background-color: var(--btn-bg, var(--color-primary));
 }
 
-
-
-
-/* Add Product Modal CSS */
-.modal-add-product,
-.modal-add-part,
-.modal-add-extra,
-.modal-add-service {
-    display: none; /* Hidden by default */
-    position: fixed; 
-    z-index: 999; 
-    left: 0;
-    top: 0;
-    width: 100%; 
-    height: 100%; 
-    overflow: auto; 
-    background-color: rgba(0, 0, 0, 0.4); 
+/* Delete Button */
+.btn-universal-product-delete {
+    background-color: var(--color-danger);
 }
-
-/* Active state - show the modal when this class is added */
-.modal-add-product.active,
-.modal-add-part.active,
-.modal-add-extra.active,
-.modal-add-service.active {
-    display: block;
-}
-  
-/* Modal Content */
-.modal-add-product-content {
-    background-color: var(--color-secondary);
-    margin: 5% auto;
-    padding: 2rem;
-    border-radius: 8px;
-    width: 50%;
-    max-width: 800px;
-    position: relative;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-    color: var(--color-text-light);
-    font-family: var(--font-primary);
-}
-  
-/* Close (X) */
-.modal-add-product-close {
-    color: var(--color-text-light);
-    float: right;
-    font-size: 1.5rem;
-    font-weight: bold;
-    cursor: pointer;
-}
-  
-.modal-add-product-close:hover,
-.modal-add-product-close:focus {
-    color: var(--color-primary);
-    text-decoration: none;
-}
-  
-/* Title */
-.modal-add-product-title {
-    margin-top: 0;
-    margin-bottom: 1rem;
-    font-size: 1.4rem;
-    font-weight: bold;
-    text-align: center;
-    color: var(--color-primary);
-}
-  
-/* Form */
-.modal-add-product-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-  
-/* Fields */
-.modal-add-product-field {
-    display: flex;
-    flex-direction: column;
-}
-  
-.modal-add-product-field label {
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: var(--color-text-light);
-}
-  
-.modal-add-product-field input,
-.modal-add-product-field textarea,
-.modal-add-product-field select {
-    padding: 0.5rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    font-size: 1rem;
-    font-family: var(--font-primary);
-    background-color: var(--input-bg);
-    color: var(--color-text-light);
-}
-  
-/* Buttons */
-.modal-add-product-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1rem;
-}
-  
-.btn-modal-add-product-save,
-.btn-modal-add-product-cancel {
-    padding: 0.6rem 1.2rem;
-    font-size: 1rem;
-    cursor: pointer;
-    border: none;
-    border-radius: 4px;
-    font-family: var(--font-primary);
-}
-  
-/* Save Button */
-.btn-modal-add-product-save {
-    background-color: var(--color-primary);
-    color: var(--color-text-dark);
-    transition: background-color 0.3s ease;
-}
-  
-.btn-modal-add-product-save:hover {
-    background-color: var(--color-hover);
-}
-  
-/* Cancel Button */
-.btn-modal-add-product-cancel {
-    background-color: var(--btn-bg);
-    color: var(--color-text-light);
-    transition: background-color 0.3s ease;
-}
-  
-.btn-modal-add-product-cancel:hover {
-    background-color: var(--btn-hover-bg);
+.btn-universal-product-delete:hover {
+    background-color: var(--color-danger-hover);
 }
 
 /* Image preview styling */

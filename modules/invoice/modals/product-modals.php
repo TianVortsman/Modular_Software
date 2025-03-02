@@ -6,30 +6,30 @@
 
     <form class="universal-product-modal-form" id="universalProductForm" enctype="multipart/form-data">
       <!-- Hidden fields for internal reference -->
-      <input type="hidden" name="item_id" id="universalItemId">
-      <input type="hidden" name="item_type" id="universalItemType" value="products">
+      <input type="hidden" name="prod_id" id="universalItemId">
+      <input type="hidden" name="product_type" id="universalItemType" value="products">
       <input type="hidden" name="modal_mode" id="universalModalMode" value="add">
 
       <!-- Basic Information Section -->
       <fieldset class="universal-product-fieldset">
         <legend>Basic Information</legend>
         
-        <!-- Item Name (dynamically labeled) -->
+        <!-- Product Name -->
         <div class="universal-product-field">
-          <label for="universalItemName" id="universalItemNameLabel">Product Name:</label>
-          <input type="text" name="item_name" id="universalItemName" placeholder="Enter name" required>
+          <label for="universalItemName">Product Name:</label>
+          <input type="text" name="prod_name" id="universalItemName" placeholder="Enter name" required>
         </div>
 
-        <!-- Item Description (dynamically labeled) -->
+        <!-- Product Description -->
         <div class="universal-product-field">
-          <label for="universalItemDescr" id="universalItemDescrLabel">Description:</label>
-          <textarea name="item_descr" id="universalItemDescr" placeholder="Short description here..."></textarea>
+          <label for="universalItemDescr">Description:</label>
+          <textarea name="prod_descr" id="universalItemDescr" placeholder="Short description here..."></textarea>
         </div>
 
-        <!-- Price (dynamically labeled) -->
+        <!-- Price -->
         <div class="universal-product-field">
-          <label for="universalItemPrice" id="universalItemPriceLabel">Price:</label>
-          <input type="number" step="0.01" name="item_price" id="universalItemPrice" placeholder="0.00" required>
+          <label for="universalItemPrice">Price:</label>
+          <input type="number" step="0.01" name="prod_price" id="universalItemPrice" placeholder="0.00" required>
         </div>
 
         <!-- SKU -->
@@ -55,30 +55,24 @@
             <option value="on_order">On Order</option>
           </select>
         </div>
+        
+        <!-- Category -->
+        <div class="universal-product-field">
+          <label for="universalItemCategory">Category:</label>
+          <input type="text" name="category" id="universalItemCategory" placeholder="Product Category">
+        </div>
+        
+        <!-- Sub-Category -->
+        <div class="universal-product-field">
+          <label for="universalItemSubCategory">Sub-Category:</label>
+          <input type="text" name="sub_category" id="universalItemSubCategory" placeholder="Product Sub-Category">
+        </div>
       </fieldset>
 
       <!-- Pricing and Tax Section -->
       <fieldset class="universal-product-fieldset">
         <legend>Pricing and Tax</legend>
         
-        <!-- Cost Price -->
-        <div class="universal-product-field">
-          <label for="universalItemCostPrice">Cost Price:</label>
-          <input type="number" step="0.01" name="cost_price" id="universalItemCostPrice" placeholder="0.00">
-        </div>
-        
-        <!-- Retail Price -->
-        <div class="universal-product-field">
-          <label for="universalItemRetailPrice">Retail Price:</label>
-          <input type="number" step="0.01" name="retail_price" id="universalItemRetailPrice" placeholder="0.00">
-        </div>
-        
-        <!-- Wholesale Price -->
-        <div class="universal-product-field">
-          <label for="universalItemWholesalePrice">Wholesale Price:</label>
-          <input type="number" step="0.01" name="wholesale_price" id="universalItemWholesalePrice" placeholder="0.00">
-        </div>
-
         <!-- Tax Rate -->
         <div class="universal-product-field">
           <label for="universalItemTaxRate">Tax Rate (%):</label>
@@ -90,6 +84,12 @@
           <label for="universalItemDiscount">Discount (%):</label>
           <input type="number" step="0.01" name="discount" id="universalItemDiscount" placeholder="Discount percentage">
         </div>
+        
+        <!-- Labor Cost -->
+        <div class="universal-product-field">
+          <label for="universalItemLaborCost">Labor Cost:</label>
+          <input type="number" step="0.01" name="labor_cost" id="universalItemLaborCost" placeholder="0.00">
+        </div>
       </fieldset>
 
       <!-- Inventory Section -->
@@ -99,7 +99,7 @@
         <!-- Stock Quantity -->
         <div class="universal-product-field">
           <label for="universalItemStock">Stock Quantity:</label>
-          <input type="number" name="stock_quantity" id="universalItemStock" placeholder="0">
+          <input type="text" name="stock_quantity" id="universalItemStock" placeholder="0">
         </div>
         
         <!-- Reorder Level -->
@@ -108,10 +108,10 @@
           <input type="number" name="reorder_level" id="universalItemReorderLevel" placeholder="0">
         </div>
         
-        <!-- Location -->
+        <!-- Lead Time -->
         <div class="universal-product-field">
-          <label for="universalItemLocation">Storage Location:</label>
-          <input type="text" name="location" id="universalItemLocation" placeholder="e.g., Warehouse A, Shelf B3">
+          <label for="universalItemLeadTime">Lead Time (days):</label>
+          <input type="number" name="lead_time" id="universalItemLeadTime" placeholder="0">
         </div>
       </fieldset>
 
@@ -143,12 +143,6 @@
           <input type="text" name="dimensions" id="universalItemDimensions" placeholder="e.g., 10x5x3 cm">
         </div>
 
-        <!-- Color -->
-        <div class="universal-product-field universal-product-field-vehicle">
-          <label for="universalItemColor">Color:</label>
-          <input type="text" name="color" id="universalItemColor" placeholder="e.g., Red, Blue, Black">
-        </div>
-
         <!-- Material -->
         <div class="universal-product-field">
           <label for="universalItemMaterial">Material:</label>
@@ -165,159 +159,57 @@
           <label for="universalItemWarranty">Warranty Period:</label>
           <input type="text" name="warranty_period" id="universalItemWarranty" placeholder="e.g., 1 year, 2 years...">
         </div>
-        
-        <!-- Support Contact -->
-        <div class="universal-product-field">
-          <label for="universalItemSupport">Support Contact:</label>
-          <input type="text" name="support_contact" id="universalItemSupport" placeholder="e.g., support@example.com">
-        </div>
-        
-        <!-- Return Policy -->
-        <div class="universal-product-field">
-          <label for="universalItemReturnPolicy">Return Policy:</label>
-          <textarea name="return_policy" id="universalItemReturnPolicy" placeholder="Return policy details..."></textarea>
-        </div>
       </fieldset>
 
-      <!-- Vehicle-Specific Fields (hidden by default) -->
-      <fieldset class="universal-product-fieldset universal-product-fieldset-vehicle">
-        <legend>Vehicle Details</legend>
-        
-        <!-- Engine Type -->
-        <div class="universal-product-field universal-product-field-vehicle">
-          <label for="universalItemEngineType">Engine Type:</label>
-          <input type="text" name="engine_type" id="universalItemEngineType" placeholder="e.g., V8, Inline-4">
-        </div>
-        
-        <!-- License Plate -->
-        <div class="universal-product-field universal-product-field-vehicle">
-          <label for="universalItemLicensePlate">License Plate:</label>
-          <input type="text" name="license_plate" id="universalItemLicensePlate" placeholder="e.g., ABC-1234">
-        </div>
-        
-        <!-- Registration Number -->
-        <div class="universal-product-field universal-product-field-vehicle">
-          <label for="universalItemRegistrationNumber">Registration Number:</label>
-          <input type="text" name="registration_number" id="universalItemRegistrationNumber" placeholder="e.g., 1HGBH41JXMN109186">
-        </div>
-        
-        <!-- Seat Type -->
-        <div class="universal-product-field universal-product-field-vehicle">
-          <label for="universalItemSeatType">Seat Type:</label>
-          <select name="seat_type" id="universalItemSeatType">
-            <option value="" disabled selected>Select Seat Type</option>
-            <option value="Cloth">Cloth</option>
-            <option value="Leather">Leather</option>
-            <option value="Synthetic">Synthetic</option>
-          </select>
-        </div>
-        
-        <!-- Previous Owners -->
-        <div class="universal-product-field universal-product-field-vehicle">
-          <label for="universalItemPreviousOwners">Previous Owners:</label>
-          <input type="number" name="previous_owners" id="universalItemPreviousOwners" placeholder="e.g., 2">
-        </div>
-        
-        <!-- Extra Features -->
-        <div class="universal-product-field universal-product-field-vehicle">
-          <label for="universalItemExtraFeatures">Extra Features:</label>
-          <textarea name="extra_features" id="universalItemExtraFeatures" placeholder="e.g., Cruise Control, Sunroof, Heated Seats"></textarea>
-        </div>
-      </fieldset>
-
-      <!-- Service-Specific Fields (hidden by default) -->
-      <fieldset class="universal-product-fieldset universal-product-fieldset-service">
-        <legend>Service Details</legend>
-        
-        <!-- Duration -->
-        <div class="universal-product-field universal-product-field-service">
-          <label for="universalItemDuration">Duration:</label>
-          <input type="text" name="duration" id="universalItemDuration" placeholder="e.g., 2 hours, 3 days">
-        </div>
-        
-        <!-- Service Type -->
-        <div class="universal-product-field universal-product-field-service">
-          <label for="universalItemServiceType">Service Type:</label>
-          <select name="service_type" id="universalItemServiceType">
-            <option value="" disabled selected>Select Service Type</option>
-            <option value="maintenance">Maintenance</option>
-            <option value="repair">Repair</option>
-            <option value="installation">Installation</option>
-            <option value="consultation">Consultation</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-        
-        <!-- Staff Required -->
-        <div class="universal-product-field universal-product-field-service">
-          <label for="universalItemStaffRequired">Staff Required:</label>
-          <input type="number" name="staff_required" id="universalItemStaffRequired" placeholder="e.g., 2">
-        </div>
-        
-        <!-- Certification Required -->
-        <div class="universal-product-field universal-product-field-service">
-          <label for="universalItemCertification">Certification Required:</label>
-          <input type="text" name="certification" id="universalItemCertification" placeholder="e.g., ASE Certified, Licensed Plumber">
-        </div>
-      </fieldset>
-
-      <!-- Parts-Specific Fields (hidden by default) -->
+      <!-- Parts-Specific Fields -->
       <fieldset class="universal-product-fieldset universal-product-fieldset-part">
         <legend>Part Details</legend>
         
-        <!-- Compatible Models -->
+        <!-- Compatible Vehicles -->
         <div class="universal-product-field universal-product-field-part">
-          <label for="universalItemCompatibleModels">Compatible Models:</label>
-          <textarea name="compatible_models" id="universalItemCompatibleModels" placeholder="e.g., Toyota Corolla 2018-2022, Honda Civic 2019-2023"></textarea>
+          <label for="universalItemCompatibleVehicles">Compatible Vehicles:</label>
+          <textarea name="compatible_vehicles" id="universalItemCompatibleVehicles" placeholder="e.g., Toyota Corolla 2018-2022, Honda Civic 2019-2023"></textarea>
         </div>
         
-        <!-- OEM Number -->
+        <!-- OEM Part Number -->
         <div class="universal-product-field universal-product-field-part">
-          <label for="universalItemOEMNumber">OEM Number:</label>
-          <input type="text" name="oem_number" id="universalItemOEMNumber" placeholder="Original Equipment Manufacturer Number">
-        </div>
-        
-        <!-- Condition -->
-        <div class="universal-product-field universal-product-field-part">
-          <label for="universalItemCondition">Condition:</label>
-          <select name="condition" id="universalItemCondition">
-            <option value="" disabled selected>Select Condition</option>
-            <option value="new">New</option>
-            <option value="used">Used</option>
-            <option value="refurbished">Refurbished</option>
-          </select>
+          <label for="universalItemOEMNumber">OEM Part Number:</label>
+          <input type="text" name="oem_part_number" id="universalItemOEMNumber" placeholder="Original Equipment Manufacturer Number">
         </div>
       </fieldset>
 
-      <!-- Extras-Specific Fields (hidden by default) -->
-      <fieldset class="universal-product-fieldset universal-product-fieldset-extra">
-        <legend>Extra Details</legend>
+      <!-- Service-Specific Fields -->
+      <fieldset class="universal-product-fieldset universal-product-fieldset-service">
+        <legend>Service Details</legend>
         
-        <!-- Category -->
-        <div class="universal-product-field universal-product-field-extra">
-          <label for="universalItemCategory">Category:</label>
-          <select name="category" id="universalItemCategory">
-            <option value="" disabled selected>Select Category</option>
-            <option value="accessory">Accessory</option>
-            <option value="add_on">Add-on</option>
-            <option value="upgrade">Upgrade</option>
-            <option value="other">Other</option>
-          </select>
+        <!-- Estimated Time -->
+        <div class="universal-product-field universal-product-field-service">
+          <label for="universalItemEstimatedTime">Estimated Time:</label>
+          <input type="text" name="estimated_time" id="universalItemEstimatedTime" placeholder="e.g., 2 hours, 3 days">
+        </div>
+        
+        <!-- Service Frequency -->
+        <div class="universal-product-field universal-product-field-service">
+          <label for="universalItemServiceFrequency">Service Frequency:</label>
+          <input type="text" name="service_frequency" id="universalItemServiceFrequency" placeholder="e.g., Monthly, Quarterly, Annually">
+        </div>
+      </fieldset>
+
+      <!-- Bundle Items -->
+      <fieldset class="universal-product-fieldset">
+        <legend>Bundle Information</legend>
+        <div class="universal-product-field">
+          <label for="universalItemBundleItems">Bundle Items:</label>
+          <textarea name="bundle_items" id="universalItemBundleItems" placeholder="List of items included in this bundle..."></textarea>
         </div>
         
         <!-- Installation Required -->
-        <div class="universal-product-field universal-product-field-extra">
+        <div class="universal-product-field">
           <label for="universalItemInstallationRequired">Installation Required:</label>
           <select name="installation_required" id="universalItemInstallationRequired">
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
+            <option value="true">Yes</option>
+            <option value="false" selected>No</option>
           </select>
-        </div>
-        
-        <!-- Installation Cost -->
-        <div class="universal-product-field universal-product-field-extra">
-          <label for="universalItemInstallationCost">Installation Cost:</label>
-          <input type="number" step="0.01" name="installation_cost" id="universalItemInstallationCost" placeholder="0.00">
         </div>
       </fieldset>
 
@@ -325,20 +217,12 @@
       <fieldset class="universal-product-fieldset">
         <legend>Images</legend>
         <div class="universal-product-field">
-          <label for="universalItemImage" id="universalItemImageLabel">Product Image:</label>
+          <label for="universalItemImage">Product Image:</label>
           <input type="file" name="item_image" id="universalItemImage" accept="image/*">
           <div class="image-preview-container">
             <img id="universalItemImagePreview" src="https://placehold.co/300x300?text=No+Image" alt="Image preview" class="image-preview">
           </div>
-        </div>
-        
-        <!-- Additional Images (for vehicles) -->
-        <div class="universal-product-field universal-product-field-vehicle">
-          <label for="universalItemAdditionalImages">Additional Images:</label>
-          <input type="file" name="additional_images[]" id="universalItemAdditionalImages" accept="image/*" multiple>
-          <div class="additional-images-preview" id="additionalImagesPreview">
-            <!-- Additional image previews will be added here dynamically -->
-          </div>
+          <input type="hidden" name="image_url" id="universalItemImageUrl">
         </div>
       </fieldset>
 
@@ -358,20 +242,5 @@
         <button type="button" class="btn-universal-product-delete" id="universalProductDeleteBtn" style="display: none;">Delete</button>
       </div>
     </form>
-  </div>
-</div>
-
-<!-- Loading Modal -->
-<div id="loading-modal" class="loading-modal">
-  <div class="loading-spinner"></div>
-  <p>Processing your request...</p>
-</div>
-
-<!-- Response Modal -->
-<div id="response-modal" class="response-modal">
-  <div class="response-modal-content">
-    <span class="response-modal-close">&times;</span>
-    <h3 class="response-status">SUCCESS</h3>
-    <p class="response-message">Operation completed successfully.</p>
   </div>
 </div>
