@@ -2,7 +2,10 @@
 /* Product Details Modal CSS */
 /* ========================= */
 
-.modal-product-details {
+.modal-product-details, 
+.modal-part-details,
+.modal-extra-details,
+.modal-service-details {
     display: none; /* Hidden by default */
     position: fixed;
     z-index: var(--z-index-modal, 999);
@@ -15,7 +18,10 @@
     background-color: var(--shadow-dark, rgba(0, 0, 0, 0.4));
 }
 
-.modal-product-details.active {
+.modal-product-details.active, 
+.modal-part-details.active,
+.modal-extra-details.active,
+.modal-service-details.active {
     display: flex;
 }
 
@@ -135,7 +141,10 @@
 
 
 /* Add Product Modal CSS */
-.modal-add-product {
+.modal-add-product,
+.modal-add-part,
+.modal-add-extra,
+.modal-add-service {
     display: none; /* Hidden by default */
     position: fixed; 
     z-index: 999; 
@@ -148,7 +157,10 @@
 }
 
 /* Active state - show the modal when this class is added */
-.modal-add-product.active {
+.modal-add-product.active,
+.modal-add-part.active,
+.modal-add-extra.active,
+.modal-add-service.active {
     display: block;
 }
   

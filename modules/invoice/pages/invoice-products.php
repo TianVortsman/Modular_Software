@@ -70,7 +70,7 @@ include('../../../php/db.php');
 
             <!-- Vehicles Section -->
             <div class="tab-content" id="vehicles">
-            <button onclick="toggleAddVehicleModal()" class="add-vehicle-open-btn">Add Vehicle</button>
+            <button onclick="openAddVehicleModal()" class="add-vehicle-open-btn">Add Vehicle</button>
                 <h2>Vehicles</h2>
                 <div class="products-grid" id="vehicles-grid">
 
@@ -79,7 +79,7 @@ include('../../../php/db.php');
 
             <!-- Parts Section -->
             <div class="tab-content" id="parts">
-            <button onclick="toggleAddPartsModal()" class="add-parts-open-btn">Add Parts</button>
+            <button onclick="openAddPartModal()" class="add-parts-open-btn">Add Parts</button>
                 <h2>Parts</h2>
                 <div class="products-grid" id="parts-grid">
 
@@ -88,7 +88,7 @@ include('../../../php/db.php');
 
             <!-- Extras Section -->
             <div class="tab-content" id="extras">
-            <button onclick="toggleAddExtrasModal()" class="add-extras-open-btn">Add Extras</button>
+            <button onclick="openAddExtraModal()" class="add-extras-open-btn">Add Extras</button>
                 <h2>Extras</h2>
                 <div class="products-grid" id="extras-grid">
 
@@ -97,7 +97,7 @@ include('../../../php/db.php');
 
             <!-- Services Section -->
             <div class="tab-content" id="services">
-            <button onclick="toggleAddServicesModal()" class="add-services-open-btn">Add Services</button>
+            <button onclick="openAddServiceModal()" class="add-services-open-btn">Add Services</button>
                 <h2>Services</h2>
                 <div class="products-grid" id="services-grid">
                     

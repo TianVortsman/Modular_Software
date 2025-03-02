@@ -149,7 +149,7 @@ overflow: hidden;
 background-color: var(--color-background-light);
 }
 
-.tabs-header, .sub-tabs-header {
+.main-tabs-header, .sub-tabs-header {
 display: flex;
 background-color: var(--color-background);
 border-bottom: 1px solid var(--color-border);
@@ -199,7 +199,7 @@ border-bottom: 1px solid var(--color-border);
     border-radius: var(--radius-medium);
 }
 
-.employee-table {
+.main-employee-table {
     width: 100%;
     border-collapse: collapse;
     background-color: var(--color-background);
@@ -209,38 +209,38 @@ border-bottom: 1px solid var(--color-border);
     overflow: hidden;
 }
 
-.employee-table thead {
+.main-employee-table thead {
     background-color: var(--color-primary);
     color: var(--color-text-dark);
     text-align: left;
     font-size: var(--font-size-large);
 }
 
-.employee-table th,
-.employee-table td {
+.main-employee-table th,
+.main-employee-table td {
     padding: var(--spacing-small) var(--spacing-medium);
     border-bottom: 1px solid var(--border-color);
     text-align: left;
 }
 
-.employee-table tbody tr:hover {
+.main-employee-table tbody tr:hover {
     background-color: var(--color-secondary);
 }
 
-.employee-table .action-icons {
+.main-employee-table .action-icons {
     display: flex;
     gap: var(--spacing-small);
     justify-content: center;
 }
 
-.employee-table .icon {
+.main-employee-table .icon {
     cursor: pointer;
     font-size: var(--font-size-large);
     color: var(--color-primary);
     transition: transform 0.2s ease-in-out;
 }
 
-.employee-table .icon:hover {
+.main-employee-table .icon:hover {
     transform: scale(1.2);
 }
 

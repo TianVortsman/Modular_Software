@@ -17,6 +17,35 @@ document.addEventListener("DOMContentLoaded", () => {
     // Show the modal
     modalAddProduct.classList.add('active');
   };
+
+  // Function to open the Add Part modal
+  window.openAddPartModal = function() {
+       // Reset form fields if needed
+       document.getElementById("modal-add-part-form").reset();       
+       // Show the modal
+       modalAddProduct.classList.add('active');
+  };
+
+  // Function to open the Add Service modal
+  window.openAddServiceModal = function() {
+       // Reset form fields if needed
+       document.getElementById("modal-add-service-form").reset();
+       
+       // Show the modal
+       modalAddProduct.classList.add('active');
+  };
+
+  // Function to open the Add Extra modal
+  window.openAddExtraModal = function() {
+       // Reset form fields if needed
+       document.getElementById("modal-add-extra-form").reset();
+    
+       // Set the product type
+       document.getElementById("modalProductType").value = type;
+       
+       // Show the modal
+       modalAddProduct.classList.add('active');
+  };
   
   // Function to close the modal
   function closeAddProductModal() {

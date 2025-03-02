@@ -141,6 +141,7 @@
 :root.dark-mode {
     --color-chart-bg:rgba(255, 215, 0, 0.6);
     --color-background: hsl(220 27% 6%); /* Dark background */
+    --color-background-light: hsl(220 27% 10%); /* Slightly lighter background */
     --color-text-light: #ffffff;         /* Light text on dark mode */
     --color-primary: #FFD700;            /* Primary accent color */
     --color-hover: #FFC107;              /* Hover color for interactive elements */
@@ -171,6 +172,7 @@
 :root.dark-mode-brown {
   --color-chart-bg: rgba(139, 69, 19, 0.6); /* Brown chart background */
   --color-background: hsl(220 27% 6%); /* Dark background */
+  --color-background-light: hsl(220 27% 10%); /* Slightly lighter background */
   --color-text-light: #ffffff; /* Light text on dark mode */
   --color-primary: #8B4513; /* Primary accent color (brown) */
   --color-hover: #A0522D; /* Hover color for interactive elements (sienna) */
@@ -194,6 +196,7 @@
 :root.dark-mode-blue {
   --color-chart-bg:rgba(0, 123, 255, 0.6);
   --color-background: hsl(220 27% 6%); /* Dark background */
+  --color-background-light: hsl(220 27% 10%); /* Slightly lighter background */
   --color-text-light: #ffffff;         /* Light text on dark mode */
   --color-primary: #007BFF;            /* Primary accent color */
   --color-hover: #0056b3;              /* Hover color for interactive elements */
@@ -222,6 +225,7 @@
 :root.dark-mode-red {
   --color-chart-bg:rgba(255, 0, 0, 0.6);
   --color-background: hsl(220 27% 6%); /* Dark background */
+  --color-background-light: hsl(220 27% 10%); /* Slightly lighter background */
   --color-text-light: #ffffff;         /* Light text on dark mode */
   --color-primary: #FF0000;            /* Primary accent color */
   --color-hover: #CC0000;              /* Hover color for interactive elements */

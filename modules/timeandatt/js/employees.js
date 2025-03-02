@@ -102,7 +102,7 @@ function initEmployeeOverviewModal() {
     employeeRows.forEach(row => {
       row.addEventListener('dblclick', function() {
         const employeeId = this.getAttribute('data-employee-id');
-        alert(`Employee details modal for ${employeeId} will be implemented later.`);
+        openEmployeeModal(employeeId);
       });
     });
     initEmployeeOverviewModal();

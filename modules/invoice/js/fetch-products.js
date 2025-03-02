@@ -132,30 +132,189 @@ function closeProductDetailsModal() {
     }
 }
 
-// Placeholder functions for other modal types
 function openVehicleDetailsModal(product) {
     console.log("Vehicle modal not implemented yet", product);
     // Implement similar to product modal
 }
 
 function openPartDetailsModal(product) {
-    console.log("Part modal not implemented yet", product);
-    // Implement similar to product modal
+console.log("Opening part modal with data:", product);
+const modal = document.getElementById('modalPartDetails');
+
+if (modal) {
+    // Populate form fields with part data
+    document.getElementById('modalPartId').value = product.part_id || '';
+    document.getElementById('modalPartName').value = product.part_name || '';
+    document.getElementById('modalPartDescr').value = product.part_descr || '';
+    document.getElementById('modalPartPrice').value = product.part_price || '';
+    
+    // Check if other fields exist before trying to set their values
+    if (document.getElementById('modalPartSKU')) {
+        document.getElementById('modalPartSKU').value = product.sku || '';
+    }
+    if (document.getElementById('modalPartBarcode')) {
+        document.getElementById('modalPartBarcode').value = product.barcode || '';
+    }
+    if (document.getElementById('modalPartBrand')) {
+        document.getElementById('modalPartBrand').value = product.brand || '';
+    }
+    if (document.getElementById('modalPartManufacturer')) {
+        document.getElementById('modalPartManufacturer').value = product.manufacturer || '';
+    }
+    if (document.getElementById('modalPartWeight')) {
+        document.getElementById('modalPartWeight').value = product.weight || '';
+    }
+    if (document.getElementById('modalPartDimensions')) {
+        document.getElementById('modalPartDimensions').value = product.dimensions || '';
+    }
+    if (document.getElementById('modalPartWarranty')) {
+        document.getElementById('modalPartWarranty').value = product.warranty_period || '';
+    }
+    if (document.getElementById('modalPartTaxRate')) {
+        document.getElementById('modalPartTaxRate').value = product.tax_rate || '';
+    }
+    if (document.getElementById('modalPartDiscount')) {
+        document.getElementById('modalPartDiscount').value = product.discount || '';
+    }
+    if (document.getElementById('modalPartStatus')) {
+        document.getElementById('modalPartStatus').value = product.status || 'active';
+    }
+
+    // Set image preview if available
+    const imagePreview = document.getElementById('modalPartImagePreview');
+    if (imagePreview) {
+        if (product.image_url) {
+            imagePreview.src = '../../../' + product.image_url;
+        } else {
+            imagePreview.src = 'https://placehold.co/300x300?text=No+Image';
+        }
+    }
+    
+    // Show the modal - use classList for consistency
+    modal.classList.add('active');
+} else {
+    console.error("Part modal element not found");
+}
 }
 
 function openExtraDetailsModal(product) {
-    console.log("Extra modal not implemented yet", product);
-    // Implement similar to product modal
+    console.log("Opening extra details modal with data:", product);
+    const modal = document.getElementById('modalExtraDetails');
+
+    if (modal) {
+        // Populate form fields with extra details data
+        document.getElementById('modalExtraId').value = product.extra_id || '';
+        document.getElementById('modalExtraName').value = product.extra_name || '';
+        document.getElementById('modalExtraDescr').value = product.extra_descr || '';
+        document.getElementById('modalExtraPrice').value = product.extra_price || '';
+
+        // Check if other fields exist before trying to set their values
+        if (document.getElementById('modalExtraSKU')) {
+            document.getElementById('modalExtraSKU').value = product.sku || '';
+        }
+        if (document.getElementById('modalExtraBarcode')) {
+            document.getElementById('modalExtraBarcode').value = product.barcode || '';
+        }
+        if (document.getElementById('modalExtraBrand')) {
+            document.getElementById('modalExtraBrand').value = product.brand || '';
+        }
+        if (document.getElementById('modalExtraManufacturer')) {
+            document.getElementById('modalExtraManufacturer').value = product.manufacturer || '';
+        }
+        if (document.getElementById('modalExtraWeight')) {
+            document.getElementById('modalExtraWeight').value = product.weight || '';
+        }
+        if (document.getElementById('modalExtraDimensions')) {
+            document.getElementById('modalExtraDimensions').value = product.dimensions || '';
+        }
+        if (document.getElementById('modalExtraWarranty')) {
+            document.getElementById('modalExtraWarranty').value = product.warranty_period || '';
+        }
+        if (document.getElementById('modalExtraTaxRate')) {
+            document.getElementById('modalExtraTaxRate').value = product.tax_rate || '';
+        }
+        if (document.getElementById('modalExtraDiscount')) {
+            document.getElementById('modalExtraDiscount').value = product.discount || '';
+        }
+        if (document.getElementById('modalExtraStatus')) {
+            document.getElementById('modalExtraStatus').value = product.status || 'active';
+        }
+
+        // Set image preview if available
+        const imagePreview = document.getElementById('modalExtraImagePreview');
+        if (imagePreview) {
+            if (product.image_url) {
+                imagePreview.src = '../../../' + product.image_url;
+            } else {
+                imagePreview.src = 'https://placehold.co/300x300?text=No+Image';
+            }
+        }
+
+        // Show the modal - use classList for consistency
+        modal.classList.add('active');
+    } else {
+        console.error("Extra details modal element not found");
+    }
 }
 
 function openServiceDetailsModal(product) {
-    console.log("Service modal not implemented yet", product);
-    // Implement similar to product modal
-}
+    console.log("Opening service modal with data:", product);
+    const modal = document.getElementById('modalServiceDetails');
 
-function openDefaultDetailsModal(product) {
-    console.log("Default modal not implemented yet", product);
-    // Implement similar to product modal
+    if (modal) {
+        // Populate form fields with service data
+        document.getElementById('modalServiceId').value = product.service_id || '';
+        document.getElementById('modalServiceName').value = product.service_name || '';
+        document.getElementById('modalServiceDescr').value = product.service_descr || '';
+        document.getElementById('modalServicePrice').value = product.service_price || '';
+
+        // Check if other fields exist before trying to set their values
+        if (document.getElementById('modalServiceSKU')) {
+            document.getElementById('modalServiceSKU').value = product.sku || '';
+        }
+        if (document.getElementById('modalServiceBarcode')) {
+            document.getElementById('modalServiceBarcode').value = product.barcode || '';
+        }
+        if (document.getElementById('modalServiceBrand')) {
+            document.getElementById('modalServiceBrand').value = product.brand || '';
+        }
+        if (document.getElementById('modalServiceManufacturer')) {
+            document.getElementById('modalServiceManufacturer').value = product.manufacturer || '';
+        }
+        if (document.getElementById('modalServiceWeight')) {
+            document.getElementById('modalServiceWeight').value = product.weight || '';
+        }
+        if (document.getElementById('modalServiceDimensions')) {
+            document.getElementById('modalServiceDimensions').value = product.dimensions || '';
+        }
+        if (document.getElementById('modalServiceWarranty')) {
+            document.getElementById('modalServiceWarranty').value = product.warranty_period || '';
+        }
+        if (document.getElementById('modalServiceTaxRate')) {
+            document.getElementById('modalServiceTaxRate').value = product.tax_rate || '';
+        }
+        if (document.getElementById('modalServiceDiscount')) {
+            document.getElementById('modalServiceDiscount').value = product.discount || '';
+        }
+        if (document.getElementById('modalServiceStatus')) {
+            document.getElementById('modalServiceStatus').value = product.status || 'active';
+        }
+
+        // Set image preview if available
+        const imagePreview = document.getElementById('modalServiceImagePreview');
+        if (imagePreview) {
+            if (product.image_url) {
+                imagePreview.src = '../../../' + product.image_url;
+            } else {
+                imagePreview.src = 'https://placehold.co/300x300?text=No+Image';
+            }
+        }
+
+        // Show the modal - use classList for consistency
+        modal.classList.add('active');
+    } else {
+        console.error("Service modal element not found");
+    }
 }
 
 function createProductCard(product) {

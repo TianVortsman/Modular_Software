@@ -41,6 +41,7 @@ include('../../../php/db.php');
   <link rel="stylesheet" href="../css/TandA.css">
   <link rel="stylesheet" href="../css/modals.css">
   <link rel="stylesheet" href="../css/employees.css">
+  <link rel="stylesheet" href="../css/employee-modal.css">
   <script src="../../../js/sidebar.js"></script>
   <script src="../../../js/toggle-theme.js"></script>
 </head>
@@ -105,7 +106,7 @@ include('../../../php/db.php');
       
       <!-- Main Tabs -->
       <div class="tabs-container">
-        <div class="tabs-header">
+        <div class="main-tabs-header">
           <button class="tab-button active" data-tab="active">Active</button>
           <button class="tab-button" data-tab="terminated">Terminated</button>
           <button class="tab-button" data-tab="incomplete">Incomplete</button>
@@ -125,7 +126,7 @@ include('../../../php/db.php');
             <!-- Permanent Employees Sub-tab -->
             <div class="sub-tab-pane active" id="permanent-tab">
               <div class="table-container">
-                <table class="employee-table">
+                <table class="main-employee-table">
                   <thead>
                     <tr>
                       <th>Employee ID</th>
@@ -192,7 +193,7 @@ include('../../../php/db.php');
             <!-- Temporary Employees Sub-tab -->
             <div class="sub-tab-pane" id="temporary-tab">
               <div class="table-container">
-                <table class="employee-table">
+                <table class="main-employee-table">
                   <thead>
                     <tr>
                       <th>Employee ID</th>
@@ -248,7 +249,7 @@ include('../../../php/db.php');
           <!-- Terminated Tab -->
           <div class="tab-pane" id="terminated-tab">
             <div class="table-container">
-              <table class="employee-table">
+              <table class="main-employee-table">
                 <thead>
                   <tr>
                     <th>Employee ID</th>
@@ -294,7 +295,7 @@ include('../../../php/db.php');
           <!-- Incomplete Tab -->
           <div class="tab-pane" id="incomplete-tab">
             <div class="table-container">
-              <table class="employee-table">
+              <table class="main-employee-table">
                 <thead>
                   <tr>
                     <th>Employee ID</th>
@@ -336,7 +337,7 @@ include('../../../php/db.php');
           <!-- All Employees Tab -->
           <div class="tab-pane" id="all-tab">
             <div class="table-container">
-              <table class="employee-table">
+              <table class="main-employee-table">
                 <thead>
                   <tr>
                     <th>Employee ID</th>
@@ -401,7 +402,7 @@ include('../../../php/db.php');
     </section>
   </div>
 
-  
+
 <!-- Employee Overview Modal -->
 <div id="employee-overview-modal" class="modal">
   <div class="modal-content">
@@ -475,7 +476,7 @@ include('../../../php/db.php');
     </div>
   </div>
 </div>
-
+  <?php include('../modals/employee-modal.php') ?>
   <script src="../js/employees.js"></script>
   </body>
   </html>
