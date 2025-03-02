@@ -83,13 +83,17 @@ document.addEventListener('DOMContentLoaded', function () {
         ],
         "TandA": [
             { href: "/modular1/main/dashboard.php", icon: "home", text: "Home" },
-            { href: "/modular1/modules/time-and-attendance/pages/employees.php", icon: "people", text: "Employees" },
-            { href: "/modular1/modules/time-and-attendance/pages/timecards.php", icon: "access_time", text: "Timecards" },
-            { href: "/modular1/modules/time-and-attendance/pages/mobile-clocking.php", icon: "phone_android", text: "Mobile Clocking" },
-            { href: "/modular1/modules/time-and-attendance/pages/reports.php", icon: "bar_chart", text: "Reports" },
-            { href: "/modular1/modules/time-and-attendance/pages/devices.php", icon: "devices", text: "Devices" }
+            { href: "/modular1/modules/timeandatt/pages/employees.php", icon: "people", text: "Employees" },
+            { href: "/modular1/modules/timeandatt/pages/timecards.php", icon: "access_time", text: "Timecards" },
+            { href: "/modular1/modules/timeandatt/pages/mobile-clocking.php", icon: "phone_android", text: "Mobile Clocking" },
+            { href: "/modular1/modules/timeandatt/pages/reports.php", icon: "bar_chart", text: "Reports" },
+            { href: "/modular1/modules/timeandatt/pages/devices.php", icon: "devices", text: "Devices" }
             
         ],
+        "TA-employees": [
+            { href: "/modular1/modules/timeandatt/dashboard-TA.php", icon: "dashboard", text: "Dashboard", },
+            { href: "#", icon: "person_add", text: "Add Employee", onclick: "openAddEmployeeModal()" }
+        ]
     };
     
 
