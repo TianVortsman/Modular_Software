@@ -400,6 +400,8 @@ include('../../../php/db.php');
       </div>
     </section>
   </div>
+
+  
 <!-- Employee Overview Modal -->
 <div id="employee-overview-modal" class="modal">
   <div class="modal-content">
