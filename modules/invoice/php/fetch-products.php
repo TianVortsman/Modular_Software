@@ -45,6 +45,7 @@ try {
             prod_descr, 
             prod_price,
             sku,
+            product_type,
             barcode,
             brand,
             manufacturer,

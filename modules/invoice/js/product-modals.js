@@ -340,7 +340,7 @@ checkRequiredElements() {
     // Set common fields if they exist in the data
     const commonFields = [
       'sku', 'barcode', 'brand', 'manufacturer', 'weight', 
-      'dimensions', 'warranty_period', 'tax_rate', 'discount', 'status',
+      'dimensions', 'warranty_period','product_type', 'tax_rate', 'discount', 'status',
       'category', 'sub_category', 'stock_quantity', 'reorder_level',
       'lead_time', 'material', 'labor_cost'
     ];
@@ -413,13 +413,7 @@ checkRequiredElements() {
       document.getElementById('unique-loading-modal').style.display = 'none';
       
       // Show response modal
-      const responseModal = document.getElementById('response-modal');
-      const responseStatus = document.querySelector('.response-status');
-      const responseMessage = document.querySelector('.response-message');
-      
-      responseStatus.textContent = data.success ? 'SUCCESS' : 'ERROR';
-      responseMessage.textContent = data.message;
-      responseModal.style.display = 'block';
+      showResponseModal(data.success ? 'success' : 'error', data.message);
       
       // Close the modal after successful save
       if (data.success) {
@@ -436,13 +430,7 @@ checkRequiredElements() {
       document.getElementById('unique-loading-modal').style.display = 'none';
       
       // Show error in response modal
-      const responseModal = document.getElementById('modalResponse');
-      const responseStatus = document.getElementById('modalResponseTitle');
-      const responseMessage = document.getElementById('modalResponseMessage');
-      
-      responseStatus.textContent = 'ERROR';
-      responseMessage.textContent = 'An error occurred while saving the product. Please try again.';
-      responseModal.style.display = 'block';
+      showResponseModal('error', 'An error occurred while saving the product. Please try again.');
       
       console.error('Error:', error);
     });

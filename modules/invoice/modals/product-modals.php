@@ -80,8 +80,8 @@
                 <input type="text" name="barcode" id="universalItemBarcode" placeholder="Barcode">
               </div>
               <div class="upm-field">
-                <label for="universalItemCategory">Category:</label>
-                <input type="text" name="category" id="universalItemCategory" placeholder="Product Category">
+                <label for="universalItemProduct_type">Category:</label>
+                <input type="text" name="product_type" id="universalItemProduct_type" placeholder="Product Category">
               </div>
               <div class="upm-field">
                 <label for="universalItemSubCategory">Sub-Category:</label>
