@@ -413,7 +413,7 @@ checkRequiredElements() {
       document.getElementById('unique-loading-modal').style.display = 'none';
       
       // Show response modal
-      showResponseModal(data.success ? 'success' : 'error', data.message);
+      showResponseModal(data.status, data.message);
       
       // Close the modal after successful save
       if (data.success) {
