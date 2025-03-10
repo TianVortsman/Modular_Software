@@ -55,17 +55,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Handle image upload if present
         $imageUrl = null;
-        if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
+        if (isset($_FILES['item_image']) && $_FILES['item_image']['error'] === 0) {
             $uploadDir = '../../../uploads/products/';
             if (!file_exists($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
             
-            $fileExtension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+            $fileExtension = pathinfo($_FILES['item_image']['name'], PATHINFO_EXTENSION);
             $newFilename = 'product_' . time() . '_' . rand(1000, 9999) . '.' . $fileExtension;
             $targetFile = $uploadDir . $newFilename;
             
-            if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
+            if (move_uploaded_file($_FILES['item_image']['tmp_name'], $targetFile)) {
                 $imageUrl = 'uploads/products/' . $newFilename;
             }
         }

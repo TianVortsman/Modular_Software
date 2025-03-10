@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const formData = new FormData(productForm);
             
             // AJAX request to save product
-            fetch('../handlers/product-handler.php', {
+            fetch('../handlers/save-product.php', {
                 method: 'POST',
                 body: formData // Don't set Content-Type header when using FormData
             })
@@ -213,9 +213,6 @@ if (modalProductImage && modalProductImagePreview) {
     });
 }
 });
-
-// Add this code to the end of fetch-products.js or in a separate script that runs after both files are loaded
-
 // Override the existing modal open functions to use the universal modal
 function openProductDetailsModal(product) {
     console.log("Opening product modal with data:", product);
