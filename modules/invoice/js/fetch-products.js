@@ -79,7 +79,7 @@ function createProductCard(product) {
                      <p class="product-description">${product.prod_descr || 'No description available'}</p>
                      <p class="product-price">R${product.prod_price || 'N/A'}</p>
                 `;
-                card.onclick = () => openProductDetailsModal(product);
+                card.ondblclick = () => openProductDetailsModal(product);
                 break;
           case 'vehicles':
                 imageUrl = product.imageUrl || 'https://placehold.co/300x300?text=No+Vehicle+Image';
@@ -89,7 +89,7 @@ function createProductCard(product) {
                      <p class="product-description">${product.vehicle_descr || 'No description available'}</p>
                      <p class="product-price">R${product.vehicle_price || 'N/A'}</p>
                 `;
-                card.onclick = () => openVehicleDetailsModal(product);
+                card.ondblclick = () => openVehicleDetailsModal(product);
                 break;
           case 'parts':
                 imageUrl = product.imageUrl || 'https://placehold.co/300x300?text=No+Part+Image';
@@ -99,7 +99,7 @@ function createProductCard(product) {
                      <p class="product-description">${product.prod_descr || 'No description available'}</p>
                      <p class="product-price">R${product.prod_price || 'N/A'}</p>
                 `;
-                card.onclick = () => openPartDetailsModal(product);
+                card.ondblclick = () => openPartDetailsModal(product);
                 break;
           case 'extras':
                 imageUrl = product.imageUrl || 'https://placehold.co/300x300?text=No+Extras+Image';
@@ -109,7 +109,7 @@ function createProductCard(product) {
                      <p class="product-description">${product.prod_descr || 'No description available'}</p>
                      <p class="product-price">R${product.prod_price || 'N/A'}</p>
                 `;
-                card.onclick = () => openExtraDetailsModal(product);
+                card.ondblclick = () => openExtraDetailsModal(product);
                 break;
           case 'services':
                 imageUrl = product.imageUrl || 'https://placehold.co/300x300?text=No+Service+Image';
@@ -119,7 +119,7 @@ function createProductCard(product) {
                      <p class="product-description">${product.prod_descr || 'No description available'}</p>
                      <p class="product-price">R${product.prod_price || 'N/A'}</p>
                 `;
-                card.onclick = () => openServiceDetailsModal(product);
+                card.ondblclick = () => openServiceDetailsModal(product);
                 break;
           default:
                 imageUrl = product.imageUrl || 'https://placehold.co/300x300?text=No+Image';
@@ -129,7 +129,7 @@ function createProductCard(product) {
                      <p class="product-description">${product.prod_descr || 'No description available'}</p>
                      <p class="product-price">R${product.prod_price || 'N/A'}</p>
                 `;
-                card.onclick = () => openDefaultDetailsModal(product);
+                card.ondblclick = () => openDefaultDetailsModal(product);
      }
 
      card.innerHTML = cardContent;
