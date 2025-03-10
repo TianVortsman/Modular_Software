@@ -390,108 +390,124 @@ checkRequiredElements() {
       document.getElementById('universalItemInstallationRequired').value = data.installation_required ? 'true' : 'false';
     }
   }
-  
-  // Handle form submission
-  handleSubmit() {
-    // Show loading modal
-    document.getElementById('unique-loading-modal').style.display = 'flex';
-    
-    // Create FormData object from the form
-    const formData = new FormData(this.form);
-    
-    // Add the mode (add/edit)
-    formData.append('mode', this.modalModeField.value);
-    
-    // Send the data to the server
-    fetch('../php/save-product.php', {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-      // Hide loading modal
-      document.getElementById('unique-loading-modal').style.display = 'none';
+
+    handleSubmit() {
+      // Show loading modal
+      document.getElementById('unique-loading-modal').style.display = 'flex';
       
-      // Show response modal
-      showResponseModal(data.status, data.message);
+      // Create FormData object from the form
+      const formData = new FormData(this.form);
       
-      // Close the modal after successful save
-      if (data.success) {
-        this.close();
-        
-        // Refresh the product list if needed
-        if (typeof fetchProducts === 'function') {
-          fetchProducts(this.itemTypeField.value);
-        }
+      // Add the mode (add/edit)
+      formData.append('mode', this.modalModeField.value);
+      
+      // Handle image file
+      const imageFile = this.imageInput.files[0];
+      if (imageFile) {
+          formData.append('image', imageFile);
       }
-    })
-    .catch(error => {
-      // Hide loading modal
-      document.getElementById('unique-loading-modal').style.display = 'none';
       
-      // Show error in response modal
-      showResponseModal('error', 'An error occurred while saving the product. Please try again.');
-      
-      console.error('Error:', error);
-    });
-  }
-  
-  // Handle item deletion
-  handleDelete() {
-    // Show loading modal
-    document.getElementById('unique-loading-modal').style.display = 'flex';
-    
-    // Create FormData object with the necessary data
-    const formData = new FormData();
-    formData.append('prod_id', this.itemIdField.value);
-    formData.append('product_type', this.itemTypeField.value);
-    formData.append('mode', 'delete');
-    
-    // Send the data to the server
-    fetch('php/delete-product.php', {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-      // Hide loading modal
-      document.getElementById('unique-loading-modal').style.display = 'none';
-      
-      // Show response modal
-      const responseModal = document.getElementById('response-modal');
-      const responseStatus = document.querySelector('.response-status');
-      const responseMessage = document.querySelector('.response-message');
-      
-      responseStatus.textContent = data.success ? 'SUCCESS' : 'ERROR';
-      responseMessage.textContent = data.message;
-      responseModal.style.display = 'block';
-      
-      // Close the modal after successful delete
-      if (data.success) {
-        this.close();
-        
-        // Refresh the product list if needed
-        if (typeof fetchProducts === 'function') {
-          fetchProducts(this.itemTypeField.value);
-        }
+      // Send the data to the server
+      fetch('../php/save-product.php', {
+          method: 'POST',
+          body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+          // Hide loading modal
+          document.getElementById('unique-loading-modal').style.display = 'none';
+          
+          // Show response modal
+          showResponseModal(data.status, data.message);
+          
+          if (data.status === 'success') {
+              this.close();
+              // Refresh the product list
+              if (typeof fetchProducts === 'function') {
+                  fetchProducts(this.itemTypeField.value);
+              }
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          document.getElementById('unique-loading-modal').style.display = 'none';
+          showResponseModal('error', 'An error occurred while saving the product');
+      });
+    }
+
+    handleDelete() {
+      if (!confirm('Are you sure you want to delete this item?')) {
+          return;
       }
-    })
-    .catch(error => {
-      // Hide loading modal
-      document.getElementById('unique-loading-modal').style.display = 'none';
+
+      document.getElementById('unique-loading-modal').style.display = 'flex';
       
-      // Show error in response modal
-      const responseModal = document.getElementById('response-modal');
-      const responseStatus = document.querySelector('.response-status');
-      const responseMessage = document.querySelector('.response-message');
+      const formData = new FormData();
+      formData.append('prod_id', this.itemIdField.value);
+      formData.append('mode', 'delete');
       
-      responseStatus.textContent = 'ERROR';
-      responseMessage.textContent = 'An error occurred while deleting the product. Please try again.';
-      responseModal.style.display = 'block';
+      fetch('../php/save-product.php', {
+          method: 'POST',
+          body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+          document.getElementById('unique-loading-modal').style.display = 'none';
+          showResponseModal(data.status, data.message);
+          
+          if (data.status === 'success') {
+              this.close();
+              if (typeof fetchProducts === 'function') {
+                  fetchProducts(this.itemTypeField.value);
+              }
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          document.getElementById('unique-loading-modal').style.display = 'none';
+          showResponseModal('error', 'An error occurred while deleting the product');
+      });
+    }
+
+    populateForm(itemType, data) {
+      // Reset form first
+      this.resetForm();
       
-      console.error('Error:', error);
-    });
-  }
+      // Set basic fields
+      Object.keys(data).forEach(key => {
+          const input = document.getElementById(`universalItem${this.capitalizeFirstLetter(key)}`);
+          if (input && data[key] !== null) {
+              if (input.type === 'checkbox') {
+                  input.checked = data[key];
+              } else {
+                  input.value = data[key];
+              }
+          }
+      });
+      
+      // Handle image preview
+      if (data.image_url) {
+          this.imagePreview.src = '../../../' + data.image_url;
+          this.imageUrlField.value = data.image_url;
+          document.getElementById('universalImageDropzone').classList.add('has-image');
+      }
+      
+      // Show type-specific fields
+      this.toggleTypeSpecificFields(itemType);
+    }
+    // Add to UniversalProductModal class
+    close() {
+      this.resetForm();
+      this.modal.style.display = 'none';
+      this.hideAllTypeSpecificFields();
+    }
+
+    resetForm() {
+      this.form.reset();
+      this.imagePreview.src = 'https://placehold.co/300x300?text=No+Image';
+      document.getElementById('universalImageDropzone').classList.remove('has-image');
+      document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+    }
 }
 
 // Initialize the modal controller

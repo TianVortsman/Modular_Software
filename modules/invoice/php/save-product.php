@@ -55,10 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Handle image upload if present
         $imageUrl = null;
-        if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+        if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
             $uploadDir = '../../../uploads/products/';
-            
-            // Create directory if it doesn't exist
             if (!file_exists($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -69,11 +67,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
                 $imageUrl = 'uploads/products/' . $newFilename;
-            } else {
-                throw new Exception("Failed to upload image");
             }
         }
         
+        // Add image URL to product data if uploaded
         if ($imageUrl) {
             $productData['image_url'] = $imageUrl;
         }
@@ -140,9 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             // INSERT new product
             $columns = array_keys($productData);
-            if (isset($productData['image_url'])) {
-                $columns[] = 'image_url';
-            }
+            $columns[] = 'image_url';
             $columns[] = 'created_at';
             $columns[] = 'updated_at';
             
