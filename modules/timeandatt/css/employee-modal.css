@@ -201,7 +201,7 @@
     cursor: pointer;
     white-space: nowrap;
     font-weight: 500;
-    color: var(--color-text, #333);
+    color: var(--color-text-light, #333);
   }
   
   .tab-button:hover {

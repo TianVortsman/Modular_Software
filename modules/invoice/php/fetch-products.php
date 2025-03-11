@@ -9,7 +9,7 @@ global $conn;
 $category = isset($_GET['category']) ? $_GET['category'] : 'products';
 $searchTerm = isset($_GET['searchTerm']) ? '%' . trim($_GET['searchTerm']) . '%' : '%';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 12;
+$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 100;
 $offset = ($page - 1) * $limit;
 
 // Map category to the correct table and column names

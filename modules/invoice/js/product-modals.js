@@ -473,15 +473,42 @@ checkRequiredElements() {
       // Reset form first
       this.resetForm();
       
-      // Set basic fields
-      Object.keys(data).forEach(key => {
-          const input = document.getElementById(`universalItem${this.capitalizeFirstLetter(key)}`);
-          if (input && data[key] !== null) {
-              if (input.type === 'checkbox') {
-                  input.checked = data[key];
-              } else {
-                  input.value = data[key];
-              }
+      // Map all database fields to form fields
+      const fieldMappings = {
+          'prod_name': 'universalItemName',
+          'prod_descr': 'universalItemDescr',
+          'prod_price': 'universalItemPrice',
+          'stock_quantity': 'universalItemStockQuantity',
+          'barcode': 'universalItemBarcode',
+          'product_type': 'universalItemProductType',
+          'brand': 'universalItemBrand',
+          'manufacturer': 'universalItemManufacturer',
+          'weight': 'universalItemWeight',
+          'dimensions': 'universalItemDimensions',
+          'warranty_period': 'universalItemWarrantyPeriod',
+          'tax_rate': 'universalItemTaxRate',
+          'discount': 'universalItemDiscount',
+          'status': 'universalItemStatus',
+          'sku': 'universalItemSKU',
+          'category': 'universalItemCategory',
+          'sub_category': 'universalItemSubCategory',
+          'reorder_level': 'universalItemReorderLevel',
+          'lead_time': 'universalItemLeadTime',
+          'oem_part_number': 'universalItemOEMPartNumber',
+          'compatible_vehicles': 'universalItemCompatibleVehicles',
+          'material': 'universalItemMaterial',
+          'labor_cost': 'universalItemLaborCost',
+          'estimated_time': 'universalItemEstimatedTime',
+          'service_frequency': 'universalItemServiceFrequency',
+          'bundle_items': 'universalItemBundleItems',
+          'installation_required': 'universalItemInstallationRequired'
+      };
+  
+      // Populate each field if data exists
+      Object.entries(fieldMappings).forEach(([dbField, formId]) => {
+          const input = document.getElementById(formId);
+          if (input && data[dbField] !== null && data[dbField] !== undefined) {
+              input.value = data[dbField];
           }
       });
       
@@ -490,24 +517,19 @@ checkRequiredElements() {
           this.imagePreview.src = '../../../' + data.image_url;
           this.imageUrlField.value = data.image_url;
           document.getElementById('universalImageDropzone').classList.add('has-image');
+      } else {
+          this.imagePreview.src = 'https://placehold.co/300x300?text=No+Image';
+          document.getElementById('universalImageDropzone').classList.remove('has-image');
       }
-      
+  
+      // Set the item ID
+      if (data.prod_id) {
+          this.itemIdField.value = data.prod_id;
+      }
+  
       // Show type-specific fields
       this.toggleTypeSpecificFields(itemType);
-    }
-    // Add to UniversalProductModal class
-    close() {
-      this.resetForm();
-      this.modal.style.display = 'none';
-      this.hideAllTypeSpecificFields();
-    }
-
-    resetForm() {
-      this.form.reset();
-      this.imagePreview.src = 'https://placehold.co/300x300?text=No+Image';
-      document.getElementById('universalImageDropzone').classList.remove('has-image');
-      document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
-    }
+  }
 }
 
 // Initialize the modal controller

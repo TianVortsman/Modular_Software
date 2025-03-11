@@ -13,7 +13,7 @@ async function fetchProducts(categoryParam) {
     try {
         const params = new URLSearchParams(window.location.search);
         const searchTerm = params.get('searchTerm') || '';
-        const limit = parseInt(params.get('limit')) || 10;
+        const limit = parseInt(params.get('limit')) || 100;
         const page = parseInt(params.get('page')) || 1;
         
         // Construct the query string for the request
