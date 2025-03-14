@@ -105,26 +105,26 @@ include('../../../php/db.php');
       </div>
       
       <!-- Main Tabs -->
-      <div class="tabs-container">
-        <div class="main-tabs-header">
-          <button class="tab-button active" data-tab="active">Active</button>
-          <button class="tab-button" data-tab="terminated">Terminated</button>
-          <button class="tab-button" data-tab="incomplete">Incomplete</button>
-          <button class="tab-button" data-tab="all">All Employees</button>
+      <div class="page-tabs-container">
+        <div class="page-tabs-header">
+          <button class="page-tab-button active" data-tab="active" role="tab" aria-selected="true" aria-controls="active-tab">Active</button>
+          <button class="page-tab-button" data-tab="terminated" role="tab" aria-selected="false" aria-controls="terminated-tab">Terminated</button>
+          <button class="page-tab-button" data-tab="incomplete" role="tab" aria-selected="false" aria-controls="incomplete-tab">Incomplete</button>
+          <button class="page-tab-button" data-tab="all" role="tab" aria-selected="false" aria-controls="all-tab">All Employees</button>
         </div>
         
         <!-- Tab Content -->
-        <div class="tab-content">
+        <div class="page-tab-content">
           <!-- Active Tab -->
-          <div class="tab-pane active" id="active-tab">
+          <div class="page-tab-pane active" id="active-tab" role="tabpanel">
             <!-- Sub-tabs for Active Employees -->
-            <div class="sub-tabs-header">
-              <button class="sub-tab-button active" data-subtab="permanent">Permanent</button>
-              <button class="sub-tab-button" data-subtab="temporary">Temporary</button>
+            <div class="page-subtabs-header">
+              <button class="page-subtab-button active" data-subtab="permanent" role="tab" aria-selected="true" aria-controls="permanent-tab">Permanent</button>
+              <button class="page-subtab-button" data-subtab="temporary" role="tab" aria-selected="false" aria-controls="temporary-tab">Temporary</button>
             </div>
             
             <!-- Permanent Employees Sub-tab -->
-            <div class="sub-tab-pane active" id="permanent-tab">
+            <div class="page-subtab-pane active" id="permanent-tab" role="tabpanel">
               <div class="table-container">
                 <table class="main-employee-table">
                   <thead>
@@ -191,7 +191,7 @@ include('../../../php/db.php');
             </div>
             
             <!-- Temporary Employees Sub-tab -->
-            <div class="sub-tab-pane" id="temporary-tab">
+            <div class="page-subtab-pane" id="temporary-tab" role="tabpanel">
               <div class="table-container">
                 <table class="main-employee-table">
                   <thead>
@@ -247,7 +247,7 @@ include('../../../php/db.php');
           </div>
           
           <!-- Terminated Tab -->
-          <div class="tab-pane" id="terminated-tab">
+          <div class="page-tab-pane" id="terminated-tab" role="tabpanel">
             <div class="table-container">
               <table class="main-employee-table">
                 <thead>
@@ -293,7 +293,7 @@ include('../../../php/db.php');
           </div>
           
           <!-- Incomplete Tab -->
-          <div class="tab-pane" id="incomplete-tab">
+          <div class="page-tab-pane" id="incomplete-tab" role="tabpanel">
             <div class="table-container">
               <table class="main-employee-table">
                 <thead>
@@ -335,7 +335,7 @@ include('../../../php/db.php');
           </div>
           
           <!-- All Employees Tab -->
-          <div class="tab-pane" id="all-tab">
+          <div class="page-tab-pane" id="all-tab" role="tabpanel">
             <div class="table-container">
               <table class="main-employee-table">
                 <thead>
@@ -476,6 +476,78 @@ include('../../../php/db.php');
     </div>
   </div>
 </div>
+
+<!-- Add Employee Modal -->
+<div id="add-employee-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Add New Employee</h2>
+      <span class="modal-close material-icons">close</span>
+    </div>
+    <div class="modal-body">
+      <form id="addEmployeeForm">
+        <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+        
+        <!-- Basic Information -->
+        <div class="form-section">
+          <h3>Basic Information</h3>
+          <div class="form-group">
+            <label for="employeeNumber">Employee Number</label>
+            <input type="text" id="employeeNumber" name="employeeNumber" required>
+          </div>
+          <div class="form-group">
+            <label for="badgeNumber">Badge Number</label>
+            <input type="text" id="badgeNumber" name="badgeNumber" required>
+          </div>
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" name="firstName" required>
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" name="lastName" required>
+          </div>
+        </div>
+
+        <!-- Schedule Information -->
+        <div class="form-section">
+          <h3>Schedule Information</h3>
+          <div class="form-group">
+            <label for="payPeriod">Pay Period</label>
+            <select id="payPeriod" name="payPeriod" required>
+              <option value="">Select Pay Period</option>
+              <option value="weekly">Weekly</option>
+              <option value="biweekly">Bi-Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+          <div class="form-group custom-period-details" style="display: none;">
+            <label for="periodStartDate">Period Start Date</label>
+            <input type="date" id="periodStartDate" name="periodStartDate">
+            <label for="periodEndDate">Period End Date</label>
+            <input type="date" id="periodEndDate" name="periodEndDate">
+            <label for="periodDays">Number of Days</label>
+            <input type="number" id="periodDays" name="periodDays" min="1">
+          </div>
+          <div class="form-group">
+            <label for="scheduleTemplate">Schedule Template (Optional)</label>
+            <select id="scheduleTemplate" name="scheduleTemplate">
+              <option value="">Select Template</option>
+              <!-- Templates will be loaded here -->
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="cancel-btn">Cancel</button>
+          <button type="submit" class="submit-btn">Add Employee</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
   <?php include('../modals/employee-modal.php') ?>
   <script src="../js/employees.js"></script>
   </body>

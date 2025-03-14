@@ -1,0 +1,123 @@
+#project-dashboard .stat-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease;
+}
+
+#project-dashboard .stat-card:hover {
+    transform: translateY(-5px);
+}
+
+#project-dashboard .activity-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#project-dashboard .activity-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#project-dashboard .activity-time {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+#project-dashboard .deadline-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#project-dashboard .deadline-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+#project-dashboard .deadline-project {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+#project-dashboard .deadline-task {
+    color: var(--text-secondary);
+}
+
+#project-dashboard .deadline-date {
+    color: var(--text-muted);
+    text-align: right;
+}
+
+#project-dashboard .dashboard-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 1rem;
+}
+
+#project-dashboard .dashboard-card h2 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+}
+
+#project-dashboard .stat-info h3 {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+#project-dashboard .stat-info p {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+#project-dashboard .material-icons {
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* Status Colors */
+#project-dashboard .status-on-track {
+    color: var(--success-color);
+}
+
+#project-dashboard .status-at-risk {
+    color: var(--warning-color);
+}
+
+#project-dashboard .status-delayed {
+    color: var(--danger-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #project-dashboard .stats-container {
+        grid-template-columns: 1fr;
+    }
+    
+    #project-dashboard .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    #project-dashboard .deadline-item {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    #project-dashboard .deadline-date {
+        text-align: left;
+    }
+} 

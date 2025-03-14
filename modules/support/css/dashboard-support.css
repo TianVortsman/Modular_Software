@@ -1,0 +1,180 @@
+#support-dashboard .stat-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease;
+}
+
+#support-dashboard .stat-card:hover {
+    transform: translateY(-5px);
+}
+
+#support-dashboard .ticket-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#support-dashboard .ticket-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+#support-dashboard .ticket-priority {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+#support-dashboard .ticket-priority.high {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+#support-dashboard .ticket-priority.medium {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+#support-dashboard .ticket-priority.low {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#support-dashboard .ticket-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+#support-dashboard .ticket-status.open {
+    background-color: var(--primary-color-light);
+    color: var(--primary-color);
+}
+
+#support-dashboard .ticket-status.in-progress {
+    background-color: var(--info-color-light);
+    color: var(--info-color);
+}
+
+#support-dashboard .ticket-status.resolved {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#support-dashboard .agent-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#support-dashboard .agent-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+#support-dashboard .agent-status {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+#support-dashboard .agent-status.online {
+    background-color: var(--success-color);
+}
+
+#support-dashboard .agent-status.busy {
+    background-color: var(--warning-color);
+}
+
+#support-dashboard .agent-status.offline {
+    background-color: var(--danger-color);
+}
+
+#support-dashboard .dashboard-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 1rem;
+}
+
+#support-dashboard .dashboard-card h2 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+}
+
+#support-dashboard .stat-info h3 {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+#support-dashboard .stat-info p {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+#support-dashboard .material-icons {
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* SLA Indicators */
+#support-dashboard .sla-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+}
+
+#support-dashboard .sla-status.within {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#support-dashboard .sla-status.at-risk {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+#support-dashboard .sla-status.breached {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #support-dashboard .stats-container {
+        grid-template-columns: 1fr;
+    }
+    
+    #support-dashboard .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    #support-dashboard .ticket-item,
+    #support-dashboard .agent-item {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    #support-dashboard .ticket-priority,
+    #support-dashboard .ticket-status {
+        text-align: left;
+    }
+}

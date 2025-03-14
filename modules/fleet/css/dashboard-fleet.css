@@ -1,0 +1,182 @@
+#fleet-dashboard .stat-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease;
+}
+
+#fleet-dashboard .stat-card:hover {
+    transform: translateY(-5px);
+}
+
+#fleet-dashboard .vehicle-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#fleet-dashboard .vehicle-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+#fleet-dashboard .vehicle-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+#fleet-dashboard .vehicle-status.active {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#fleet-dashboard .vehicle-status.maintenance {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+#fleet-dashboard .vehicle-status.inactive {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+#fleet-dashboard .maintenance-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#fleet-dashboard .maintenance-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+#fleet-dashboard .maintenance-type {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+#fleet-dashboard .maintenance-type.scheduled {
+    background-color: var(--info-color-light);
+    color: var(--info-color);
+}
+
+#fleet-dashboard .maintenance-type.repair {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+#fleet-dashboard .maintenance-type.emergency {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+#fleet-dashboard .dashboard-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 1rem;
+}
+
+#fleet-dashboard .dashboard-card h2 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+}
+
+#fleet-dashboard .stat-info h3 {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+#fleet-dashboard .stat-info p {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+#fleet-dashboard .material-icons {
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* Fuel Efficiency Indicators */
+#fleet-dashboard .fuel-efficiency {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+}
+
+#fleet-dashboard .fuel-efficiency.good {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#fleet-dashboard .fuel-efficiency.average {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+#fleet-dashboard .fuel-efficiency.poor {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+/* Route Status */
+#fleet-dashboard .route-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+}
+
+#fleet-dashboard .route-status.on-time {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#fleet-dashboard .route-status.delayed {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+#fleet-dashboard .route-status.cancelled {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #fleet-dashboard .stats-container {
+        grid-template-columns: 1fr;
+    }
+    
+    #fleet-dashboard .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    #fleet-dashboard .vehicle-item,
+    #fleet-dashboard .maintenance-item {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    #fleet-dashboard .vehicle-status,
+    #fleet-dashboard .maintenance-type {
+        text-align: left;
+    }
+} 

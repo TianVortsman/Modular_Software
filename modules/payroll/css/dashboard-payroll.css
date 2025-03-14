@@ -1,0 +1,196 @@
+#payroll-dashboard .stat-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease;
+}
+
+#payroll-dashboard .stat-card:hover {
+    transform: translateY(-5px);
+}
+
+#payroll-dashboard .payroll-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#payroll-dashboard .payroll-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+#payroll-dashboard .payroll-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+#payroll-dashboard .payroll-status.processed {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#payroll-dashboard .payroll-status.pending {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+#payroll-dashboard .payroll-status.error {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+#payroll-dashboard .adjustment-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#payroll-dashboard .adjustment-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+#payroll-dashboard .adjustment-type {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+#payroll-dashboard .adjustment-type.bonus {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#payroll-dashboard .adjustment-type.deduction {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+#payroll-dashboard .adjustment-type.overtime {
+    background-color: var(--info-color-light);
+    color: var(--info-color);
+}
+
+#payroll-dashboard .dashboard-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 1rem;
+}
+
+#payroll-dashboard .dashboard-card h2 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+}
+
+#payroll-dashboard .stat-info h3 {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+#payroll-dashboard .stat-info p {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+#payroll-dashboard .material-icons {
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* Salary Components */
+#payroll-dashboard .salary-component {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+}
+
+#payroll-dashboard .salary-component.base {
+    background-color: var(--primary-color-light);
+    color: var(--primary-color);
+}
+
+#payroll-dashboard .salary-component.allowance {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#payroll-dashboard .salary-component.deduction {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+/* Tax Status */
+#payroll-dashboard .tax-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+}
+
+#payroll-dashboard .tax-status.filed {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#payroll-dashboard .tax-status.pending {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+#payroll-dashboard .tax-status.overdue {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+/* Amount Display */
+#payroll-dashboard .amount {
+    font-family: monospace;
+    font-weight: 600;
+}
+
+#payroll-dashboard .amount.positive {
+    color: var(--success-color);
+}
+
+#payroll-dashboard .amount.negative {
+    color: var(--danger-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #payroll-dashboard .stats-container {
+        grid-template-columns: 1fr;
+    }
+    
+    #payroll-dashboard .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    #payroll-dashboard .payroll-item,
+    #payroll-dashboard .adjustment-item {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    #payroll-dashboard .payroll-status,
+    #payroll-dashboard .adjustment-type {
+        text-align: left;
+    }
+} 

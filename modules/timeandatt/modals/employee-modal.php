@@ -8,17 +8,19 @@
     <div class="modal-body">
       <!-- Two-column layout -->
       <div class="employee-details-layout">
-        <!-- Left column - Always visible -->
+        <!-- Left column - Employee Profile -->
         <div class="employee-profile-section">
           <div class="profile-image-container">
-            <img id="employee-profile-image" src="../../../img/default-profile.jpg" alt="Employee Profile">
+            <img id="employee-profile-image" src="" alt="Employee Profile" 
+              data-gender="male" 
+              onerror="this.src='../img/' + (this.dataset.gender === 'female' ? 'Female-placeholder.jpg' : 'Male-placeholder.jpg')">
           </div>
           
           <div class="employee-basic-info">
             <h3 id="employee-full-name">John Smith</h3>
             
             <div class="info-field">
-              <label>Payroll Number:</label>
+              <label>Employee ID:</label>
               <span id="employee-payroll-number">EMP001</span>
             </div>
             
@@ -28,13 +30,10 @@
             </div>
             
             <div class="info-field">
-              <label>Roster Assignment:</label>
-              <select id="employee-roster">
-                <option value="standard">Standard Week (Mon-Fri)</option>
-                <option value="rotating">Rotating Shift</option>
-                <option value="weekend">Weekend Shift</option>
-                <option value="night">Night Shift</option>
-                <option value="custom">Custom Schedule</option>
+              <label>Gender:</label>
+              <select id="employee-gender" onchange="updateProfilePlaceholder(this.value)">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
               </select>
             </div>
             
@@ -47,20 +46,24 @@
         <!-- Right column - Tabbed content -->
         <div class="employee-details-tabs">
           <!-- Tab navigation -->
-          <div class="tabs-header">
-            <button class="tab-button active" data-tab="personal">Personal Details</button>
-            <button class="tab-button" data-tab="employment">Employment Details</button>
-            <button class="tab-button" data-tab="mobile">Mobile Clocking Setup</button>
-            <button class="tab-button" data-tab="leave">Leave & Balances</button>
-            <button class="tab-button" data-tab="termination">Termination</button>
-            <button class="tab-button" data-tab="hr">HR & Documentation</button>
+          <div class="emp-details-tab-nav" role="tablist">
+            <button class="emp-details-tab-button active" data-modal-tab="personal" role="tab" aria-selected="true" aria-controls="personal-tab">Personal Details</button>
+            <button class="emp-details-tab-button" data-modal-tab="organization" role="tab" aria-selected="false" aria-controls="organization-tab">Organization</button>
+            <button class="emp-details-tab-button" data-modal-tab="employment" role="tab" aria-selected="false" aria-controls="employment-tab">Employment Details</button>
+            <button class="emp-details-tab-button" data-modal-tab="schedule" role="tab" aria-selected="false" aria-controls="schedule-tab">Schedule & Roster</button>
+            <button class="emp-details-tab-button" data-modal-tab="mobile" role="tab" aria-selected="false" aria-controls="mobile-tab">Mobile Clocking Setup</button>
+            <button class="emp-details-tab-button" data-modal-tab="leave" role="tab" aria-selected="false" aria-controls="leave-tab">Leave & Balances</button>
+            <button class="emp-details-tab-button" data-modal-tab="termination" role="tab" aria-selected="false" aria-controls="termination-tab">Termination</button>
+            <button class="emp-details-tab-button" data-modal-tab="hr" role="tab" aria-selected="false" aria-controls="hr-tab">HR & Documentation</button>
           </div>
           
           <!-- Tab content -->
-          <div class="tab-content">
+          <div class="emp-details-tab-content">
             <!-- Personal Details Tab -->
-            <div class="tab-pane active" id="personal-tab">
-              <h3>Personal Details</h3>
+            <div class="emp-details-tab-pane active" id="personal-tab" role="tabpanel" aria-labelledby="personal-tab-button">
+              <div class="section-header">
+                <h3>Personal Details</h3>
+              </div>
               <div class="form-row">
                 <div class="form-column">
                   <div class="form-group">
@@ -129,25 +132,304 @@
               </div>
             </div>
             
+            <!-- New Organization Tab -->
+            <div class="emp-details-tab-pane" id="organization-tab" role="tabpanel" aria-labelledby="organization-tab-button">
+              <div class="section-header">
+                <h3>Organizational Structure</h3>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-column">
+                  <div class="form-group">
+                    <label>Division:</label>
+                    <select id="employee-division">
+                      <option value="">Select Division</option>
+                      <option value="operations">Operations</option>
+                      <option value="support">Support Services</option>
+                      <option value="commercial">Commercial</option>
+                      <option value="corporate">Corporate Services</option>
+                    </select>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label>Department:</label>
+                    <select id="employee-department">
+                      <option value="">Select Department</option>
+                      <option value="sales">Sales</option>
+                      <option value="marketing">Marketing</option>
+                      <option value="finance">Finance</option>
+                      <option value="hr">Human Resources</option>
+                      <option value="it">Information Technology</option>
+                      <option value="operations">Operations</option>
+                    </select>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label>Group:</label>
+                    <select id="employee-group">
+                      <option value="">Select Group</option>
+                      <option value="management">Management</option>
+                      <option value="staff">Staff</option>
+                      <option value="contractors">Contractors</option>
+                      <option value="temporary">Temporary</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="form-column">
+                  <div class="form-group">
+                    <label>Cost Centre:</label>
+                    <select id="employee-cost-centre">
+                      <option value="">Select Cost Centre</option>
+                      <option value="cc001">CC001 - Head Office</option>
+                      <option value="cc002">CC002 - Regional Office</option>
+                      <option value="cc003">CC003 - Production</option>
+                      <option value="cc004">CC004 - Distribution</option>
+                    </select>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label>Location:</label>
+                    <select id="employee-location">
+                      <option value="">Select Location</option>
+                      <option value="hq">Headquarters</option>
+                      <option value="branch1">Branch Office 1</option>
+                      <option value="branch2">Branch Office 2</option>
+                      <option value="warehouse">Warehouse</option>
+                      <option value="remote">Remote</option>
+                    </select>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label>Team:</label>
+                    <select id="employee-team">
+                      <option value="">Select Team</option>
+                      <option value="team1">Team A</option>
+                      <option value="team2">Team B</option>
+                      <option value="team3">Team C</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Reporting Manager:</label>
+                  <select id="employee-manager">
+                    <option value="">Select Manager</option>
+                    <option value="1">Sarah Johnson (VP Operations)</option>
+                    <option value="2">Michael Brown (Director)</option>
+                    <option value="3">Emily Davis (Regional Manager)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Additional Filters:</label>
+                  <div class="filter-tags">
+                    <div class="filter-tag">
+                      <label>
+                        <input type="checkbox" name="filters" value="shift-worker">
+                        Shift Worker
+                      </label>
+                    </div>
+                    <div class="filter-tag">
+                      <label>
+                        <input type="checkbox" name="filters" value="remote-worker">
+                        Remote Worker
+                      </label>
+                    </div>
+                    <div class="filter-tag">
+                      <label>
+                        <input type="checkbox" name="filters" value="overtime-eligible">
+                        Overtime Eligible
+                      </label>
+                    </div>
+                    <div class="filter-tag">
+                      <label>
+                        <input type="checkbox" name="filters" value="flexible-hours">
+                        Flexible Hours
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- New Schedule & Roster Tab -->
+            <div class="emp-details-tab-pane" id="schedule-tab" role="tabpanel" aria-labelledby="schedule-tab-button">
+              <div class="section-header">
+                <h3>Work Schedule & Roster</h3>
+              </div>
+
+              <div class="form-row">
+                <div class="form-column">
+                  <div class="form-group">
+                    <label>Work Pattern:</label>
+                    <select id="work-pattern">
+                      <option value="standard">Standard Week (Mon-Fri)</option>
+                      <option value="rotating">Rotating Shift</option>
+                      <option value="fixed">Fixed Shift</option>
+                      <option value="flexible">Flexible Hours</option>
+                      <option value="custom">Custom Schedule</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Roster Template:</label>
+                    <select id="roster-template">
+                      <option value="">Select Roster Template</option>
+                      <option value="day">Day Shift (8AM-4PM)</option>
+                      <option value="evening">Evening Shift (4PM-12AM)</option>
+                      <option value="night">Night Shift (12AM-8AM)</option>
+                      <option value="custom">Custom Roster</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Rotation Pattern:</label>
+                    <select id="rotation-pattern">
+                      <option value="none">No Rotation</option>
+                      <option value="weekly">Weekly Rotation</option>
+                      <option value="biweekly">Bi-weekly Rotation</option>
+                      <option value="monthly">Monthly Rotation</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-column">
+                  <div class="form-group">
+                    <label>Standard Hours:</label>
+                    <input type="number" id="standard-hours" value="40" min="0" max="168" step="0.5">
+                  </div>
+
+                  <div class="form-group">
+                    <label>Break Duration (minutes):</label>
+                    <input type="number" id="break-duration" value="60" min="0" max="480" step="15">
+                  </div>
+
+                  <div class="form-group">
+                    <label>Grace Period (minutes):</label>
+                    <input type="number" id="grace-period" value="15" min="0" max="60" step="5">
+                  </div>
+                </div>
+              </div>
+
+              <div class="weekly-schedule">
+                <h4>Weekly Schedule</h4>
+                <table class="schedule-table">
+                  <thead>
+                    <tr>
+                      <th>Day</th>
+                      <th>Start Time</th>
+                      <th>End Time</th>
+                      <th>Break Start</th>
+                      <th>Break End</th>
+                      <th>Working</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Monday</td>
+                      <td><input type="time" value="09:00"></td>
+                      <td><input type="time" value="17:00"></td>
+                      <td><input type="time" value="13:00"></td>
+                      <td><input type="time" value="14:00"></td>
+                      <td><input type="checkbox" checked></td>
+                    </tr>
+                    <tr>
+                      <td>Tuesday</td>
+                      <td><input type="time" value="09:00"></td>
+                      <td><input type="time" value="17:00"></td>
+                      <td><input type="time" value="13:00"></td>
+                      <td><input type="time" value="14:00"></td>
+                      <td><input type="checkbox" checked></td>
+                    </tr>
+                    <tr>
+                      <td>Wednesday</td>
+                      <td><input type="time" value="09:00"></td>
+                      <td><input type="time" value="17:00"></td>
+                      <td><input type="time" value="13:00"></td>
+                      <td><input type="time" value="14:00"></td>
+                      <td><input type="checkbox" checked></td>
+                    </tr>
+                    <tr>
+                      <td>Thursday</td>
+                      <td><input type="time" value="09:00"></td>
+                      <td><input type="time" value="17:00"></td>
+                      <td><input type="time" value="13:00"></td>
+                      <td><input type="time" value="14:00"></td>
+                      <td><input type="checkbox" checked></td>
+                    </tr>
+                    <tr>
+                      <td>Friday</td>
+                      <td><input type="time" value="09:00"></td>
+                      <td><input type="time" value="17:00"></td>
+                      <td><input type="time" value="13:00"></td>
+                      <td><input type="time" value="14:00"></td>
+                      <td><input type="checkbox" checked></td>
+                    </tr>
+                    <tr>
+                      <td>Saturday</td>
+                      <td><input type="time"></td>
+                      <td><input type="time"></td>
+                      <td><input type="time"></td>
+                      <td><input type="time"></td>
+                      <td><input type="checkbox"></td>
+                    </tr>
+                    <tr>
+                      <td>Sunday</td>
+                      <td><input type="time"></td>
+                      <td><input type="time"></td>
+                      <td><input type="time"></td>
+                      <td><input type="time"></td>
+                      <td><input type="checkbox"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="schedule-options">
+                <h4>Additional Options</h4>
+                <div class="form-row">
+                  <div class="form-group toggle-group">
+                    <label>Allow Overtime:</label>
+                    <label class="switch">
+                      <input type="checkbox" id="allow-overtime">
+                      <span class="slider round"></span>
+                    </label>
+                  </div>
+                  
+                  <div class="form-group toggle-group">
+                    <label>Flexible Hours:</label>
+                    <label class="switch">
+                      <input type="checkbox" id="flexible-hours">
+                      <span class="slider round"></span>
+                    </label>
+                  </div>
+                  
+                  <div class="form-group toggle-group">
+                    <label>Weekend Work:</label>
+                    <label class="switch">
+                      <input type="checkbox" id="weekend-work">
+                      <span class="slider round"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
             <!-- Employment Details Tab -->
-            <div class="tab-pane" id="employment-tab">
-              <h3>Employment Details</h3>
+            <div class="emp-details-tab-pane" id="employment-tab" role="tabpanel" aria-labelledby="employment-tab-button">
+              <div class="section-header">
+                <h3>Employment Details</h3>
+              </div>
               <div class="form-row">
                 <div class="form-column">
                   <div class="form-group">
                     <label>Job Title:</label>
                     <input type="text" id="employee-job-title" value="Sales Manager">
-                  </div>
-                  <div class="form-group">
-                    <label>Department:</label>
-                    <select id="employee-department">
-                      <option value="sales" selected>Sales</option>
-                      <option value="marketing">Marketing</option>
-                      <option value="it">IT</option>
-                      <option value="hr">Human Resources</option>
-                      <option value="finance">Finance</option>
-                      <option value="operations">Operations</option>
-                    </select>
                   </div>
                   <div class="form-group">
                     <label>Date of Employment:</label>
@@ -164,14 +446,6 @@
                   </div>
                 </div>
                 <div class="form-column">
-                  <div class="form-group">
-                    <label>Reporting Manager:</label>
-                    <select id="employee-manager">
-                      <option value="1">Sarah Johnson (VP Sales)</option>
-                      <option value="2">Michael Brown (Director)</option>
-                      <option value="3">Emily Davis (Regional Manager)</option>
-                    </select>
-                  </div>
                   <div class="form-group">
                     <label>Work Location:</label>
                     <select id="employee-location">
@@ -195,8 +469,10 @@
             </div>
             
             <!-- Mobile Clocking Setup Tab -->
-            <div class="tab-pane" id="mobile-tab">
-              <h3>Mobile Clocking Setup</h3>
+            <div class="emp-details-tab-pane" id="mobile-tab" role="tabpanel" aria-labelledby="mobile-tab-button">
+              <div class="section-header">
+                <h3>Mobile Clocking Setup</h3>
+              </div>
               <div class="form-row">
                 <div class="form-column">
                   <div class="form-group">
@@ -267,24 +543,30 @@
             </div>
             
             <!-- Leave & Balances Tab -->
-            <div class="tab-pane" id="leave-tab">
-              <h3>Leave & Balances</h3>
+            <div class="emp-details-tab-pane" id="leave-tab" role="tabpanel" aria-labelledby="leave-tab-button">
+              <div class="section-header">
+                <h3>Leave & Balances</h3>
+              </div>
               <div class="leave-balances">
                 <div class="balance-item">
                   <span class="balance-label">Annual Leave:</span>
-                  <span class="balance-value">15 days</span>
+                  <input type="number" id="annual-leave" value="15" min="0" step="0.5"> days
                 </div>
                 <div class="balance-item">
                   <span class="balance-label">Sick Leave:</span>
-                  <span class="balance-value">8 days</span>
+                  <input type="number" id="sick-leave" value="8" min="0" step="0.5"> days
                 </div>
                 <div class="balance-item">
                   <span class="balance-label">Personal Leave:</span>
-                  <span class="balance-value">3 days</span>
+                  <input type="number" id="personal-leave" value="3" min="0" step="0.5"> days
                 </div>
                 <div class="balance-item">
                   <span class="balance-label">Unpaid Leave:</span>
-                  <span class="balance-value">Unlimited</span>
+                  <select id="unpaid-leave">
+                    <option value="unlimited" selected>Unlimited</option>
+                    <option value="limited">Limited</option>
+                    <option value="disabled">Disabled</option>
+                  </select>
                 </div>
               </div>
               
@@ -330,8 +612,10 @@
             </div>
             
             <!-- Termination Tab -->
-            <div class="tab-pane" id="termination-tab">
-              <h3>Termination Details</h3>
+            <div class="emp-details-tab-pane" id="termination-tab" role="tabpanel" aria-labelledby="termination-tab-button">
+              <div class="section-header">
+                <h3>Termination Details</h3>
+              </div>
               <div class="termination-status">
                 <p>This employee is currently <strong>Active</strong>.</p>
               </div>
@@ -383,8 +667,10 @@
             </div>
             
             <!-- HR & Documentation Tab -->
-            <div class="tab-pane" id="hr-tab">
-              <h3>HR & Documentation</h3>
+            <div class="emp-details-tab-pane" id="hr-tab" role="tabpanel" aria-labelledby="hr-tab-button">
+              <div class="section-header">
+                <h3>HR & Documentation</h3>
+              </div>
               <div class="documents-section">
                 <h4>Employment Documents</h4>
                 <div class="document-list">
@@ -414,38 +700,25 @@
                   </div>
                 </div>
                 
-                <button class="upload-document-btn">+ Upload Document</button>
-                
-                <h4>Disciplinary Records</h4>
-                <div class="table-container">
-                  <table class="employee-table">
-                    <thead>
-                      <tr>
-                        <th>Date</th>
-                        <th>Type</th>
-                        <th>Description</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>2022-05-10</td>
-                        <td>Verbal Warning</td>
-                        <td>Late arrival (3 instances)</td>
-                        <td><span class="status-badge status-resolved">Resolved</span></td>
-                        <td><button class="icon-button">📋</button></td>
-                      </tr>
-                      <tr>
-                        <td>2023-02-15</td>
-                        <td>Written Warning</td>
-                        <td>Missed sales targets for Q4 2022</td>
-                        <td><span class="status-badge status-active">Active</span></td>
-                        <td><button class="icon-button">📋</button></td>
-                      </tr>
-                    </tbody>
-                  </table>
+                <div class="form-group">
+                  <label>Upload New Document:</label>
+                  <input type="file" id="document-upload">
                 </div>
+                <div class="form-group">
+                  <label>Document Type:</label>
+                  <select id="document-type">
+                    <option value="">Select document type</option>
+                    <option value="contract">Employment Contract</option>
+                    <option value="id">ID Document</option>
+                    <option value="certification">Certification</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Document Description:</label>
+                  <textarea id="document-description" placeholder="Enter document description"></textarea>
+                </div>
+                <button class="upload-document-btn">Upload Document</button>
               </div>
             </div>
           </div>

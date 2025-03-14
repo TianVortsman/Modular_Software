@@ -387,4 +387,449 @@ function initEmployeeOverviewModal() {
             }
         });
     }
+  });
+
+class TabManager {
+    constructor(options) {
+        this.containerSelector = options.containerSelector;
+        this.buttonSelector = options.buttonSelector;
+        this.paneSelector = options.paneSelector;
+        this.activeClass = options.activeClass || 'active';
+        this.dataAttribute = options.dataAttribute;
+        
+        this.init();
+    }
+
+    init() {
+        const container = document.querySelector(this.containerSelector);
+        if (!container) return;
+
+        container.addEventListener('click', (e) => {
+            const button = e.target.closest(this.buttonSelector);
+            if (!button) return;
+
+            this.switchTab(button);
+        });
+    }
+
+    switchTab(selectedButton) {
+        const container = selectedButton.closest(this.containerSelector);
+        const tabId = selectedButton.getAttribute(this.dataAttribute);
+        
+        // Update buttons
+        container.querySelectorAll(this.buttonSelector).forEach(button => {
+            button.classList.remove(this.activeClass);
+            button.setAttribute('aria-selected', 'false');
+        });
+        selectedButton.classList.add(this.activeClass);
+        selectedButton.setAttribute('aria-selected', 'true');
+        
+        // Update panes
+        container.querySelectorAll(this.paneSelector).forEach(pane => {
+            pane.classList.remove(this.activeClass);
+        });
+        const targetPane = document.getElementById(`${tabId}-tab`);
+        if (targetPane) {
+            targetPane.classList.add(this.activeClass);
+        }
+    }
+}
+
+// Initialize page level tabs
+const pageTabManager = new TabManager({
+    containerSelector: '.page-tabs-container',
+    buttonSelector: '.page-tab-button',
+    paneSelector: '.page-tab-pane',
+    dataAttribute: 'data-tab'
 });
+
+// Initialize employee modal tabs
+const modalTabManager = new TabManager({
+    containerSelector: '.employee-details-tabs',
+    buttonSelector: '.emp-details-tab-button',
+    paneSelector: '.emp-details-tab-pane',
+    dataAttribute: 'data-modal-tab'
+});
+
+// SubTabManager class for handling nested tabs
+class SubTabManager {
+    constructor(options) {
+        this.containerSelector = options.containerSelector;
+        this.buttonSelector = options.buttonSelector;
+        this.paneSelector = options.paneSelector;
+        this.activeClass = options.activeClass || 'active';
+        this.dataAttribute = options.dataAttribute;
+        
+        this.init();
+    }
+
+    init() {
+        const container = document.querySelector(this.containerSelector);
+        if (!container) return;
+
+        container.addEventListener('click', (e) => {
+            const button = e.target.closest(this.buttonSelector);
+            if (!button) return;
+
+            this.switchSubTab(button);
+        });
+    }
+
+    switchSubTab(selectedButton) {
+        const container = selectedButton.closest(this.containerSelector);
+        const tabId = selectedButton.getAttribute(this.dataAttribute);
+        
+        // Update buttons
+        container.querySelectorAll(this.buttonSelector).forEach(button => {
+            button.classList.remove(this.activeClass);
+            button.setAttribute('aria-selected', 'false');
+        });
+        selectedButton.classList.add(this.activeClass);
+        selectedButton.setAttribute('aria-selected', 'true');
+        
+        // Update panes
+        const allPanes = document.querySelectorAll(this.paneSelector);
+        allPanes.forEach(pane => {
+            pane.classList.remove(this.activeClass);
+        });
+        const targetPane = document.getElementById(`${tabId}-tab`);
+        if (targetPane) {
+            targetPane.classList.add(this.activeClass);
+        }
+    }
+}
+
+// Initialize sub-tabs for permanent/temporary employees
+const employeeSubTabManager = new SubTabManager({
+    containerSelector: '#active-tab',
+    buttonSelector: '.page-subtab-button',
+    paneSelector: '.page-subtab-pane',
+    dataAttribute: 'data-subtab'
+});
+
+// Employee Modal Manager
+class EmployeeModalManager {
+    constructor() {
+        this.modal = document.getElementById('employee-details-modal');
+        this.init();
+    }
+
+    init() {
+        if (!this.modal) return;
+        
+        // Modal open/close handlers
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('[data-action="open-employee-modal"]')) {
+                this.openModal(e.target.dataset.employeeId);
+            }
+            if (e.target.matches('.modal-close, .btn-cancel')) {
+                this.closeModal();
+            }
+        });
+
+        // Close modal when clicking outside
+        this.modal.addEventListener('click', (e) => {
+            if (e.target === this.modal) {
+                this.closeModal();
+            }
+        });
+
+        // Handle form submission
+        const saveButton = this.modal.querySelector('.btn-save');
+        if (saveButton) {
+            saveButton.addEventListener('click', () => this.saveEmployeeData());
+        }
+
+        // Initialize device management
+        this.initDeviceManagement();
+    }
+
+    openModal(employeeId) {
+        const firstTab = this.modal.querySelector('.emp-details-tab-button');
+        if (firstTab) {
+            modalTabManager.switchTab(firstTab);
+        }
+        
+        this.modal.classList.add('show');
+        if (employeeId) {
+            this.fetchEmployeeData(employeeId);
+        }
+    }
+
+    closeModal() {
+        this.modal.classList.remove('show');
+    }
+
+    initDeviceManagement() {
+        const deviceList = this.modal.querySelector('.device-list');
+        const addDeviceBtn = this.modal.querySelector('.add-device-btn');
+
+        if (deviceList && addDeviceBtn) {
+            // Add device functionality
+            addDeviceBtn.addEventListener('click', () => {
+                const deviceItem = document.createElement('div');
+                deviceItem.className = 'device-item';
+                deviceItem.innerHTML = `
+                    <span>New Device</span>
+                    <button class="remove-device">Remove</button>
+                `;
+                deviceList.appendChild(deviceItem);
+            });
+
+            // Remove device functionality
+            deviceList.addEventListener('click', (e) => {
+                if (e.target.matches('.remove-device')) {
+                    e.target.closest('.device-item').remove();
+                }
+            });
+        }
+    }
+
+    saveEmployeeData() {
+        const formData = this.collectFormData();
+        console.log('Saving employee data:', formData);
+        
+        // Simulate API call
+        setTimeout(() => {
+            alert('Employee details saved successfully!');
+            this.closeModal();
+        }, 500);
+    }
+
+    collectFormData() {
+        return {
+            personalDetails: {
+                fullName: document.getElementById('employee-full-name').textContent,
+                dob: document.getElementById('employee-dob').value,
+                email: document.getElementById('employee-email').value,
+                phone: document.getElementById('employee-phone').value,
+                address: {
+                    line1: document.getElementById('employee-address1').value,
+                    line2: document.getElementById('employee-address2').value,
+                    city: document.getElementById('employee-city').value,
+                    state: document.getElementById('employee-state').value,
+                    postal: document.getElementById('employee-postal').value,
+                    country: document.getElementById('employee-country').value
+                }
+            },
+            employmentDetails: {
+                payrollNumber: document.getElementById('employee-payroll-number').textContent,
+                badgeNumber: document.getElementById('employee-badge-number').textContent,
+                jobTitle: document.getElementById('employee-job-title').value,
+                department: document.getElementById('employee-department').value,
+                location: document.getElementById('employee-location').value
+            },
+            mobileSettings: {
+                gpsTracking: document.getElementById('gps-tracking').checked,
+                biometricAuth: document.getElementById('biometric-auth').checked,
+                manualEntry: document.getElementById('manual-entry').checked,
+                offlineMode: document.getElementById('offline-mode').checked,
+                photoVerification: document.getElementById('photo-verification').checked,
+                geofencingType: document.getElementById('geofencing-type').value
+            }
+        };
+    }
+
+    fetchEmployeeData(employeeId) {
+        console.log(`Fetching data for employee ID: ${employeeId}`);
+        // Simulate API call
+        setTimeout(() => {
+            // Populate form with mock data
+            document.getElementById('employee-full-name').textContent = 'John Smith';
+            document.getElementById('employee-payroll-number').textContent = 'EMP001';
+            document.getElementById('employee-badge-number').textContent = 'B12345';
+        }, 300);
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    initEmployeeOverviewModal();
+    new EmployeeModalManager();
+});
+
+// Employee Management Functions
+async function loadEmployees() {
+    try {
+        const response = await fetch('../api/employees.php');
+        if (!response.ok) {
+            throw new Error('Failed to load employees');
+        }
+        const employees = await response.json();
+        displayEmployees(employees);
+    } catch (error) {
+        console.error('Error loading employees:', error);
+        showNotification('Failed to load employees', 'error');
+    }
+}
+
+function displayEmployees(employees) {
+    const employeeList = document.getElementById('employee-list');
+    if (!employeeList) return;
+
+    employeeList.innerHTML = '';
+    employees.forEach(employee => {
+        const employeeCard = createEmployeeCard(employee);
+        employeeList.appendChild(employeeCard);
+    });
+}
+
+function createEmployeeCard(employee) {
+    const card = document.createElement('div');
+    card.className = 'employee-card';
+    card.innerHTML = `
+        <div class="employee-info">
+            <h3>${employee.first_name} ${employee.last_name}</h3>
+            <p>Employee #: ${employee.employee_number}</p>
+            <p>Badge #: ${employee.badge_number}</p>
+            <p>Pay Period: ${employee.pay_period}</p>
+        </div>
+        <div class="employee-actions">
+            <button class="action-btn edit-btn" data-id="${employee.id}">
+                <i class="material-icons">edit</i>
+            </button>
+            <button class="action-btn delete-btn" data-id="${employee.id}">
+                <i class="material-icons">delete</i>
+            </button>
+        </div>
+    `;
+    return card;
+}
+
+// Add Employee Modal Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const addEmployeeBtn = document.getElementById('addEmployeeBtn');
+    const addEmployeeModal = document.getElementById('add-employee-modal');
+    const addEmployeeForm = document.getElementById('addEmployeeForm');
+    const payPeriodSelect = document.getElementById('payPeriod');
+    const customPeriodDetails = document.querySelector('.custom-period-details');
+    const cancelBtn = addEmployeeModal.querySelector('.cancel-btn');
+    const closeBtn = addEmployeeModal.querySelector('.modal-close');
+
+    // Show modal
+    addEmployeeBtn.addEventListener('click', () => {
+        addEmployeeModal.style.display = 'block';
+        loadScheduleTemplates();
+    });
+
+    // Hide modal
+    function hideModal() {
+        addEmployeeModal.style.display = 'none';
+        addEmployeeForm.reset();
+        customPeriodDetails.style.display = 'none';
+    }
+
+    closeBtn.addEventListener('click', hideModal);
+    cancelBtn.addEventListener('click', hideModal);
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (e) => {
+        if (e.target === addEmployeeModal) {
+            hideModal();
+        }
+    });
+
+    // Handle pay period selection
+    payPeriodSelect.addEventListener('change', () => {
+        if (payPeriodSelect.value === 'custom') {
+            customPeriodDetails.style.display = 'block';
+        } else {
+            customPeriodDetails.style.display = 'none';
+        }
+    });
+
+    // Load schedule templates
+    async function loadScheduleTemplates() {
+        try {
+            const response = await fetch('../api/templates.php');
+            if (!response.ok) {
+                throw new Error('Failed to load templates');
+            }
+            const templates = await response.json();
+            const templateSelect = document.getElementById('scheduleTemplate');
+            
+            // Clear existing options except the first one
+            while (templateSelect.options.length > 1) {
+                templateSelect.remove(1);
+            }
+
+            // Add template options
+            templates.forEach(template => {
+                const option = document.createElement('option');
+                option.value = template.id;
+                option.textContent = template.name;
+                templateSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error loading templates:', error);
+        }
+    }
+
+    // Handle form submission
+    addEmployeeForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(addEmployeeForm);
+        const employeeData = {
+            employee_number: formData.get('employeeNumber'),
+            badge_number: formData.get('badgeNumber'),
+            first_name: formData.get('firstName'),
+            last_name: formData.get('lastName'),
+            pay_period: formData.get('payPeriod'),
+            period_start_date: formData.get('periodStartDate'),
+            period_end_date: formData.get('periodEndDate'),
+            period_days: formData.get('periodDays'),
+            schedule_template_id: formData.get('scheduleTemplate') || null,
+            csrf_token: formData.get('csrf_token')
+        };
+
+        try {
+            const response = await fetch('../api/employees.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(employeeData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to add employee');
+            }
+
+            const result = await response.json();
+            if (result.success) {
+                // Refresh employee list
+                loadEmployees();
+                // Hide modal
+                hideModal();
+                // Show success message
+                showNotification('Employee added successfully', 'success');
+            } else {
+                throw new Error(result.message || 'Failed to add employee');
+            }
+        } catch (error) {
+            console.error('Error adding employee:', error);
+            showNotification(error.message, 'error');
+        }
+    });
+});
+
+// Utility Functions
+function showNotification(message, type = 'info') {
+    // Implementation depends on your notification system
+    console.log(`${type}: ${message}`);
+}
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', () => {
+    loadEmployees();
+});
+
+// Function to open the Add Employee modal
+function openAddEmployeeModal() {
+    const modal = document.getElementById('add-employee-modal');
+    if (modal) {
+        modal.style.display = 'block';
+        loadScheduleTemplates();
+    }
+}

@@ -1,0 +1,197 @@
+#asset-dashboard .stat-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease;
+}
+
+#asset-dashboard .stat-card:hover {
+    transform: translateY(-5px);
+}
+
+#asset-dashboard .asset-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#asset-dashboard .asset-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+#asset-dashboard .asset-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+#asset-dashboard .asset-status.active {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#asset-dashboard .asset-status.maintenance {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+#asset-dashboard .asset-status.retired {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+#asset-dashboard .maintenance-schedule {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#asset-dashboard .maintenance-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+#asset-dashboard .maintenance-priority {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+#asset-dashboard .maintenance-priority.high {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+#asset-dashboard .maintenance-priority.medium {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+#asset-dashboard .maintenance-priority.low {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#asset-dashboard .dashboard-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 1rem;
+}
+
+#asset-dashboard .dashboard-card h2 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+}
+
+#asset-dashboard .stat-info h3 {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+#asset-dashboard .stat-info p {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+#asset-dashboard .material-icons {
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* Depreciation Indicators */
+#asset-dashboard .depreciation-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+}
+
+#asset-dashboard .depreciation-status.new {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#asset-dashboard .depreciation-status.mid-life {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+#asset-dashboard .depreciation-status.end-life {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+/* Warranty Status */
+#asset-dashboard .warranty-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+}
+
+#asset-dashboard .warranty-status.active {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#asset-dashboard .warranty-status.expiring {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+#asset-dashboard .warranty-status.expired {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+/* Asset Value Trend */
+#asset-dashboard .value-trend {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#asset-dashboard .value-trend.increase {
+    color: var(--success-color);
+}
+
+#asset-dashboard .value-trend.decrease {
+    color: var(--danger-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #asset-dashboard .stats-container {
+        grid-template-columns: 1fr;
+    }
+    
+    #asset-dashboard .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    #asset-dashboard .asset-item,
+    #asset-dashboard .maintenance-item {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    #asset-dashboard .asset-status,
+    #asset-dashboard .maintenance-priority {
+        text-align: left;
+    }
+} 

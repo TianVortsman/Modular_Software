@@ -1,0 +1,95 @@
+#hr-dashboard .stat-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease;
+}
+
+#hr-dashboard .stat-card:hover {
+    transform: translateY(-5px);
+}
+
+#hr-dashboard .activity-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#hr-dashboard .activity-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#hr-dashboard .activity-time {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+#hr-dashboard .review-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#hr-dashboard .review-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1rem;
+}
+
+#hr-dashboard .review-name {
+    font-weight: 500;
+}
+
+#hr-dashboard .review-date {
+    color: var(--text-muted);
+    text-align: right;
+}
+
+#hr-dashboard .dashboard-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 1rem;
+}
+
+#hr-dashboard .dashboard-card h2 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+}
+
+#hr-dashboard .stat-info h3 {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+#hr-dashboard .stat-info p {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+#hr-dashboard .material-icons {
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #hr-dashboard .stats-container {
+        grid-template-columns: 1fr;
+    }
+    
+    #hr-dashboard .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+} 

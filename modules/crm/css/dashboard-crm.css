@@ -1,0 +1,162 @@
+#crm-dashboard .stat-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease;
+}
+
+#crm-dashboard .stat-card:hover {
+    transform: translateY(-5px);
+}
+
+#crm-dashboard .lead-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#crm-dashboard .lead-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+#crm-dashboard .lead-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+#crm-dashboard .lead-status.new {
+    background-color: var(--primary-color-light);
+    color: var(--primary-color);
+}
+
+#crm-dashboard .lead-status.contacted {
+    background-color: var(--info-color-light);
+    color: var(--info-color);
+}
+
+#crm-dashboard .lead-status.qualified {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#crm-dashboard .opportunity-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#crm-dashboard .opportunity-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+#crm-dashboard .opportunity-value {
+    font-weight: 600;
+    color: var(--success-color);
+}
+
+#crm-dashboard .opportunity-stage {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+#crm-dashboard .opportunity-stage.proposal {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+#crm-dashboard .opportunity-stage.negotiation {
+    background-color: var(--info-color-light);
+    color: var(--info-color);
+}
+
+#crm-dashboard .opportunity-stage.closed {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#crm-dashboard .dashboard-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 1rem;
+}
+
+#crm-dashboard .dashboard-card h2 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+}
+
+#crm-dashboard .stat-info h3 {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+#crm-dashboard .stat-info p {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+#crm-dashboard .material-icons {
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* Pipeline Stages */
+#crm-dashboard .pipeline-stage {
+    padding: 1rem;
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+}
+
+#crm-dashboard .pipeline-stage h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+#crm-dashboard .pipeline-value {
+    color: var(--success-color);
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #crm-dashboard .stats-container {
+        grid-template-columns: 1fr;
+    }
+    
+    #crm-dashboard .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    #crm-dashboard .lead-item,
+    #crm-dashboard .opportunity-item {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    #crm-dashboard .lead-status,
+    #crm-dashboard .opportunity-stage {
+        text-align: left;
+    }
+} 

@@ -1,0 +1,197 @@
+#access-dashboard .stat-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease;
+}
+
+#access-dashboard .stat-card:hover {
+    transform: translateY(-5px);
+}
+
+#access-dashboard .access-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#access-dashboard .access-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+#access-dashboard .access-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+#access-dashboard .access-status.granted {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#access-dashboard .access-status.denied {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+#access-dashboard .access-status.pending {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+#access-dashboard .security-alerts {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#access-dashboard .alert-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+#access-dashboard .alert-severity {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+#access-dashboard .alert-severity.critical {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+#access-dashboard .alert-severity.warning {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+#access-dashboard .alert-severity.info {
+    background-color: var(--info-color-light);
+    color: var(--info-color);
+}
+
+#access-dashboard .dashboard-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 1rem;
+}
+
+#access-dashboard .dashboard-card h2 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+}
+
+#access-dashboard .stat-info h3 {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+#access-dashboard .stat-info p {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+#access-dashboard .material-icons {
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* Access Point Status */
+#access-dashboard .access-point {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+}
+
+#access-dashboard .access-point.online {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#access-dashboard .access-point.offline {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+#access-dashboard .access-point.maintenance {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+/* Security Level Indicators */
+#access-dashboard .security-level {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+}
+
+#access-dashboard .security-level.high {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+#access-dashboard .security-level.medium {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+#access-dashboard .security-level.low {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+/* User Activity Status */
+#access-dashboard .user-activity {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#access-dashboard .user-activity.active {
+    color: var(--success-color);
+}
+
+#access-dashboard .user-activity.inactive {
+    color: var(--text-muted);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #access-dashboard .stats-container {
+        grid-template-columns: 1fr;
+    }
+    
+    #access-dashboard .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    #access-dashboard .access-item,
+    #access-dashboard .alert-item {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    #access-dashboard .access-status,
+    #access-dashboard .alert-severity {
+        text-align: left;
+    }
+} 

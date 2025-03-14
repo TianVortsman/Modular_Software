@@ -60,19 +60,19 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
                 <h2>Invoicing & Billing</h2>
                 <p>Automate billing and generate invoices.</p>
             </a>
-            <a href="#" class="module-card">
+            <a href="../modules/payroll/dashboard-payroll.php" class="module-card">
                 <h2>Payroll</h2>
                 <p>Manage payroll, taxes, and salary calculations.</p>
             </a>
-            <a href="#" class="module-card">
+            <a href="../modules/inventory/dashboard-inventory.php" class="module-card">
                 <h2>Inventory Management</h2>
                 <p>Track stock levels and automate reorders.</p>
             </a>
-            <a href="#" class="module-card">
+            <a href="../modules/crm/dashboard-crm.php" class="module-card">
                 <h2>CRM</h2>
                 <p>Manage customer relationships and sales leads.</p>
             </a>
-            <a href="#" class="module-card">
+            <a href="../modules/project/dashboard-project.php" class="module-card">
                 <h2>Project Management</h2>
                 <p>Track tasks, timelines, and project progress.</p>
             </a>
@@ -80,24 +80,23 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
                 <h2>Accounting</h2>
                 <p>Manage finances, ledger, and reporting.</p>
             </a>
-            <a href="#" class="module-card">
+            <a href="../modules/hr/dashboard-hr.php" class="module-card">
                 <h2>HR Management</h2>
                 <p>Manage employee records, recruitment, and evaluations.</p>
             </a>
-            <a href="#" class="module-card">
+            <a href="../modules/support/dashboard-support.php" class="module-card">
                 <h2>Support Module</h2>
                 <p>Streamlined support for customer inquiries and resolutions.</p>
             </a>
-            <a href="#" class="module-card">
+            <a href="../modules/fleet/dashboard-fleet.php" class="module-card">
                 <h2>Fleet Management</h2>
                 <p>Oversee your fleet operations effectively.</p>
             </a>
-            <a href="#" class="module-card">
+            <a href="../modules/asset/dashboard-asset.php" class="module-card">
                 <h2>Asset Management</h2>
                 <p>Maximize asset efficiency for improved operational performance.</p>
-
             </a>
-            <a href="#" class="module-card">
+            <a href="../modules/access/dashboard-access.php" class="module-card">
                 <h2>Access Control</h2>
                 <p>Ensure secure access to protect your valuable assets.</p>
             </a>

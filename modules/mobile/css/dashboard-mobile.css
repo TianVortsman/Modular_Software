@@ -1,0 +1,213 @@
+#mobile-dashboard .stat-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease;
+}
+
+#mobile-dashboard .stat-card:hover {
+    transform: translateY(-5px);
+}
+
+#mobile-dashboard .user-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#mobile-dashboard .user-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+#mobile-dashboard .user-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+#mobile-dashboard .user-status.active {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#mobile-dashboard .user-status.inactive {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+#mobile-dashboard .user-status.suspended {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+#mobile-dashboard .sync-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#mobile-dashboard .sync-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+#mobile-dashboard .sync-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+#mobile-dashboard .sync-status.success {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#mobile-dashboard .sync-status.error {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+#mobile-dashboard .sync-status.in-progress {
+    background-color: var(--info-color-light);
+    color: var(--info-color);
+}
+
+#mobile-dashboard .dashboard-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 1rem;
+}
+
+#mobile-dashboard .dashboard-card h2 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+}
+
+#mobile-dashboard .stat-info h3 {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+#mobile-dashboard .stat-info p {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+#mobile-dashboard .material-icons {
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* Device Status */
+#mobile-dashboard .device-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+}
+
+#mobile-dashboard .device-status.online {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#mobile-dashboard .device-status.offline {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+#mobile-dashboard .device-status.updating {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+/* Version Status */
+#mobile-dashboard .version-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+}
+
+#mobile-dashboard .version-status.current {
+    background-color: var(--success-color-light);
+    color: var(--success-color);
+}
+
+#mobile-dashboard .version-status.outdated {
+    background-color: var(--warning-color-light);
+    color: var(--warning-color);
+}
+
+#mobile-dashboard .version-status.critical {
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+}
+
+/* Notification Badge */
+#mobile-dashboard .notification-badge {
+    background-color: var(--danger-color);
+    color: var(--text-white);
+    border-radius: 50%;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Activity Indicator */
+#mobile-dashboard .activity-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+#mobile-dashboard .activity-indicator.high {
+    background-color: var(--success-color);
+}
+
+#mobile-dashboard .activity-indicator.medium {
+    background-color: var(--warning-color);
+}
+
+#mobile-dashboard .activity-indicator.low {
+    background-color: var(--danger-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #mobile-dashboard .stats-container {
+        grid-template-columns: 1fr;
+    }
+    
+    #mobile-dashboard .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    #mobile-dashboard .user-item,
+    #mobile-dashboard .sync-item {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    #mobile-dashboard .user-status,
+    #mobile-dashboard .sync-status {
+        text-align: left;
+    }
+} 

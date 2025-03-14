@@ -87,12 +87,104 @@ document.addEventListener('DOMContentLoaded', function () {
             { href: "/modular1/modules/timeandatt/pages/timecards.php", icon: "access_time", text: "Timecards" },
             { href: "/modular1/modules/timeandatt/pages/mobile-clocking.php", icon: "phone_android", text: "Mobile Clocking" },
             { href: "/modular1/modules/timeandatt/pages/reports.php", icon: "bar_chart", text: "Reports" },
-            { href: "/modular1/modules/timeandatt/pages/devices.php", icon: "devices", text: "Devices" }
-            
+            { href: "/modular1/modules/timeandatt/pages/devices.php", icon: "devices", text: "Devices" },
+            { href: "/modular1/modules/timeandatt/pages/schedules.php", icon: "calendar_today", text: "Schedules" }
+        ],
+        "schedules": [
+            { href: "/modular1/modules/timeandatt/dashboard-TA.php", icon: "dashboard", text: "Dashboard" },
+            { href: "/modular1/modules/timeandatt/pages/employees.php", icon: "people", text: "Employees" },
+            { href: "/modular1/modules/timeandatt/pages/timecards.php", icon: "access_time", text: "Timecards" },
+            { href: "/modular1/modules/timeandatt/pages/mobile-clocking.php", icon: "phone_android", text: "Mobile Clocking" },
+            { href: "/modular1/modules/timeandatt/pages/reports.php", icon: "bar_chart", text: "Reports" },
+            { href: "/modular1/modules/timeandatt/pages/devices.php", icon: "devices", text: "Devices" },
+            { href: "/modular1/modules/timeandatt/pages/schedules.php", icon: "calendar_today", text: "Schedules", active: true }
         ],
         "TA-employees": [
             { href: "/modular1/modules/timeandatt/dashboard-TA.php", icon: "dashboard", text: "Dashboard", },
             { href: "#", icon: "person_add", text: "Add Employee", onclick: "openAddEmployeeModal()" }
+        ],
+        "hr-dashboard": [
+            { href: "/modular1/main/dashboard.php", icon: "home", text: "Home" },
+            { href: "/modular1/modules/hr/pages/employees.php", icon: "people", text: "Employees" },
+            { href: "/modular1/modules/hr/pages/recruitment.php", icon: "person_add", text: "Recruitment" },
+            { href: "/modular1/modules/hr/pages/performance.php", icon: "assessment", text: "Performance" },
+            { href: "/modular1/modules/hr/pages/training.php", icon: "school", text: "Training" },
+            { href: "/modular1/modules/hr/pages/documents.php", icon: "description", text: "Documents" },
+            { href: "/modular1/modules/hr/pages/benefits.php", icon: "health_and_safety", text: "Benefits" },
+            { href: "/modular1/modules/hr/pages/reports.php", icon: "bar_chart", text: "Reports" }
+        ],
+        "project-dashboard": [
+            { href: "/modular1/main/dashboard.php", icon: "home", text: "Home" },
+            { href: "/modular1/modules/project/pages/projects.php", icon: "assignment", text: "Projects" },
+            { href: "/modular1/modules/project/pages/tasks.php", icon: "task", text: "Tasks" },
+            { href: "/modular1/modules/project/pages/teams.php", icon: "groups", text: "Teams" },
+            { href: "/modular1/modules/project/pages/timeline.php", icon: "timeline", text: "Timeline" },
+            { href: "/modular1/modules/project/pages/resources.php", icon: "build", text: "Resources" },
+            { href: "/modular1/modules/project/pages/reports.php", icon: "bar_chart", text: "Reports" }
+        ],
+        "inventory-dashboard": [
+            { href: "/modular1/main/dashboard.php", icon: "home", text: "Home" },
+            { href: "/modular1/modules/inventory/pages/items.php", icon: "inventory_2", text: "Items" },
+            { href: "/modular1/modules/inventory/pages/stock.php", icon: "store", text: "Stock" },
+            { href: "/modular1/modules/inventory/pages/suppliers.php", icon: "local_shipping", text: "Suppliers" },
+            { href: "/modular1/modules/inventory/pages/orders.php", icon: "shopping_cart", text: "Orders" },
+            { href: "/modular1/modules/inventory/pages/reports.php", icon: "bar_chart", text: "Reports" }
+        ],
+        "crm-dashboard": [
+            { href: "/modular1/main/dashboard.php", icon: "home", text: "Home" },
+            { href: "/modular1/modules/crm/pages/contacts.php", icon: "contacts", text: "Contacts" },
+            { href: "/modular1/modules/crm/pages/leads.php", icon: "trending_up", text: "Leads" },
+            { href: "/modular1/modules/crm/pages/opportunities.php", icon: "lightbulb", text: "Opportunities" },
+            { href: "/modular1/modules/crm/pages/campaigns.php", icon: "campaign", text: "Campaigns" },
+            { href: "/modular1/modules/crm/pages/reports.php", icon: "bar_chart", text: "Reports" }
+        ],
+        "support-dashboard": [
+            { href: "/modular1/main/dashboard.php", icon: "home", text: "Home" },
+            { href: "/modular1/modules/support/pages/tickets.php", icon: "confirmation_number", text: "Tickets" },
+            { href: "/modular1/modules/support/pages/knowledge.php", icon: "menu_book", text: "Knowledge Base" },
+            { href: "/modular1/modules/support/pages/faq.php", icon: "help", text: "FAQ" },
+            { href: "/modular1/modules/support/pages/reports.php", icon: "bar_chart", text: "Reports" }
+        ],
+        "fleet-dashboard": [
+            { href: "/modular1/main/dashboard.php", icon: "home", text: "Home" },
+            { href: "/modular1/modules/fleet/pages/vehicles.php", icon: "directions_car", text: "Vehicles" },
+            { href: "/modular1/modules/fleet/pages/maintenance.php", icon: "build", text: "Maintenance" },
+            { href: "/modular1/modules/fleet/pages/drivers.php", icon: "person", text: "Drivers" },
+            { href: "/modular1/modules/fleet/pages/trips.php", icon: "map", text: "Trips" },
+            { href: "/modular1/modules/fleet/pages/fuel.php", icon: "local_gas_station", text: "Fuel Log" },
+            { href: "/modular1/modules/fleet/pages/reports.php", icon: "bar_chart", text: "Reports" }
+        ],
+        "asset-dashboard": [
+            { href: "/modular1/main/dashboard.php", icon: "home", text: "Home" },
+            { href: "/modular1/modules/asset/pages/assets.php", icon: "business_center", text: "Assets" },
+            { href: "/modular1/modules/asset/pages/maintenance.php", icon: "build", text: "Maintenance" },
+            { href: "/modular1/modules/asset/pages/depreciation.php", icon: "trending_down", text: "Depreciation" },
+            { href: "/modular1/modules/asset/pages/licenses.php", icon: "vpn_key", text: "Licenses" },
+            { href: "/modular1/modules/asset/pages/reports.php", icon: "bar_chart", text: "Reports" }
+        ],
+        "access-dashboard": [
+            { href: "/modular1/main/dashboard.php", icon: "home", text: "Home" },
+            { href: "/modular1/modules/access/pages/users.php", icon: "people", text: "Users" },
+            { href: "/modular1/modules/access/pages/roles.php", icon: "admin_panel_settings", text: "Roles" },
+            { href: "/modular1/modules/access/pages/permissions.php", icon: "security", text: "Permissions" },
+            { href: "/modular1/modules/access/pages/logs.php", icon: "history", text: "Access Logs" },
+            { href: "/modular1/modules/access/pages/reports.php", icon: "bar_chart", text: "Reports" }
+        ],
+        "payroll-dashboard": [
+            { href: "/modular1/main/dashboard.php", icon: "home", text: "Home" },
+            { href: "/modular1/modules/payroll/pages/salaries.php", icon: "payments", text: "Salaries" },
+            { href: "/modular1/modules/payroll/pages/deductions.php", icon: "remove_circle", text: "Deductions" },
+            { href: "/modular1/modules/payroll/pages/benefits.php", icon: "add_circle", text: "Benefits" },
+            { href: "/modular1/modules/payroll/pages/taxes.php", icon: "receipt", text: "Taxes" },
+            { href: "/modular1/modules/payroll/pages/reports.php", icon: "bar_chart", text: "Reports" }
+        ],
+        "mobile-dashboard": [
+            { href: "/modular1/main/dashboard.php", icon: "home", text: "Home" },
+            { href: "/modular1/modules/mobile/pages/settings.php", icon: "settings", text: "Settings" },
+            { href: "/modular1/modules/mobile/pages/users.php", icon: "people", text: "Users" },
+            { href: "/modular1/modules/mobile/pages/notifications.php", icon: "notifications", text: "Notifications" },
+            { href: "/modular1/modules/mobile/pages/sync.php", icon: "sync", text: "Sync" },
+            { href: "/modular1/modules/mobile/pages/reports.php", icon: "bar_chart", text: "Reports" }
         ]
     };
     
@@ -191,6 +283,10 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         'invoice-setup':{
             targetId: '.container',
+            toggleClasses: ['collapsed']
+        },
+        'schedules': {
+            targetId: 'schedule-container',
             toggleClasses: ['collapsed']
         }
     };
