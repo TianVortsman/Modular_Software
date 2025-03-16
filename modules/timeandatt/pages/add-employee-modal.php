@@ -257,6 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function showModal() {
         addEmployeeModal.style.display = 'flex';
+        addEmployeeForm.reset();
         clearErrors();
     }
 
@@ -267,7 +268,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function clearErrors() {
-        // Remove all error messages and classes
         document.querySelectorAll('.add-emp-error').forEach(error => {
             error.style.display = 'none';
             error.textContent = '';
@@ -288,19 +288,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Clear errors when input changes
-    addEmployeeForm.querySelectorAll('input').forEach(input => {
-        input.addEventListener('input', () => {
-            const formGroup = input.closest('.add-emp-form-group');
+    function clearFieldError(field) {
+        const formGroup = field.closest('.add-emp-form-group');
+        if (formGroup) {
+            formGroup.classList.remove('has-error');
             const errorElement = formGroup.querySelector('.add-emp-error');
-            
-            if (formGroup && errorElement) {
-                formGroup.classList.remove('has-error');
+            if (errorElement) {
                 errorElement.style.display = 'none';
                 errorElement.textContent = '';
             }
-        });
-    });
+        }
+    }
 
     if (addEmployeeBtn) addEmployeeBtn.addEventListener('click', showModal);
     if (closeBtn) closeBtn.addEventListener('click', hideModal);
@@ -317,6 +315,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (addEmployeeForm) {
         addEmployeeForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            // Clear previous errors and state
             clearErrors();
             
             const formData = new FormData(addEmployeeForm);
@@ -337,53 +337,50 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: JSON.stringify(employeeData)
                 });
 
-                // Get the raw text first for debugging
                 const responseText = await response.text();
-                console.log('Raw response:', responseText);
-
+                console.log('Server response:', responseText); // Debug log
+                
                 let result;
                 try {
-                    // Parse the text manually since we already consumed the response
                     result = JSON.parse(responseText);
                 } catch (jsonError) {
-                    console.error('JSON parsing error:', jsonError);
-                    console.error('Response text that failed to parse:', responseText);
-                    
-                    // Check if the response contains success indicators despite invalid JSON
-                    if (responseText.includes('success') || response.ok) {
-                        hideModal();
-                        loadEmployees();
-                        showNotification('Employee added successfully', 'success');
-                        return;
-                    }
-                    throw new Error('Invalid response from server');
+                    console.error('JSON parsing error:', jsonError, 'Response:', responseText);
+                    throw new Error('Invalid server response');
                 }
 
-                // Log the parsed result for debugging
-                console.log('Parsed result:', result);
-
-                if (!response.ok || (result && !result.success)) {
-                    if (result && result.message === 'Employee number already exists') {
-                        showError('employeeNumber', 'Employee number already exists');
-                    } else if (result && result.errors) {
-                        result.errors.forEach(error => {
-                            const field = error.toLowerCase().split(' ')[0];
-                            showError(field, error);
-                        });
-                    } else {
-                        throw new Error(result?.message || 'Failed to add employee');
-                    }
-                    return;
+                if (!result) {
+                    throw new Error('Empty response from server');
                 }
 
-                // If we get here, the response was successful
-                hideModal();
-                loadEmployees();
-                showNotification('Employee added successfully', 'success');
+                if (response.ok && result.success) {
+                    hideModal();
+                    addEmployeeForm.reset();
+                    await loadEmployees();
+                    showNotification('Employee added successfully', 'success');
+                } else if (result.message === 'Employee number already exists') {
+                    showError('employeeNumber', 'Employee number already exists');
+                } else {
+                    throw new Error(result.message || 'Failed to add employee');
+                }
+
             } catch (error) {
                 console.error('Error adding employee:', error);
                 showNotification(error.message, 'error');
             }
+        });
+
+        // Clear errors when any input changes
+        addEmployeeForm.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => {
+                const field = input.id;
+                clearFieldError(input);
+                // Also clear the specific error message
+                const errorElement = document.getElementById(`${field}-error`);
+                if (errorElement) {
+                    errorElement.style.display = 'none';
+                    errorElement.textContent = '';
+                }
+            });
         });
     }
 });
