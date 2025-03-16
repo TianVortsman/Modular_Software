@@ -17,16 +17,16 @@
           </div>
           
           <div class="employee-basic-info">
-            <h3 id="employee-full-name">John Smith</h3>
+            <h3 id="employee-full-name"></h3>
             
             <div class="info-field">
               <label>Employee ID:</label>
-              <span id="employee-payroll-number">EMP001</span>
+              <span id="employee-payroll-number"></span>
             </div>
             
             <div class="info-field">
-              <label>Badge Number:</label>
-              <span id="employee-badge-number">B12345</span>
+              <label>Clocking Number:</label>
+              <span id="employee-clock-number"></span>
             </div>
             
             <div class="info-field">
@@ -38,7 +38,7 @@
             </div>
             
             <div class="status-indicator">
-              <span class="status-badge status-active">Active</span>
+              <span class="status-badge"></span>
             </div>
           </div>
         </div>
@@ -68,41 +68,41 @@
                 <div class="form-column">
                   <div class="form-group">
                     <label>Date of Birth:</label>
-                    <input type="date" id="employee-dob" value="1985-06-15">
+                    <input type="date" id="employee-dob">
                   </div>
                   <div class="form-group">
                     <label>Email:</label>
-                    <input type="email" id="employee-email" value="john.smith@example.com">
+                    <input type="email" id="employee-email">
                   </div>
                   <div class="form-group">
                     <label>Phone:</label>
-                    <input type="tel" id="employee-phone" value="(555) 123-4567">
+                    <input type="tel" id="employee-phone">
                   </div>
                 </div>
                 <div class="form-column">
                   <div class="form-group">
                     <label>Address Line 1:</label>
-                    <input type="text" id="employee-address1" value="123 Main Street">
+                    <input type="text" id="employee-address1">
                   </div>
                   <div class="form-group">
                     <label>Address Line 2:</label>
-                    <input type="text" id="employee-address2" value="Apt 4B">
+                    <input type="text" id="employee-address2">
                   </div>
                   <div class="form-group">
                     <label>City:</label>
-                    <input type="text" id="employee-city" value="Springfield">
+                    <input type="text" id="employee-city">
                   </div>
                   <div class="form-group">
                     <label>State/Province:</label>
-                    <input type="text" id="employee-state" value="IL">
+                    <input type="text" id="employee-state">
                   </div>
                   <div class="form-group">
                     <label>Postal Code:</label>
-                    <input type="text" id="employee-postal" value="62701">
+                    <input type="text" id="employee-postal">
                   </div>
                   <div class="form-group">
                     <label>Country:</label>
-                    <input type="text" id="employee-country" value="United States">
+                    <input type="text" id="employee-country">
                   </div>
                 </div>
               </div>
@@ -112,21 +112,21 @@
                 <div class="form-column">
                   <div class="form-group">
                     <label>Name:</label>
-                    <input type="text" id="emergency-name" value="Jane Smith">
+                    <input type="text" id="emergency-name">
                   </div>
                   <div class="form-group">
                     <label>Relationship:</label>
-                    <input type="text" id="emergency-relation" value="Spouse">
+                    <input type="text" id="emergency-relation">
                   </div>
                 </div>
                 <div class="form-column">
                   <div class="form-group">
                     <label>Phone:</label>
-                    <input type="tel" id="emergency-phone" value="(555) 987-6543">
+                    <input type="tel" id="emergency-phone">
                   </div>
                   <div class="form-group">
                     <label>Email:</label>
-                    <input type="email" id="emergency-email" value="jane.smith@example.com">
+                    <input type="email" id="emergency-email">
                   </div>
                 </div>
               </div>
@@ -144,10 +144,6 @@
                     <label>Division:</label>
                     <select id="employee-division">
                       <option value="">Select Division</option>
-                      <option value="operations">Operations</option>
-                      <option value="support">Support Services</option>
-                      <option value="commercial">Commercial</option>
-                      <option value="corporate">Corporate Services</option>
                     </select>
                   </div>
                   
@@ -155,12 +151,6 @@
                     <label>Department:</label>
                     <select id="employee-department">
                       <option value="">Select Department</option>
-                      <option value="sales">Sales</option>
-                      <option value="marketing">Marketing</option>
-                      <option value="finance">Finance</option>
-                      <option value="hr">Human Resources</option>
-                      <option value="it">Information Technology</option>
-                      <option value="operations">Operations</option>
                     </select>
                   </div>
                   
@@ -168,10 +158,6 @@
                     <label>Group:</label>
                     <select id="employee-group">
                       <option value="">Select Group</option>
-                      <option value="management">Management</option>
-                      <option value="staff">Staff</option>
-                      <option value="contractors">Contractors</option>
-                      <option value="temporary">Temporary</option>
                     </select>
                   </div>
                 </div>
@@ -181,10 +167,6 @@
                     <label>Cost Centre:</label>
                     <select id="employee-cost-centre">
                       <option value="">Select Cost Centre</option>
-                      <option value="cc001">CC001 - Head Office</option>
-                      <option value="cc002">CC002 - Regional Office</option>
-                      <option value="cc003">CC003 - Production</option>
-                      <option value="cc004">CC004 - Distribution</option>
                     </select>
                   </div>
                   
@@ -192,11 +174,6 @@
                     <label>Location:</label>
                     <select id="employee-location">
                       <option value="">Select Location</option>
-                      <option value="hq">Headquarters</option>
-                      <option value="branch1">Branch Office 1</option>
-                      <option value="branch2">Branch Office 2</option>
-                      <option value="warehouse">Warehouse</option>
-                      <option value="remote">Remote</option>
                     </select>
                   </div>
                   
@@ -204,9 +181,6 @@
                     <label>Team:</label>
                     <select id="employee-team">
                       <option value="">Select Team</option>
-                      <option value="team1">Team A</option>
-                      <option value="team2">Team B</option>
-                      <option value="team3">Team C</option>
                     </select>
                   </div>
                 </div>
@@ -217,9 +191,6 @@
                   <label>Reporting Manager:</label>
                   <select id="employee-manager">
                     <option value="">Select Manager</option>
-                    <option value="1">Sarah Johnson (VP Operations)</option>
-                    <option value="2">Michael Brown (Director)</option>
-                    <option value="3">Emily Davis (Regional Manager)</option>
                   </select>
                 </div>
               </div>
@@ -429,16 +400,16 @@
                 <div class="form-column">
                   <div class="form-group">
                     <label>Job Title:</label>
-                    <input type="text" id="employee-job-title" value="Sales Manager">
+                    <input type="text" id="employee-job-title">
                   </div>
                   <div class="form-group">
                     <label>Date of Employment:</label>
-                    <input type="date" id="employee-hire-date" value="2018-03-15">
+                    <input type="date" id="employee-hire-date">
                   </div>
                   <div class="form-group">
                     <label>Contract Type:</label>
                     <select id="employee-contract-type">
-                      <option value="permanent" selected>Permanent</option>
+                      <option value="permanent">Permanent</option>
                       <option value="temporary">Temporary</option>
                       <option value="contract">Contract-based</option>
                       <option value="probation">Probation</option>
@@ -447,18 +418,9 @@
                 </div>
                 <div class="form-column">
                   <div class="form-group">
-                    <label>Work Location:</label>
-                    <select id="employee-location">
-                      <option value="hq">Headquarters</option>
-                      <option value="branch1" selected>Branch Office 1</option>
-                      <option value="branch2">Branch Office 2</option>
-                      <option value="remote">Remote</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
                     <label>Employment Status:</label>
                     <select id="employee-status">
-                      <option value="active" selected>Active</option>
+                      <option value="active">Active</option>
                       <option value="suspended">Suspended</option>
                       <option value="terminated">Terminated</option>
                       <option value="leave">On Leave</option>
@@ -478,14 +440,7 @@
                   <div class="form-group">
                     <label>Associated Devices:</label>
                     <div class="device-list">
-                      <div class="device-item">
-                        <span>iPhone 13 (John's Phone)</span>
-                        <button class="remove-device">Remove</button>
-                      </div>
-                      <div class="device-item">
-                        <span>Samsung Galaxy S21 (Work Phone)</span>
-                        <button class="remove-device">Remove</button>
-                      </div>
+                      <!-- Devices will be populated dynamically -->
                     </div>
                     <button class="add-device-btn">+ Add Device</button>
                   </div>
@@ -494,14 +449,14 @@
                   <div class="form-group toggle-group">
                     <label>GPS Location Tracking:</label>
                     <label class="switch">
-                      <input type="checkbox" id="gps-tracking" checked>
+                      <input type="checkbox" id="gps-tracking">
                       <span class="slider round"></span>
                     </label>
                   </div>
                   <div class="form-group toggle-group">
                     <label>Biometric Authentication:</label>
                     <label class="switch">
-                      <input type="checkbox" id="biometric-auth" checked>
+                      <input type="checkbox" id="biometric-auth">
                       <span class="slider round"></span>
                     </label>
                   </div>
@@ -515,7 +470,7 @@
                   <div class="form-group toggle-group">
                     <label>Offline Mode Allowed:</label>
                     <label class="switch">
-                      <input type="checkbox" id="offline-mode" checked>
+                      <input type="checkbox" id="offline-mode">
                       <span class="slider round"></span>
                     </label>
                   </div>
@@ -532,13 +487,9 @@
                 <label>Geofencing Restrictions:</label>
                 <select id="geofencing-type">
                   <option value="none">None</option>
-                  <option value="office" selected>Office Only</option>
+                  <option value="office">Office Only</option>
                   <option value="custom">Custom Locations</option>
                 </select>
-              </div>
-              <div id="custom-locations" class="form-group" style="display: none;">
-                <label>Custom Locations:</label>
-                <textarea id="custom-locations-list" placeholder="Enter custom locations"></textarea>
               </div>
             </div>
             
@@ -550,23 +501,15 @@
               <div class="leave-balances">
                 <div class="balance-item">
                   <span class="balance-label">Annual Leave:</span>
-                  <input type="number" id="annual-leave" value="15" min="0" step="0.5"> days
+                  <input type="number" id="annual-leave" min="0" step="0.5"> days
                 </div>
                 <div class="balance-item">
                   <span class="balance-label">Sick Leave:</span>
-                  <input type="number" id="sick-leave" value="8" min="0" step="0.5"> days
+                  <input type="number" id="sick-leave" min="0" step="0.5"> days
                 </div>
                 <div class="balance-item">
                   <span class="balance-label">Personal Leave:</span>
-                  <input type="number" id="personal-leave" value="3" min="0" step="0.5"> days
-                </div>
-                <div class="balance-item">
-                  <span class="balance-label">Unpaid Leave:</span>
-                  <select id="unpaid-leave">
-                    <option value="unlimited" selected>Unlimited</option>
-                    <option value="limited">Limited</option>
-                    <option value="disabled">Disabled</option>
-                  </select>
+                  <input type="number" id="personal-leave" min="0" step="0.5"> days
                 </div>
               </div>
               
@@ -583,32 +526,10 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>Annual Leave</td>
-                      <td>2023-12-20</td>
-                      <td>2023-12-31</td>
-                      <td>8 days</td>
-                      <td><span class="status-badge status-approved">Approved</span></td>
-                    </tr>
-                    <tr>
-                      <td>Sick Leave</td>
-                      <td>2023-10-05</td>
-                      <td>2023-10-06</td>
-                      <td>2 days</td>
-                      <td><span class="status-badge status-approved">Approved</span></td>
-                    </tr>
-                    <tr>
-                      <td>Annual Leave</td>
-                      <td>2024-07-15</td>
-                      <td>2024-07-26</td>
-                      <td>10 days</td>
-                      <td><span class="status-badge status-pending">Pending</span></td>
-                    </tr>
+                    <!-- Leave history will be populated dynamically -->
                   </tbody>
                 </table>
               </div>
-              
-              <button class="request-leave-btn">+ Request Leave</button>
             </div>
             
             <!-- Termination Tab -->
@@ -732,3 +653,25 @@
     </div>
   </div>
 </div>
+
+<script>
+// Function to update profile image placeholder based on gender
+function updateProfilePlaceholder(gender) {
+    const profileImage = document.getElementById('employee-profile-image');
+    if (profileImage) {
+        profileImage.dataset.gender = gender;
+        if (!profileImage.src || profileImage.src.includes('placeholder')) {
+            profileImage.src = `../img/${gender === 'female' ? 'Female-placeholder.jpg' : 'Male-placeholder.jpg'}`;
+        }
+    }
+}
+
+// Initialize the modal when the document is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize gender-based profile image
+    const genderSelect = document.getElementById('employee-gender');
+    if (genderSelect) {
+        updateProfilePlaceholder(genderSelect.value);
+    }
+});
+</script>

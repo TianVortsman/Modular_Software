@@ -90,6 +90,15 @@ document.addEventListener('DOMContentLoaded', function () {
             { href: "/modular1/modules/timeandatt/pages/devices.php", icon: "devices", text: "Devices" },
             { href: "/modular1/modules/timeandatt/pages/schedules.php", icon: "calendar_today", text: "Schedules" }
         ],
+        "timecards": [
+            { href: "/modular1/modules/timeandatt/dashboard-TA.php", icon: "dashboard", text: "Dashboard" },
+            { href: "/modular1/modules/timeandatt/pages/employees.php", icon: "people", text: "Employees" },
+            { href: "/modular1/modules/timeandatt/pages/timecards.php", icon: "access_time", text: "Timecards", active: true },
+            { href: "/modular1/modules/timeandatt/pages/mobile-clocking.php", icon: "phone_android", text: "Mobile Clocking" },
+            { href: "/modular1/modules/timeandatt/pages/reports.php", icon: "bar_chart", text: "Reports" },
+            { href: "/modular1/modules/timeandatt/pages/devices.php", icon: "devices", text: "Devices" },
+            { href: "/modular1/modules/timeandatt/pages/schedules.php", icon: "calendar_today", text: "Schedules" }
+        ],
         "schedules": [
             { href: "/modular1/modules/timeandatt/dashboard-TA.php", icon: "dashboard", text: "Dashboard" },
             { href: "/modular1/modules/timeandatt/pages/employees.php", icon: "people", text: "Employees" },

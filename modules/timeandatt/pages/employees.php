@@ -138,46 +138,6 @@ include('../../../php/db.php');
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="employee-row" data-employee-id="EMP001">
-                      <td>EMP001</td>
-                      <td>John Smith</td>
-                      <td>Sales</td>
-                      <td>Sales Manager</td>
-                      <td>01/15/2020</td>
-                      <td><span class="status-badge active">Active</span></td>
-                    </tr>
-                    <tr class="employee-row" data-employee-id="EMP002">
-                      <td>EMP002</td>
-                      <td>Sarah Johnson</td>
-                      <td>Administration</td>
-                      <td>Office Manager</td>
-                      <td>03/22/2019</td>
-                      <td><span class="status-badge active">Active</span></td>
-                    </tr>
-                    <tr class="employee-row" data-employee-id="EMP003">
-                      <td>EMP003</td>
-                      <td>Michael Brown</td>
-                      <td>Warehouse</td>
-                      <td>Warehouse Supervisor</td>
-                      <td>06/10/2021</td>
-                      <td><span class="status-badge active">Active</span></td>
-                    </tr>
-                    <tr class="employee-row" data-employee-id="EMP004">
-                      <td>EMP004</td>
-                      <td>Emily Davis</td>
-                      <td>Sales</td>
-                      <td>Sales Representative</td>
-                      <td>11/05/2020</td>
-                      <td><span class="status-badge active">Active</span></td>
-                    </tr>
-                    <tr class="employee-row" data-employee-id="EMP005">
-                      <td>EMP005</td>
-                      <td>Robert Wilson</td>
-                      <td>IT</td>
-                      <td>IT Specialist</td>
-                      <td>02/15/2022</td>
-                      <td><span class="status-badge active">Active</span></td>
-                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -206,33 +166,6 @@ include('../../../php/db.php');
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="employee-row" data-employee-id="TEMP001">
-                      <td>TEMP001</td>
-                      <td>Jennifer Lee</td>
-                      <td>Sales</td>
-                      <td>Seasonal Sales Associate</td>
-                      <td>11/01/2023</td>
-                      <td>01/15/2024</td>
-                      <td><span class="status-badge temp">Temporary</span></td>
-                    </tr>
-                    <tr class="employee-row" data-employee-id="TEMP002">
-                      <td>TEMP002</td>
-                      <td>David Clark</td>
-                      <td>Warehouse</td>
-                      <td>Seasonal Warehouse Worker</td>
-                      <td>10/15/2023</td>
-                      <td>01/15/2024</td>
-                      <td><span class="status-badge temp">Temporary</span></td>
-                    </tr>
-                    <tr class="employee-row" data-employee-id="TEMP003">
-                      <td>TEMP003</td>
-                      <td>Amanda Martinez</td>
-                      <td>Administration</td>
-                      <td>Temporary Assistant</td>
-                      <td>09/01/2023</td>
-                      <td>03/01/2024</td>
-                      <td><span class="status-badge temp">Temporary</span></td>
-                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -262,24 +195,6 @@ include('../../../php/db.php');
                   </tr>
                 </thead>
                 <tbody>
-                  <tr class="employee-row" data-employee-id="EMP006">
-                    <td>EMP006</td>
-                    <td>Thomas Anderson</td>
-                    <td>IT</td>
-                    <td>Developer</td>
-                    <td>05/10/2019</td>
-                    <td>08/15/2023</td>
-                    <td>Resignation</td>
-                  </tr>
-                  <tr class="employee-row" data-employee-id="EMP007">
-                    <td>EMP007</td>
-                    <td>Lisa Johnson</td>
-                    <td>Sales</td>
-                    <td>Sales Representative</td>
-                    <td>03/22/2020</td>
-                    <td>07/01/2023</td>
-                    <td>Better Opportunity</td>
-                  </tr>
                 </tbody>
               </table>
             </div>
@@ -306,22 +221,6 @@ include('../../../php/db.php');
                   </tr>
                 </thead>
                 <tbody>
-                  <tr class="employee-row" data-employee-id="INC001">
-                    
-                    <td>INC001</td>
-                    <td>Kevin Williams</td>
-                    <td>Tax Information, Emergency Contact</td>
-                    <td>11/01/2023</td>
-                    <td><span class="status-badge incomplete">Incomplete</span></td>
-                  </tr>
-                  <tr class="employee-row" data-employee-id="INC002">
-                    
-                    <td>INC002</td>
-                    <td>Maria Garcia</td>
-                    <td>Banking Details, ID Verification</td>
-                    <td>11/05/2023</td>
-                    <td><span class="status-badge incomplete">Incomplete</span></td>
-                  </tr>
                 </tbody>
               </table>
             </div>
@@ -349,43 +248,6 @@ include('../../../php/db.php');
                   </tr>
                 </thead>
                 <tbody>
-                  <!-- This would contain all employees from all categories -->
-                  <tr class="employee-row" data-employee-id="EMP001">
-                    
-                    <td>EMP001</td>
-                    <td>John Smith</td>
-                    <td>Sales</td>
-                    <td>Sales Manager</td>
-                    <td>01/15/2020</td>
-                    <td><span class="status-badge active">Active</span></td>
-                  </tr>
-                  <tr class="employee-row" data-employee-id="TEMP001">
-                    
-                    <td>TEMP001</td>
-                    <td>Jennifer Lee</td>
-                    <td>Sales</td>
-                    <td>Seasonal Sales Associate</td>
-                    <td>11/01/2023</td>
-                    <td><span class="status-badge temp">Temporary</span></td>
-                  </tr>
-                  <tr class="employee-row" data-employee-id="EMP006">
-                    
-                    <td>EMP006</td>
-                    <td>Thomas Anderson</td>
-                    <td>IT</td>
-                    <td>Developer</td>
-                    <td>05/10/2019</td>
-                    <td><span class="status-badge terminated">Terminated</span></td>
-                  </tr>
-                  <tr class="employee-row" data-employee-id="INC001">
-                    
-                    <td>INC001</td>
-                    <td>Kevin Williams</td>
-                    <td>Marketing</td>
-                    <td>Marketing Specialist</td>
-                    <td>11/01/2023</td>
-                    <td><span class="status-badge incomplete">Incomplete</span></td>
-                  </tr>
                 </tbody>
               </table>
             </div>
@@ -496,8 +358,13 @@ include('../../../php/db.php');
             <input type="text" id="employeeNumber" name="employeeNumber" required>
           </div>
           <div class="form-group">
-            <label for="badgeNumber">Badge Number</label>
-            <input type="text" id="badgeNumber" name="badgeNumber" required>
+            <label for="clockNumber">Clock Number</label>
+            <input type="text" id="clockNumber" name="clockNumber" required>
+          </div>
+          <div class="form-group">
+            <label for="biometricId">Biometric ID</label>
+            <input type="text" id="biometricId" name="biometricId" placeholder="Optional">
+            <small class="form-text text-muted">Leave empty if not using biometric authentication</small>
           </div>
           <div class="form-group">
             <label for="firstName">First Name</label>

@@ -1,0 +1,20 @@
+{
+  "name": "hikvision-clock-server",
+  "version": "1.0.0",
+  "description": "Server to handle Hikvision clock machine data",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "pg": "^8.11.3",
+    "body-parser": "^1.20.2",
+    "winston": "^3.11.0",
+    "body-parser-xml": "^2.0.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+} 
