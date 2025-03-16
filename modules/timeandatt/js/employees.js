@@ -218,14 +218,16 @@ class EmployeeModalManager {
             modalTabManager.switchTab(firstTab);
         }
         
-        this.modal.classList.add('show');
+        this.modal.style.display = 'flex';
         if (employeeId) {
             this.fetchEmployeeData(employeeId);
         }
     }
 
     closeModal() {
-        this.modal.classList.remove('show');
+        if (this.modal) {
+            this.modal.style.display = 'none';
+        }
     }
 
     initDeviceManagement() {
@@ -423,8 +425,11 @@ async function loadEmployees() {
         if (!response.ok) {
             throw new Error('Failed to load employees');
         }
-        const employees = await response.json();
-        displayEmployees(employees);
+        const result = await response.json();
+        if (!result.success) {
+            throw new Error(result.message || 'Failed to load employees');
+        }
+        displayEmployees(result.data);
     } catch (error) {
         console.error('Error loading employees:', error);
         showNotification('Failed to load employees', 'error');
@@ -433,9 +438,11 @@ async function loadEmployees() {
 
 function displayEmployees(employees) {
     const tables = {
-        active: document.getElementById('active-employees-table').getElementsByTagName('tbody')[0],
-        inactive: document.getElementById('inactive-employees-table').getElementsByTagName('tbody')[0],
-        onLeave: document.getElementById('on-leave-employees-table').getElementsByTagName('tbody')[0]
+        active: document.querySelector('#permanent-tab .main-employee-table tbody'),
+        temporary: document.querySelector('#temporary-tab .main-employee-table tbody'),
+        terminated: document.querySelector('#terminated-tab .main-employee-table tbody'),
+        incomplete: document.querySelector('#incomplete-tab .main-employee-table tbody'),
+        all: document.querySelector('#all-tab .main-employee-table tbody')
     };
 
     // Clear existing rows
@@ -443,23 +450,36 @@ function displayEmployees(employees) {
         if (table) table.innerHTML = '';
     });
 
-    // Group employees by status
-    const groupedEmployees = groupEmployeesByStatus(employees);
-
     // Populate tables
-    Object.entries(groupedEmployees).forEach(([status, statusEmployees]) => {
-        const table = tables[status];
-        if (table) {
-            statusEmployees.forEach(employee => {
+    employees.forEach(employee => {
                 const row = createEmployeeRow(employee);
-                // Bind double-click handler with proper context
-                row.addEventListener('dblclick', () => {
-                    const employeeId = row.dataset.employeeId;
-                    console.log(`Double clicked employee row for employee ID: ${employeeId}`);
-                    openEmployeeModal(employeeId);
-                });
-                table.appendChild(row);
-            });
+        
+        // Add to appropriate tables based on status and employment type
+        if (employee.status === 'active') {
+            if (employee.employment_type === 'Temporary' && tables.temporary) {
+                const clonedRow = row.cloneNode(true);
+                addRowEventListeners(clonedRow, employee);
+                tables.temporary.appendChild(clonedRow);
+            } else if (tables.active) {
+                const clonedRow = row.cloneNode(true);
+                addRowEventListeners(clonedRow, employee);
+                tables.active.appendChild(clonedRow);
+            }
+        } else if (employee.status === 'terminated' && tables.terminated) {
+            const clonedRow = row.cloneNode(true);
+            addRowEventListeners(clonedRow, employee);
+            tables.terminated.appendChild(clonedRow);
+        } else if (employee.status === 'incomplete' && tables.incomplete) {
+            const clonedRow = row.cloneNode(true);
+            addRowEventListeners(clonedRow, employee);
+            tables.incomplete.appendChild(clonedRow);
+        }
+        
+        // Always add to the "all" table
+        if (tables.all) {
+            const clonedRow = row.cloneNode(true);
+            addRowEventListeners(clonedRow, employee);
+            tables.all.appendChild(clonedRow);
         }
     });
 
@@ -467,13 +487,11 @@ function displayEmployees(employees) {
     updateEmployeeStats(employees);
 }
 
-function groupEmployeesByStatus(employees) {
-    return employees.reduce((acc, employee) => {
-        const status = employee.status.toLowerCase();
-        if (!acc[status]) acc[status] = [];
-        acc[status].push(employee);
-        return acc;
-    }, { active: [], inactive: [], onLeave: [] });
+function addRowEventListeners(row, employee) {
+    row.addEventListener('dblclick', () => {
+        console.log('Double-clicked employee row:', employee.employee_id);
+        openEmployeeModal(employee.employee_id);
+    });
 }
 
 function createEmployeeRow(employee) {
@@ -489,7 +507,7 @@ function createEmployeeRow(employee) {
         <td>${employee.department || ''}</td>
         <td>${employee.position || ''}</td>
         <td>${hireDate}</td>
-        <td><span class="status-badge ${employee.status || 'active'}">${employee.status || 'active'}</span></td>
+        <td><span class="status-badge ${employee.status || 'active'}">${employee.status || 'Active'}</span></td>
     `;
     
     return row;
@@ -500,8 +518,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const addEmployeeBtn = document.getElementById('addEmployeeBtn');
     const addEmployeeModal = document.getElementById('add-employee-modal');
     const addEmployeeForm = document.getElementById('addEmployeeForm');
-    const payPeriodSelect = document.getElementById('payPeriod');
-    const customPeriodDetails = document.querySelector('.custom-period-details');
     const cancelBtn = addEmployeeModal.querySelector('.cancel-btn');
     const closeBtn = addEmployeeModal.querySelector('.modal-close');
 
@@ -509,11 +525,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function hideModal() {
         addEmployeeModal.style.display = 'none';
         addEmployeeForm.reset();
-        customPeriodDetails.style.display = 'none';
     }
 
-    closeBtn.addEventListener('click', hideModal);
-    cancelBtn.addEventListener('click', hideModal);
+    if (closeBtn) closeBtn.addEventListener('click', hideModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', hideModal);
 
     // Close modal when clicking outside
     window.addEventListener('click', (e) => {
@@ -522,43 +537,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Handle pay period selection
-    payPeriodSelect.addEventListener('change', () => {
-        if (payPeriodSelect.value === 'custom') {
-            customPeriodDetails.style.display = 'block';
-        } else {
-            customPeriodDetails.style.display = 'none';
-        }
-    });
-
-    // Load schedule templates
-    async function loadScheduleTemplates() {
-        try {
-            const response = await fetch('../api/templates.php');
-            if (!response.ok) {
-                throw new Error('Failed to load templates');
-            }
-            const templates = await response.json();
-            const templateSelect = document.getElementById('scheduleTemplate');
-            
-            // Clear existing options except the first one
-            while (templateSelect.options.length > 1) {
-                templateSelect.remove(1);
-            }
-
-            // Add template options
-            templates.forEach(template => {
-                const option = document.createElement('option');
-                option.value = template.id;
-                option.textContent = template.name;
-                templateSelect.appendChild(option);
-            });
-        } catch (error) {
-            console.error('Error loading templates:', error);
-        }
-    }
-
     // Handle form submission
+    if (addEmployeeForm) {
     addEmployeeForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -566,14 +546,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const employeeData = {
             employee_number: formData.get('employeeNumber'),
             clock_number: formData.get('clockNumber'),
-            biometric_id: formData.get('biometricId') || null,
             first_name: formData.get('firstName'),
             last_name: formData.get('lastName'),
-            pay_period: formData.get('payPeriod'),
-            period_start_date: formData.get('periodStartDate'),
-            period_end_date: formData.get('periodEndDate'),
-            period_days: formData.get('periodDays'),
-            schedule_template_id: formData.get('scheduleTemplate') || null,
             csrf_token: formData.get('csrf_token')
         };
 
@@ -587,7 +561,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to add employee');
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to add employee');
             }
 
             const result = await response.json();
@@ -606,426 +581,179 @@ document.addEventListener('DOMContentLoaded', function() {
             showNotification(error.message, 'error');
         }
     });
-});
-
-// Utility Functions
-function showNotification(message, type = 'info') {
-    // Implementation depends on your notification system
-    console.log(`${type}: ${message}`);
-}
-
-// Initialize the page
-document.addEventListener('DOMContentLoaded', () => {
-    loadEmployees();
+    }
 });
 
 // Function to open the Add Employee modal
 function openAddEmployeeModal() {
     const modal = document.getElementById('add-employee-modal');
     if (modal) {
-        modal.style.display = 'block';
-        loadScheduleTemplates();
+        modal.style.display = 'flex';
     }
 }
 
-// Employee Management Class
-class EmployeeManager {
-    constructor() {
-        this.tables = {
-            active: '#active-tab .main-employee-table tbody',
-            terminated: '#terminated-tab .main-employee-table tbody',
-            incomplete: '#incomplete-tab .main-employee-table tbody',
-            all: '#all-tab .main-employee-table tbody'
-        };
-        this.initializeEventListeners();
-        this.loadEmployees();
-    }
+// Utility Functions
+function showNotification(message, type = 'info') {
+    const modalResponse = document.getElementById('modalResponse');
+    if (modalResponse) {
+        const title = document.getElementById('modalResponseTitle');
+        const icon = document.getElementById('modalResponseIcon');
+        const msg = document.getElementById('modalResponseMessage');
 
-    displayEmployees(employees) {
-        // Get table references using querySelector
-        const tableRefs = {
-            active: document.querySelector(this.tables.active),
-            terminated: document.querySelector(this.tables.terminated),
-            incomplete: document.querySelector(this.tables.incomplete),
-            all: document.querySelector(this.tables.all)
+        msg.innerText = message;
+
+        const statusConfig = {
+            success: { title: "Success!", icon: "✔", color: "var(--color-primary)" },
+            error: { title: "Error!", icon: "✖", color: "#F44336" },
+            warning: { title: "Warning!", icon: "⚠", color: "#FFC107" },
+            info: { title: "Info", icon: "ℹ", color: "#2196F3" }
         };
 
-        // Clear existing rows
-        Object.values(tableRefs).forEach(table => {
-            if (table) table.innerHTML = '';
-        });
-
-        // Populate tables
-        employees.forEach(employee => {
-            const row = this.createEmployeeRow(employee);
-            
-            // Add to appropriate tables
-            if (tableRefs[employee.status]) {
-                const clonedRow = row.cloneNode(true);
-                // Add double-click handler to cloned row
-                clonedRow.addEventListener('dblclick', () => {
-                    console.log('Double-clicked employee row:', employee.employee_id);
-                    this.openEmployeeModal(employee.employee_id);
-                });
-                tableRefs[employee.status].appendChild(clonedRow);
-            }
-            if (tableRefs.all) {
-                const clonedRow = row.cloneNode(true);
-                // Add double-click handler to cloned row
-                clonedRow.addEventListener('dblclick', () => {
-                    console.log('Double-clicked employee row:', employee.employee_id);
-                    this.openEmployeeModal(employee.employee_id);
-                });
-                tableRefs.all.appendChild(clonedRow);
-            }
-        });
-
-        // Update employee statistics
-        this.updateEmployeeStats(employees);
-    }
-
-    initializeEventListeners() {
-        // Add Employee button
-        const addEmployeeBtn = document.getElementById('addEmployeeBtn');
-        if (addEmployeeBtn) {
-            addEmployeeBtn.addEventListener('click', () => this.openAddEmployeeModal());
+        if (statusConfig[type]) {
+            title.innerText = statusConfig[type].title;
+            icon.innerHTML = statusConfig[type].icon;
+            icon.style.color = statusConfig[type].color;
         }
 
-        // Tab switching
-        const tabButtons = document.querySelectorAll('.page-tab-button');
-        tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const status = button.dataset.tab;
-                this.loadEmployees(status);
-            });
-        });
-
-        // Modal close handlers
-        const closeButtons = document.querySelectorAll('.modal-close, .btn-cancel');
-        closeButtons.forEach(button => {
-            button.addEventListener('click', () => this.closeModal(button.closest('.modal-container')));
-        });
-
-        // Close modal when clicking outside
-        window.addEventListener('click', (e) => {
-            if (e.target.matches('.modal-container')) {
-                this.closeModal(e.target);
-            }
-        });
-
-        // Form submission handlers
-        const addEmployeeForm = document.getElementById('addEmployeeForm');
-        if (addEmployeeForm) {
-            addEmployeeForm.addEventListener('submit', (e) => this.handleAddEmployee(e));
-        }
-
-        // Save changes button
-        const saveButton = document.querySelector('.btn-save');
-        if (saveButton) {
-            saveButton.addEventListener('click', () => this.saveEmployeeData());
-        }
-
-        // Initialize device management
-        this.initDeviceManagement();
-    }
-
-    initializeEmployeeOverviewModal() {
-        const employeeOverviewWidget = document.getElementById('employee-count-widget');
-        if (employeeOverviewWidget) {
-            employeeOverviewWidget.addEventListener('dblclick', () => this.openEmployeeOverviewModal());
-        }
-    }
-
-    openEmployeeOverviewModal() {
-        const modal = document.getElementById('employee-overview-modal');
-        if (modal) {
-            modal.classList.add('show');
-            this.updateEmployeeOverviewStats();
-        }
-    }
-
-    updateEmployeeOverviewStats() {
-        const totalEmployees = document.getElementById('total-employees').textContent;
-        const licenseLimit = document.getElementById('license-limit').textContent;
-        const licenseUsage = document.getElementById('license-usage').textContent;
-        
-        document.getElementById('modal-total-employees').textContent = totalEmployees;
-        document.getElementById('modal-license-limit').textContent = licenseLimit;
-        document.getElementById('modal-license-usage').textContent = licenseUsage;
-        
-        const progressBar = document.querySelector('#employee-overview-modal .progress');
-        if (progressBar) {
-            progressBar.style.width = licenseUsage;
-        }
-    }
-
-    async loadEmployees(status = 'active') {
-        try {
-            const response = await fetch(`../api/employees.php?status=${status}`);
-            if (!response.ok) throw new Error('Failed to load employees');
-            
-            const employees = await response.json();
-            this.displayEmployees(employees);
-            this.updateEmployeeStats(employees);
-        } catch (error) {
-            console.error('Error loading employees:', error);
-            this.showNotification('Failed to load employees', 'error');
-        }
-    }
-
-    createEmployeeRow(employee) {
-        const row = document.createElement('tr');
-        row.className = 'employee-row';
-        row.dataset.employeeId = employee.employee_id;
-        
-        const hireDate = employee.hire_date ? new Date(employee.hire_date).toLocaleDateString() : '';
-        
-        row.innerHTML = `
-            <td>${employee.employee_number || ''}</td>
-            <td>${employee.first_name} ${employee.last_name}</td>
-            <td>${employee.department || ''}</td>
-            <td>${employee.position || ''}</td>
-            <td>${hireDate}</td>
-            <td><span class="status-badge ${employee.status || 'active'}">${employee.status || 'Active'}</span></td>
-        `;
-        
-        return row;
-    }
-
-    async openEmployeeModal(employeeId) {
-        console.log('Opening modal for employee:', employeeId);
-        const modal = document.getElementById('employee-details-modal');
-        if (modal) {
-            modal.style.display = 'flex';
-            modal.classList.add('show');
-            if (employeeId) {
-                await this.fetchEmployeeData(employeeId);
-            }
-        }
-    }
-
-    closeModal(modal) {
-        if (modal) {
-            modal.style.display = 'none';
-            modal.classList.remove('show');
-        }
-    }
-
-    initDeviceManagement() {
-        const deviceList = document.querySelector('.device-list');
-        const addDeviceBtn = document.querySelector('.add-device-btn');
-
-        if (deviceList && addDeviceBtn) {
-            addDeviceBtn.addEventListener('click', () => {
-                const deviceItem = document.createElement('div');
-                deviceItem.className = 'device-item';
-                deviceItem.innerHTML = `
-                    <span>New Device</span>
-                    <button class="remove-device">Remove</button>
-                `;
-                deviceList.appendChild(deviceItem);
-            });
-
-            deviceList.addEventListener('click', (e) => {
-                if (e.target.matches('.remove-device')) {
-                    e.target.closest('.device-item').remove();
-                }
-            });
-        }
-    }
-
-    async fetchEmployeeData(employeeId) {
-        console.log('Fetching data for employee:', employeeId);
-        try {
-            const response = await fetch(`../api/employee-details.php?id=${employeeId}`);
-            if (!response.ok) throw new Error('Failed to fetch employee data');
-            
-            const result = await response.json();
-            if (!result.success) throw new Error(result.message || 'Failed to fetch employee data');
-            
-            console.log('Received employee data:', result.data);
-            this.populateEmployeeModal(result.data);
-        } catch (error) {
-            console.error('Error fetching employee data:', error);
-            this.showNotification('Failed to load employee details', 'error');
-        }
-    }
-
-    populateEmployeeModal(employee) {
-        console.log('Populating modal with employee data:', employee);
-        
-        // Basic info
-        this.setElementValue('employee-full-name', `${employee.first_name} ${employee.last_name}`, 'textContent');
-        this.setElementValue('employee-payroll-number', employee.employee_number, 'textContent');
-        this.setElementValue('employee-clock-number', employee.clock_number || 'Not Set', 'textContent');
-        this.setElementValue('employee-gender', employee.gender || 'male');
-        
-        // Personal Details
-        this.setElementValue('employee-dob', employee.date_of_birth);
-        this.setElementValue('employee-email', employee.email);
-        this.setElementValue('employee-phone', employee.phone_number);
-        this.setElementValue('employee-address1', employee.address_line1);
-        this.setElementValue('employee-address2', employee.address_line2);
-        this.setElementValue('employee-city', employee.city);
-        this.setElementValue('employee-state', employee.state);
-        this.setElementValue('employee-postal', employee.postal_code);
-        this.setElementValue('employee-country', employee.country);
-        
-        // Emergency Contact
-        this.setElementValue('emergency-name', employee.emergency_contact_name);
-        this.setElementValue('emergency-relation', employee.emergency_contact_relation);
-        this.setElementValue('emergency-phone', employee.emergency_contact_phone);
-        this.setElementValue('emergency-email', employee.emergency_contact_email);
-        
-        // Organization
-        this.setElementValue('employee-division', employee.division_id);
-        this.setElementValue('employee-department', employee.department_id);
-        this.setElementValue('employee-group', employee.employee_group);
-        this.setElementValue('employee-cost-centre', employee.cost_centre);
-        this.setElementValue('employee-location', employee.location_id);
-        this.setElementValue('employee-team', employee.team_id);
-        this.setElementValue('employee-manager', employee.manager_id);
-        
-        // Employment Details
-        this.setElementValue('employee-job-title', employee.position_name);
-        this.setElementValue('employee-hire-date', employee.hire_date);
-        this.setElementValue('employee-contract-type', employee.contract_type || 'permanent');
-        this.setElementValue('employee-status', employee.status || 'active');
-        
-        // Update status badge
-        const statusBadge = document.querySelector('.status-badge');
-        if (statusBadge) {
-            statusBadge.className = `status-badge ${employee.status || 'active'}`;
-            statusBadge.textContent = employee.status || 'Active';
-        }
-        
-        // Leave Balances
-        if (employee.leave_balances) {
-            employee.leave_balances.forEach(balance => {
-                this.setElementValue(`${balance.leave_type.toLowerCase()}-leave`, balance.balance);
-            });
-        }
-        
-        // Leave History
-        const leaveHistoryBody = document.querySelector('#leave-tab .employee-table tbody');
-        if (leaveHistoryBody && employee.leave_history) {
-            leaveHistoryBody.innerHTML = employee.leave_history.map(leave => `
-                <tr>
-                    <td>${leave.leave_type}</td>
-                    <td>${new Date(leave.start_date).toLocaleDateString()}</td>
-                    <td>${new Date(leave.end_date).toLocaleDateString()}</td>
-                    <td>${Math.ceil((new Date(leave.end_date) - new Date(leave.start_date)) / (1000 * 60 * 60 * 24))} days</td>
-                    <td><span class="status-badge status-${leave.status.toLowerCase()}">${leave.status}</span></td>
-                </tr>
-            `).join('');
-        }
-        
-        // Devices
-        const deviceList = document.querySelector('.device-list');
-        if (deviceList && employee.devices) {
-            deviceList.innerHTML = employee.devices.map(device => `
-                <div class="device-item">
-                    <span>${device.device_name} (${device.device_type})</span>
-                    <button class="remove-device">Remove</button>
-                </div>
-            `).join('');
-        }
-        
-        // Mobile Settings
-        if (employee.mobile_settings) {
-            this.setElementValue('gps-tracking', employee.mobile_settings.gps_tracking, 'checked');
-            this.setElementValue('biometric-auth', employee.mobile_settings.biometric_auth, 'checked');
-            this.setElementValue('manual-entry', employee.mobile_settings.manual_entry, 'checked');
-            this.setElementValue('offline-mode', employee.mobile_settings.offline_mode, 'checked');
-            this.setElementValue('photo-verification', employee.mobile_settings.photo_verification, 'checked');
-            this.setElementValue('geofencing-type', employee.mobile_settings.geofencing_type || 'none');
-        }
-
-        // Set the first tab as active
-        const firstTab = document.querySelector('.emp-details-tab-button');
-        if (firstTab) {
-            modalTabManager.switchTab(firstTab);
-        }
-    }
-
-    setElementValue(elementId, value, property = 'value') {
-        const element = document.getElementById(elementId);
-        if (element) {
-            element[property] = value || '';
+        modalResponse.classList.remove('hidden');
         } else {
-            console.warn(`Element with id '${elementId}' not found`);
-        }
-    }
-
-    collectFormData() {
-        return {
-            personalDetails: {
-                fullName: document.getElementById('employee-full-name').textContent,
-                gender: document.getElementById('employee-gender').value,
-                dob: document.getElementById('employee-dob').value,
-                email: document.getElementById('employee-email').value,
-                phone: document.getElementById('employee-phone').value,
-                address: {
-                    line1: document.getElementById('employee-address1').value,
-                    line2: document.getElementById('employee-address2').value,
-                    city: document.getElementById('employee-city').value,
-                    state: document.getElementById('employee-state').value,
-                    postal: document.getElementById('employee-postal').value,
-                    country: document.getElementById('employee-country').value
-                }
-            },
-            employmentDetails: {
-                payrollNumber: document.getElementById('employee-payroll-number').textContent,
-                jobTitle: document.getElementById('employee-job-title').value,
-                hireDate: document.getElementById('employee-hire-date').value,
-                contractType: document.getElementById('employee-contract-type').value,
-                status: document.getElementById('employee-status').value
-            },
-            organization: {
-                division: document.getElementById('employee-division').value,
-                department: document.getElementById('employee-department').value,
-                group: document.getElementById('employee-group').value,
-                costCentre: document.getElementById('employee-cost-centre').value,
-                location: document.getElementById('employee-location').value,
-                team: document.getElementById('employee-team').value,
-                manager: document.getElementById('employee-manager').value
-            },
-            mobileSettings: {
-                gpsTracking: document.getElementById('gps-tracking').checked,
-                biometricAuth: document.getElementById('biometric-auth').checked,
-                manualEntry: document.getElementById('manual-entry').checked,
-                offlineMode: document.getElementById('offline-mode').checked,
-                photoVerification: document.getElementById('photo-verification').checked,
-                geofencingType: document.getElementById('geofencing-type').value
-            }
-        };
-    }
-
-    updateEmployeeStats(employees) {
-        const totalEmployees = employees.length;
-        const activeEmployees = employees.filter(e => e.status === 'active').length;
-        const licenseLimit = 300; // This should come from your configuration
-        const usagePercentage = Math.round((activeEmployees / licenseLimit) * 100);
-
-        document.getElementById('total-employees').textContent = totalEmployees;
-        document.getElementById('license-limit').textContent = licenseLimit;
-        document.getElementById('license-usage').textContent = `${usagePercentage}%`;
-
-        const progressBar = document.querySelector('.progress');
-        if (progressBar) {
-            progressBar.style.width = `${usagePercentage}%`;
-        }
-    }
-
-    showNotification(message, type = 'info') {
         console.log(`${type}: ${message}`);
-        // Implement your notification system here
     }
 }
 
-// Initialize the employee manager when the DOM is loaded
+// Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
-    const employeeManager = new EmployeeManager();
-    employeeManager.initializeEventListeners();
-    employeeManager.loadEmployees();
+    loadEmployees();
+    initEmployeeOverviewModal();
 });
+
+function updateEmployeeStats(employees) {
+    // Count employees by status
+    const stats = employees.reduce((acc, emp) => {
+        if (emp.status === 'active') {
+            if (emp.employment_type === 'Temporary') {
+                acc.temporary++;
+            } else {
+                acc.permanent++;
+            }
+        } else if (emp.status === 'terminated') {
+            acc.terminated++;
+        } else if (emp.status === 'incomplete') {
+            acc.incomplete++;
+        }
+        return acc;
+    }, { permanent: 0, temporary: 0, terminated: 0, incomplete: 0 });
+
+    // Update total employees count
+    const totalEmployees = employees.length;
+    const totalEmployeesElement = document.getElementById('total-employees');
+    if (totalEmployeesElement) {
+        totalEmployeesElement.textContent = totalEmployees;
+    }
+
+    // Calculate and update license usage
+    const licenseLimitElement = document.getElementById('license-limit');
+    const licenseLimit = licenseLimitElement ? parseInt(licenseLimitElement.textContent) || 300 : 300;
+    const usagePercentage = Math.round((totalEmployees / licenseLimit) * 100);
+    
+    const licenseUsageElement = document.getElementById('license-usage');
+    if (licenseUsageElement) {
+        licenseUsageElement.textContent = `${usagePercentage}%`;
+    }
+
+    // Update progress bar
+    const progressBar = document.querySelector('.progress');
+        if (progressBar) {
+        progressBar.style.width = `${usagePercentage}%`;
+        // Add color classes based on usage
+        progressBar.className = 'progress ' + 
+            (usagePercentage > 90 ? 'critical' : 
+             usagePercentage > 75 ? 'warning' : 
+             'normal');
+    }
+
+    // Update status distribution in overview modal if it exists
+    const modalStats = document.querySelector('.status-distribution');
+    if (modalStats) {
+        const statusCounts = modalStats.querySelectorAll('.status-count');
+        if (statusCounts.length >= 3) {
+            statusCounts[0].textContent = stats.permanent + stats.temporary; // Active (Permanent + Temporary)
+            statusCounts[1].textContent = stats.temporary; // Temporary
+            statusCounts[2].textContent = stats.incomplete; // Incomplete
+        }
+    }
+
+    // Update modal statistics
+    const modalTotalEmployees = document.getElementById('modal-total-employees');
+    if (modalTotalEmployees) {
+        modalTotalEmployees.textContent = totalEmployees;
+    }
+
+    const modalLicenseLimit = document.getElementById('modal-license-limit');
+    if (modalLicenseLimit) {
+        modalLicenseLimit.textContent = licenseLimit;
+    }
+
+    const modalLicenseUsage = document.getElementById('modal-license-usage');
+    if (modalLicenseUsage) {
+        modalLicenseUsage.textContent = `${usagePercentage}%`;
+    }
+
+    const modalProgressBar = document.querySelector('#employee-overview-modal .progress');
+    if (modalProgressBar) {
+        modalProgressBar.style.width = `${usagePercentage}%`;
+    }
+}
+
+function openEmployeeModal(employeeId) {
+    const modal = document.getElementById('employee-details-modal');
+    if (!modal) {
+        console.error('Employee details modal not found');
+        return;
+    }
+
+    // Show loading modal while fetching data
+    const loadingModal = document.getElementById('loadingModal');
+    if (loadingModal) {
+        loadingModal.classList.remove('hidden');
+    }
+
+    // Fetch and display employee details
+    fetch(`../api/employees.php?id=${employeeId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch employee details');
+            }
+            return response.json();
+        })
+        .then(result => {
+            if (!result.success) {
+                throw new Error(result.message || 'Failed to fetch employee details');
+            }
+
+            // Hide loading modal
+            if (loadingModal) {
+                loadingModal.classList.add('hidden');
+            }
+
+            // Show employee modal
+            modal.style.display = 'flex';
+
+            // Initialize employee modal manager if not already initialized
+            if (!window.employeeModalManager) {
+                window.employeeModalManager = new EmployeeModalManager();
+            }
+
+            // Let the modal manager handle populating the data
+            window.employeeModalManager.openModal(employeeId);
+        })
+        .catch(error => {
+            console.error('Error fetching employee details:', error);
+            showNotification(error.message, 'error');
+            
+            // Hide loading modal
+            if (loadingModal) {
+                loadingModal.classList.add('hidden');
+            }
+        });
+}

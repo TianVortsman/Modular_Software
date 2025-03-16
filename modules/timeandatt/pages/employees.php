@@ -23,10 +23,10 @@ if (isset($_SESSION['account_number'])) {
 }
 
 $userName = $_SESSION['user_name'] ?? ($_SESSION['tech_logged_in'] ? $_SESSION['tech_name'] : 'Guest');
-$multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple_accounts'] : false;
 
 // Include the database connection
 include('../../../php/db.php');
+$multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple_accounts'] : false;
 ?>
 
 <!DOCTYPE html>
@@ -338,84 +338,13 @@ include('../../../php/db.php');
     </div>
   </div>
 </div>
-
-<!-- Add Employee Modal -->
-<div id="add-employee-modal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Add New Employee</h2>
-      <span class="modal-close material-icons">close</span>
-    </div>
-    <div class="modal-body">
-      <form id="addEmployeeForm">
-        <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-        
-        <!-- Basic Information -->
-        <div class="form-section">
-          <h3>Basic Information</h3>
-          <div class="form-group">
-            <label for="employeeNumber">Employee Number</label>
-            <input type="text" id="employeeNumber" name="employeeNumber" required>
-          </div>
-          <div class="form-group">
-            <label for="clockNumber">Clock Number</label>
-            <input type="text" id="clockNumber" name="clockNumber" required>
-          </div>
-          <div class="form-group">
-            <label for="biometricId">Biometric ID</label>
-            <input type="text" id="biometricId" name="biometricId" placeholder="Optional">
-            <small class="form-text text-muted">Leave empty if not using biometric authentication</small>
-          </div>
-          <div class="form-group">
-            <label for="firstName">First Name</label>
-            <input type="text" id="firstName" name="firstName" required>
-          </div>
-          <div class="form-group">
-            <label for="lastName">Last Name</label>
-            <input type="text" id="lastName" name="lastName" required>
-          </div>
-        </div>
-
-        <!-- Schedule Information -->
-        <div class="form-section">
-          <h3>Schedule Information</h3>
-          <div class="form-group">
-            <label for="payPeriod">Pay Period</label>
-            <select id="payPeriod" name="payPeriod" required>
-              <option value="">Select Pay Period</option>
-              <option value="weekly">Weekly</option>
-              <option value="biweekly">Bi-Weekly</option>
-              <option value="monthly">Monthly</option>
-              <option value="custom">Custom</option>
-            </select>
-          </div>
-          <div class="form-group custom-period-details" style="display: none;">
-            <label for="periodStartDate">Period Start Date</label>
-            <input type="date" id="periodStartDate" name="periodStartDate">
-            <label for="periodEndDate">Period End Date</label>
-            <input type="date" id="periodEndDate" name="periodEndDate">
-            <label for="periodDays">Number of Days</label>
-            <input type="number" id="periodDays" name="periodDays" min="1">
-          </div>
-          <div class="form-group">
-            <label for="scheduleTemplate">Schedule Template (Optional)</label>
-            <select id="scheduleTemplate" name="scheduleTemplate">
-              <option value="">Select Template</option>
-              <!-- Templates will be loaded here -->
-            </select>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button type="button" class="cancel-btn">Cancel</button>
-          <button type="submit" class="submit-btn">Add Employee</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-  <?php include('../modals/employee-modal.php') ?>
+<?php 
+    include '../../../php/loading-modal.php';
+    include '../../../php/response-modal.php';
+    include '../../../php/error-table-modal.php';
+    include 'add-employee-modal.php';
+    include '../modals/employee-modal.php'
+?>
   <script src="../js/employees.js"></script>
   </body>
   </html>

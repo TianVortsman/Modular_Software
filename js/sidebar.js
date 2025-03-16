@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', function () {
         "dashboard": [
             { href: "/modular1/main/dashboard.php", icon: "home", text: "Home" },
             { href: "/modular1/main/settings.php", icon: "settings", text: "Settings" },
-            { href: "pages/export.html", icon: "upload", text: "Exporting" },
-            { href: "pages/import.html", icon: "download", text: "Importing" },
+            { href: "/modular1/main/exporting.php", icon: "upload", text: "Exporting" },
+            { href: "/modular1/main/importing.php", icon: "download", text: "Importing" },
             { href: "../php/logout.php", icon: "exit_to_app", text: "LogOut" }
         ],
         "invoice-dashboard": [
@@ -110,7 +110,8 @@ document.addEventListener('DOMContentLoaded', function () {
         ],
         "TA-employees": [
             { href: "/modular1/modules/timeandatt/dashboard-TA.php", icon: "dashboard", text: "Dashboard", },
-            { href: "#", icon: "person_add", text: "Add Employee", onclick: "openAddEmployeeModal()" }
+            { href: "#", icon: "person_add", text: "Add Employee", onclick: "openAddEmployeeModal()" },
+            { href: "/modular1/modules/timeandatt/pages/import-employees.php", icon: "upload_file", text: "Import Employees" }
         ],
         "hr-dashboard": [
             { href: "/modular1/main/dashboard.php", icon: "home", text: "Home" },
@@ -194,6 +195,21 @@ document.addEventListener('DOMContentLoaded', function () {
             { href: "/modular1/modules/mobile/pages/notifications.php", icon: "notifications", text: "Notifications" },
             { href: "/modular1/modules/mobile/pages/sync.php", icon: "sync", text: "Sync" },
             { href: "/modular1/modules/mobile/pages/reports.php", icon: "bar_chart", text: "Reports" }
+        ],
+        "importing": [
+            { href: "/modular1/main/dashboard.php", icon: "home", text: "Home" },
+            { href: "#timeandatt", icon: "schedule", text: "Time & Attendance", onclick: "activateSection('timeandatt')" },
+            { href: "#accounting", icon: "account_balance", text: "Accounting", onclick: "activateSection('accounting')" },
+            { href: "#payroll", icon: "payments", text: "Payroll Management", onclick: "activateSection('payroll')" },
+            { href: "#access", icon: "security", text: "Access Control", onclick: "activateSection('access')" },
+            { href: "#asset", icon: "inventory", text: "Asset Management", onclick: "activateSection('asset')" },
+            { href: "#fleet", icon: "directions_car", text: "Fleet Management", onclick: "activateSection('fleet')" },
+            { href: "#support", icon: "support_agent", text: "Support/Help Desk", onclick: "activateSection('support')" },
+            { href: "#crm", icon: "people", text: "Customer Relationship", onclick: "activateSection('crm')" },
+            { href: "#inventory", icon: "inventory_2", text: "Inventory Management", onclick: "activateSection('inventory')" },
+            { href: "#project", icon: "assignment", text: "Project Management", onclick: "activateSection('project')" },
+            { href: "#hr", icon: "person", text: "Human Resources", onclick: "activateSection('hr')" },
+            { href: "#invoice", icon: "receipt", text: "Invoice Management", onclick: "activateSection('invoice')" }
         ]
     };
     
@@ -296,6 +312,10 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         'schedules': {
             targetId: 'schedule-container',
+            toggleClasses: ['collapsed']
+        },
+        'importing': {
+            targetId: 'import-container',
             toggleClasses: ['collapsed']
         }
     };

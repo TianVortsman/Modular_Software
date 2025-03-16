@@ -254,33 +254,37 @@ CREATE TABLE IF NOT EXISTS public.sales_items (
 );
 -- Part 4: Time and Attendance Tables
 
-CREATE TABLE IF NOT EXISTS public.positions (
-    position_id serial NOT NULL,
-    position_name character varying(100) NOT NULL,
-    department character varying(100) NOT NULL,
-    company_id integer NOT NULL,
-    created_at timestamp without time zone DEFAULT now(),
-    updated_at timestamp without time zone DEFAULT now(),
-    deleted_at timestamp without time zone,
-    CONSTRAINT positions_pkey PRIMARY KEY (position_id)
-);
-
 CREATE TABLE IF NOT EXISTS public.employees (
     employee_id serial NOT NULL,
-    first_name character varying(50) NOT NULL,
-    last_name character varying(50) NOT NULL,
-    email character varying(100) NOT NULL,
-    phone character varying(20),
-    hire_date date NOT NULL,
-    position_id integer NOT NULL,
-    department character varying(100) NOT NULL,
-    manager_id integer,
-    addr_id integer,
-    created_at timestamp without time zone DEFAULT now(),
-    updated_at timestamp without time zone DEFAULT now(),
-    deleted_at timestamp without time zone,
+    first_name varchar(100) NOT NULL,
+    last_name varchar(100) NOT NULL,
+    email varchar(255),
+    phone_number varchar(20),
+    hire_date date,
+    division varchar(100),
+    group_name varchar(100),
+    department varchar(100),
+    cost_center varchar(100),
+    position varchar(100),
+    employee_number varchar(50) NOT NULL,
+    status varchar(20) DEFAULT 'active',
+    employment_type varchar(20) DEFAULT 'Permanent',
+    work_schedule_type varchar(20) DEFAULT 'Open',
+    biometric_id varchar(100),
+    emergency_contact_name varchar(100),
+    emergency_contact_phone varchar(20),
+    address text,
+    clock_number integer NOT NULL,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp with time zone,
     CONSTRAINT employees_pkey PRIMARY KEY (employee_id),
-    CONSTRAINT employees_email_key UNIQUE (email)
+    CONSTRAINT employees_email_key UNIQUE (email),
+    CONSTRAINT employees_employee_number_key UNIQUE (employee_number),
+    CONSTRAINT employees_biometric_id_key UNIQUE (biometric_id),
+    CONSTRAINT employees_status_check CHECK (status IN ('active', 'inactive', 'terminated')),
+    CONSTRAINT employees_employment_type_check CHECK (employment_type IN ('Permanent', 'Contract')),
+    CONSTRAINT employees_work_schedule_type_check CHECK (work_schedule_type IN ('Open', 'Fixed', 'Rotating'))
 );
 
 CREATE TABLE IF NOT EXISTS public.shifts (
@@ -810,18 +814,6 @@ CREATE INDEX IF NOT EXISTS idx_sales_items_product ON public.sales_items(prod_id
 
 
 -- Time and Attendance Foreign Keys
-ALTER TABLE IF EXISTS public.positions
-    ADD CONSTRAINT fk_position_company FOREIGN KEY (company_id)
-    REFERENCES public.company (company_id) ON DELETE CASCADE;
-
-ALTER TABLE IF EXISTS public.employees
-    ADD CONSTRAINT fk_employee_position FOREIGN KEY (position_id)
-    REFERENCES public.positions (position_id) ON DELETE RESTRICT;
-
-ALTER TABLE IF EXISTS public.employees
-    ADD CONSTRAINT fk_employee_manager FOREIGN KEY (manager_id)
-    REFERENCES public.employees (employee_id) ON DELETE SET NULL;
-
 ALTER TABLE IF EXISTS public.employees
     ADD CONSTRAINT fk_employee_address FOREIGN KEY (addr_id)
     REFERENCES public.address (addr_id) ON DELETE SET NULL;
@@ -895,10 +887,12 @@ ALTER TABLE IF EXISTS public.weekly_hours
     REFERENCES public.employees (employee_id) ON DELETE CASCADE;
 
 -- Time and Attendance Indexes
-CREATE INDEX IF NOT EXISTS idx_positions_company ON public.positions(company_id);
-CREATE INDEX IF NOT EXISTS idx_employees_position ON public.employees(position_id);
-CREATE INDEX IF NOT EXISTS idx_employees_manager ON public.employees(manager_id);
 CREATE INDEX IF NOT EXISTS idx_employees_address ON public.employees(addr_id);
+CREATE INDEX IF NOT EXISTS idx_employees_division ON public.employees(division);
+CREATE INDEX IF NOT EXISTS idx_employees_group ON public.employees(group_name);
+CREATE INDEX IF NOT EXISTS idx_employees_department ON public.employees(department);
+CREATE INDEX IF NOT EXISTS idx_employees_cost_center ON public.employees(cost_center);
+CREATE INDEX IF NOT EXISTS idx_employees_status ON public.employees(status);
 CREATE INDEX IF NOT EXISTS idx_attendance_employee ON public.attendance_records(employee_id);
 CREATE INDEX IF NOT EXISTS idx_attendance_shift ON public.attendance_records(shift_id);
 CREATE INDEX IF NOT EXISTS idx_break_attendance ON public.break_records(attendance_id);
@@ -916,7 +910,6 @@ CREATE INDEX IF NOT EXISTS idx_template_shift ON public.schedule_templates(shift
 CREATE INDEX IF NOT EXISTS idx_roster_employee ON public.monthly_rosters(employee_id);
 CREATE INDEX IF NOT EXISTS idx_roster_creator ON public.monthly_rosters(created_by);
 CREATE INDEX IF NOT EXISTS idx_weekly_hours_employee ON public.weekly_hours(employee_id);
-
 
 -- Additional Foreign Keys
 ALTER TABLE IF EXISTS public.sale
@@ -1008,5 +1001,13 @@ CREATE INDEX IF NOT EXISTS idx_purchase_orders_supplier ON public.purchase_order
 CREATE INDEX IF NOT EXISTS idx_purchase_orders_status ON public.purchase_orders(order_status_id);
 CREATE INDEX IF NOT EXISTS idx_po_items_po ON public.purchase_order_items(po_id);
 CREATE INDEX IF NOT EXISTS idx_po_items_product ON public.purchase_order_items(prod_id);
+
+-- Remove the positions table and its related foreign keys
+ALTER TABLE IF EXISTS public.employees DROP CONSTRAINT IF EXISTS fk_employee_position;
+DROP TABLE IF EXISTS public.positions;
+
+-- Remove positions-related indexes
+DROP INDEX IF EXISTS idx_positions_company;
+DROP INDEX IF EXISTS idx_employees_position;
 
 COMMIT; 

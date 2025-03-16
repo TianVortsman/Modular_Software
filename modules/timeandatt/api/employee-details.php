@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
                 e.group_name,
                 e.department,
                 e.cost_center,
-                e.position_id,
+                e.position,
                 e.employee_number,
                 e.status,
                 e.employment_type,
@@ -82,10 +82,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
                 e.address,
                 e.created_at,
                 e.updated_at,
-                e.clock_number,
-                p.title as position_title
+                e.clock_number
             FROM employees e
-            LEFT JOIN positions p ON e.position_id = p.position_id
             WHERE e.employee_id = :id
             AND e.deleted_at IS NULL
         ");
