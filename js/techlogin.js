@@ -6,6 +6,10 @@ const customerModal = document.getElementById('customerModal');
 let currentCustomerId = null;
 let currentCustomerData = null;
 
+// Global variables at the top of the file
+let deviceRefreshInterval = null;
+const DEVICE_REFRESH_INTERVAL = 10000; // 10 seconds
+
 // Modal Functions
 function openAddCustomerModal() {
     addCustomerModal.classList.add('active');
@@ -331,10 +335,10 @@ function loadClockMachines(accountNumber) {
     
     // Track both fetch operations
     let portFetchComplete = false;
-    let machinesFetchComplete = false;
+    let devicesComplete = false;
     
     function checkAndHideLoading() {
-        if (portFetchComplete && machinesFetchComplete) {
+        if (portFetchComplete && devicesComplete) {
             // Use the global hideLoadingModal function
             if (typeof hideLoadingModal === 'function') {
                 hideLoadingModal();
@@ -361,12 +365,12 @@ function loadClockMachines(accountNumber) {
         })
         .then(data => {
             if (data.success) {
-                const portInput = document.getElementById('clockServerPort');
-                if (portInput) {
-                    portInput.value = data.port || '';
+                const portDisplay = document.getElementById('clockServerPort');
+                if (portDisplay) {
+                    portDisplay.textContent = data.port || 'Not configured';
                     updateServerStatus(data.port);
                 } else {
-                    console.error('Port input element not found');
+                    console.error('Port display element not found');
                 }
             } else {
                 throw new Error(data.error || 'Failed to load port');
@@ -380,75 +384,100 @@ function loadClockMachines(accountNumber) {
             portFetchComplete = true;
             checkAndHideLoading();
         });
+        
+    // Load devices for devices table
+    const devicesTable = document.getElementById('devicesTableBody');
+    const loadingIndicator = document.getElementById('devicesLoading');
+    const noDevicesMessage = document.getElementById('noDevicesMessage');
+    
+    if (devicesTable && loadingIndicator && noDevicesMessage) {
+        // Show loading, hide table and no devices message
+        loadingIndicator.classList.remove('hidden');
+        noDevicesMessage.classList.add('hidden');
+        
+        // Call the get_customer_devices API to get devices for this account
+        fetch(`../techlogin/api/get_customer_devices.php?account_number=${accountNumber}`)
+            .then(response => response.json())
+            .then(data => {
+                loadingIndicator.classList.add('hidden');
+                
+                if (data.success && data.devices && data.devices.length > 0) {
+                    // Clear table body
+                    devicesTable.innerHTML = '';
+                    
+                    // Populate table with devices
+                    data.devices.forEach(device => {
+                        const row = document.createElement('tr');
+                        
+                        // Format last online date
+                        const lastOnline = device.last_online 
+                            ? new Date(device.last_online).toLocaleString() 
+                            : 'Never';
+                        
+                        // Determine status class
+                        const statusClass = device.status === 'online' 
+                            ? 'status-online' 
+                            : 'status-offline';
+                        
+                        row.innerHTML = `
+                            <td>${escapeHtml(device.device_id || device.serial_number || '')}</td>
+                            <td>${escapeHtml(device.device_name || '')}</td>
+                            <td>${escapeHtml(device.ip_address || '')}</td>
+                            <td><span class="status-badge ${statusClass}">${device.status || 'offline'}</span></td>
+                            <td>${lastOnline}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="icon-button" onclick="viewMachineDetails('${device.device_id}')" title="View Details">
+                                        <i class="material-icons">visibility</i>
+                                    </button>
+                                    <button class="icon-button" onclick="editMachine('${device.device_id}')" title="Edit Device">
+                                        <i class="material-icons">edit</i>
+                                    </button>
+                                    <button class="icon-button" onclick="controlMachineDoor('${device.device_id}')" title="Control Door">
+                                        <i class="material-icons">meeting_room</i>
+                                    </button>
+                                    <button class="icon-button danger" onclick="confirmDeleteMachine('${device.device_id}')" title="Delete Device">
+                                        <i class="material-icons">delete</i>
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+                        
+                        devicesTable.appendChild(row);
+                    });
+                    
+                    // Show table
+                    document.getElementById('devicesTable').classList.remove('hidden');
+                    
+                    // Setup auto-refresh
+                    setupDeviceRefresh(accountNumber);
+                } else {
+                    // Show no devices message
+                    noDevicesMessage.classList.remove('hidden');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading devices:', error);
+                loadingIndicator.classList.add('hidden');
+                noDevicesMessage.classList.remove('hidden');
+                noDevicesMessage.innerHTML = `
+                    <p>Error loading devices: ${error.message}</p>
+                    <button class="btn btn-primary" onclick="loadClockMachines('${accountNumber}')">
+                        <i class="material-icons">refresh</i> Retry
+                    </button>
+                `;
+            })
+            .finally(() => {
+                devicesComplete = true;
+                checkAndHideLoading();
+            });
+    } else {
+        devicesComplete = true;
+        checkAndHideLoading();
+    }
 
-    // Load clock machines list
-    fetch(`../php/get-customer-machines.php?account_number=${accountNumber}`)
-        .then(response => {
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            return response.json();
-        })
-        .then(data => {
-            if (!data.success) throw new Error(data.error || 'Failed to load machines');
-            
-            // Update machines list and statistics
-            updateMachinesList(data.machines || []);
-            updateMachinesStatistics(data.statistics || {});
-        })
-        .catch(error => {
-            console.error('Error loading machines:', error);
-            showResponseModal('error', 'Failed to load machines data');
-        })
-        .finally(() => {
-            machinesFetchComplete = true;
-            checkAndHideLoading();
-        });
-}
-
-function updateMachinesList(machines) {
-    const container = document.getElementById('machines-list');
-    if (!container) return;
-
-    container.innerHTML = '';
-    machines.forEach(machine => {
-        const machineDiv = document.createElement('div');
-        machineDiv.className = `machine-item ${machine.status}`;
-        machineDiv.innerHTML = `
-            <div class="machine-info">
-                <span class="machine-name">${escapeHtml(machine.name)}</span>
-                <span class="machine-type">${machine.type}</span>
-                <span class="machine-location">${machine.location}</span>
-            </div>
-            <div class="machine-status">
-                <span class="status-badge ${machine.status}">${machine.status}</span>
-                <span class="last-sync">Last sync: ${formatDate(machine.last_sync)}</span>
-            </div>
-        `;
-        container.appendChild(machineDiv);
-    });
-}
-
-function updateMachinesStatistics(statistics) {
-    const statsContainer = document.getElementById('machines-statistics');
-    if (!statsContainer) return;
-
-    statsContainer.innerHTML = `
-        <div class="stat-item">
-            <span class="stat-label">Total Machines</span>
-            <span class="stat-value">${statistics.total_machines}</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Active</span>
-            <span class="stat-value">${statistics.active_machines}</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Inactive</span>
-            <span class="stat-value">${statistics.inactive_machines}</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Last Sync</span>
-            <span class="stat-value">${formatDate(statistics.last_sync_time)}</span>
-        </div>
-    `;
+    // Clear any existing refresh interval
+    clearDeviceRefresh();
 }
 
 // Account Settings Management
@@ -701,6 +730,9 @@ function closeCustomerModal() {
         setTimeout(() => {
             modal.style.display = 'none';
             modal.classList.remove('closing');
+            
+            // Clear device refresh interval
+            clearDeviceRefresh();
         }, 300); // Match the animation duration
     }
 }
@@ -894,4 +926,105 @@ function searchCustomers() {
         console.error('fetchCustomerData function not available');
         showToast('Search functionality not available', 'error');
     }
+}
+
+// Add these new functions to handle the periodic refresh
+function setupDeviceRefresh(accountNumber) {
+    // Clear any existing interval first
+    clearDeviceRefresh();
+    
+    // Setup new refresh interval
+    deviceRefreshInterval = setInterval(() => {
+        refreshDevicesData(accountNumber);
+    }, DEVICE_REFRESH_INTERVAL);
+    
+    // Add event listener to clear interval when tab is closed
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+}
+
+function clearDeviceRefresh() {
+    if (deviceRefreshInterval) {
+        clearInterval(deviceRefreshInterval);
+        deviceRefreshInterval = null;
+    }
+}
+
+function handleVisibilityChange() {
+    if (document.hidden) {
+        // Tab is hidden, clear refresh to save resources
+        clearDeviceRefresh();
+    } else {
+        // Tab is visible again, setup refresh if modal is still open
+        const modal = document.getElementById('customerModal');
+        if (modal && modal.style.display !== 'none' && modal.classList.contains('active')) {
+            const accountNumber = modal.dataset.accountNumber;
+            if (accountNumber) {
+                setupDeviceRefresh(accountNumber);
+                // Immediately refresh data
+                refreshDevicesData(accountNumber);
+            }
+        }
+    }
+}
+
+function refreshDevicesData(accountNumber) {
+    const devicesTable = document.getElementById('devicesTableBody');
+    if (!devicesTable || !accountNumber) return;
+    
+    // Quiet refresh - no loading indicators
+    fetch(`../techlogin/api/get_customer_devices.php?account_number=${accountNumber}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.devices && data.devices.length > 0) {
+                // Clear table body
+                devicesTable.innerHTML = '';
+                
+                // Populate table with devices
+                data.devices.forEach(device => {
+                    const row = document.createElement('tr');
+                    
+                    // Format last online date
+                    const lastOnline = device.last_online 
+                        ? new Date(device.last_online).toLocaleString() 
+                        : 'Never';
+                    
+                    // Determine status class
+                    const statusClass = device.status === 'online' 
+                        ? 'status-online' 
+                        : 'status-offline';
+                    
+                    row.innerHTML = `
+                        <td>${escapeHtml(device.device_id || device.serial_number || '')}</td>
+                        <td>${escapeHtml(device.device_name || '')}</td>
+                        <td>${escapeHtml(device.ip_address || '')}</td>
+                        <td><span class="status-badge ${statusClass}">${device.status || 'offline'}</span></td>
+                        <td>${lastOnline}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="icon-button" onclick="viewMachineDetails('${device.device_id}')" title="View Details">
+                                    <i class="material-icons">visibility</i>
+                                </button>
+                                <button class="icon-button" onclick="editMachine('${device.device_id}')" title="Edit Device">
+                                    <i class="material-icons">edit</i>
+                                </button>
+                                <button class="icon-button" onclick="controlMachineDoor('${device.device_id}')" title="Control Door">
+                                    <i class="material-icons">meeting_room</i>
+                                </button>
+                                <button class="icon-button danger" onclick="confirmDeleteMachine('${device.device_id}')" title="Delete Device">
+                                    <i class="material-icons">delete</i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    
+                    devicesTable.appendChild(row);
+                });
+                
+                // Show table
+                document.getElementById('devicesTable').classList.remove('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error refreshing devices:', error);
+        });
 }

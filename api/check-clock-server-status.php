@@ -17,62 +17,47 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     }
 }
 
-try {
-    // Check if port parameter is provided
-    if (!isset($_GET['port']) || empty($_GET['port'])) {
-        throw new Exception("Port parameter is required");
-    }
-    
-    $port = intval($_GET['port']);
-    
-    // Validate port number
-    if ($port < 1024 || $port > 65535) {
-        throw new Exception("Invalid port number. Port must be between 1024 and 65535.");
-    }
-    
-    // Check if port is in use
-    $isRunning = false;
-    
-    // Try to check port status using various methods
-    
-    // Method 1: Try to check via local socket connection
-    $connection = @fsockopen('localhost', $port, $errno, $errstr, 1);
+// Check if user is logged in
+if (!isset($_SESSION['logged_in']) || !isset($_SESSION['account_number'])) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+    exit;
+}
+
+// Get the port from query parameters
+$port = isset($_GET['port']) ? intval($_GET['port']) : null;
+
+if (!$port) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'Port is required']);
+    exit;
+}
+
+// Validate port range
+if ($port < 1024 || $port > 65535) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'Invalid port number']);
+    exit;
+}
+
+// Function to check if a port is in use (server is running)
+function isPortInUse($port) {
+    $connection = @fsockopen('127.0.0.1', $port, $errno, $errstr, 1);
     if (is_resource($connection)) {
         fclose($connection);
-        $isRunning = true;
-    } 
-    
-    // Method 2: Check via system command if Method 1 fails and we're on Linux
-    if (!$isRunning && stripos(PHP_OS, 'linux') !== false) {
-        $command = "netstat -tuln | grep ':$port '";
-        exec($command, $output, $return);
-        $isRunning = count($output) > 0;
+        return true;
     }
-    
-    // Method 3: Check via system command if on Windows
-    if (!$isRunning && stripos(PHP_OS, 'win') !== false) {
-        $command = "netstat -an | findstr :$port";
-        exec($command, $output, $return);
-        $isRunning = count($output) > 0;
-    }
-    
-    // Return success response with the port's running status
-    echo json_encode([
-        'success' => true,
-        'port' => $port,
-        'is_running' => $isRunning,
-        'message' => $isRunning ? "Server is running on port $port" : "No server running on port $port"
-    ]);
-    
-} catch (Exception $e) {
-    // Log the error
-    error_log("check-clock-server-status.php error: " . $e->getMessage());
-    
-    // Return error response
-    http_response_code(400);
-    echo json_encode([
-        'success' => false,
-        'error' => $e->getMessage()
-    ]);
+    return false;
 }
+
+// Check if server is running on specified port
+$isRunning = isPortInUse($port);
+
+// Return result
+echo json_encode([
+    'success' => true, 
+    'is_running' => $isRunning,
+    'port' => $port
+]);
+exit;
 ?> 

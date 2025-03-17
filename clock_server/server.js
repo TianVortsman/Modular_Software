@@ -4,14 +4,12 @@ const bodyParser = require('body-parser');
 const winston = require('winston');
 const bodyParserXml = require('body-parser-xml');
 const http = require('http');
-const WebSocket = require('ws');
 const cors = require('cors');
 const multer = require('multer');
-const upload = multer();
 
-// Configure logger with console transport
+// Simplified logger configuration
 const logger = winston.createLogger({
-    level: 'debug',
+    level: 'info',
     format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.json()
@@ -24,21 +22,7 @@ const logger = winston.createLogger({
             )
         }),
         new winston.transports.File({ filename: 'error.log', level: 'error' }),
-        new winston.transports.File({ filename: 'clock_data.log', level: 'debug' }),
-        new winston.transports.File({ filename: 'raw_clock_data.log' }),
         new winston.transports.File({ filename: 'combined.log' })
-    ]
-});
-
-// Create a dedicated logger for raw data
-const rawDataLogger = winston.createLogger({
-    level: 'info',
-    format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json()
-    ),
-    transports: [
-        new winston.transports.File({ filename: 'raw_clock_data.log' })
     ]
 });
 
@@ -47,12 +31,6 @@ bodyParserXml(bodyParser);
 
 // Store active servers
 const servers = new Map();
-
-// Store WebSocket servers
-const wssMap = new Map();
-
-// Store active WebSocket connections
-const connectionsMap = new Map();
 
 // Main database pool for customer lookup
 const pool = new Pool({
@@ -88,20 +66,8 @@ process.on('unhandledRejection', (reason, promise) => {
     logger.error('Unhandled Rejection:', { promise, reason });
 });
 
-// Add ISUP configuration
-const ISUP_KEY = 'Modul@rdev@2024';
-
 // ISUP Key validation middleware
 function verifyIsupAuth(req, res, next) {
-    // Log full request details for debugging
-    logger.debug('ISUP Auth Check - Full Request Details:', {
-        headers: req.headers,
-        query: req.query,
-        body: req.body,
-        rawBody: req.rawBody ? req.rawBody.substring(0, 1000) : null,
-        timestamp: new Date().toISOString()
-    });
-
     // Define the expected ISUP key
     const EXPECTED_ISUP_KEY = process.env.ISUP_KEY || "MySecretKey123";
     
@@ -110,82 +76,30 @@ function verifyIsupAuth(req, res, next) {
                    req.headers['x-isup-key'] || 
                    req.headers['authorization'];
     
-    // Special handling for multipart form-data requests from Hikvision devices
+    // Special handling for Hikvision devices (simplified)
     if (req.headers['content-type'] && req.headers['content-type'].includes('multipart/form-data')) {
-        logger.info('Processing multipart form-data request');
-        
-        // Check if this is a valid Hikvision event
-        if (req.body && req.body.event_log) {
-            try {
-                // Try to parse the event_log to verify it's a valid Hikvision event
-                const eventData = JSON.parse(req.body.event_log);
-                if (eventData.AccessControllerEvent) {
-                    logger.info('Valid Hikvision event data found, allowing request');
+        // Allow Hikvision multipart requests to proceed
+        logger.info('Allowing Hikvision multipart form-data request');
                     return next();
-                }
-            } catch (e) {
-                // If we can't parse it but it contains the right keywords, still allow it
-                if (req.body.event_log.includes('AccessControllerEvent')) {
-                    logger.info('Hikvision event data found (string match), allowing request');
-                    return next();
-                }
-                logger.warn('Error parsing event_log:', e.message);
-            }
-        } else if (req.rawBody && req.rawBody.includes('AccessControllerEvent')) {
-            // If we have the raw body and it contains the right keywords, allow it
-            logger.info('Hikvision event data found in raw body, allowing request');
-            return next();
-        }
     }
     
     // If no ISUP key is found, log warning but allow the request to proceed
     if (!isupKey) {
-        logger.warn('No ISUP key provided in request', {
-            headers: req.headers,
-            url: req.url,
-            method: req.method,
-            timestamp: new Date().toISOString()
-        });
+        logger.warn('No ISUP key provided in request');
         // Allow the request to proceed anyway
         return next();
     }
     
     // If ISUP key is found but doesn't match expected value
     if (isupKey !== EXPECTED_ISUP_KEY) {
-        logger.warn(`Invalid ISUP key provided: ${isupKey}`, {
-            timestamp: new Date().toISOString()
-        });
+        logger.warn(`Invalid ISUP key provided: ${isupKey}`);
         // Allow the request to proceed anyway
         return next();
     }
     
     // ISUP key is valid
-    logger.info('Valid ISUP key provided', {
-        timestamp: new Date().toISOString()
-    });
+    logger.info('Valid ISUP key provided');
     next();
-}
-
-// Function to broadcast clock event to all connected clients for an account
-function broadcastClockEvent(accountNumber, eventData) {
-    if (!connectionsMap.has(accountNumber)) {
-        return; // No connections for this account
-    }
-    
-    const connections = connectionsMap.get(accountNumber);
-    const message = JSON.stringify({
-        type: 'clock_event',
-        timestamp: new Date().toISOString(),
-        data: eventData
-    });
-    
-    logger.info(`Broadcasting to ${connections.size} clients for account ${accountNumber}`);
-    
-    connections.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
-            client.send(message);
-        }
-    });
 }
 
 // Function to refresh the port cache
@@ -220,77 +134,32 @@ async function refreshPortCache() {
 
 // Function to get account number for a port
 async function getAccountNumberForPort(port) {
-    // First try the cache
-    if (portToAccountCache.has(port)) {
-        return portToAccountCache.get(port);
-    }
+    const { Pool } = require('pg');
+    const mainPool = new Pool({
+        user: 'Tian',
+        host: 'localhost',
+        database: 'modular_system',
+        password: 'Modul@rdev@2024',
+        port: 5432,
+    });
     
-    // If not in cache, refresh the cache and try again
-    await refreshPortCache();
-    return portToAccountCache.get(port);
-}
-
-// Function to set up WebSocket server for an account
-function setupWebSocket(server, accountNumber) {
-    // Check if WebSocket server already exists for this account
-    if (wssMap.has(accountNumber)) {
-        return wssMap.get(accountNumber);
-    }
-    
-    const wss = new WebSocket.Server({ server });
-    
-    wss.on('connection', (ws, req) => {
-        logger.info(`New WebSocket connection for account ${accountNumber}`);
+    try {
+        const result = await mainPool.query(
+            'SELECT account_number FROM customers WHERE clock_server_port = $1 AND status = $2',
+            [port, 'active']
+        );
         
-        // Initialize connections set for this account if it doesn't exist
-        if (!connectionsMap.has(accountNumber)) {
-            connectionsMap.set(accountNumber, new Set());
+        if (result.rows.length === 0) {
+            return null;
         }
         
-        // Add this connection to the set
-        connectionsMap.get(accountNumber).add(ws);
-        
-        // Send welcome message
-        ws.send(JSON.stringify({
-            type: 'connection',
-            message: `Connected to real-time clock events for account ${accountNumber}`,
-            timestamp: new Date().toISOString()
-        }));
-        
-        // Handle connection close
-        ws.on('close', () => {
-            logger.info(`WebSocket connection closed for account ${accountNumber}`);
-            if (connectionsMap.has(accountNumber)) {
-                connectionsMap.get(accountNumber).delete(ws);
-            }
-        });
-        
-        // Ping-pong to keep connection alive
-        ws.isAlive = true;
-        ws.on('pong', () => {
-            ws.isAlive = true;
-        });
-    });
-    
-    // Set up ping interval
-    const pingInterval = setInterval(() => {
-        wss.clients.forEach(ws => {
-            if (ws.isAlive === false) return ws.terminate();
-            
-            ws.isAlive = false;
-            ws.ping();
-        });
-    }, 30000);
-    
-    // Handle server shutdown
-    wss.on('close', () => {
-        clearInterval(pingInterval);
-    });
-    
-    // Store WebSocket server
-    wssMap.set(accountNumber, wss);
-    
-    return wss;
+        return result.rows[0].account_number;
+    } catch (error) {
+        logger.error(`Error getting account number for port ${port}: ${error.message}`);
+        return null;
+    } finally {
+        await mainPool.end();
+    }
 }
 
 // Function to create a server for a specific port
@@ -311,17 +180,14 @@ async function createServer(port) {
         
         req.on('end', () => {
             req.rawBody = data;
-            logger.info(`[PORT ${port}] RAW REQUEST BODY: ${data}`);
+            logger.debug(`[PORT ${port}] RAW REQUEST BODY: ${data}`);
         next();
         });
     });
     
-    // Configure body parsers - SIMPLIFIED
+    // Configure body parsers
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
-    
-    // Configure multer for multipart form data
-    const upload = multer();
     
     // Add ISUP verification middleware
     app.use(['/ISAPI/*', '/EventService', '/clock'], verifyIsupAuth);
@@ -329,14 +195,13 @@ async function createServer(port) {
     // Log all incoming requests
     app.use((req, res, next) => {
         logger.info(`[PORT ${port}] Received ${req.method} request to ${req.url}`);
-        logger.info(`[PORT ${port}] Headers: ${JSON.stringify(req.headers)}`);
         next();
     });
 
-    // Handle clock data from Hikvision device - manually parse multipart form data
+    // Handle clock data from Hikvision device
     app.post('/clock', async (req, res) => {
         try {
-            logger.debug('Received request to /clock');
+            logger.info('Received request to /clock');
             
             // Check if we have the raw body
             if (!req.rawBody) {
@@ -348,8 +213,13 @@ async function createServer(port) {
                 });
             }
             
-            // Log the raw body for debugging
-            logger.debug('Raw body:', req.rawBody.substring(0, 1000));
+            // Log the raw request body for debugging
+            logger.info(`RAW BODY: ${req.rawBody.substring(0, 2000)}`);
+
+            // Get request content type for determining response format
+            const isXmlRequest = req.headers['content-type'] && 
+                (req.headers['content-type'].includes('application/xml') || 
+                 req.headers['content-type'].includes('text/xml'));
             
             // Manually extract the event_log from the multipart form data
             let eventLogJson = null;
@@ -364,237 +234,315 @@ async function createServer(port) {
             
             if (match && match[1]) {
                 eventLogJson = match[1].trim();
-                logger.debug('Extracted event_log JSON:', eventLogJson);
+                logger.info('Extracted event_log JSON:', eventLogJson);
             } else {
                 // Try a simpler pattern as fallback
                 const simpleMatch = req.rawBody.match(/name="event_log"[\s\S]*?\r\n\r\n([\s\S]*?)(?:\r\n--|$)/);
                 if (simpleMatch && simpleMatch[1]) {
                     eventLogJson = simpleMatch[1].trim();
-                    logger.debug('Extracted event_log JSON (simple method):', eventLogJson);
+                    logger.info('Extracted event_log JSON (simple method):', eventLogJson);
                 } else {
                     // Last resort - try to find any JSON object in the raw body
                     const jsonMatch = req.rawBody.match(/(\{[\s\S]*\})/);
                     if (jsonMatch && jsonMatch[1]) {
                         eventLogJson = jsonMatch[1].trim();
-                        logger.debug('Extracted JSON from raw body (last resort):', eventLogJson);
+                        logger.info('Extracted JSON from raw body (last resort):', eventLogJson);
                     }
                 }
             }
             
             if (!eventLogJson) {
                 logger.error('Could not extract event_log from multipart form data');
-                return res.status(400).json({
-                    status: "ERROR",
-                    message: "Could not extract event_log from request",
-                    timestamp: new Date().toISOString()
-                });
+                
+                // Even when failing to extract, send a successful ACK to prevent retries
+                if (isXmlRequest) {
+                    res.set('Content-Type', 'application/xml');
+                    res.status(200).send(`<?xml version="1.0" encoding="UTF-8"?>
+<ResponseStatus version="2.0" xmlns="http://www.hikvision.com/ver20/XMLSchema">
+    <statusCode>1</statusCode>
+    <statusString>OK</statusString>
+    <subStatusCode>ok</subStatusCode>
+</ResponseStatus>`);
+                } else {
+                    res.status(200).json({
+                        ResponseStatus: {
+                            statusCode: 1,
+                            statusString: "OK", 
+                            subStatusCode: "ok"
+                        }
+                    });
+                }
+                return;
             }
+            
+            // Check for duplicates at the raw event level using a hash
+            const crypto = require('crypto');
+            const eventHash = crypto.createHash('md5').update(eventLogJson).digest('hex');
+            
+            // Use a simple in-memory cache for duplicates (lasts for server lifetime)
+            if (!global.recentEventHashes) {
+                global.recentEventHashes = new Map();
+            }
+            
+            // Check if this exact event was processed recently (within 2 minutes)
+            const now = Date.now();
+            const twoMinutesAgo = now - (2 * 60 * 1000);
+            
+            // Clean up old entries first
+            for (const [hash, timestamp] of global.recentEventHashes.entries()) {
+                if (timestamp < twoMinutesAgo) {
+                    global.recentEventHashes.delete(hash);
+                }
+            }
+            
+            // Check if event is a duplicate
+            if (global.recentEventHashes.has(eventHash)) {
+                logger.info(`Duplicate event detected by hash ${eventHash}. Acknowledging without processing.`);
+                
+                // Send ACK response even for duplicates
+                if (isXmlRequest) {
+                    res.set('Content-Type', 'application/xml');
+                    res.status(200).send(`<?xml version="1.0" encoding="UTF-8"?>
+<ResponseStatus version="2.0" xmlns="http://www.hikvision.com/ver20/XMLSchema">
+    <statusCode>1</statusCode>
+    <statusString>OK</statusString>
+    <subStatusCode>ok</subStatusCode>
+</ResponseStatus>`);
+                } else {
+                        res.status(200).json({
+                        ResponseStatus: {
+                            statusCode: 1,
+                            statusString: "OK",
+                            subStatusCode: "ok"
+                        }
+                    });
+                }
+                return;
+            }
+            
+            // Store this event hash
+            global.recentEventHashes.set(eventHash, now);
             
             // Parse the JSON
             try {
                 const eventData = JSON.parse(eventLogJson);
-                logger.debug('Parsed event data:', eventData);
                 
-                // Log all fields in AccessControllerEvent
-                if (eventData.AccessControllerEvent) {
-                    logger.debug('AccessControllerEvent fields:', {
-                        availableFields: Object.keys(eventData.AccessControllerEvent),
-                        fieldValues: eventData.AccessControllerEvent
-                    });
-                    
-                    // Check for employee ID fields
-                    const employeeIdFields = ['employeeNoString', 'verifyNo', 'cardNo', 'employeeNo', 'cardNumber', 'employeeID'];
-                    let employeeId = null;
-                    
-                    for (const field of employeeIdFields) {
-                        if (eventData.AccessControllerEvent && eventData.AccessControllerEvent[field]) {
-                            employeeId = eventData.AccessControllerEvent[field];
-                            logger.info(`Found employee ID in field ${field}: ${employeeId}`);
-                        break;
-                    }
-                }
+                // Log the complete event data structure
+                logger.info('FULL EVENT DATA:', JSON.stringify(eventData, null, 2));
                 
-                if (!employeeId) {
-                        logger.warn('No employee ID found in event data. Using fallback values.');
-                        // Use fallback values
-                        if (eventData.AccessControllerEvent.doorNo) {
-                            employeeId = eventData.AccessControllerEvent.doorNo;
-                            logger.info(`Using doorNo as fallback: ${employeeId}`);
-                        } else if (eventData.AccessControllerEvent.serialNo) {
-                            employeeId = eventData.AccessControllerEvent.serialNo;
-                            logger.info(`Using serialNo as fallback: ${employeeId}`);
+                // Handle different types of events from the clock
+                    if (eventData.AccessControllerEvent) {
+                    // This is the main access control event
+                    logger.info('AccessControllerEvent FIELDS:', Object.keys(eventData.AccessControllerEvent));
+                    
+                    // Look for all expected fields that should be in a valid clock event
+                    const employeeNoString = eventData.AccessControllerEvent.employeeNoString;
+                    const cardNo = eventData.AccessControllerEvent.cardNo;
+                    const verifyNo = eventData.AccessControllerEvent.verifyNo;
+                    const attendanceStatus = eventData.AccessControllerEvent.attendanceStatus;
+                    
+                    logger.info(`CLOCK EVENT - Card: ${cardNo}, Employee: ${employeeNoString}, VerifyNo: ${verifyNo}, Status: ${attendanceStatus}`);
+                    
+                    // Determine if this is a primary clock event or a secondary relay event
+                    // Primary events usually have employeeNoString and verifyNo
+                    const isPrimaryClockEvent = employeeNoString && (verifyNo || cardNo);
+                    
+                    if (isPrimaryClockEvent) {
+                        // Process the primary event
+                        try {
+                            // Use employeeNoString as the employee number since that's what user is clocking with (1005)
+                            const clockNumber = employeeNoString || verifyNo?.toString() || cardNo;
+                            
+                            if (!clockNumber) {
+                                logger.error('No valid clock number found in event data');
+                                
+                                // Send ACK even though we didn't find a clock number
+                                if (isXmlRequest) {
+                                    res.set('Content-Type', 'application/xml');
+                                    res.status(200).send(`<?xml version="1.0" encoding="UTF-8"?>
+<ResponseStatus version="2.0" xmlns="http://www.hikvision.com/ver20/XMLSchema">
+    <statusCode>1</statusCode>
+    <statusString>OK</statusString>
+    <subStatusCode>ok</subStatusCode>
+</ResponseStatus>`);
+                                } else {
+                                    res.status(200).json({
+                                        ResponseStatus: {
+                                            statusCode: 1,
+                                            statusString: "OK",
+                                            subStatusCode: "ok"
+                                        }
+                                    });
+                                }
+                                return;
+                            }
+                            
+                            logger.info(`Processing primary clock event for employee ${clockNumber}`);
+                            const result = await processClockEvent(req, port, eventData, clockNumber);
+                            
+                            // Send ACK response in exact Hikvision-compatible format per documentation
+                            if (isXmlRequest) {
+                                // XML format for Hikvision devices that expect XML
+                                res.set('Content-Type', 'application/xml');
+                                res.status(200).send(`<?xml version="1.0" encoding="UTF-8"?>
+<ResponseStatus version="2.0" xmlns="http://www.hikvision.com/ver20/XMLSchema">
+    <statusCode>1</statusCode>
+    <statusString>OK</statusString>
+    <subStatusCode>ok</subStatusCode>
+</ResponseStatus>`);
+                            } else {
+                                // JSON format for newer Hikvision devices
+                            res.status(200).json({
+                                    ResponseStatus: {
+                                        statusCode: 1,
+                                        statusString: "OK", 
+                                        subStatusCode: "ok"
+                                    }
+                                });
+                            }
+                        } catch (error) {
+                            logger.error(`Error processing clock event: ${error.message}`);
+                            
+                            // Still send ACK to the device to prevent retries - in exact Hikvision format
+                            if (isXmlRequest) {
+                                // XML format
+                                res.set('Content-Type', 'application/xml');
+                                res.status(200).send(`<?xml version="1.0" encoding="UTF-8"?>
+<ResponseStatus version="2.0" xmlns="http://www.hikvision.com/ver20/XMLSchema">
+    <statusCode>1</statusCode>
+    <statusString>OK</statusString>
+    <subStatusCode>ok</subStatusCode>
+</ResponseStatus>`);
+                            } else {
+                                // JSON format
+                                res.status(200).json({
+                                    ResponseStatus: {
+                                        statusCode: 1,
+                                        statusString: "OK",
+                                        subStatusCode: "ok"
+                                    }
+                                });
+                            }
+                        }
+                    } else {
+                        // This appears to be a secondary event (like relay activation)
+                        logger.info('Received secondary event (likely relay activation). Acknowledging without processing.');
+                        
+                        // Just send ACK for secondary events without processing them
+                        if (isXmlRequest) {
+                            res.set('Content-Type', 'application/xml');
+                            res.status(200).send(`<?xml version="1.0" encoding="UTF-8"?>
+<ResponseStatus version="2.0" xmlns="http://www.hikvision.com/ver20/XMLSchema">
+    <statusCode>1</statusCode>
+    <statusString>OK</statusString>
+    <subStatusCode>ok</subStatusCode>
+</ResponseStatus>`);
+                        } else {
+        res.status(200).json({
+                                ResponseStatus: {
+                                    statusCode: 1,
+                                    statusString: "OK",
+                                    subStatusCode: "ok"
+                                }
+                            });
                         }
                     }
+                } else if (eventData.eventType && eventData.eventType === "AccessControllerEvent") {
+                    // This is likely a secondary event or notification 
+                    logger.info('Received secondary or notification event. Acknowledging without processing.');
                     
-                    // Process the event with the extracted employee ID
-                    try {
-                        const result = await processClockEvent(req, port, eventData, employeeId);
-                        
-                        // Send ACK response
+                    // Send ACK response without processing further
+                    if (isXmlRequest) {
+                        res.set('Content-Type', 'application/xml');
+                        res.status(200).send(`<?xml version="1.0" encoding="UTF-8"?>
+<ResponseStatus version="2.0" xmlns="http://www.hikvision.com/ver20/XMLSchema">
+    <statusCode>1</statusCode>
+    <statusString>OK</statusString>
+    <subStatusCode>ok</subStatusCode>
+</ResponseStatus>`);
+                    } else {
                         res.status(200).json({
-                            status: "ACK",
-                            message: "Event received successfully",
-                            timestamp: new Date().toISOString()
-                        });
-            } catch (error) {
-                        logger.error(`Error processing clock event: ${error.message}`, {
-                            stack: error.stack,
-                            timestamp: new Date().toISOString()
-                        });
-                        
-                        // Still send an ACK to the device to prevent retries
-                        res.status(200).json({
-                            status: "ACK",
-                            message: "Event received but processing failed",
-                            error: error.message,
-                            timestamp: new Date().toISOString()
+                            ResponseStatus: {
+                                statusCode: 1,
+                                statusString: "OK",
+                                subStatusCode: "ok"
+                            }
                         });
                     }
                 } else {
-                    logger.error('Invalid event format: AccessControllerEvent not found');
-                    res.status(400).json({
-                        status: "ERROR",
-                        message: "Invalid event format",
-                        timestamp: new Date().toISOString()
-                    });
-                }
-            } catch (e) {
-                logger.error(`Error parsing event_log JSON: ${e.message}`, {
-                    rawJson: eventLogJson ? eventLogJson.substring(0, 200) + '...' : 'null',
-                    error: e.message,
-                    stack: e.stack,
-                    timestamp: new Date().toISOString()
-                });
-                
-                // Try to clean the JSON string and parse again
-                try {
-                    // Remove any non-JSON characters that might be causing issues
-                    const cleanedJson = eventLogJson.replace(/[\u0000-\u0019]+/g, "");
-                    const eventData = JSON.parse(cleanedJson);
-                    logger.info('Successfully parsed JSON after cleaning');
-                    
-                    // Continue processing with the cleaned JSON
-                    if (eventData.AccessControllerEvent) {
-                        logger.debug('AccessControllerEvent fields after cleaning:', {
-                            availableFields: Object.keys(eventData.AccessControllerEvent),
-                            fieldValues: eventData.AccessControllerEvent
-                        });
-                        
-                        // Check for employee ID fields
-                        const employeeIdFields = ['employeeNoString', 'verifyNo', 'cardNo', 'employeeNo', 'cardNumber', 'employeeID'];
-                        let employeeId = null;
-                        
-                        for (const field of employeeIdFields) {
-                            if (eventData.AccessControllerEvent && eventData.AccessControllerEvent[field]) {
-                                employeeId = eventData.AccessControllerEvent[field];
-                                logger.info(`Found employee ID in field ${field}: ${employeeId}`);
-                                break;
-                            }
-                        }
-                        
-                        if (!employeeId) {
-                            logger.warn('No employee ID found in event data. Using fallback values.');
-                            // Use fallback values
-                            if (eventData.AccessControllerEvent.doorNo) {
-                                employeeId = eventData.AccessControllerEvent.doorNo;
-                                logger.info(`Using doorNo as fallback: ${employeeId}`);
-                            } else if (eventData.AccessControllerEvent.serialNo) {
-                                employeeId = eventData.AccessControllerEvent.serialNo;
-                                logger.info(`Using serialNo as fallback: ${employeeId}`);
-                            }
-                        }
-                        
-                        // Process the event with the extracted employee ID
-                        try {
-                            const result = await processClockEvent(req, port, eventData, employeeId);
-                            
-                            // Send ACK response
-                            res.status(200).json({
-                                status: "ACK",
-                                message: "Event received successfully (after JSON cleaning)",
-                                timestamp: new Date().toISOString()
-                            });
-                        } catch (error) {
-                            logger.error(`Error processing clock event: ${error.message}`, {
-                                stack: error.stack,
-                                timestamp: new Date().toISOString()
-                            });
-                            
-                            // Still send an ACK to the device to prevent retries
-        res.status(200).json({
-                                status: "ACK",
-                                message: "Event received but processing failed",
-                                error: error.message,
-                                timestamp: new Date().toISOString()
-                            });
-                        }
+                    logger.error('Invalid event format: No AccessControllerEvent found');
+                    // Send success response even for invalid format to stop retries
+                    if (isXmlRequest) {
+                        res.set('Content-Type', 'application/xml');
+                        res.status(200).send(`<?xml version="1.0" encoding="UTF-8"?>
+<ResponseStatus version="2.0" xmlns="http://www.hikvision.com/ver20/XMLSchema">
+    <statusCode>1</statusCode>
+    <statusString>OK</statusString>
+    <subStatusCode>ok</subStatusCode>
+</ResponseStatus>`);
                     } else {
-                        logger.error('Invalid event format after cleaning: AccessControllerEvent not found');
-                        res.status(400).json({
-                            status: "ERROR",
-                            message: "Invalid event format",
-                            timestamp: new Date().toISOString()
+                        res.status(200).json({
+                            ResponseStatus: {
+                                statusCode: 1,
+                                statusString: "OK",
+                                subStatusCode: "ok"
+                            }
                         });
                     }
-                } catch (cleanError) {
-                    // If cleaning also fails, respond with error
-                    res.status(400).json({
-                        status: "ERROR",
-                        message: "Invalid JSON in event_log",
-                        originalError: e.message,
-                        cleanError: cleanError.message,
-                        timestamp: new Date().toISOString()
+                }
+            } catch (e) {
+                logger.error(`Error parsing event_log JSON: ${e.message}`);
+                // Send success response even for parse errors to stop retries
+                if (isXmlRequest) {
+                    res.set('Content-Type', 'application/xml');
+                    res.status(200).send(`<?xml version="1.0" encoding="UTF-8"?>
+<ResponseStatus version="2.0" xmlns="http://www.hikvision.com/ver20/XMLSchema">
+    <statusCode>1</statusCode>
+    <statusString>OK</statusString>
+    <subStatusCode>ok</subStatusCode>
+</ResponseStatus>`);
+                } else {
+                    res.status(200).json({
+                        ResponseStatus: {
+                            statusCode: 1,
+                            statusString: "OK",
+                            subStatusCode: "ok"
+                        }
                     });
                 }
             }
         } catch (error) {
             logger.error(`Error processing Hikvision event on port ${port}:`, error);
-            res.status(500).json({
-                status: "ERROR",
-                message: error.message,
-                timestamp: new Date().toISOString()
-            });
+            // Send success response even for unexpected errors to stop retries
+            if (req.headers['content-type'] && (req.headers['content-type'].includes('application/xml') || req.headers['content-type'].includes('text/xml'))) {
+                res.set('Content-Type', 'application/xml');
+                res.status(200).send(`<?xml version="1.0" encoding="UTF-8"?>
+<ResponseStatus version="2.0" xmlns="http://www.hikvision.com/ver20/XMLSchema">
+    <statusCode>1</statusCode>
+    <statusString>OK</statusString>
+    <subStatusCode>ok</subStatusCode>
+</ResponseStatus>`);
+            } else {
+                res.status(200).json({
+                    ResponseStatus: {
+                        statusCode: 1,
+                        statusString: "OK",
+                        subStatusCode: "ok"
+                    }
+                });
+            }
         }
     });
     
     // Additional endpoints for Hikvision - use the same handler
-    app.post('/EventService', (req, res) => {
+    app.post(['/EventService', '/EventService/*', '/ISAPI/Event/notification/alertStream', 
+        '/ISAPI/AccessControl/AcsEvent', '/ISAPI/AccessControl/*', '/ISAPI/Event/*'], (req, res) => {
         // Forward to the /clock handler
         req.url = '/clock';
         app.handle(req, res);
     });
 
-    app.post('/EventService/*', (req, res) => {
-        // Forward to the /clock handler
-        req.url = '/clock';
-        app.handle(req, res);
-    });
-
-    app.post('/ISAPI/Event/notification/alertStream', (req, res) => {
-        // Forward to the /clock handler
-        req.url = '/clock';
-        app.handle(req, res);
-    });
-
-    app.post('/ISAPI/AccessControl/AcsEvent', (req, res) => {
-        // Forward to the /clock handler
-        req.url = '/clock';
-        app.handle(req, res);
-    });
-
-    app.post('/ISAPI/AccessControl/*', (req, res) => {
-        // Forward to the /clock handler
-        req.url = '/clock';
-        app.handle(req, res);
-    });
-
-    app.post('/ISAPI/Event/*', (req, res) => {
-        // Forward to the /clock handler
-        req.url = '/clock';
-        app.handle(req, res);
-    });
-
-    // Add device status endpoint
+    // Required for Hikvision device compatibility
     app.get('/DeviceStatus', (req, res) => {
         const statusResponse = `<AcsWorkStatus>
             <cardReaderOnlineStatus>enable</cardReaderOnlineStatus>
@@ -604,20 +552,31 @@ async function createServer(port) {
         
         res.set('Content-Type', 'application/xml');
         res.send(statusResponse);
-        logger.info('Sent online status response to device');
     });
 
-    // Add heartbeat endpoint
-    app.post('/KeepAlive', async (req, res) => {
+    // Add door control endpoint
+    app.post('/door/control', async (req, res) => {
         try {
+            // Extract device info and command
+            const { deviceId, action, duration } = req.body;
+            
+            if (!deviceId || !action) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Missing required parameters'
+                });
+            }
+            
+            // Get account number for this port
             const accountNumber = await getAccountNumberForPort(port);
-            const deviceId = req.body.deviceID || req.query.deviceID || 'unknown';
+            if (!accountNumber) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Customer account not found'
+                });
+            }
             
-            // Log the heartbeat
-            logger.info(`Received heartbeat from device ${deviceId} on port ${port}`);
-            
-            // Update device status in database if we have an account number
-            if (accountNumber) {
+            // Get device info from customer database
             const customerPool = new Pool({
                 user: 'Tian',
                 host: 'localhost',
@@ -627,99 +586,123 @@ async function createServer(port) {
             });
 
                 try {
-                    // Get account ID for this account number
-                    const accountResult = await pool.query(
-                        'SELECT id FROM customers WHERE account_number = $1',
-                        [accountNumber]
+                        const deviceResult = await customerPool.query(
+                    'SELECT ip_address, username, password FROM devices WHERE device_id = $1 OR serial_number = $1',
+                    [deviceId]
+                );
+                
+                if (deviceResult.rows.length === 0) {
+                    return res.status(404).json({
+                        success: false,
+                        message: 'Device not found'
+                    });
+                }
+                
+                const device = deviceResult.rows[0];
+                const deviceIp = device.ip_address;
+                const username = device.username || 'admin'; // Default to admin if not set
+                const password = device.password || '12345'; // Default to 12345 if not set
+                
+                // Define XML commands for different actions
+                const commandMap = {
+                    'unlock': `<?xml version="1.0" encoding="UTF-8"?>
+<RemoteControlDoor version="2.0" xmlns="http://www.isapi.org/ver20/XMLSchema">
+    <doorNo>1</doorNo>
+    <openDoor>true</openDoor>
+</RemoteControlDoor>`,
+                    'lock': `<?xml version="1.0" encoding="UTF-8"?>
+<RemoteControlDoor version="2.0" xmlns="http://www.isapi.org/ver20/XMLSchema">
+    <doorNo>1</doorNo>
+    <openDoor>false</openDoor>
+</RemoteControlDoor>`,
+                    'hold': `<?xml version="1.0" encoding="UTF-8"?>
+<RemoteControlDoor version="2.0" xmlns="http://www.isapi.org/ver20/XMLSchema">
+    <doorNo>1</doorNo>
+    <openDoor>true</openDoor>
+    <holdTime>${duration || 60}</holdTime>
+</RemoteControlDoor>`
+                };
+                
+                const commandXml = commandMap[action];
+                if (!commandXml) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Invalid action specified'
+                    });
+                }
+                
+                // Implement the API call to control the door
+                // Using node-fetch for HTTP requests
+                const fetch = require('node-fetch');
+                const btoa = require('btoa');
+                
+                const apiUrl = `http://${deviceIp}/ISAPI/AccessControl/RemoteControl/door/1`;
+                const authHeader = 'Basic ' + btoa(`${username}:${password}`);
+                
+                const response = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/xml',
+                        'Authorization': authHeader
+                    },
+                    body: commandXml
+                });
+                
+                const responseText = await response.text();
+                
+                if (response.ok) {
+                    logger.info(`Door control successful: ${action} for device ${deviceId}`);
+                    
+                    // Log the action in the database
+                    await customerPool.query(
+                        `INSERT INTO device_actions (
+                            device_id,
+                            action_type,
+                            status,
+                            details,
+                            created_at
+                        ) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)`,
+                        [deviceId, action, 'success', JSON.stringify({duration})]
                     );
                     
-                    if (accountResult.rows.length > 0) {
-                        const accountId = accountResult.rows[0].id;
-                        
-                        // Check if device exists
-                        const deviceResult = await customerPool.query(
-                            'SELECT id FROM clock_devices WHERE device_id = $1 AND account_id = $2',
-                            [deviceId, accountId]
-                        );
-                        
-                        if (deviceResult.rows.length > 0) {
-                            // Update existing device
-                            await customerPool.query(
-                                'UPDATE clock_devices SET last_heartbeat = NOW(), status = $1 WHERE device_id = $2 AND account_id = $3',
-                                ['online', deviceId, accountId]
-                            );
-                        } else {
-                            // Insert new device
-                            await customerPool.query(
-                                'INSERT INTO clock_devices (account_id, device_id, device_name, status, last_heartbeat) VALUES ($1, $2, $3, $4, NOW())',
-                                [accountId, deviceId, `Device ${deviceId}`, 'online']
-                            );
-                        }
-                    }
-                    
-                    await customerPool.end();
-                } catch (dbError) {
-                    logger.error(`Error updating device status: ${dbError.message}`);
-                }
-            }
-            
-            // Send response
-            res.status(200).json({ 
-                status: "OK", 
-                timestamp: new Date().toISOString(),
-                message: "Heartbeat received"
-            });
-        } catch (error) {
-            logger.error(`Error processing heartbeat: ${error.message}`);
-            res.status(500).json({ 
-                status: "ERROR", 
-                timestamp: new Date().toISOString(),
-                message: error.message
-            });
-        }
-    });
-
-    // WebSocket setup endpoint
-    app.get('/ws', (req, res) => {
-        res.send('WebSocket endpoint available');
-    });
-    
-    // Test endpoint to verify server is running
-    app.get('/test', (req, res) => {
         res.status(200).json({
-            status: 'OK',
-            port: port,
-            accountNumber: portToAccountCache.get(port) || 'Unknown',
-            time: new Date().toISOString()
-        });
-    });
-
-    // Add endpoint to view raw logs
-    app.get('/raw-logs', (req, res) => {
-        const fs = require('fs');
-        try {
-            // Read the last 100 lines of the raw log file
-            const logData = fs.readFileSync('raw_clock_data.log', 'utf8')
-                .split('\n')
-                .filter(line => line.trim() !== '')
-                .slice(-100)
-                .map(line => {
-                    try {
-                        return JSON.parse(line);
-                    } catch (e) {
-                        return { raw: line };
-                    }
-                });
-            
-            res.json({
-                timestamp: new Date().toISOString(),
-                count: logData.length,
-                logs: logData
-            });
+                        success: true,
+                        message: `Door ${action} command sent successfully`,
+                        response: responseText
+                    });
+                } else {
+                    logger.error(`Door control failed: ${responseText}`);
+                    
+                    // Log the failed action
+                    await customerPool.query(
+                        `INSERT INTO device_actions (
+                            device_id,
+                            action_type,
+                            status,
+                            details,
+                            created_at
+                        ) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)`,
+                        [deviceId, action, 'failed', JSON.stringify({
+                            error: response.statusText,
+                            response: responseText
+                        })]
+                    );
+                    
+                    res.status(response.status).json({
+                        success: false,
+                        message: 'Failed to execute door control command',
+                        error: responseText
+                    });
+                }
+            } finally {
+                await customerPool.end();
+            }
         } catch (error) {
+            logger.error(`Error in door control: ${error.message}`);
             res.status(500).json({
-                error: 'Failed to read log file',
-                message: error.message
+                success: false,
+                message: 'Internal server error processing door control command',
+                error: error.message
             });
         }
     });
@@ -732,14 +715,6 @@ async function createServer(port) {
 
     // Create HTTP server instance
     const server = http.createServer(app);
-    
-    // Get account number for the port
-    const accountNumber = portToAccountCache.get(port);
-    
-    // Set up WebSocket if we have an account number
-    if (accountNumber) {
-        setupWebSocket(server, accountNumber);
-    }
 
     // Start the server
     server.listen(port, () => {
@@ -782,64 +757,31 @@ const HIKVISION_EVENT_TYPES = {
     }
 };
 
-// Helper function to handle clock data from various endpoints
-async function handleClockData(req, res) {
-    const port = req.socket.localPort;
-    try {
-        // Enhanced logging of ALL incoming data
-        logger.debug('========== HIKVISION EVENT DATA START ==========');
-        logger.debug(`Timestamp: ${new Date().toISOString()}`);
-        logger.debug(`Port: ${port}`);
-        logger.debug(`Method: ${req.method}`);
-        logger.debug(`URL: ${req.url}`);
-        logger.debug(`Headers:`, req.headers);
-        
-        // Log the raw request body if available
-        if (req.rawBody) {
-            logger.debug(`RAW BODY: ${req.rawBody}`);
-        }
-        
-        // Log the parsed body
-        logger.debug('Parsed Body:', req.body);
-        
-        // Process the event
-        const result = await processClockEvent(req, port);
-
-        // Send ACK response to the device
-        const ackResponse = {
-            status: "ACK",
-            message: "Event received successfully",
-            timestamp: new Date().toISOString(),
-            eventId: result.id
-        };
-
-        // Log the acknowledgment
-        logger.info('Sending ACK for clock event:', {
-            port,
-            eventId: result.id,
-            timestamp: new Date().toISOString()
-        });
-
-        // Send response with ACK
-        res.status(200).json(ackResponse);
-
-    } catch (error) {
-        logger.error(`Error processing Hikvision event on port ${port}:`, error);
-        res.status(500).json({
-            status: "ERROR",
-            message: error.message,
-            timestamp: new Date().toISOString()
-        });
-    }
-}
-
 // Separate the event processing logic
-async function processClockEvent(req, port, eventData, employeeId) {
-        const accountNumber = await getAccountNumberForPort(port);
+async function processClockEvent(req, port, eventData, verifyNo) {
+    // Connect to main DB to get account number from port
+    const { Pool } = require('pg');
+    const mainPool = new Pool({
+        user: 'Tian',
+        host: 'localhost',
+        database: 'modular_system',
+        password: 'Modul@rdev@2024',
+        port: 5432,
+    });
+    
+    try {
+        // Get account number from port in customers table
+        const portResult = await mainPool.query(
+            'SELECT account_number FROM customers WHERE clock_server_port = $1 AND status = $2',
+            [port, 'active']
+        );
         
-        if (!accountNumber) {
-        throw new Error('Customer not found');
+        if (portResult.rows.length === 0) {
+            throw new Error(`No active customer found for port ${port}`);
         }
+        
+        const accountNumber = portResult.rows[0].account_number;
+        logger.info(`Found account number ${accountNumber} for port ${port}`);
 
         // Create a new pool for the customer's database
         const customerPool = new Pool({
@@ -851,49 +793,76 @@ async function processClockEvent(req, port, eventData, employeeId) {
         });
 
         try {
-        // Test database connection
-            const testResult = await customerPool.query('SELECT NOW()');
-            logger.info(`Database connection test successful for ${accountNumber}: ${JSON.stringify(testResult.rows[0])}`);
+            // Extract device information
+            const deviceId = eventData.deviceID || '';
+            const ipAddress = eventData.ipAddress || req.ip || '';
+            const macAddress = eventData.macAddress || '';
+            const serialNumber = deviceId; // Using deviceID as serialNumber
+            const deviceName = eventData.deviceName || `Clock Device ${deviceId}`;
 
         // Use the provided event data
         const clockData = eventData;
         
         // Extract the important fields
-        const majorEventType = clockData.AccessControllerEvent.majorEventType;
-        const subEventType = clockData.AccessControllerEvent.subEventType;
-        
-        // Fix: Use deviceID as the device identifier
-        const deviceId = clockData.deviceID || '';
-        
+            const majorEventType = clockData.AccessControllerEvent?.majorEventType;
+            const subEventType = clockData.AccessControllerEvent?.subEventType;
         const eventDateTime = new Date(clockData.dateTime || new Date());
         
-        // Fix: Properly extract verify mode
-        const verifyMode = clockData.AccessControllerEvent.currentVerifyMode || 
-                          clockData.AccessControllerEvent.verifyMode || 
+            // Extract verify mode
+            const verifyMode = clockData.AccessControllerEvent?.currentVerifyMode || 
+                            clockData.AccessControllerEvent?.verifyMode || 
                           'unknown';
-        
-        // Use the provided employee ID
-        const verifyNo = employeeId;
-        
-        // Extract employeeNoString if available (this is the employee number)
-        const employeeNoString = clockData.AccessControllerEvent.employeeNoString || null;
-
-        // Log the complete event data for debugging
-        logger.debug('Processing Hikvision access event:', {
-            verifyNo,
-            employeeNoString,
-            deviceId,
-            eventDateTime,
-            majorEventType,
-            subEventType,
-            verifyMode,
-            fullEvent: clockData
-        });
 
         // Start a transaction
         const client = await customerPool.connect();
+            
         try {
             await client.query('BEGIN');
+                
+                // Check if device exists, create or update it
+                const deviceResult = await client.query(
+                    `SELECT device_id FROM devices WHERE serial_number = $1 OR device_id = $2`,
+                    [serialNumber, deviceId]
+                );
+                
+                if (deviceResult.rows.length === 0) {
+                    // Create new device
+                    logger.info(`Creating new device record for ${deviceId} in account ${accountNumber}`);
+                    await client.query(
+                        `INSERT INTO devices (
+                            serial_number, 
+                            device_id, 
+                            device_name, 
+                            ip_address, 
+                            mac_address, 
+                            status, 
+                            last_online,
+                            created_at
+                        ) VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP)`,
+                        [
+                            serialNumber,
+                            deviceId,
+                            deviceName,
+                            ipAddress,
+                            macAddress,
+                            'online',
+                            new Date()
+                        ]
+                    );
+                } else {
+                    // Update existing device
+                    logger.info(`Updating device ${deviceId} status to online`);
+                    await client.query(
+                        `UPDATE devices SET 
+                            ip_address = $1, 
+                            mac_address = $2,
+                            status = $3, 
+                            last_online = $4,
+                            updated_at = CURRENT_TIMESTAMP
+                        WHERE device_id = $5 OR serial_number = $5`,
+                        [ipAddress, macAddress, 'online', new Date(), deviceId]
+                    );
+                }
 
             // Check for existing clocking within 1 minute
             const existingClocking = await client.query(
@@ -905,10 +874,7 @@ async function processClockEvent(req, port, eventData, employeeId) {
             );
 
             if (existingClocking.rows.length > 0) {
-                logger.info('Skipping duplicate clocking:', {
-                    deviceId,
-                    eventDateTime
-                });
+                    logger.info('Skipping duplicate clocking');
                 await client.query('COMMIT');
                 return {
                     success: true,
@@ -917,36 +883,21 @@ async function processClockEvent(req, port, eventData, employeeId) {
                 };
             }
 
-            // Try to get employee details using employee_number first (from employeeNoString)
+                // Try to get employee details by clock_number (verifyNo)
             let employee = null;
             
-            // First try by employee_number if employeeNoString is available
-            if (employeeNoString) {
+                // Look up employee by clock_number
                 const employeeResult = await client.query(
-                    'SELECT employee_id, first_name, last_name, department FROM employees WHERE employee_number = $1',
-                    [employeeNoString]
-                );
-                
-                if (employeeResult.rows.length > 0) {
-                    employee = employeeResult.rows[0];
-                    logger.info(`Found employee by employee_number: ${employeeNoString}`);
-                }
-            }
-            
-            // If not found by employee_number, try by clock_number
-            if (!employee && verifyNo) {
-                const fallbackResult = await client.query(
                     'SELECT employee_id, first_name, last_name, department FROM employees WHERE clock_number = $1',
                     [verifyNo]
                 );
                 
-                if (fallbackResult.rows.length > 0) {
-                    employee = fallbackResult.rows[0];
+                if (employeeResult.rows.length > 0) {
+                    employee = employeeResult.rows[0];
                     logger.info(`Found employee by clock_number: ${verifyNo}`);
-                }
             }
 
-            // Fix: Determine attendance status based on verify mode and event type more accurately
+                // Determine attendance status based on verify mode and event type
             let status = 'present';
             if (subEventType === HIKVISION_EVENT_TYPES.MINOR.SWIPE_CARD_FAILED ||
                 subEventType === HIKVISION_EVENT_TYPES.MINOR.FACE_RECOGNITION_FAILED ||
@@ -960,7 +911,7 @@ async function processClockEvent(req, port, eventData, employeeId) {
 
             // If no employee found, insert into unknown_clockings table
             if (!employee) {
-                logger.warn(`No employee found for clock number ${verifyNo} or employee number ${employeeNoString}, inserting into unknown_clockings table`);
+                    logger.warn(`No employee found for clock number ${verifyNo}`);
                 
                 // Insert into unknown_clockings table
                 const insertResult = await client.query(
@@ -979,7 +930,7 @@ async function processClockEvent(req, port, eventData, employeeId) {
                     [
                         new Date(eventDateTime).toISOString().split('T')[0], // Extract date part only
                         eventDateTime,
-                        employeeNoString || verifyNo.toString(), // Use employeeNoString if available, otherwise verifyNo
+                            verifyNo.toString(), // Always use verifyNo
                         deviceId,
                         verifyMode,
                         status,
@@ -990,22 +941,6 @@ async function processClockEvent(req, port, eventData, employeeId) {
                 );
                 
                 await client.query('COMMIT');
-                
-                // Broadcast the event with unknown employee info
-                broadcastClockEvent(accountNumber, {
-                    id: insertResult.rows[0].id,
-                    employeeId: null,
-                    employeeName: `Unknown (${employeeNoString || verifyNo})`,
-                    department: 'Unassigned',
-                    clockNumber: employeeNoString || verifyNo.toString(),
-                    deviceId: deviceId,
-                    time: eventDateTime.toISOString(),
-                    type: 'unknown_clocking',
-                    status: status,
-                    verifyMode: verifyMode,
-                    majorEventType: majorEventType,
-                    minorEventType: subEventType
-                });
                 
                 return {
                     success: true,
@@ -1054,7 +989,7 @@ async function processClockEvent(req, port, eventData, employeeId) {
                         1, // default shift_id
                         eventDateTime,
                         status,
-                        employeeNoString || verifyNo.toString(), // Use employeeNoString if available, otherwise verifyNo
+                            verifyNo.toString(), // Always use verifyNo for clock_number
                         deviceId,
                         verifyMode,
                         status,
@@ -1064,22 +999,6 @@ async function processClockEvent(req, port, eventData, employeeId) {
                 );
                 
                 await client.query('COMMIT');
-                
-                // Broadcast the event with correct employee name fields and status
-        broadcastClockEvent(accountNumber, {
-                    id: insertResult.rows[0].attendance_id,
-                    employeeId: employee.employee_id,
-                    employeeName: `${employee.first_name} ${employee.last_name}`,
-                    department: employee.department,
-                    clockNumber: employeeNoString || verifyNo.toString(),
-                    deviceId: deviceId,
-                    time: eventDateTime.toISOString(),
-                    type: 'clock_in',
-                    status: status,
-                    verifyMode: verifyMode,
-                    majorEventType: majorEventType,
-                    minorEventType: subEventType
-                });
                 
                 return {
                     success: true,
@@ -1094,10 +1013,14 @@ async function processClockEvent(req, port, eventData, employeeId) {
             throw error;
         } finally {
             client.release();
+            }
+        } finally {
         await customerPool.end();
         }
     } catch (error) {
         throw error;
+    } finally {
+        await mainPool.end();
     }
 }
 
@@ -1139,8 +1062,6 @@ async function manageServers() {
                 await stopServer(port);
             }
         }
-        
-        logger.info(`Server management complete. Active servers: ${servers.size}`);
     } catch (error) {
         logger.error('Error managing servers:', error);
     }
@@ -1177,25 +1098,3 @@ process.on('SIGINT', async () => {
     await pool.end();
     process.exit(0);
 }); 
-
-// Add periodic heartbeat to maintain device connection
-setInterval(async () => {
-    try {
-        // For each active server/port
-        for (const [port] of servers) {
-            const accountNumber = await getAccountNumberForPort(port);
-            if (!accountNumber) continue;
-
-            logger.debug(`Sending heartbeat for port ${port}, account ${accountNumber}`);
-            
-            // Log the heartbeat attempt
-            logger.info('Heartbeat sent for device on port:', {
-                port,
-                accountNumber,
-                timestamp: new Date().toISOString()
-            });
-        }
-    } catch (error) {
-        logger.error('Error sending heartbeat:', error);
-    }
-}, 30000); // Send every 30 seconds 

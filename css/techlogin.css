@@ -1411,3 +1411,19 @@ html, body {
 [data-theme="dark"] .help-text {
     color: var(--color-text-light-dark);
 }
+
+/* Port display styling */
+.display-field {
+    padding: 10px 0;
+}
+
+.port-display {
+    font-size: 16px;
+    font-weight: 500;
+    padding: 8px 12px;
+    background-color: var(--bg-secondary);
+    border-radius: 4px;
+    color: var(--text-primary);
+    display: inline-block;
+    min-width: 80px;
+}

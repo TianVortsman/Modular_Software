@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
     const bodyId = document.body.id;
 
+    // Get current page path
+    const currentPath = window.location.pathname;
+
     // Sidebar configurations
     const sidebarConfig = {
         "dashboard": [

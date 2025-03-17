@@ -1,15 +1,6 @@
 <?php
-/**
- * KPI Data API Endpoint
- * 
- * This API provides KPI data for the Time and Attendance dashboard
- * It returns data based on the requested time period and tab
- */
-
-// Include necessary files
-require_once '../../../config/config.php';
-require_once '../../../php/auth_check.php';
-require_once '../../../php/db_connect.php';
+session_start();
+require_once '../../../php/db.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {

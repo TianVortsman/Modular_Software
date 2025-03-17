@@ -468,14 +468,10 @@ if (!isset($_SESSION['csrf_token'])) {
                         <h4>Clock Server Configuration</h4>
                         <div class="form-group">
                             <label for="clockServerPort">Clock Server Port</label>
-                            <div class="input-group">
-                                <input type="number" id="clockServerPort" name="clockServerPort" min="1024" max="65535"
-                                       class="form-control" placeholder="Enter port number (1024-65535)">
-                                <div class="input-group-append">
-                                    <button onclick="saveClockServerPort()" class="btn btn-primary">Save</button>
-                                </div>
+                            <div class="display-field">
+                                <span id="clockServerPort" class="port-display">Not configured</span>
                             </div>
-                            <small class="help-text">This port will be used by the clock server to listen for this customer's clock machines.</small>
+                            <small class="help-text">This port is used by the clock server to listen for this customer's clock machines.</small>
                         </div>
                         <div class="server-status">
                             <div id="server-status-indicator" class="status-indicator"></div>
@@ -483,7 +479,35 @@ if (!isset($_SESSION['csrf_token'])) {
                         </div>
                     </div>
 
-                    <div class="machines-grid" id="machines-list"></div>
+                    <!-- Devices Table Section -->
+                    <div class="devices-section">
+                        <h4>Connected Devices</h4>
+                        <div class="table-responsive">
+                            <table class="management-table" id="devicesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Device ID</th>
+                                        <th>Name</th>
+                                        <th>IP Address</th>
+                                        <th>Status</th>
+                                        <th>Last Online</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="devicesTableBody">
+                                    <!-- Devices will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="devicesLoading" class="loading-indicator">
+                            <div class="spinner"></div>
+                            <p>Loading devices...</p>
+                        </div>
+                        <div id="noDevicesMessage" class="no-data-message hidden">
+                            <p>No devices found for this customer.</p>
+                            <p>Click "Add Machine" to add a device manually, or devices will be automatically added when they connect to the clock server.</p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Account Settings Tab -->
