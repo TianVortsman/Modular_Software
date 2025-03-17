@@ -30,7 +30,7 @@
     align-items: center;
     padding: var(--spacing-medium);
     background-color: var(--color-primary);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     border-radius: var(--radius-medium) var(--radius-medium) 0 0;
 }
 
@@ -43,7 +43,7 @@
 .widget-modal-close {
     background: none;
     border: none;
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     font-size: 1.5rem;
     cursor: pointer;
     transition: transform var(--transition-speed);
@@ -70,7 +70,7 @@
 .widget-modal-close-btn {
     padding: var(--spacing-small) var(--spacing-medium);
     background-color: var(--color-primary);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     border: none;
     border-radius: var(--radius-small);
     cursor: pointer;
@@ -128,7 +128,7 @@
 .filter-button {
     padding: var(--spacing-small) var(--spacing-medium);
     background-color: var(--color-primary);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     border: none;
     border-radius: var(--radius-small);
     cursor: pointer;
@@ -155,7 +155,7 @@
 
 .modal-table th {
     background-color: var(--color-primary);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     font-weight: bold;
 }
 
@@ -409,7 +409,7 @@
 
 .primary-button {
     background-color: var(--color-primary);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
 }
 
 .secondary-button {
@@ -439,7 +439,7 @@
 .action-button {
     padding: 2px 6px;
     background-color: var(--color-primary);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     border: none;
     border-radius: var(--radius-small);
     cursor: pointer;

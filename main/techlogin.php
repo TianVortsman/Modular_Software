@@ -1,8 +1,15 @@
+<?php
+session_start();
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?php echo $_SESSION['csrf_token']; ?>">
     <title>Customer Management Dashboard</title>
     <link rel="stylesheet" href="../css/root.css">
     <link rel="stylesheet" href="../css/techlogin.css">
@@ -342,7 +349,7 @@
     </div>
 
     <!-- Customer Management Modal -->
-    <div id="manage-customer-modal" class="modal">
+    <div id="customerModal" class="modal">
         <div class="modal-content extra-large">
             <div class="modal-header">
                 <div class="modal-title">
@@ -357,7 +364,7 @@
                         <i class="material-icons">login</i>
                         Login as Technician
                     </button>
-                    <button class="close-button" onclick="closeManageCustomerModal()">
+                    <button class="close-button" onclick="closeCustomerModal()">
                         <i class="material-icons">close</i>
                     </button>
                 </div>
@@ -365,23 +372,23 @@
 
             <div class="modal-body">
                 <div class="tabs">
-                    <button class="tab-button active" onclick="openCustomerTab(event, 'users-management')">
+                    <button class="tab-button active" data-tab="users-management">
                         <i class="material-icons">group</i>
                         Users
                     </button>
-                    <button class="tab-button" onclick="openCustomerTab(event, 'modules-permissions')">
+                    <button class="tab-button" data-tab="modules-permissions">
                         <i class="material-icons">apps</i>
                         Modules & Permissions
                     </button>
-                    <button class="tab-button" onclick="openCustomerTab(event, 'clock-machines')">
+                    <button class="tab-button" data-tab="clock-machines">
                         <i class="material-icons">timer</i>
                         Clock Machines
                     </button>
-                    <button class="tab-button" onclick="openCustomerTab(event, 'account-settings')">
+                    <button class="tab-button" data-tab="account-settings">
                         <i class="material-icons">settings</i>
                         Account
                     </button>
-                    <button class="tab-button" onclick="openCustomerTab(event, 'data-storage')">
+                    <button class="tab-button" data-tab="data-storage">
                         <i class="material-icons">storage</i>
                         Data Storage
                     </button>
@@ -455,6 +462,27 @@
                             </button>
                         </div>
                     </div>
+                    
+                    <!-- Clock Server Port Section -->
+                    <div class="settings-section">
+                        <h4>Clock Server Configuration</h4>
+                        <div class="form-group">
+                            <label for="clockServerPort">Clock Server Port</label>
+                            <div class="input-group">
+                                <input type="number" id="clockServerPort" name="clockServerPort" min="1024" max="65535"
+                                       class="form-control" placeholder="Enter port number (1024-65535)">
+                                <div class="input-group-append">
+                                    <button onclick="saveClockServerPort()" class="btn btn-primary">Save</button>
+                                </div>
+                            </div>
+                            <small class="help-text">This port will be used by the clock server to listen for this customer's clock machines.</small>
+                        </div>
+                        <div class="server-status">
+                            <div id="server-status-indicator" class="status-indicator"></div>
+                            <span id="server-status-text">Checking server status...</span>
+                        </div>
+                    </div>
+
                     <div class="machines-grid" id="machines-list"></div>
                 </div>
 
@@ -574,7 +602,10 @@
     <!-- Scripts -->
     <script src="../js/techlogin.js"></script>
     <script src="../js/add-customer.js"></script>
-    <script src="/modular1/js/page-transitions.js"></script>
     <script src="../js/fetch-customerdata.js"></script>
+    <script src="../js/clock-server.js"></script>
+
+    <?php include '../php/loading-modal.php'; ?>
+    <?php include '../php/response-modal.php'; ?>
 </body>
 </html>

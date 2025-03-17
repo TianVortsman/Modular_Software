@@ -69,7 +69,7 @@ body {
 
 .btn-primary {
     background-color: var(--color-primary);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
 }
 
 .table {
@@ -80,7 +80,7 @@ body {
 
 .table th {
     background-color: var(--color-primary);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     padding: var(--spacing-small) var(--spacing-medium);
     text-align: left;
 }
@@ -225,7 +225,7 @@ input:checked + .slider:before {
 
 .modal-header {
     background-color: var(--color-primary);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     padding: var(--spacing-medium);
     display: flex;
     justify-content: space-between;

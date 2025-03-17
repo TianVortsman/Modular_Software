@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
     // Make fetchCustomerData available globally
     window.fetchCustomerData = function(searchTerm = '') {
-        if (isLoading) return; // Prevent multiple simultaneous requests
+        if (isLoading) return;
         isLoading = true;
 
         const statusFilter = document.getElementById("status-filter").value;
@@ -67,92 +67,53 @@ document.addEventListener("DOMContentLoaded", function () {
                     countElement.textContent = `${totalCustomers} customers`;
                 }
 
-                // Prepare the new rows
-                const fragment = document.createDocumentFragment();
+                // Clear the table first
+                tableBody.innerHTML = '';
+
+                // Add each customer row
                 data.customers.forEach(customer => {
-                    if (!customer || !customer.id) {
-                        console.error('Invalid customer data:', customer);
-                        return;
-                    }
-
-                    const row = document.createElement("tr");
-                    row.classList.add('customer-row');
-                    row.setAttribute('data-customer-id', customer.id);
-
-                    // Safely get customer data with defaults
-                    const customerData = {
-                        id: parseInt(customer.id) || 0,
-                        customer_name: customer.customer_name || customer.company_name || 'N/A',
-                        company_name: customer.company_name || 'N/A',
-                        email: customer.email || 'N/A',
-                        account_number: customer.account_number || 'N/A',
-                        total_devices: parseInt(customer.total_devices) || 0,
-                        active_devices: parseInt(customer.active_devices) || 0,
-                        status: (customer.status || 'unknown').toLowerCase(),
-                        last_login: customer.last_login || null
-                    };
-
-                    // Verify customer ID before creating row
-                    if (!customerData.id) {
-                        console.error('Invalid customer ID:', customerData);
-                        return;
-                    }
-
-                    const statusClass = getStatusClass(customerData.status);
-
+                    const row = document.createElement('tr');
+                    row.className = 'customer-row';
+                    row.setAttribute('data-account', customer.account_number);
+                    row.setAttribute('data-customerid', customer.id);
+                    
                     row.innerHTML = `
-                        <td>${escapeHtml(customerData.customer_name)}</td>
-                        <td>${escapeHtml(customerData.company_name)}</td>
-                        <td>${escapeHtml(customerData.email)}</td>
-                        <td>${escapeHtml(customerData.account_number)}</td>
+                        <td>${escapeHtml(customer.customer_name || customer.company_name || 'N/A')}</td>
+                        <td>${escapeHtml(customer.company_name || 'N/A')}</td>
+                        <td>${escapeHtml(customer.email || 'N/A')}</td>
+                        <td>${escapeHtml(customer.account_number || 'N/A')}</td>
                         <td>
                             <div class="device-stats">
-                                <span class="device-total">${customerData.total_devices}</span>
-                                <span class="device-active">${customerData.active_devices} active</span>
+                                <span class="device-total">${customer.total_devices || 0}</span>
+                                <span class="device-active">${customer.active_devices || 0} active</span>
                             </div>
                         </td>
                         <td>
-                            <span class="status-badge ${statusClass}">${capitalizeFirst(customerData.status)}</span>
+                            <span class="status-badge ${(customer.status || '').toLowerCase()}">${customer.status || 'Unknown'}</span>
                         </td>
-                        <td>${customerData.last_login ? formatDate(customerData.last_login) : 'Never'}</td>
+                        <td>${formatDate(customer.last_login)}</td>
                         <td>
                             <div class="action-buttons">
-                                <button class="icon-button" onclick="viewCustomer(${customerData.id})" title="View Details">
+                                <button class="icon-button" onclick="viewCustomer(${customer.id})" title="View Details">
                                     <i class="material-icons">visibility</i>
                                 </button>
-                                <button class="icon-button" onclick="editCustomer(${customerData.id})" title="Edit">
+                                <button class="icon-button" onclick="editCustomer(${customer.id})" title="Edit">
                                     <i class="material-icons">edit</i>
                                 </button>
-                                <button class="icon-button" onclick="manageDevices(${customerData.id})" title="Manage Devices">
+                                <button class="icon-button" onclick="manageDevices(${customer.id})" title="Manage Devices">
                                     <i class="material-icons">devices</i>
                                 </button>
-                                <button class="icon-button danger" onclick="deleteCustomer(${customerData.id})" title="Delete">
+                                <button class="icon-button danger" onclick="deleteCustomer(${customer.id})" title="Delete">
                                     <i class="material-icons">delete</i>
                                 </button>
                             </div>
                         </td>
                     `;
-
-                    fragment.appendChild(row);
-                });
-
-                // Update the table content
-                requestAnimationFrame(() => {
-                    tableBody.innerHTML = '';
-                    tableBody.appendChild(fragment);
                     
-                    // Attach double-click handlers to all rows
-                    attachRowEventListeners();
-
-                    // Fade in the new rows
-                    const newRows = tableBody.getElementsByTagName('tr');
-                    Array.from(newRows).forEach(row => {
-                        row.style.opacity = '0';
-                        requestAnimationFrame(() => {
-                            row.style.opacity = '1';
-                            row.style.transition = 'opacity 0.2s ease-in';
-                        });
-                    });
+                    // Add double-click event listener
+                    row.addEventListener('dblclick', handleRowDoubleClick);
+                    
+                    tableBody.appendChild(row);
                 });
 
                 updatePagination();
@@ -170,35 +131,128 @@ document.addEventListener("DOMContentLoaded", function () {
                         </td>
                     </tr>
                 `;
-                showToast('Failed to fetch customer data. Please try again.', 'error');
+                showResponseModal('error', 'Failed to fetch customer data. Please try again.');
             })
             .finally(() => {
                 isLoading = false;
             });
     };
 
-    // Function to attach event listeners to rows
-    function attachRowEventListeners() {
-        const rows = document.querySelectorAll('#customer-body tr.customer-row');
-        rows.forEach(row => {
-            // Remove existing event listeners if any
-            row.removeEventListener('dblclick', handleRowDoubleClick);
-            // Add new event listener
-            row.addEventListener('dblclick', handleRowDoubleClick);
-        });
-    }
-
     // Function to handle row double-click
-    function handleRowDoubleClick(event) {
+    async function handleRowDoubleClick(event) {
         const row = event.currentTarget;
-        const customerId = row.getAttribute('data-customer-id');
-        if (customerId) {
-            window.openManageCustomerModal(parseInt(customerId));
-        } else {
-            console.error('No customer ID found on row');
-            showToast('Error: Unable to open customer details', 'error');
+        const accountNumber = row.getAttribute('data-account');
+        const customerId = row.getAttribute('data-customerid');
+        
+        if (!accountNumber) {
+            console.error('No account number found on row');
+            showResponseModal('error', 'Unable to open customer details');
+            return;
+        }
+
+        // Show loading modal first with proper error handling
+        try {
+            const loadingModal = document.getElementById('unique-loading-modal');
+            if (loadingModal) {
+                const messageElement = loadingModal.querySelector('.modal-message');
+                if (messageElement) {
+                    messageElement.textContent = 'Loading customer data...';
+                }
+                
+                // First make it visible with display:flex
+                loadingModal.classList.remove('hidden');
+                loadingModal.style.display = 'flex';
+                
+                // Force a reflow to ensure display change is applied
+                loadingModal.offsetHeight;
+                
+                // Now make it visible with opacity
+                loadingModal.style.opacity = 1;
+                loadingModal.style.visibility = 'visible';
+            } else {
+                console.error('Loading modal element not found');
+            }
+
+            // Fetch port data
+            const response = await fetch(`../api/get-clock-server-port.php?account_number=${accountNumber}`);
+            if (!response.ok) {
+                console.error('Failed to fetch port with status:', response.status);
+                throw new Error('Failed to fetch port');
+            }
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Open the modal and switch to Clock Machines tab
+                const modal = document.getElementById('customerModal');
+                if (modal) {
+                    // Store account number for later use
+                    modal.dataset.accountNumber = accountNumber;
+                    
+                    // If we have a customer ID, store it and fetch customer details
+                    if (customerId) {
+                        currentCustomerId = customerId;
+                        fetchCustomerDetails(customerId);
+                    }
+                    
+                    // Show modal
+                    modal.style.display = 'flex';
+                    modal.classList.add('active');
+                    
+                    // Switch to Clock Machines tab and load data
+                    const clockTab = document.querySelector('[data-tab="clock-machines"]');
+                    if (clockTab) {
+                        clockTab.click();
+                    }
+                    
+                    // Update port input if it exists
+                    const portInput = document.getElementById('clockServerPort');
+                    if (portInput) {
+                        portInput.value = data.port || '';
+                    }
+                    
+                    // Prevent body scrolling
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    throw new Error('Modal not found');
+                }
+            } else {
+                throw new Error(data.error || 'Failed to fetch port');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showResponseModal('error', error.message || 'An error occurred');
+        } finally {
+            // Hide loading modal properly
+            const loadingModal = document.getElementById('unique-loading-modal');
+            if (loadingModal) {
+                // First set opacity to 0 for fade out
+                loadingModal.style.opacity = 0;
+                
+                // After animation completes, hide completely
+                setTimeout(() => {
+                    loadingModal.classList.add('hidden');
+                    loadingModal.style.display = 'none';
+                    loadingModal.style.visibility = 'hidden';
+                }, 300);
+            }
+            
+            // Extra fallback in case the loading modal doesn't hide properly
+            setTimeout(() => {
+                const modal = document.getElementById('unique-loading-modal');
+                if (modal && modal.style.opacity !== "0") {
+                    console.warn('Loading modal still visible - forcing hide');
+                    modal.style.opacity = 0;
+                    modal.style.display = 'none';
+                    modal.style.visibility = 'hidden';
+                    modal.classList.add('hidden');
+                }
+            }, 1000);
         }
     }
+    
+    // Expose handleRowDoubleClick globally
+    window.handleRowDoubleClick = handleRowDoubleClick;
 
     // Helper function to get status class
     function getStatusClass(status) {
@@ -218,7 +272,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Helper function to escape HTML
     function escapeHtml(unsafe) {
+        if (!unsafe) return '';
         return unsafe
+            .toString()
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
@@ -228,10 +284,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Helper function to format date
     function formatDate(dateString) {
+        if (!dateString) return 'Never';
         try {
             const date = new Date(dateString);
             if (isNaN(date.getTime())) {
-                throw new Error('Invalid date');
+                return 'Invalid date';
             }
             return date.toLocaleString('en-US', {
                 year: 'numeric',
@@ -347,12 +404,162 @@ document.addEventListener("DOMContentLoaded", function () {
         window.fetchCustomerData();
     });
 
-    // Error message helper
-    function showToast(message, type) {
-        // Implement your toast notification logic here
-        console.log(message);
-    }
-
     // Initial data fetch
     window.fetchCustomerData();
+});
+
+// Function to create a customer row
+function createCustomerRow(customer) {
+    const row = document.createElement('tr');
+    row.className = 'customer-row';
+    row.setAttribute('data-account', customer.account_number);
+    
+    // Add double-click event listener
+    row.addEventListener('dblclick', function() {
+        const modal = document.getElementById('customerModal');
+        if (modal) {
+            // Store account number for later use
+            modal.dataset.accountNumber = customer.account_number;
+            
+            // Show modal
+            modal.style.display = 'flex';
+            modal.classList.add('active');
+            
+            // Switch to Clock Machines tab
+            const clockTab = document.querySelector('[data-tab="clock-machines"]');
+            if (clockTab) {
+                clockTab.click();
+            }
+            
+            // Prevent body scrolling
+            document.body.style.overflow = 'hidden';
+        }
+    });
+    
+    row.innerHTML = `
+        <td>${escapeHtml(customer.name || customer.customer_name)}</td>
+        <td>${escapeHtml(customer.company || customer.company_name)}</td>
+        <td>${escapeHtml(customer.email)}</td>
+        <td>${escapeHtml(customer.account_number)}</td>
+        <td>
+            <div class="device-stats">
+                <span class="device-total">${customer.total_devices || 0}</span>
+                <span class="device-active">${customer.active_devices || 0} active</span>
+            </div>
+        </td>
+        <td>
+            <span class="status-badge ${(customer.status || '').toLowerCase()}">${customer.status || 'Unknown'}</span>
+        </td>
+        <td>${formatDate(customer.last_login)}</td>
+        <td>
+            <div class="action-buttons">
+                <button class="icon-button" onclick="viewCustomer(${customer.id})" title="View Details">
+                    <i class="material-icons">visibility</i>
+                </button>
+                <button class="icon-button" onclick="editCustomer(${customer.id})" title="Edit">
+                    <i class="material-icons">edit</i>
+                </button>
+                <button class="icon-button" onclick="manageDevices(${customer.id})" title="Manage Devices">
+                    <i class="material-icons">devices</i>
+                </button>
+                <button class="icon-button danger" onclick="deleteCustomer(${customer.id})" title="Delete">
+                    <i class="material-icons">delete</i>
+                </button>
+            </div>
+        </td>
+    `;
+    return row;
+}
+
+// Function to handle double-click on customer row
+async function handleCustomerRowDoubleClick(accountNumber) {
+    try {
+        // Get CSRF token from meta tag
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        
+        const response = await fetch(`../api/get-clock-server-port.php?account_number=${accountNumber}`, {
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            }
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch port');
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Open the modal and switch to Clock Machines tab
+            const modal = document.getElementById('customerModal');
+            if (modal) {
+                // Store account number for later use
+                modal.dataset.accountNumber = accountNumber;
+                
+                // Switch to Clock Machines tab
+                const clockTab = document.querySelector('[data-tab="clock-machines"]');
+                if (clockTab) {
+                    clockTab.click();
+                }
+                
+                // Update port input if it exists
+                const portInput = document.getElementById('clockServerPort');
+                if (portInput) {
+                    portInput.value = data.port || '';
+                }
+                
+                // Show modal
+                modal.style.display = 'flex';
+                modal.classList.add('active');
+                
+                // Add class to body to prevent scrolling
+                document.body.style.overflow = 'hidden';
+            } else {
+                showToast('Error: Modal not found', 'error');
+            }
+        } else {
+            showToast(data.error || 'Failed to fetch port', 'error');
+        }
+    } catch (error) {
+        console.error('Error fetching port:', error);
+        showToast('Failed to fetch port', 'error');
+    }
+}
+
+// Function to fetch and display customer data
+async function fetchCustomerData() {
+    const tbody = document.getElementById('customer-body');
+    if (!tbody) return;
+
+    try {
+        tbody.innerHTML = '<tr><td colspan="8" class="loading-state">Loading customers...</td></tr>';
+
+        const response = await fetch('../php/get-customers.php');
+        if (!response.ok) throw new Error('Failed to fetch customers');
+        
+        const data = await response.json();
+        tbody.innerHTML = '';
+
+        if (data.customers && data.customers.length > 0) {
+            data.customers.forEach(customer => {
+                const row = createCustomerRow(customer);
+                tbody.appendChild(row);
+            });
+
+            // Update customer count
+            const customerCount = document.querySelector('.customer-count');
+            if (customerCount) {
+                customerCount.textContent = `${data.customers.length} customers`;
+            }
+        } else {
+            tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No customers found</td></tr>';
+        }
+    } catch (error) {
+        console.error('Error fetching customers:', error);
+        tbody.innerHTML = '<tr><td colspan="8" class="error-state">Failed to load customers</td></tr>';
+        showToast('Failed to load customers', 'error');
+    }
+}
+
+// Initialize customer data on page load
+document.addEventListener('DOMContentLoaded', () => {
+    fetchCustomerData();
 });

@@ -14,38 +14,35 @@ $db_user = 'root';
 $db_pass = '';
 $db_name = $account_number;
 
-$conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
+require_once('../../../php/db.php');
 
-if ($conn->connect_error) {
-    die(json_encode(['error' => 'Connection failed: ' . $conn->connect_error]));
-}
+try {
+    // Initialize PDO connection
+    $dsn = "pgsql:host=$host;port=5432;dbname=$db";
+    $pdo = new PDO($dsn, $user, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-// Handle search query
-if (isset($_GET['query'])) {
-    $query = $conn->real_escape_string($_GET['query']);
-    $sql = "SELECT customer_name, address_line1, address_line2 FROM invoiceCustomers WHERE customer_name LIKE ? LIMIT 5";
+    $search = $_POST['search'] ?? '';
+    
+    $stmt = $pdo->prepare("
+        SELECT id, name, email, phone 
+        FROM customers 
+        WHERE (name ILIKE :search OR email ILIKE :search OR phone ILIKE :search)
+        AND account_number = :account_number
+        LIMIT 10
+    ");
+    
+    $stmt->execute([
+        ':search' => '%' . $search . '%',
+        ':account_number' => $_SESSION['account_number']
+    ]);
+    
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode($results);
 
-    if ($stmt = $conn->prepare($sql)) {
-        $searchTerm = "%" . $query . "%";
-        $stmt->bind_param('s', $searchTerm);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        $customers = [];
-        while ($row = $result->fetch_assoc()) {
-            $customers[] = [
-                'customer_name' => $row['customer_name'],
-                'address_line_1' => $row['address_line1'], // Fixed to match JS
-                'address_line_2' => $row['address_line2']  // Fixed to match JS
-            ];
-        }
-
-        echo json_encode($customers);
-        $stmt->close();
-    } else {
-        echo json_encode(['error' => 'Query preparation failed: ' . $conn->error]); // Add detailed error
-    }
-} else {
-    echo json_encode(['error' => 'Invalid request. Missing parameters.']);
+} catch (PDOException $e) {
+    error_log("Error in searchCustomer.php: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['error' => 'Database error occurred']);
 }
 ?>

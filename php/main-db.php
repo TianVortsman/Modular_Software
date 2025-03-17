@@ -16,7 +16,10 @@ $conn = pg_connect($conn_string);
 // }
 // Check if the connection succeeded
 if (!$conn) {
-    die("Connection failed: " . pg_last_error());
+    header('Content-Type: application/json');
+    http_response_code(500);
+    die(json_encode([
+        'success' => false,
+        'error' => 'Database connection failed: ' . pg_last_error()
+    ]));
 }
-
-

@@ -117,7 +117,7 @@
 #employee-details-modal .info-field label {
     font-weight: bold;
     font-size: 0.9rem;
-    color: var(--color-text-secondary);
+    color: var(--color-text-light);
     margin-bottom: 5px;
 }
 

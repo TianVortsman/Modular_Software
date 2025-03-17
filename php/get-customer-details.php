@@ -1,7 +1,7 @@
 <?php
-// Enable error reporting for debugging
+// Enable error reporting for debugging but don't display errors
 error_reporting(E_ALL);
-ini_set('display_errors', 1); // Temporarily enable display errors for debugging
+ini_set('display_errors', 0); // Disable display errors to prevent HTML output
 
 // Set JSON header right at the start
 header('Content-Type: application/json');

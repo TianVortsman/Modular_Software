@@ -287,6 +287,21 @@ CREATE TABLE IF NOT EXISTS public.employees (
     CONSTRAINT employees_work_schedule_type_check CHECK (work_schedule_type IN ('Open', 'Fixed', 'Rotating'))
 );
 
+CREATE TABLE IF NOT EXISTS public.unknown_clockings (
+    id SERIAL PRIMARY KEY,
+    date DATE NOT NULL,
+    date_time TIMESTAMP NOT NULL,
+    clock_number VARCHAR(50) NOT NULL,
+    device_id VARCHAR(50),
+    verify_mode VARCHAR(50),
+    verify_status VARCHAR(50),
+    major_event_type INTEGER,
+    minor_event_type INTEGER,
+    raw_data TEXT,
+    processed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS public.shifts (
     shift_id serial NOT NULL,
     shift_name character varying(50) NOT NULL,
@@ -303,14 +318,35 @@ CREATE TABLE IF NOT EXISTS public.attendance_records (
     employee_id integer NOT NULL,
     shift_id integer NOT NULL,
     date date NOT NULL,
+    date_time timestamp without time zone NOT NULL,
     time_in timestamp without time zone,
     time_out timestamp without time zone,
     status character varying(20) NOT NULL DEFAULT 'Present',
+    clock_number VARCHAR(50),
+    device_id VARCHAR(50),
+    verify_mode VARCHAR(50),
+    verify_status VARCHAR(50),
+    major_event_type INTEGER,
+    minor_event_type INTEGER,
     notes text,
     created_at timestamp without time zone DEFAULT now(),
     updated_at timestamp without time zone DEFAULT now(),
     deleted_at timestamp without time zone,
     CONSTRAINT attendance_records_pkey PRIMARY KEY (attendance_id)
+);
+
+CREATE TABLE devices (
+    id SERIAL PRIMARY KEY,
+    device_id VARCHAR(255) NOT NULL,
+    device_name VARCHAR(255) NOT NULL,
+    device_type VARCHAR(255) NOT NULL,
+    device_ip VARCHAR(255) NOT NULL,
+    device_port VARCHAR(255) NOT NULL,
+    device_username VARCHAR(255) NOT NULL,
+    device_password VARCHAR(255) NOT NULL,
+    device_location VARCHAR(255) NOT NULL,
+    device_status VARCHAR(255) NOT NULL,
+    device_last_online TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS public.break_types (
@@ -893,6 +929,8 @@ CREATE INDEX IF NOT EXISTS idx_employees_group ON public.employees(group_name);
 CREATE INDEX IF NOT EXISTS idx_employees_department ON public.employees(department);
 CREATE INDEX IF NOT EXISTS idx_employees_cost_center ON public.employees(cost_center);
 CREATE INDEX IF NOT EXISTS idx_employees_status ON public.employees(status);
+CREATE INDEX IF NOT EXISTS idx_employees_employee_number ON public.employees(employee_number);
+CREATE INDEX IF NOT EXISTS idx_employees_clock_number ON public.employees(clock_number);
 CREATE INDEX IF NOT EXISTS idx_attendance_employee ON public.attendance_records(employee_id);
 CREATE INDEX IF NOT EXISTS idx_attendance_shift ON public.attendance_records(shift_id);
 CREATE INDEX IF NOT EXISTS idx_break_attendance ON public.break_records(attendance_id);

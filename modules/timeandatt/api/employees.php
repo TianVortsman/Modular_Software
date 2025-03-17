@@ -105,6 +105,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Begin transaction
         $conn->beginTransaction();
         
+        // Check for existing employee number first
+        $checkStmt = $conn->prepare("SELECT COUNT(*) FROM employees WHERE employee_number = ?");
+        $checkStmt->execute([$data['employee_number']]);
+        if ($checkStmt->fetchColumn() > 0) {
+            throw new PDOException('Employee number already exists', '23505');
+        }
+        
         // Insert employee
         $stmt = $conn->prepare("
             INSERT INTO employees (
@@ -133,6 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'message' => 'Employee added successfully',
             'employee_id' => $conn->lastInsertId()
         ]);
+        exit;
         
     } catch (PDOException $e) {
         // Rollback transaction on error
@@ -140,14 +148,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $conn->rollBack();
         }
         
-        // PostgreSQL error code for unique violation is '23505'
-        if ($e->getCode() == '23505') {
+        // Check for duplicate entry
+        if ($e->getCode() == '23505' || $e->getMessage() === 'Employee number already exists') {
             http_response_code(400);
-            echo json_encode(['success' => false, 'message' => 'Employee number already exists']);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Employee number already exists'
+            ]);
         } else {
             error_log("Database Error: " . $e->getMessage());
             http_response_code(500);
-            echo json_encode(['success' => false, 'message' => 'Failed to add employee']);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to add employee'
+            ]);
         }
         exit;
     }

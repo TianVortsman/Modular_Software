@@ -337,49 +337,38 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: JSON.stringify(employeeData)
                 });
 
-                const responseText = await response.text();
-                console.log('Server response:', responseText); // Debug log
-                
-                let result;
-                try {
-                    result = JSON.parse(responseText);
-                } catch (jsonError) {
-                    console.error('JSON parsing error:', jsonError, 'Response:', responseText);
-                    throw new Error('Invalid server response');
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || 'Failed to add employee');
                 }
 
-                if (!result) {
-                    throw new Error('Empty response from server');
-                }
-
-                if (response.ok && result.success) {
-                    hideModal();
-                    addEmployeeForm.reset();
+                if (result.success) {
+                    // Refresh employee list
                     await loadEmployees();
+                    // Hide modal
+                    hideModal();
+                    // Show success message
                     showNotification('Employee added successfully', 'success');
                 } else if (result.message === 'Employee number already exists') {
                     showError('employeeNumber', 'Employee number already exists');
                 } else {
                     throw new Error(result.message || 'Failed to add employee');
                 }
-
             } catch (error) {
                 console.error('Error adding employee:', error);
-                showNotification(error.message, 'error');
+                if (error.message === 'Employee number already exists') {
+                    showError('employeeNumber', 'Employee number already exists');
+                } else {
+                    showNotification(error.message, 'error');
+                }
             }
         });
 
         // Clear errors when any input changes
         addEmployeeForm.querySelectorAll('input').forEach(input => {
             input.addEventListener('input', () => {
-                const field = input.id;
                 clearFieldError(input);
-                // Also clear the specific error message
-                const errorElement = document.getElementById(`${field}-error`);
-                if (errorElement) {
-                    errorElement.style.display = 'none';
-                    errorElement.textContent = '';
-                }
             });
         });
     }

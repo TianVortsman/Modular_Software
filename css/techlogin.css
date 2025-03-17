@@ -472,32 +472,32 @@ html, body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: 1000;
-    justify-content: center;
-    align-items: center;
-    backdrop-filter: blur(5px);
-    transition: all 0.3s ease;
+    overflow-y: auto;
+    padding: 2rem 1rem;
+    box-sizing: border-box;
 }
 
-.modal.active {
+.modal.active,
+.modal[style*="display: block"],
+.modal[style*="display: flex"] {
     display: flex !important;
-    animation: modalBackgroundFadeIn 0.3s ease forwards;
+    justify-content: center;
+    align-items: flex-start;
 }
 
 .modal-content {
+    position: relative;
     background-color: var(--color-background);
-    border-radius: var(--radius-medium);
-    padding: 0;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     width: 90%;
     max-width: 1200px;
-    max-height: 90vh;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    animation: modalSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    display: flex;
-    flex-direction: column;
+    margin: 2rem auto;
+    opacity: 1;
+    transform: translateY(0);
+    animation: modalFadeIn 0.3s ease forwards;
 }
 
 .modal-content.extra-large {
@@ -509,12 +509,10 @@ html, body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 2rem;
-    background-color: var(--color-primary);
-    color: var(--color-text-dark);
-    border-radius: var(--radius-medium) var(--radius-medium) 0 0;
-    position: relative;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--color-secondary);
+    border-radius: 8px 8px 0 0;
 }
 
 .modal-title {
@@ -524,64 +522,30 @@ html, body {
 }
 
 .modal-title h2 {
-    margin: 0;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.5rem;
+    margin: 0;
     font-size: 1.5rem;
-    font-weight: 600;
+    color: var(--text-color);
 }
 
-.modal-title h2 i {
-    font-size: 1.75rem;
-}
-
-.modal-title span {
-    font-size: 0.9rem;
-    opacity: 0.9;
-    color: var(--color-text-dark);
+.modal-title .material-icons {
+    font-size: 1.5rem;
 }
 
 .modal-actions {
     display: flex;
+    align-items: center;
     gap: 1rem;
-    align-items: center;
-}
-
-.modal-actions .button {
-    padding: 0.6rem 1.2rem;
-    border-radius: var(--radius-medium);
-    font-weight: 500;
-    transition: all 0.2s ease;
-}
-
-.modal-actions .button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.modal-actions .close-button {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    padding: 0.5rem;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-}
-
-.modal-actions .close-button:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: rotate(90deg);
 }
 
 .modal-body {
-    flex: 1;
+    padding: 1.5rem;
+    max-height: calc(100vh - 200px);
     overflow-y: auto;
-    padding: 2rem;
     background-color: var(--color-background);
+    border-radius: 0 0 8px 8px;
 }
 
 /* Tabs Styling */
@@ -640,12 +604,15 @@ html, body {
 /* Tab Content */
 .tab-content {
     display: none;
-    padding: 2rem;
-    animation: fadeIn 0.3s ease;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .tab-content.active {
     display: block;
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .tab-header {
@@ -730,32 +697,10 @@ html, body {
 }
 
 /* Animations */
-@keyframes modalBackgroundFadeIn {
-    from {
-        background-color: rgba(0, 0, 0, 0);
-        backdrop-filter: blur(0);
-    }
-    to {
-        background-color: rgba(0, 0, 0, 0.7);
-        backdrop-filter: blur(5px);
-    }
-}
-
-@keyframes modalSlideIn {
+@keyframes modalFadeIn {
     from {
         opacity: 0;
-        transform: translateY(-20px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(-20px);
     }
     to {
         opacity: 1;
@@ -763,9 +708,23 @@ html, body {
     }
 }
 
-@keyframes spin {
+.modal.closing {
+    background-color: rgba(0, 0, 0, 0);
+    transition: background-color 0.3s ease;
+}
+
+.modal.closing .modal-content {
+    animation: modalFadeOut 0.3s ease forwards;
+}
+
+@keyframes modalFadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
     to {
-        transform: translate(-50%, -50%) rotate(360deg);
+        opacity: 0;
+        transform: translateY(-20px);
     }
 }
 
@@ -851,16 +810,93 @@ html, body {
 }
 
 .settings-section {
-    background: var(--color-background);
+    background-color: var(--surface-color);
     border-radius: 8px;
-    padding: 1.5rem;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
+.settings-section h4 {
+    margin: 0 0 15px;
+    color: var(--text-color);
+    font-size: 1.1em;
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.input-group input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
+.input-group button {
+    padding: 8px 16px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.input-group button:hover {
+    background-color: var(--primary-color-dark);
+}
+
+.help-text {
+    display: block;
+    margin-top: 5px;
+    color: var(--text-muted);
+    font-size: 0.9em;
+}
+
+.server-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--text-muted);
+}
+
+.status-indicator.running {
+    background-color: var(--success-color);
+}
+
+.status-indicator.stopped {
+    background-color: var(--error-color);
+}
+
+.status-indicator.error {
+    background-color: var(--warning-color);
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .settings-section {
+    background-color: var(--surface-color-dark);
+}
+
+[data-theme="dark"] .input-group input {
+    background-color: var(--input-bg-dark);
+    border-color: var(--border-color-dark);
+}
+
+[data-theme="dark"] .help-text {
+    color: var(--text-muted-dark);
 }
 
 /* Storage Overview */
@@ -921,37 +957,457 @@ html, body {
 }
 
 /* Toast Notifications */
-#toast-container {
+.toast-container {
     position: fixed;
-    top: 20px;
+    bottom: 20px;
     right: 20px;
     z-index: 9999;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    max-width: 350px;
 }
 
 .toast {
-    min-width: 250px;
-    padding: 15px 20px;
-    border-radius: 8px;
-    background: var(--color-secondary);
-    color: var(--color-text-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    animation: slideIn 0.3s ease-out;
-    transition: opacity 0.3s ease;
+    animation: toast-in 0.3s ease forwards;
+    background-color: var(--surface-color);
+    color: var(--text-color);
+    border-left: 4px solid var(--primary-color);
 }
 
-.toast.error {
-    background: var(--color-danger);
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.toast-icon {
+    font-size: 20px;
+}
+
+.toast-message {
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0;
+    margin-left: 12px;
+}
+
+.toast-close:hover {
+    color: var(--text-color);
+}
+
+.toast-success {
+    border-left-color: var(--success-color);
+}
+
+.toast-success .toast-icon {
+    color: var(--success-color);
+}
+
+.toast-error {
+    border-left-color: var(--error-color);
+}
+
+.toast-error .toast-icon {
+    color: var(--error-color);
+}
+
+.toast-warning {
+    border-left-color: var(--warning-color);
+}
+
+.toast-warning .toast-icon {
+    color: var(--warning-color);
+}
+
+.toast-info {
+    border-left-color: var(--info-color);
+}
+
+.toast-info .toast-icon {
+    color: var(--info-color);
+}
+
+.toast-hiding {
+    animation: toast-out 0.3s ease forwards;
+}
+
+@keyframes toast-in {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes toast-out {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .toast {
+    background-color: var(--surface-color-dark);
+    color: var(--text-color-dark);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .toast-close {
+    color: var(--text-muted-dark);
+}
+
+[data-theme="dark"] .toast-close:hover {
+    color: var(--text-color-dark);
+}
+
+/* Clock Server Settings */
+.clock-server-settings {
+    margin: 20px 0;
+    padding: 20px;
+    background: var(--surface-2);
+    border-radius: 8px;
+}
+
+.settings-card {
+    background: var(--surface-1);
+    border-radius: 6px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.settings-card h4 {
+    margin: 0 0 15px 0;
+    color: var(--text-1);
+    font-size: 1.1em;
+}
+
+.port-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.port-input-group input[type="number"] {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--surface-1);
+    color: var(--text-1);
+}
+
+.help-text {
+    display: block;
+    color: var(--text-2);
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+.server-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+    padding: 10px;
+    background: var(--surface-2);
+    border-radius: 4px;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--error-color);
+}
+
+.status-indicator.active {
+    background: var(--success-color);
+}
+
+.status-indicator.inactive {
+    background: var(--warning-color);
+}
+
+.status-text {
+    color: var(--text-2);
+    font-size: 0.9em;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .clock-server-settings {
+    background: var(--surface-3);
+}
+
+[data-theme="dark"] .settings-card {
+    background: var(--surface-2);
+}
+
+[data-theme="dark"] .port-input-group input[type="number"] {
+    background: var(--surface-3);
+    border-color: var(--border-color-dark);
+}
+
+/* Clock Server Port Section */
+#clockServerPort {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
+#clockServerPort:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2);
+}
+
+.btn.btn-primary {
+    padding: 8px 16px;
+    background-color: var(--primary-color);
     color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
-.toast.success {
-    background: var(--color-success);
-    color: white;
+.btn.btn-primary:hover {
+    background-color: var(--primary-color-dark);
 }
 
-.toast.fade-out {
+/* Fix for tab switching */
+[data-tab] {
+    cursor: pointer;
+}
+
+/* Status indicator colors */
+#server-status-indicator.running {
+    background-color: var(--success-color);
+}
+
+#server-status-indicator.stopped {
+    background-color: var(--error-color);
+}
+
+#server-status-indicator.error {
+    background-color: var(--warning-color);
+}
+
+/* Customer row styles for double-click */
+.customer-row {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.customer-row:hover {
+    background-color: rgba(var(--primary-color-rgb), 0.05);
+}
+
+.customer-row:active {
+    background-color: rgba(var(--primary-color-rgb), 0.1);
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] #clockServerPort {
+    background-color: var(--input-bg-dark);
+    border-color: var(--border-color-dark);
+    color: var(--text-color-dark);
+}
+
+[data-theme="dark"] .customer-row:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .customer-row:active {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Tab Switching Animation */
+.tab-content {
+    display: none;
     opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.tab-button {
+    position: relative;
+    overflow: hidden;
+}
+
+.tab-button::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--primary-color);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+.tab-button.active::after {
+    transform: scaleX(1);
+}
+
+.tab-button:hover::after {
+    transform: scaleX(1);
+}
+
+/* Tab Content Fade Effect */
+@keyframes tabFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tab-content.active {
+    animation: tabFadeIn 0.3s ease forwards;
+}
+
+/* Server Status Styles */
+.server-status {
+    display: flex;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+    display: inline-block;
+}
+
+.status-indicator.running {
+    background-color: #4CAF50;
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.8);
+}
+
+.status-indicator.stopped {
+    background-color: #F44336;
+    box-shadow: 0 0 8px rgba(244, 67, 54, 0.8);
+}
+
+.status-indicator.error {
+    background-color: #FFC107;
+    box-shadow: 0 0 8px rgba(255, 193, 7, 0.8);
+}
+
+.status-indicator.checking {
+    background-color: #2196F3;
+    box-shadow: 0 0 8px rgba(33, 150, 243, 0.8);
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0.8);
+        opacity: 0.7;
+    }
+}
+
+#server-status-text {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Settings section styles */
+.settings-section {
+    background-color: var(--color-background);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.settings-section h4 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 16px;
+    color: var(--color-text);
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+}
+
+.input-group input {
+    flex: 1;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.input-group-append {
+    display: flex;
+}
+
+.input-group-append button {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    height: 100%;
+}
+
+.help-text {
+    display: block;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--color-text-light);
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .settings-section {
+    background-color: var(--color-background-dark);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .help-text {
+    color: var(--color-text-light-dark);
 }

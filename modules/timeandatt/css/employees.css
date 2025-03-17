@@ -292,7 +292,7 @@ color: var(--color-text-secondary);
 
 .main-employee-table thead {
     background-color: var(--color-primary);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     text-align: left;
     font-size: var(--font-size-large);
 }
@@ -417,7 +417,7 @@ color: var(--color-text-secondary);
     align-items: center;
     padding: var(--spacing-medium);
     background-color: var(--color-primary);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     border-radius: var(--radius-medium) var(--radius-medium) 0 0;
   }
   
@@ -498,7 +498,7 @@ color: var(--color-text-secondary);
     display: flex;
     align-items: center;
     padding: 0 var(--spacing-small);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     font-size: 12px;
   }
   

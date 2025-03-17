@@ -364,12 +364,341 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeSidebar();
     setupTabs();
 
+    // Initialize notification system
+    initializeNotifications();
+
 });
 
 function checkMultipleAccounts() {
     if (multipleAccounts) {
         window.location.href = "/modular1/main/choose-account.php"; // Redirect if session variable is set
     }
+}
+
+/**
+ * Notification System
+ */
+function initializeNotifications() {
+    const notificationBell = document.getElementById('notification-bell');
+    const notificationsModal = document.getElementById('notifications-modal');
+    const closeNotificationsBtn = document.querySelector('.close-notifications');
+    const markAllReadBtn = document.getElementById('mark-all-read');
+    const loadMoreBtn = document.getElementById('load-more-notifications');
+    const tabButtons = document.querySelectorAll('.tab-button');
+    
+    // Current state variables
+    let currentTab = 'all';
+    let currentPage = 1;
+    const notificationsPerPage = 10;
+    
+    // Toggle notifications modal when bell is clicked
+    if (notificationBell) {
+        notificationBell.addEventListener('click', () => {
+            notificationsModal.classList.remove('hidden');
+            notificationsModal.classList.add('visible');
+            
+            // Load notifications if this is the first open
+            if (document.querySelector('.no-notifications')) {
+                loadNotifications(currentTab, currentPage, true);
+            }
+        });
+    }
+    
+    // Close notifications modal when close button is clicked
+    if (closeNotificationsBtn) {
+        closeNotificationsBtn.addEventListener('click', () => {
+            notificationsModal.classList.remove('visible');
+            notificationsModal.classList.add('hidden');
+        });
+    }
+    
+    // Handle tab switching
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove active class from all tabs
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            button.classList.add('active');
+            
+            // Update current tab and reload notifications
+            currentTab = button.getAttribute('data-tab');
+            currentPage = 1;
+            loadNotifications(currentTab, currentPage, true);
+        });
+    });
+    
+    // Handle mark all as read
+    if (markAllReadBtn) {
+        markAllReadBtn.addEventListener('click', () => {
+            markAllNotificationsAsRead();
+        });
+    }
+    
+    // Handle load more
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+            currentPage++;
+            loadNotifications(currentTab, currentPage, false);
+        });
+    }
+    
+    // Fetch notifications count on load and periodically
+    updateNotificationCount();
+    
+    // Poll for new notifications every minute
+    setInterval(updateNotificationCount, 60000);
+}
+
+/**
+ * Load notifications based on tab and page
+ * @param {string} tab - The notification tab to load
+ * @param {number} page - The page number to load
+ * @param {boolean} reset - Whether to reset the list or append
+ */
+function loadNotifications(tab, page, reset) {
+    const notificationsList = document.getElementById('notifications-list');
+    
+    // Show loading state
+    if (reset) {
+        notificationsList.innerHTML = '<div class="notification-loading">Loading...</div>';
+    } else {
+        // Add loading indicator at the end
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'notification-loading';
+        loadingDiv.textContent = 'Loading...';
+        notificationsList.appendChild(loadingDiv);
+    }
+    
+    // Fetch notifications from the server
+    fetch(`/modular1/api/notifications.php?tab=${tab}&page=${page}`)
+        .then(response => response.json())
+        .then(data => {
+            // Remove loading indicators
+            const loadingElements = notificationsList.querySelectorAll('.notification-loading');
+            loadingElements.forEach(el => el.remove());
+            
+            if (reset) {
+                notificationsList.innerHTML = '';
+            }
+            
+            if (data.notifications && data.notifications.length > 0) {
+                // Create and append notification items
+                data.notifications.forEach(notification => {
+                    const notificationElement = createNotificationItem(notification);
+                    notificationsList.appendChild(notificationElement);
+                });
+                
+                // Hide load more button if no more notifications
+                const loadMoreBtn = document.getElementById('load-more-notifications');
+                if (data.has_more) {
+                    loadMoreBtn.style.display = 'block';
+                } else {
+                    loadMoreBtn.style.display = 'none';
+                }
+            } else if (reset) {
+                // Show no notifications message
+                notificationsList.innerHTML = '<div class="no-notifications">No notifications to display</div>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching notifications:', error);
+            const loadingElements = notificationsList.querySelectorAll('.notification-loading');
+            loadingElements.forEach(el => el.remove());
+            
+            if (reset) {
+                notificationsList.innerHTML = '<div class="no-notifications">Error loading notifications</div>';
+            }
+        });
+}
+
+/**
+ * Create a notification item element
+ * @param {Object} notification - The notification data
+ * @returns {HTMLElement} - The notification item element
+ */
+function createNotificationItem(notification) {
+    const item = document.createElement('div');
+    item.className = `notification-item ${notification.is_read ? '' : 'unread'}`;
+    item.setAttribute('data-id', notification.id);
+    
+    const header = document.createElement('div');
+    header.className = 'notification-header';
+    
+    const title = document.createElement('div');
+    title.className = 'notification-title';
+    title.textContent = notification.title;
+    
+    const time = document.createElement('div');
+    time.className = 'notification-time';
+    time.textContent = formatNotificationTime(notification.created_at);
+    
+    header.appendChild(title);
+    header.appendChild(time);
+    
+    const message = document.createElement('div');
+    message.className = 'notification-message';
+    message.textContent = notification.message;
+    
+    const footer = document.createElement('div');
+    footer.className = 'notification-footer';
+    
+    const source = document.createElement('div');
+    source.className = 'notification-source';
+    source.textContent = notification.source;
+    
+    const actions = document.createElement('div');
+    actions.className = 'notification-actions';
+    
+    if (!notification.is_read) {
+        const markReadAction = document.createElement('span');
+        markReadAction.className = 'notification-action';
+        markReadAction.textContent = 'Mark as read';
+        markReadAction.addEventListener('click', (e) => {
+            e.stopPropagation();
+            markNotificationAsRead(notification.id);
+        });
+        actions.appendChild(markReadAction);
+    }
+    
+    footer.appendChild(source);
+    footer.appendChild(actions);
+    
+    item.appendChild(header);
+    item.appendChild(message);
+    item.appendChild(footer);
+    
+    // Mark notification as read when clicked
+    item.addEventListener('click', () => {
+        if (!notification.is_read) {
+            markNotificationAsRead(notification.id);
+        }
+        
+        // Handle notification action if specified
+        if (notification.action_url) {
+            window.location.href = notification.action_url;
+        }
+    });
+    
+    return item;
+}
+
+/**
+ * Format notification timestamp
+ * @param {string} timestamp - The notification timestamp
+ * @returns {string} - Formatted time string
+ */
+function formatNotificationTime(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHr = Math.floor(diffMin / 60);
+    const diffDays = Math.floor(diffHr / 24);
+    
+    if (diffSec < 60) {
+        return 'Just now';
+    } else if (diffMin < 60) {
+        return `${diffMin} minute${diffMin !== 1 ? 's' : ''} ago`;
+    } else if (diffHr < 24) {
+        return `${diffHr} hour${diffHr !== 1 ? 's' : ''} ago`;
+    } else if (diffDays < 7) {
+        return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+    } else {
+        // Format as MM/DD/YYYY
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const year = date.getFullYear();
+        return `${month}/${day}/${year}`;
+    }
+}
+
+/**
+ * Mark a notification as read
+ * @param {number} id - The notification ID
+ */
+function markNotificationAsRead(id) {
+    fetch(`/modular1/api/notifications.php?action=mark_read&id=${id}`, {
+        method: 'POST'
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update UI
+                const notificationItem = document.querySelector(`.notification-item[data-id="${id}"]`);
+                if (notificationItem) {
+                    notificationItem.classList.remove('unread');
+                    
+                    // Remove 'Mark as read' action
+                    const markReadAction = notificationItem.querySelector('.notification-action');
+                    if (markReadAction) {
+                        markReadAction.remove();
+                    }
+                }
+                
+                // Update notification count
+                updateNotificationCount();
+            }
+        })
+        .catch(error => {
+            console.error('Error marking notification as read:', error);
+        });
+}
+
+/**
+ * Mark all notifications as read
+ */
+function markAllNotificationsAsRead() {
+    fetch('/modular1/api/notifications.php?action=mark_all_read', {
+        method: 'POST'
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update UI
+                const unreadItems = document.querySelectorAll('.notification-item.unread');
+                unreadItems.forEach(item => {
+                    item.classList.remove('unread');
+                    
+                    // Remove 'Mark as read' action
+                    const markReadAction = item.querySelector('.notification-action');
+                    if (markReadAction) {
+                        markReadAction.remove();
+                    }
+                });
+                
+                // Update notification count
+                updateNotificationCount(0);
+            }
+        })
+        .catch(error => {
+            console.error('Error marking all notifications as read:', error);
+        });
+}
+
+/**
+ * Update the notification count badge
+ */
+function updateNotificationCount() {
+    fetch('/modular1/api/notifications.php?action=count')
+        .then(response => response.json())
+        .then(data => {
+            const countElement = document.getElementById('notification-count');
+            if (countElement) {
+                countElement.textContent = data.count;
+                
+                // Show/hide the badge based on count
+                if (data.count > 0) {
+                    countElement.style.display = 'flex';
+                } else {
+                    countElement.style.display = 'none';
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching notification count:', error);
+        });
 }
 
 

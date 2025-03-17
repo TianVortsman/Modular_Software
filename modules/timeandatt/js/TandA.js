@@ -1455,3 +1455,589 @@ function updateModalHistoricalChart() {
     // In a real implementation, you would fetch data based on these filters
     // and update the chart accordingly
 }
+
+// Real-time updates and WebSocket connection
+function initializeRealTimeUpdates() {
+    // Get account number from URL or session
+    const accountNumber = getAccountNumber();
+    if (!accountNumber) {
+        console.error('No account number found for WebSocket connection');
+        addActivityItem('System', 'Error: Unable to connect to real-time updates', 'error');
+        return;
+    }
+    
+    // Find available port for this account number
+    findAvailablePort(accountNumber)
+        .then(port => {
+            if (!port) {
+                console.error('No available port found for account', accountNumber);
+                addActivityItem('System', 'Error: No clock server available', 'error');
+                return;
+            }
+            
+            connectWebSocket(port);
+        })
+        .catch(error => {
+            console.error('Error finding available port:', error);
+            addActivityItem('System', 'Error connecting to real-time updates', 'error');
+        });
+}
+
+// Find available port for this account number by checking each port
+function findAvailablePort(accountNumber) {
+    return new Promise((resolve, reject) => {
+        // Try to find port in the customers table
+        fetch(`../../api/get-clock-server-port.php?account_number=${accountNumber}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.port) {
+                    resolve(data.port);
+                } else {
+                    resolve(null);
+                }
+            })
+            .catch(error => {
+                console.error('Error finding port:', error);
+                reject(error);
+            });
+    });
+}
+
+// Connect to WebSocket server
+function connectWebSocket(port) {
+    // Determine WebSocket URL (use secure connection if on HTTPS)
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const host = window.location.hostname;
+    const wsUrl = `${protocol}//${host}:${port}/ws`;
+    
+    console.log('Connecting to WebSocket server at', wsUrl);
+    
+    const ws = new WebSocket(wsUrl);
+    
+    // Connection opened
+    ws.addEventListener('open', (event) => {
+        console.log('Connected to WebSocket server');
+        addActivityItem('System', 'Connected to real-time clock events', 'info');
+        
+        // Show connected status in the UI
+        document.getElementById('activity-widget').classList.add('connected');
+        
+        // Add connection indicator to widget header
+        const header = document.querySelector('#activity-widget .widget-header');
+        if (header) {
+            const indicator = document.createElement('div');
+            indicator.className = 'connection-indicator active';
+            indicator.title = 'Real-time connection active';
+            header.appendChild(indicator);
+        }
+    });
+    
+    // Listen for messages
+    ws.addEventListener('message', (event) => {
+        try {
+            const message = JSON.parse(event.data);
+            console.log('Message from server:', message);
+            
+            if (message.type === 'clock_event') {
+                handleClockEvent(message.data);
+            } else if (message.type === 'connection') {
+                console.log('Connection message:', message.message);
+            }
+        } catch (error) {
+            console.error('Error parsing WebSocket message:', error);
+        }
+    });
+    
+    // Connection closed
+    ws.addEventListener('close', (event) => {
+        console.log('Disconnected from WebSocket server');
+        addActivityItem('System', 'Disconnected from real-time updates', 'warning');
+        
+        // Show disconnected status in the UI
+        document.getElementById('activity-widget').classList.remove('connected');
+        
+        // Update connection indicator
+        const indicator = document.querySelector('#activity-widget .connection-indicator');
+        if (indicator) {
+            indicator.classList.remove('active');
+            indicator.classList.add('inactive');
+            indicator.title = 'Real-time connection lost';
+        }
+        
+        // Try to reconnect after a delay
+        setTimeout(() => {
+            connectWebSocket(port);
+        }, 5000);
+    });
+    
+    // Connection error
+    ws.addEventListener('error', (event) => {
+        console.error('WebSocket error:', event);
+        addActivityItem('System', 'Error in real-time connection', 'error');
+    });
+}
+
+// Handle clock event from WebSocket
+function handleClockEvent(data) {
+    // Add to activity feed
+    const time = new Date(data.time).toLocaleTimeString();
+    const message = `${data.employeeName || data.employeeId} clocked in`;
+    addActivityItem(time, message, 'clock-in', data);
+    
+    // Add to alerts if needed (for late arrivals, etc.)
+    checkAndAddAlert(data);
+    
+    // Update statistics
+    updateStatistics();
+}
+
+// Add item to activity feed
+function addActivityItem(time, message, type, data = null) {
+    const activityFeed = document.getElementById('activity-feed');
+    if (!activityFeed) return;
+    
+    const item = document.createElement('li');
+    item.className = `activity-item ${type}`;
+    
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'activity-time';
+    timeSpan.textContent = time;
+    
+    const messageSpan = document.createElement('span');
+    messageSpan.className = 'activity-message';
+    messageSpan.textContent = message;
+    
+    item.appendChild(timeSpan);
+    item.appendChild(messageSpan);
+    
+    // If data is provided, add data attributes for filtering
+    if (data) {
+        item.dataset.employeeId = data.employeeId;
+        item.dataset.department = data.department;
+    }
+    
+    // Add to the top of the list
+    activityFeed.insertBefore(item, activityFeed.firstChild);
+    
+    // Limit the number of items
+    const maxItems = 50;
+    while (activityFeed.children.length > maxItems) {
+        activityFeed.removeChild(activityFeed.lastChild);
+    }
+}
+
+// Check if alert should be added
+function checkAndAddAlert(data) {
+    const alertsList = document.getElementById('alerts-list');
+    if (!alertsList) return;
+    
+    // Check for late arrival (just an example, actual logic would depend on shift times)
+    const currentHour = new Date(data.time).getHours();
+    if (currentHour >= 9) {  // Assuming shift starts at 9:00 AM
+        const message = `${data.employeeName || data.employeeId} arrived late`;
+        
+        const item = document.createElement('li');
+        item.className = 'alert-item late';
+        
+        const timeSpan = document.createElement('span');
+        timeSpan.className = 'alert-time';
+        timeSpan.textContent = new Date(data.time).toLocaleTimeString();
+        
+        const messageSpan = document.createElement('span');
+        messageSpan.className = 'alert-message';
+        messageSpan.textContent = message;
+        
+        item.appendChild(timeSpan);
+        item.appendChild(messageSpan);
+        
+        // Add to the top of the list
+        alertsList.insertBefore(item, alertsList.firstChild);
+        
+        // Increment late arrivals counter
+        const lateArrivalsElement = document.getElementById('late-arrivals');
+        if (lateArrivalsElement) {
+            const current = parseInt(lateArrivalsElement.textContent, 10) || 0;
+            lateArrivalsElement.textContent = current + 1;
+        }
+    }
+}
+
+// Update dashboard statistics based on new events
+function updateStatistics() {
+    // Increment total clocked in
+    const totalClockedInElement = document.getElementById('total-clocked-in');
+    if (totalClockedInElement) {
+        const current = parseInt(totalClockedInElement.textContent, 10) || 0;
+        totalClockedInElement.textContent = current + 1;
+    }
+    
+    // Update other statistics as needed
+}
+
+// Helper function to get account number from the page
+function getAccountNumber() {
+    // Try to get from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const accountFromUrl = urlParams.get('account_number');
+    if (accountFromUrl) return accountFromUrl;
+    
+    // Try to get from meta tag (if added to the page)
+    const accountMeta = document.querySelector('meta[name="account-number"]');
+    if (accountMeta) return accountMeta.getAttribute('content');
+    
+    // Try to get from any element with data-account-number
+    const accountElement = document.querySelector('[data-account-number]');
+    if (accountElement) return accountElement.dataset.accountNumber;
+    
+    // If all else fails, try to extract from the path
+    // Assuming the account number might be in the URL path somewhere
+    const pathMatch = window.location.pathname.match(/\/([A-Z0-9]{6,})\//i);
+    if (pathMatch && pathMatch[1]) return pathMatch[1];
+    
+    return null;
+}
+
+// Initialize dashboard charts
+function initializeCharts() {
+    // Attendance trends chart
+    const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+    const attendanceChart = new Chart(attendanceCtx, {
+        type: 'line',
+        data: {
+            labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+            datasets: [{
+                label: 'On-time',
+                data: [85, 82, 88, 90, 85, 75, 70],
+                borderColor: '#4CAF50',
+                backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                tension: 0.4
+            }, {
+                label: 'Late',
+                data: [12, 15, 10, 8, 12, 5, 3],
+                borderColor: '#FFC107',
+                backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                tension: 0.4
+            }, {
+                label: 'Absent',
+                data: [3, 3, 2, 2, 3, 20, 27],
+                borderColor: '#F44336',
+                backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: false
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Employees'
+                    }
+                }
+            }
+        }
+    });
+    
+    // Department/Shift breakdown chart
+    const deptCtx = document.getElementById('deptShiftChart').getContext('2d');
+    const deptChart = new Chart(deptCtx, {
+        type: 'pie',
+        data: {
+            labels: ['HR', 'IT', 'Sales', 'Operations', 'Finance'],
+            datasets: [{
+                data: [12, 19, 25, 33, 15],
+                backgroundColor: [
+                    '#4CAF50',
+                    '#2196F3',
+                    '#FFC107',
+                    '#9C27B0',
+                    '#FF5722'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+    
+    // Historical chart (initially empty until filter is applied)
+    const historicalCtx = document.getElementById('historicalChart').getContext('2d');
+    const historicalChart = new Chart(historicalCtx, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Attendance Rate',
+                data: [],
+                backgroundColor: '#2196F3'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Attendance Rate (%)'
+                    }
+                }
+            }
+        }
+    });
+    
+    // Store charts for later access
+    window.dashboardCharts = {
+        attendance: attendanceChart,
+        dept: deptChart,
+        historical: historicalChart
+    };
+}
+
+// Initialize filters
+function initializeFilters() {
+    // Set up event listeners for filter controls
+    const departmentFilter = document.getElementById('department-filter');
+    const shiftFilter = document.getElementById('shift-filter');
+    const statusFilter = document.getElementById('status-filter');
+    const startDate = document.getElementById('start-date');
+    const endDate = document.getElementById('end-date');
+    const filterButton = document.getElementById('filter-data');
+    
+    if (filterButton) {
+        filterButton.addEventListener('click', function() {
+            applyFilters();
+        });
+    }
+    
+    // Populate department and shift filters from API
+    fetch('../../api/get-departments.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && departmentFilter) {
+                // Clear existing options (except "All Departments")
+                while (departmentFilter.options.length > 1) {
+                    departmentFilter.remove(1);
+                }
+                
+                // Add departments
+                data.departments.forEach(dept => {
+                    const option = document.createElement('option');
+                    option.value = dept.id;
+                    option.textContent = dept.name;
+                    departmentFilter.appendChild(option);
+                });
+            }
+        })
+        .catch(error => console.error('Error loading departments:', error));
+    
+    fetch('../../api/get-shifts.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && shiftFilter) {
+                // Clear existing options (except "All Shifts")
+                while (shiftFilter.options.length > 1) {
+                    shiftFilter.remove(1);
+                }
+                
+                // Add shifts
+                data.shifts.forEach(shift => {
+                    const option = document.createElement('option');
+                    option.value = shift.id;
+                    option.textContent = shift.name;
+                    shiftFilter.appendChild(option);
+                });
+            }
+        })
+        .catch(error => console.error('Error loading shifts:', error));
+    
+    // Set default dates (last 7 days)
+    if (startDate && endDate) {
+        const today = new Date();
+        const lastWeek = new Date();
+        lastWeek.setDate(today.getDate() - 7);
+        
+        endDate.valueAsDate = today;
+        startDate.valueAsDate = lastWeek;
+    }
+}
+
+// Apply filters to the dashboard data
+function applyFilters() {
+    const departmentFilter = document.getElementById('department-filter');
+    const shiftFilter = document.getElementById('shift-filter');
+    const statusFilter = document.getElementById('status-filter');
+    const startDate = document.getElementById('start-date');
+    const endDate = document.getElementById('end-date');
+    
+    if (!departmentFilter || !shiftFilter || !statusFilter || !startDate || !endDate) {
+        console.error('Filter elements not found');
+        return;
+    }
+    
+    const filters = {
+        department: departmentFilter.value,
+        shift: shiftFilter.value,
+        status: statusFilter.value,
+        startDate: startDate.value,
+        endDate: endDate.value
+    };
+    
+    // Apply filters to historical chart
+    updateHistoricalChart(filters);
+    
+    // Filter activity feed and alerts
+    filterActivityFeed(filters);
+}
+
+// Update historical chart based on filter
+function updateHistoricalChart(filters) {
+    // This would normally fetch data from the server based on filters
+    // For demo, we'll generate random data
+    
+    if (!window.dashboardCharts || !window.dashboardCharts.historical) {
+        console.error('Historical chart not found');
+        return;
+    }
+    
+    const chart = window.dashboardCharts.historical;
+    
+    // Generate date range from start to end date
+    const startDate = new Date(filters.startDate);
+    const endDate = new Date(filters.endDate);
+    const dateLabels = [];
+    const attendanceData = [];
+    
+    // Create a date array between start and end
+    let currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+        dateLabels.push(currentDate.toLocaleDateString());
+        
+        // Generate random attendance data (70-95%)
+        attendanceData.push(Math.floor(Math.random() * 25) + 70);
+        
+        // Move to next day
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+    
+    // Update chart data
+    chart.data.labels = dateLabels;
+    chart.data.datasets[0].data = attendanceData;
+    chart.update();
+}
+
+// Filter activity feed based on selected filters
+function filterActivityFeed(filters) {
+    const activityItems = document.querySelectorAll('#activity-feed .activity-item');
+    
+    activityItems.forEach(item => {
+        // Default to showing the item
+        let show = true;
+        
+        // Apply department filter if not "all"
+        if (filters.department !== 'all' && item.dataset.department && item.dataset.department !== filters.department) {
+            show = false;
+        }
+        
+        // Apply other filters as needed
+        
+        // Show or hide based on filters
+        item.style.display = show ? '' : 'none';
+    });
+}
+
+// Load initial dashboard data
+function loadDashboardData() {
+    // Fetch and display initial data
+    fetch('../../api/get-dashboard-stats.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateDashboardStats(data.stats);
+            }
+        })
+        .catch(error => console.error('Error loading dashboard stats:', error));
+}
+
+// Update dashboard statistics
+function updateDashboardStats(stats) {
+    // This function would update all the statistics widgets
+    // For this example, we'll just simulate some data
+    
+    document.getElementById('total-clocked-in').textContent = stats?.clockedIn || '0';
+    document.getElementById('avg-checkin-time').textContent = stats?.avgCheckin || '08:42';
+    document.getElementById('total-overtime').textContent = stats?.overtime || '0';
+    document.getElementById('late-arrivals').textContent = stats?.lateArrivals || '0';
+    
+    // Update mobile metrics
+    document.getElementById('mobile-usage').textContent = stats?.mobileUsage || '0%';
+    document.getElementById('mobile-success').textContent = stats?.mobileSuccess || '0%';
+    
+    // Update devices table
+    updateDevicesTable(stats?.devices || []);
+}
+
+// Update devices table
+function updateDevicesTable(devices) {
+    const tableBody = document.querySelector('#devices-table tbody');
+    if (!tableBody) return;
+    
+    // Clear existing rows
+    tableBody.innerHTML = '';
+    
+    // If no devices, show a message
+    if (devices.length === 0) {
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.colSpan = 3;
+        cell.textContent = 'No devices configured';
+        cell.className = 'empty-table-message';
+        row.appendChild(cell);
+        tableBody.appendChild(row);
+        return;
+    }
+    
+    // Add devices to the table
+    devices.forEach(device => {
+        const row = document.createElement('tr');
+        
+        const nameCell = document.createElement('td');
+        nameCell.textContent = device.name;
+        
+        const statusCell = document.createElement('td');
+        statusCell.textContent = device.status;
+        statusCell.className = `status-${device.status.toLowerCase()}`;
+        
+        const lastCheckCell = document.createElement('td');
+        lastCheckCell.textContent = device.lastCheck;
+        
+        row.appendChild(nameCell);
+        row.appendChild(statusCell);
+        row.appendChild(lastCheckCell);
+        
+        tableBody.appendChild(row);
+    });
+}

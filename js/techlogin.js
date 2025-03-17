@@ -1,7 +1,7 @@
 // Modal Elements
 const clientDevicesModal = document.getElementById('client-devices-modal');
 const addCustomerModal = document.getElementById('add-customer-modal');
-const manageCustomerModal = document.getElementById('manage-customer-modal');
+const customerModal = document.getElementById('customerModal');
 
 let currentCustomerId = null;
 let currentCustomerData = null;
@@ -33,12 +33,21 @@ function openManageCustomerModal(customerId) {
         return;
     }
     currentCustomerId = customerId;
-    manageCustomerModal.classList.add('active');
-    fetchCustomerDetails(customerId);
+    const modal = document.getElementById('customerModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        fetchCustomerDetails(customerId);
+    } else {
+        console.error('Customer modal not found');
+        showToast('Error: Unable to open customer details', 'error');
+    }
 }
 
 function closeManageCustomerModal() {
-    manageCustomerModal.classList.remove('active');
+    const modal = document.getElementById('customerModal');
+    if (modal) {
+        closeCustomerModal();
+    }
     currentCustomerId = null;
     currentCustomerData = null;
 }
@@ -53,6 +62,15 @@ function loginAsCustomer() {
 
 // Initialize modal event listeners
 document.addEventListener('DOMContentLoaded', function() {
+    // Add click handlers for all tab buttons
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const tabId = this.getAttribute('data-tab');
+            switchTab(tabId);
+        });
+    });
+
     // Close button listeners
     const closeButtons = document.querySelectorAll('.close-button');
     closeButtons.forEach(button => {
@@ -60,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const modal = this.closest('.modal');
             if (modal) {
                 modal.classList.remove('active');
-                if (modal === manageCustomerModal) {
+                if (modal === customerModal) {
                     currentCustomerId = null;
                     currentCustomerData = null;
                 }
@@ -72,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('click', function(event) {
         if (event.target.classList.contains('modal')) {
             event.target.classList.remove('active');
-            if (event.target === manageCustomerModal) {
+            if (event.target === customerModal) {
                 currentCustomerId = null;
                 currentCustomerData = null;
             }
@@ -88,6 +106,32 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Function to switch tabs
+function switchTab(tabId) {
+    // Remove active class from all tabs and buttons
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+    });
+
+    // Add active class to selected tab and button
+    const selectedTab = document.getElementById(tabId);
+    const selectedButton = document.querySelector(`[data-tab="${tabId}"]`);
+    
+    if (selectedTab) selectedTab.classList.add('active');
+    if (selectedButton) selectedButton.classList.add('active');
+
+    // If switching to clock machines tab, load the machines
+    if (tabId === 'clock-machines') {
+        const modal = document.getElementById('customerModal');
+        if (modal && modal.dataset.accountNumber) {
+            loadClockMachines(modal.dataset.accountNumber);
+        }
+    }
+}
+
 // Customer Data Management
 function fetchCustomerDetails(customerId) {
     if (!customerId) {
@@ -96,7 +140,7 @@ function fetchCustomerDetails(customerId) {
     }
 
     // Show loading state
-    const modalContent = manageCustomerModal.querySelector('.modal-content');
+    const modalContent = customerModal.querySelector('.modal-content');
     if (modalContent) modalContent.classList.add('loading');
 
     fetch(`../php/get-customer-details.php?id=${customerId}`)
@@ -124,26 +168,54 @@ function fetchCustomerDetails(customerId) {
 }
 
 function updateCustomerModalContent(data) {
-    if (!data || !data.customer) {
-        console.error('Invalid customer data received');
-        showToast('Error loading customer data', 'error');
+    if (!data || !data.success || !data.customer || !data.customer.account_number) {
+        console.error('Invalid customer data received:', data);
+        showToast('Error: Missing or invalid customer data', 'error');
         return;
     }
 
-    const customer = data.customer;
-    
-    // Update modal title and account number
-    document.getElementById('customer-name-title').textContent = customer.company_name;
-    document.getElementById('customer-account-number').textContent = `Account: ${customer.account_number}`;
+    const customerData = data.customer;
+    const modal = document.getElementById('customerModal');
+    if (!modal) {
+        console.error('Customer modal not found');
+        return;
+    }
+
+    // Store the account number in the modal's dataset
+    modal.dataset.accountNumber = customerData.account_number;
+
+    // Update modal title and account number display
+    document.getElementById('customer-name-title').textContent = customerData.company_name || 'Customer Details';
+    document.getElementById('customer-account-number').textContent = `Account: ${customerData.account_number}`;
+
+    // Update form fields with available data
+    const fields = {
+        'customerName': customerData.name || customerData.company_name || '',
+        'customerEmail': customerData.email || '',
+        'customerPhone': customerData.phone || ''
+    };
+
+    // Update each field if the element exists
+    Object.entries(fields).forEach(([elementId, value]) => {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.value = value;
+        }
+    });
 
     // Store customer data for other functions
-    currentCustomerData = customer;
+    currentCustomerData = customerData;
 
     // Load data for each tab
-    loadUsersData(customer.id);
-    loadModulesData(customer.id);
-    loadClockMachines(customer.id);
+    if (customerData.id) {
+        loadUsersData(customerData.id);
+        loadModulesData(customerData.id);
+    }
+    
     loadAccountSettings(data);
+
+    // Load clock machines using the account number
+    loadClockMachines(customerData.account_number);
 }
 
 // Users Management
@@ -242,13 +314,75 @@ function updateModulesList(containerId, modules) {
 }
 
 // Clock Machines Management
-function loadClockMachines(customerId) {
-    if (!customerId) {
-        console.error('No customer ID provided to loadClockMachines');
+function loadClockMachines(accountNumber) {
+    if (!accountNumber) {
+        console.error('No account number provided to loadClockMachines');
+        showResponseModal('error', 'Missing account number');
         return;
     }
 
-    fetch(`../php/get-customer-machines.php?customer_id=${customerId}`)
+    // Make sure we're using the functions defined in loading-modal.php
+    if (typeof showLoadingModal !== 'function') {
+        console.error('showLoadingModal function not found');
+        return;
+    }
+
+    showLoadingModal('Loading clock machines...');
+    
+    // Track both fetch operations
+    let portFetchComplete = false;
+    let machinesFetchComplete = false;
+    
+    function checkAndHideLoading() {
+        if (portFetchComplete && machinesFetchComplete) {
+            // Use the global hideLoadingModal function
+            if (typeof hideLoadingModal === 'function') {
+                hideLoadingModal();
+            } else {
+                console.error('hideLoadingModal function not found');
+                // Fallback to direct manipulation
+                const modal = document.getElementById('unique-loading-modal');
+                if (modal) {
+                    modal.style.opacity = 0;
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                        modal.style.display = 'none';
+                    }, 300);
+                }
+            }
+        }
+    }
+
+    // Load the clock server port
+    fetch(`../api/get-clock-server-port.php?account_number=${accountNumber}`)
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                const portInput = document.getElementById('clockServerPort');
+                if (portInput) {
+                    portInput.value = data.port || '';
+                    updateServerStatus(data.port);
+                } else {
+                    console.error('Port input element not found');
+                }
+            } else {
+                throw new Error(data.error || 'Failed to load port');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading clock server port:', error);
+            showResponseModal('error', 'Failed to load clock server port');
+        })
+        .finally(() => {
+            portFetchComplete = true;
+            checkAndHideLoading();
+        });
+
+    // Load clock machines list
+    fetch(`../php/get-customer-machines.php?account_number=${accountNumber}`)
         .then(response => {
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             return response.json();
@@ -257,12 +391,16 @@ function loadClockMachines(customerId) {
             if (!data.success) throw new Error(data.error || 'Failed to load machines');
             
             // Update machines list and statistics
-            updateMachinesList(data.machines);
-            updateMachinesStatistics(data.statistics);
+            updateMachinesList(data.machines || []);
+            updateMachinesStatistics(data.statistics || {});
         })
         .catch(error => {
             console.error('Error loading machines:', error);
-            showToast('Failed to load machines data', 'error');
+            showResponseModal('error', 'Failed to load machines data');
+        })
+        .finally(() => {
+            machinesFetchComplete = true;
+            checkAndHideLoading();
         });
 }
 
@@ -454,34 +592,66 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add any initialization code here
 });
 
-// Toast notification function
+// Function to show toast notifications
 function showToast(message, type = 'info') {
     // Create toast container if it doesn't exist
-    let toastContainer = document.getElementById('toast-container');
+    let toastContainer = document.querySelector('.toast-container');
     if (!toastContainer) {
         toastContainer = document.createElement('div');
-        toastContainer.id = 'toast-container';
+        toastContainer.className = 'toast-container';
         document.body.appendChild(toastContainer);
     }
-
+    
     // Create toast element
     const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.textContent = message;
-
-    // Add toast to container
-    toastContainer.appendChild(toast);
-
-    // Remove toast after animation
-    setTimeout(() => {
-        toast.classList.add('fade-out');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `
+        <div class="toast-content">
+            <i class="material-icons toast-icon">${getIconForType(type)}</i>
+            <span class="toast-message">${message}</span>
+        </div>
+        <button class="toast-close">
+            <i class="material-icons">close</i>
+        </button>
+    `;
+    
+    // Add close functionality
+    toast.querySelector('.toast-close').addEventListener('click', () => {
+        toast.classList.add('toast-hiding');
         setTimeout(() => {
             toast.remove();
-            if (toastContainer.children.length === 0) {
-                toastContainer.remove();
-            }
         }, 300);
-    }, 3000);
+    });
+    
+    // Add to container
+    toastContainer.appendChild(toast);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.classList.add('toast-hiding');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 300);
+        }
+    }, 5000);
+}
+
+// Helper function to get icon for toast type
+function getIconForType(type) {
+    switch (type) {
+        case 'success':
+            return 'check_circle';
+        case 'error':
+            return 'error';
+        case 'warning':
+            return 'warning';
+        case 'info':
+        default:
+            return 'info';
+    }
 }
 
 function escapeHtml(str) {
@@ -498,5 +668,230 @@ function formatDate(dateStr) {
         return date.toLocaleString();
     } catch (e) {
         return dateStr;
+    }
+}
+
+// Function to handle tab switching
+function initializeTabSwitching() {
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const tabId = e.target.closest('.tab-button').dataset.tab;
+            
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to clicked tab and corresponding content
+            e.target.closest('.tab-button').classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+}
+
+// Function to close the customer modal with animation
+function closeCustomerModal() {
+    const modal = document.getElementById('customerModal');
+    if (modal) {
+        modal.classList.add('closing');
+        modal.classList.remove('active');
+        
+        // Restore body scrolling
+        document.body.style.overflow = '';
+        
+        setTimeout(() => {
+            modal.style.display = 'none';
+            modal.classList.remove('closing');
+        }, 300); // Match the animation duration
+    }
+}
+
+// Initialize when document is ready
+document.addEventListener('DOMContentLoaded', () => {
+    initializeTabSwitching();
+    
+    // Add click event listener to close modal when clicking outside
+    const modal = document.getElementById('customerModal');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeCustomerModal();
+            }
+        });
+    }
+});
+
+// Function to save clock server port
+async function saveClockServerPort() {
+    const modal = document.getElementById('customerModal');
+    const portInput = document.getElementById('clockServerPort');
+    const accountNumber = modal?.dataset?.accountNumber;
+    
+    if (!portInput || !accountNumber) {
+        showResponseModal('error', 'Missing required information');
+        return;
+    }
+    
+    const port = parseInt(portInput.value);
+    if (isNaN(port) || port < 1024 || port > 65535) {
+        showResponseModal('error', 'Invalid port number. Must be between 1024 and 65535');
+        return;
+    }
+    
+    // Make sure we're using the functions defined in loading-modal.php
+    if (typeof showLoadingModal !== 'function') {
+        console.error('showLoadingModal function not found');
+        showResponseModal('error', 'Internal error: loading modal function not found');
+        return;
+    }
+    
+    showLoadingModal('Saving port...');
+    
+    try {
+        const response = await fetch('../api/update-clock-server-port.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                account_number: accountNumber,
+                port: port
+            })
+        });
+        
+        if (!response.ok) throw new Error('Failed to update port');
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showResponseModal('success', 'Port updated successfully');
+            updateServerStatus(port);
+        } else {
+            throw new Error(data.error || 'Failed to update port');
+        }
+    } catch (error) {
+        console.error('Error updating port:', error);
+        showResponseModal('error', error.message || 'Failed to update port');
+    } finally {
+        // Use the global hideLoadingModal function
+        if (typeof hideLoadingModal === 'function') {
+            hideLoadingModal();
+        } else {
+            console.error('hideLoadingModal function not found');
+            // Fallback to direct manipulation
+            const loadingModal = document.getElementById('unique-loading-modal');
+            if (loadingModal) {
+                loadingModal.style.opacity = 0;
+                setTimeout(() => {
+                    loadingModal.classList.add('hidden');
+                    loadingModal.style.display = 'none';
+                    loadingModal.style.visibility = 'hidden';
+                }, 300);
+            }
+        }
+    }
+}
+
+// Function to update server status
+async function updateServerStatus(port) {
+    if (!port) return;
+    
+    const statusIndicator = document.getElementById('server-status-indicator');
+    const statusText = document.getElementById('server-status-text');
+    
+    if (!statusIndicator || !statusText) return;
+    
+    // Set to checking state
+    statusIndicator.className = 'status-indicator checking';
+    statusText.textContent = 'Checking server status...';
+    
+    try {
+        const response = await fetch(`../api/check-clock-server-status.php?port=${port}`);
+        if (!response.ok) throw new Error('Failed to check server status');
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            if (data.is_running) {
+                statusIndicator.className = 'status-indicator running';
+                statusText.textContent = 'Server is running';
+            } else {
+                statusIndicator.className = 'status-indicator stopped';
+                statusText.textContent = 'Server is not running';
+            }
+        } else {
+            throw new Error(data.error || 'Error checking server status');
+        }
+    } catch (error) {
+        console.error('Error checking server status:', error);
+        statusIndicator.className = 'status-indicator error';
+        statusText.textContent = 'Error checking server status';
+    }
+}
+
+// Tab switching functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click handlers for all tab buttons
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const tabId = this.getAttribute('data-tab');
+            switchTab(tabId);
+        });
+    });
+});
+
+function switchTab(tabId) {
+    // Remove active class from all tabs and buttons
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+    });
+
+    // Add active class to selected tab and button
+    const selectedTab = document.getElementById(tabId);
+    const selectedButton = document.querySelector(`[data-tab="${tabId}"]`);
+    
+    if (selectedTab) selectedTab.classList.add('active');
+    if (selectedButton) selectedButton.classList.add('active');
+
+    // If switching to clock machines tab, load the machines
+    if (tabId === 'clock-machines') {
+        const modal = document.getElementById('customerModal');
+        if (modal && modal.dataset.accountNumber) {
+            loadClockMachines(modal.dataset.accountNumber);
+        }
+    }
+}
+
+// Modal management
+function openCustomerModal(customerId) {
+    const modal = document.getElementById('customerModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeCustomerModal() {
+    const modal = document.getElementById('customerModal');
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+}
+
+// Search function for customer search bar
+function searchCustomers() {
+    const searchTerm = document.getElementById('search-bar').value.trim();
+    if (window.fetchCustomerData) {
+        currentPage = 1; // Reset to first page when searching
+        window.fetchCustomerData(searchTerm);
+    } else {
+        console.error('fetchCustomerData function not available');
+        showToast('Search functionality not available', 'error');
     }
 }

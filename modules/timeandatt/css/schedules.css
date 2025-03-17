@@ -11,7 +11,7 @@ body {
     margin-left: var(--sidebar-width);
     transition: margin-left var(--transition-speed) ease-in-out;
     background: var(--color-background);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
 }
 
 .schedule-container.collapsed {
@@ -38,7 +38,7 @@ body {
 .header-left h1 {
     margin: 0;
     font-size: var(--font-size-large);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     font-weight: 600;
 }
 
@@ -56,7 +56,7 @@ body {
     border: none;
     border-radius: var(--radius-small);
     background: var(--color-background);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     cursor: pointer;
     transition: all var(--transition-speed) ease;
     font-weight: 500;
@@ -119,7 +119,7 @@ body {
     border: 1px solid var(--border-color);
     border-radius: var(--radius-small);
     background: var(--color-background);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     font-size: var(--font-size-medium);
     cursor: pointer;
     min-width: 200px;
@@ -189,7 +189,7 @@ body {
 
 .day-header h4 {
     margin: 0;
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     font-weight: 600;
 }
 
@@ -314,7 +314,7 @@ body {
 .calendar-header div {
     text-align: center;
     font-weight: 600;
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     padding: var(--spacing-small);
     font-size: 0.9em;
 }
@@ -356,7 +356,7 @@ body {
 
 .day-number {
     font-weight: 600;
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     font-size: 0.9em;
     padding: 2px 4px;
     border-radius: var(--radius-small);
@@ -408,7 +408,7 @@ body {
 
 .panel-header h3 {
     margin: 0;
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     font-weight: 600;
 }
 
@@ -483,7 +483,7 @@ body {
     border: 1px solid var(--border-color);
     border-radius: var(--radius-small);
     background: var(--color-background);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     width: 300px;
 }
 
@@ -513,7 +513,7 @@ body {
 .month-navigation h2 {
     margin: 0;
     font-size: var(--font-size-large);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     min-width: 200px;
     text-align: center;
 }
@@ -521,7 +521,7 @@ body {
 .nav-btn {
     background: var(--color-background);
     border: 1px solid var(--border-color);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     cursor: pointer;
     padding: var(--spacing-small);
     border-radius: var(--radius-small);
@@ -593,7 +593,7 @@ body {
 
 .modal-header h3 {
     margin: 0;
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     font-size: 1.25rem;
     font-weight: 600;
 }
@@ -602,7 +602,7 @@ body {
     background: none;
     border: none;
     font-size: 24px;
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     cursor: pointer;
     padding: 4px;
     border-radius: 50%;
@@ -614,7 +614,7 @@ body {
 
 .close-btn:hover {
     background: var(--color-hover);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
 }
 
 .modal-body {
@@ -653,7 +653,7 @@ body {
     padding: 8px 16px;
     border: none;
     background: none;
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     cursor: pointer;
     border-radius: 4px;
     transition: all 0.3s ease;
@@ -662,7 +662,7 @@ body {
 
 .shift-tab-btn:hover {
     background-color: var(--color-hover);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
 }
 
 .shift-tab-btn.active {
@@ -710,14 +710,14 @@ body {
 .prev-tab-btn,
 .next-tab-btn {
     background-color: var(--color-secondary);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     border: 1px solid var(--border-color);
 }
 
 .prev-tab-btn:hover,
 .next-tab-btn:hover {
     background-color: var(--color-hover);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
 }
 
 .submit-btn {
@@ -749,7 +749,7 @@ body {
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
 }
 
 .form-group input[type="text"],
@@ -761,7 +761,7 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 4px;
     background-color: var(--color-background);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     font-size: 14px;
 }
 
@@ -790,7 +790,7 @@ body {
     align-items: center;
     gap: 8px;
     cursor: pointer;
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
 }
 
 /* Error States */
@@ -811,7 +811,7 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 4px;
     background-color: var(--color-background);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     font-size: 14px;
     font-family: monospace;
 }
@@ -853,7 +853,7 @@ body {
 }
 
 .time-input-group .time-separator {
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
     font-weight: 500;
 }
 
@@ -1125,7 +1125,7 @@ body {
 
 .empty-state h3 {
     margin: 0 0 var(--spacing-small);
-    color: var(--color-text-dark);
+    color: var(--color-text-light);
 }
 
 .empty-state p {

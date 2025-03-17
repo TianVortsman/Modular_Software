@@ -1,6 +1,38 @@
 <?php
 session_start();
 
+require_once('../../../php/db.php');
+
+try {
+    // Initialize PDO connection
+    $dsn = "pgsql:host=$host;port=5432;dbname=$db";
+    $pdo = new PDO($dsn, $user, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $search = $_POST['search'] ?? '';
+    
+    $stmt = $pdo->prepare("
+        SELECT id, part_number, description, price 
+        FROM parts 
+        WHERE (part_number ILIKE :search OR description ILIKE :search)
+        AND account_number = :account_number
+        LIMIT 10
+    ");
+    
+    $stmt->execute([
+        ':search' => '%' . $search . '%',
+        ':account_number' => $_SESSION['account_number']
+    ]);
+    
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode($results);
+
+} catch (PDOException $e) {
+    error_log("Error in search-parts.php: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['error' => 'Database error occurred']);
+}
+
 // Check if the account number is set in the session
 if (!isset($_SESSION['account_number'])) {
     die(json_encode(['error' => 'Account number not set. Unable to connect to the database.'])); 

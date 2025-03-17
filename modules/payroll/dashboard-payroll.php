@@ -17,7 +17,8 @@ if (!$account_number) {
 
 try {
     // Initialize PDO connection
-    $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $password);
+    $dsn = "pgsql:host=$host;port=5432;dbname=$db";
+    $pdo = new PDO($dsn, $user, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Fetch Payroll statistics

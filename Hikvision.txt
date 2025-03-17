@@ -1,0 +1,537 @@
+Hikvision Device Network SDK (Face Recognition Terminal) - Summary & Key Commands
+This guide summarizes the Hikvision SDK for Face Recognition Terminals and includes essential commands, data structures, and JSON parsing details for future reference.
+
+📌 Key Features of the SDK
+The Hikvision Device Network SDK (HCNetSDK) enables integration of Hikvision face recognition terminals into custom applications, supporting:
+
+Access Control & Scheduling
+Card Management (RFID)
+Fingerprint Management
+Face Recognition & Management
+Remote Door Control
+Event Logging & Alarms
+Device Configuration & Status Retrieval
+📌 Important APIs and Commands
+Below are the most important API functions and their usage.
+
+1. Initialization & Cleanup
+✅ Initialize SDK
+cpp
+Copy
+Edit
+BOOL NET_DVR_Init();
+Must be called before any other API.
+Returns TRUE on success.
+✅ Cleanup SDK Resources
+cpp
+Copy
+Edit
+BOOL NET_DVR_Cleanup();
+Call at the end of the program to release resources.
+2. Device Login & Logout
+✅ Login to Device
+cpp
+Copy
+Edit
+LONG NET_DVR_Login_V40(NET_DVR_USER_LOGIN_INFO *pLoginInfo, NET_DVR_DEVICEINFO_V40 *pDeviceInfo);
+pLoginInfo: Structure containing IP, username, password, and port.
+pDeviceInfo: Returns device info upon successful login.
+✅ Logout from Device
+cpp
+Copy
+Edit
+BOOL NET_DVR_Logout(LONG lUserID);
+Logs out and frees the session.
+3. Managing Access Cards
+Each card can be linked to faces & fingerprints.
+✅ Add a New Card
+cpp
+Copy
+Edit
+BOOL NET_DVR_SetDVRConfig(LONG lUserID, DWORD dwCommand, LONG lChannel, LPVOID lpInBuffer, DWORD dwInSize);
+dwCommand = NET_DVR_SET_CARD
+lpInBuffer contains NET_DVR_CARD_RECORD with card details.
+✅ Delete a Card
+cpp
+Copy
+Edit
+BOOL NET_DVR_SendWithRecvRemoteConfig(LONG lHandle, DWORD dwCommand, LPVOID lpInBuff, DWORD dwInSize, LPVOID lpOutBuff, DWORD dwOutSize);
+dwCommand = NET_DVR_DEL_CARD
+Deletes the specified card.
+✅ Search for a Card
+cpp
+Copy
+Edit
+BOOL NET_DVR_StartRemoteConfig(LONG lUserID, DWORD dwCommand, LPVOID lpInBuffer, DWORD dwInSize, void *pUserData);
+dwCommand = NET_DVR_GET_CARD
+Retrieves card information.
+4. Managing Face Recognition
+✅ Enroll a Face
+cpp
+Copy
+Edit
+BOOL NET_DVR_StartRemoteConfig(LONG lUserID, DWORD dwCommand, LPVOID lpInBuffer, DWORD dwInSize, void *pUserData);
+dwCommand = NET_DVR_SET_FACE
+Requires face image data.
+✅ Delete a Face
+cpp
+Copy
+Edit
+BOOL NET_DVR_RemoteControl(LONG lUserID, DWORD dwCommand, LPVOID lpInBuffer, DWORD dwInSize);
+dwCommand = NET_DVR_DEL_FACE_PARAM_CFG
+✅ Retrieve a Face
+cpp
+Copy
+Edit
+BOOL NET_DVR_GetNextRemoteConfig(LONG lHandle, LPVOID lpOutBuff, DWORD dwOutSize);
+dwCommand = NET_DVR_GET_FACE
+5. Fingerprint Management
+✅ Enroll Fingerprint
+cpp
+Copy
+Edit
+BOOL NET_DVR_StartRemoteConfig(LONG lUserID, DWORD dwCommand, LPVOID lpInBuffer, DWORD dwInSize, void *pUserData);
+dwCommand = NET_DVR_SET_FINGERPRINT
+✅ Delete Fingerprint
+cpp
+Copy
+Edit
+BOOL NET_DVR_RemoteControl(LONG lUserID, DWORD dwCommand, LPVOID lpInBuffer, DWORD dwInSize);
+dwCommand = NET_DVR_DEL_FINGERPRINT
+✅ Retrieve Fingerprint
+cpp
+Copy
+Edit
+BOOL NET_DVR_GetNextRemoteConfig(LONG lHandle, LPVOID lpOutBuff, DWORD dwOutSize);
+dwCommand = NET_DVR_GET_FINGERPRINT
+6. Remote Door Control
+✅ Open/Close Door
+cpp
+Copy
+Edit
+BOOL NET_DVR_ControlGateway(LONG lUserID, LONG lGatewayIndex, DWORD dwStaic);
+lGatewayIndex = 1 (Door Number)
+dwStaic values:
+0 = Close
+1 = Open
+2 = Keep Open
+3 = Keep Closed
+7. Event & Alarm Management
+✅ Upload Event Data
+cpp
+Copy
+Edit
+BOOL NET_DVR_SetupAlarmChan_V50(LONG lUserID);
+Enables event notifications.
+✅ Close Alarm Channel
+cpp
+Copy
+Edit
+BOOL NET_DVR_CloseAlarmChan_V30(LONG lAlarmHandle);
+Disables event notifications.
+✅ Search for Access Events
+cpp
+Copy
+Edit
+BOOL NET_DVR_StartRemoteConfig(LONG lUserID, DWORD dwCommand, LPVOID lpInBuffer, DWORD dwInSize, void *pUserData);
+dwCommand = NET_DVR_GET_ACS_EVENT
+📌 JSON Data Parsing Guidelines
+Face and Card Data JSON Example
+json
+Copy
+Edit
+{
+    "card": {
+        "cardNo": "12345678",
+        "name": "John Doe",
+        "face": {
+            "image": "/9j/4AAQSkZJRgABAQAAAQABAAD...",
+            "faceID": 1
+        },
+        "fingerprint": {
+            "id": 1,
+            "data": "BASE64ENCODEDSTRING"
+        }
+    }
+}
+Parsing JSON in Node.js
+javascript
+Copy
+Edit
+const data = JSON.parse(jsonString);
+console.log(`Card Number: ${data.card.cardNo}`);
+console.log(`Face Image: ${data.card.face.image}`);
+console.log(`Fingerprint Data: ${data.card.fingerprint.data}`);
+Parsing JSON in Python
+python
+Copy
+Edit
+import json
+
+data = json.loads(json_string)
+print(f"Card Number: {data['card']['cardNo']}")
+print(f"Face Image: {data['card']['face']['image']}")
+📌 Key Takeaways
+Call NET_DVR_Init() first and NET_DVR_Cleanup() last.
+Login with NET_DVR_Login_V40() before performing operations.
+Access control uses cards as the main identifier, which link to faces and fingerprints.
+Door control commands allow opening/closing remotely.
+Events and alarms can be uploaded and retrieved.
+JSON structures are used for data transmission.
+This summary covers everything you need to work with Hikvision SDK efficiently. Let me know if you need further clarifications! 🚀
+
+
+
+
+
+
+
+You said:
+what about event data?
+ChatGPT said:
+Hikvision SDK - Event Data Handling and Access Control Events
+This section provides a detailed overview of event data handling in the Hikvision SDK, covering event upload, structure, and API commands required to interact with access control events.
+
+📌 1. Uploading Access Control Events
+Hikvision devices can automatically upload event information when an event (e.g., card swipe, door open, alarm trigger) occurs.
+
+Steps to Enable Event Uploading
+Set Alarm Callback Function
+
+cpp
+Copy
+Edit
+BOOL NET_DVR_SetDVRMessageCallBack_V50(MSGCallBack, void *pUser);
+Registers a callback function to receive event notifications.
+MSGCallBack function processes received events.
+Enable Alarm/Event Connection
+
+cpp
+Copy
+Edit
+LONG NET_DVR_SetupAlarmChan_V50(LONG lUserID);
+Starts listening for event notifications.
+Close Alarm/Event Connection
+
+cpp
+Copy
+Edit
+BOOL NET_DVR_CloseAlarmChan_V30(LONG lAlarmHandle);
+Stops receiving events from the device.
+📌 2. Event Data Structure (NET_DVR_ACS_ALARM_INFO)
+Each event uploaded from the device follows the NET_DVR_ACS_ALARM_INFO structure, containing details like time, user, event type, and associated card data.
+
+Structure Definition
+cpp
+Copy
+Edit
+struct NET_DVR_ACS_ALARM_INFO {
+    DWORD dwSize;                 // Structure size
+    DWORD dwMajor;                // Major event type
+    DWORD dwMinor;                // Minor event type
+    NET_DVR_TIME struTime;        // Event time
+    char sNetUser[MAX_NAMELEN];   // Network username (if applicable)
+    NET_DVR_IPADDR struRemoteHostAddr; // IP Address of the remote device
+    NET_DVR_ACS_EVENT_INFO struAcsEventInfo; // Access event details
+    DWORD dwPicDataLen;           // Length of associated image data
+    char *pPicData;               // Pointer to image data
+};
+📌 Key Fields Explained:
+
+dwMajor & dwMinor: Defines the event category and specific type.
+struTime: The timestamp of when the event occurred.
+struAcsEventInfo: Additional details, such as card number and verification method.
+pPicData: Captured images (if available, such as face recognition or card scans).
+📌 3. Event Categories and Types
+Each event belongs to a major type (dwMajor) with specific subtypes (dwMinor).
+
+Major Event Types (dwMajor)
+Value	Description
+0x1	Alarm Event (e.g., door forced open, fire alarm)
+0x2	Exception Event (e.g., device offline, power failure)
+0x3	Operation Event (e.g., user manually opened door)
+0x5	Access Event (e.g., valid/invalid card swipe, face recognition)
+Common Access Control Event Types (dwMinor)
+Value	Description
+0x01	Swipe Card Success
+0x02	Swipe Card Failed
+0x03	Face Recognition Success
+0x04	Face Recognition Failed
+0x07	Door Opened by Remote Control
+0x08	Door Opened by Password
+0x09	Invalid Password Attempt
+0x10	Tamper Alarm Triggered
+0x11	Fire Alarm Triggered
+0x12	Intrusion Detected
+These event types help categorize security, access, and system events​
+.
+
+📌 4. Searching for Access Control Events
+Hikvision devices store event logs which can be retrieved using SDK commands.
+
+Event Search API Calls
+✅ Start Searching for Events
+cpp
+Copy
+Edit
+LONG NET_DVR_StartRemoteConfig(LONG lUserID, DWORD dwCommand, LPVOID lpInBuffer, DWORD dwInSize, void *pUserData);
+dwCommand = NET_DVR_GET_ACS_EVENT (Command No. 2514)
+lpInBuffer contains NET_DVR_ACS_EVENT_COND to specify search criteria.
+✅ Retrieve Next Event
+cpp
+Copy
+Edit
+BOOL NET_DVR_GetNextRemoteConfig(LONG lHandle, LPVOID lpOutBuff, DWORD dwOutSize);
+Returns one event at a time.
+✅ Stop Event Search
+cpp
+Copy
+Edit
+BOOL NET_DVR_StopRemoteConfig(LONG lHandle);
+Ends the search session​
+.
+📌 5. Event Data JSON Format
+When retrieving event data, it can be represented in JSON format.
+
+Example JSON for an Access Event
+json
+Copy
+Edit
+{
+    "event": {
+        "majorType": "Access Event",
+        "minorType": "Swipe Card Success",
+        "time": "2024-03-15T14:30:00Z",
+        "user": "JohnDoe",
+        "deviceIP": "192.168.1.10",
+        "cardData": {
+            "cardNo": "12345678",
+            "cardType": "Normal",
+            "verifyMode": "Face + Card",
+            "eventPicture": "/images/event_123.jpg"
+        }
+    }
+}
+Parsing JSON in Node.js
+javascript
+Copy
+Edit
+const eventData = JSON.parse(jsonString);
+console.log(`Event Type: ${eventData.event.majorType}`);
+console.log(`Card Number: ${eventData.event.cardData.cardNo}`);
+Parsing JSON in Python
+python
+Copy
+Edit
+import json
+
+data = json.loads(json_string)
+print(f"Event Type: {data['event']['majorType']}")
+print(f"Card Number: {data['event']['cardData']['cardNo']}")
+This structure allows efficient handling of event logs, user authentication, and security monitoring​
+
+How to Confirm Clocking Data Receipt & Send Online Status to the Device (Hikvision SDK)
+From the Hikvision SDK documentation, we can confirm clocking data receipt and send online status using specific commands.
+
+1️⃣ How to Confirm That We Received a Clocking Event
+When a clocking event (such as a swipe card, fingerprint, or face recognition) occurs, the device uploads event data to the server. We need to send an acknowledgment (ACK) response to inform the device that we received the event successfully.
+
+✅ Steps to Confirm a Clocking Event
+Receive Event Data from the device using NET_DVR_SetDVRMessageCallBack_V50().
+Extract the Event Information from NET_DVR_ACS_ALARM_INFO.
+Send an Acknowledgment Response (ACK) to Confirm Receipt.
+Example Code for Handling Clocking Event and Sending ACK (C++)
+cpp
+Copy
+Edit
+void CALLBACK MsgCallback(LONG lCommand, NET_DVR_ALARMER *pAlarmer, char *pAlarmInfo, DWORD dwBufLen, void *pUser) {
+    if (lCommand == COMM_ALARM_ACS) {  // Access Control Event
+        NET_DVR_ACS_ALARM_INFO *pAlarm = (NET_DVR_ACS_ALARM_INFO*)pAlarmInfo;
+
+        // Log clocking event data
+        printf("Clocking event received from card number: %s\n", pAlarm->struAcsEventInfo.byCardNo);
+
+        // Send ACK back to the device
+        NET_DVR_SendWithRecvRemoteConfig(pAlarmer->lUserID, NET_DVR_ACK_ALARM, NULL, 0, NULL, 0);
+
+        printf("ACK Sent: Clocking event confirmed.\n");
+    }
+}
+COMM_ALARM_ACS: Identifies an access control event.
+NET_DVR_ACS_ALARM_INFO: Contains event details (e.g., user, card number, timestamp).
+NET_DVR_ACK_ALARM: Sends acknowledgment back to the device​
+.
+Equivalent in Node.js (Using HTTP API)
+javascript
+Copy
+Edit
+const express = require('express');
+const app = express();
+app.use(express.json());
+
+app.post('/EventService/', (req, res) => {
+    const event = req.body;
+    console.log(`Clocking event received: ${JSON.stringify(event)}`);
+
+    // Send ACK response to the device
+    res.status(200).send({ status: "ACK", message: "Event received successfully" });
+
+    console.log("ACK Sent: Clocking event confirmed.");
+});
+
+app.listen(8080, () => console.log('Listening for events on port 8080'));
+The event is logged and the server sends an "ACK" response to confirm receipt.
+HTTP 200 Response ensures the device recognizes the event as received.
+2️⃣ How to Send Online Status to the Device
+The Hikvision face recognition terminal can query the server for its online status. We need to respond to this query to confirm that our server is active.
+
+✅ Steps to Report Online Status
+Set Up a Server to Handle Status Queries.
+Respond to Device’s Status Requests with a "Device Online" response.
+Optionally, Configure Periodic Heartbeats.
+Example Command for Sending Online Status
+The device periodically checks its connectivity using:
+
+xml
+Copy
+Edit
+<AcsWorkStatus>
+    <cardReaderOnlineStatus>enable</cardReaderOnlineStatus>
+    <masterChannelControllerStatus>enable</masterChannelControllerStatus>
+    <slaveChannelControllerStatus>enable</slaveChannelControllerStatus>
+</AcsWorkStatus>
+<cardReaderOnlineStatus>: Indicates whether the card reader is online.
+<masterChannelControllerStatus>: Shows the main controller status.
+<slaveChannelControllerStatus>: Shows the secondary controller status​
+.
+Example Code to Respond to Online Status Check (C++)
+cpp
+Copy
+Edit
+BOOL SendOnlineStatus(LONG lUserID) {
+    char xmlData[] = 
+        "<AcsWorkStatus>"
+        "<cardReaderOnlineStatus>enable</cardReaderOnlineStatus>"
+        "<masterChannelControllerStatus>enable</masterChannelControllerStatus>"
+        "<slaveChannelControllerStatus>enable</slaveChannelControllerStatus>"
+        "</AcsWorkStatus>";
+
+    return NET_DVR_SendWithRecvRemoteConfig(lUserID, NET_DVR_SET_STATUS, xmlData, strlen(xmlData), NULL, 0);
+}
+NET_DVR_SET_STATUS: Used to send device status updates.
+The device will recognize the server as online when it receives this response​
+.
+Equivalent in Node.js (Handling Status Requests)
+javascript
+Copy
+Edit
+app.get('/DeviceStatus', (req, res) => {
+    const statusResponse = {
+        cardReaderOnlineStatus: "enable",
+        masterChannelControllerStatus: "enable",
+        slaveChannelControllerStatus: "enable"
+    };
+
+    console.log("Device requested online status. Responding...");
+    res.json(statusResponse);
+});
+The device calls /DeviceStatus and receives a JSON response confirming the server is online.
+3️⃣ Periodic Heartbeat to Maintain Device Connection
+To ensure continuous connectivity, the server can send a heartbeat signal to the device at intervals.
+
+✅ Steps for Heartbeat
+Configure a scheduled job to send heartbeats every few seconds.
+Use NET_DVR_RemoteControl() to notify the device of connectivity.
+C++ Code for Sending Heartbeat
+cpp
+Copy
+Edit
+BOOL SendHeartbeat(LONG lUserID) {
+    DWORD dwCommand = NET_DVR_KEEP_ALIVE;
+    return NET_DVR_RemoteControl(lUserID, dwCommand, NULL, 0);
+}
+NET_DVR_KEEP_ALIVE: Sends a "keep-alive" signal to the device​
+.
+Equivalent in Node.js
+javascript
+Copy
+Edit
+const axios = require('axios');
+
+setInterval(async () => {
+    try {
+        const response = await axios.post('http://device-ip/KeepAlive', {});
+        console.log("Heartbeat sent. Device acknowledged:", response.data);
+    } catch (error) {
+        console.error("Failed to send heartbeat:", error.message);
+    }
+}, 30000); // Send every 30 seconds
+Sends a heartbeat every 30 seconds to maintain an active connection.
+🔹 Summary of Key Actions
+Task	API/Method	Description
+Confirm Clocking Data Receipt	NET_DVR_ACK_ALARM	Sends ACK response to confirm clocking event received.
+Respond to Device Online Status Check	/DeviceStatus API	Returns JSON confirming server is online.
+Send Periodic Heartbeat	NET_DVR_KEEP_ALIVE	Maintains active connection with the device.
+This ensures the clocking device knows the server received events, remains connected, and confirms its operational status. 🚀
+
+Would you like additional configurations, such as real-time database storage of clocking events?
+
+How to Handle the ISUP Key in Hikvision SDK (Security & Authentication)
+The ISUP Key is a security token used by Hikvision devices to authenticate API requests between the clocking machine and the server. Below is a step-by-step guide on how to validate, store, and manage the ISUP Key.
+
+📌 1. What is the ISUP Key?
+The ISUP Key is a secret authentication token sent in the HTTP request headers.
+The server must verify the ISUP Key before processing any incoming request.
+If the ISUP Key is invalid or missing, the server should reject the request.
+Example ISUP Key in an HTTP Request
+http
+Copy
+Edit
+POST /EventService/ HTTP/1.1
+Host: 192.168.1.100:8080
+Content-Type: application/json
+ISUP-Key: MySecretKey123
+📌 2. Validating the ISUP Key in Node.js
+Every incoming request should check the ISUP Key before processing.
+
+✅ Node.js Express Middleware for ISUP Key Validation
+javascript
+Copy
+Edit
+const express = require('express');
+const app = express();
+app.use(express.json());
+
+const EXPECTED_ISUP_KEY = "MySecretKey123"; // Set your ISUP Key here
+
+// Middleware to check ISUP Key in request headers
+function validateISUPKey(req, res, next) {
+    const isupKey = req.headers['isup-key'];
+
+    if (!isupKey) {
+        return res.status(401).json({ error: "Missing ISUP Key" });
+    }
+
+    if (isupKey !== EXPECTED_ISUP_KEY) {
+        return res.status(403).json({ error: "Invalid ISUP Key" });
+    }
+
+    console.log("✅ ISUP Key validated successfully.");
+    next();
+}
+
+// Apply ISUP Key validation middleware to protected routes
+app.post('/EventService/', validateISUPKey, (req, res) => {
+    console.log("Received clocking event:", req.body);
+    res.status(200).json({ status: "ACK", message: "Event received" });
+});
+
+app.listen(8080, () => console.log("Server listening on port 8080"));
+🔹 How This Works
+Middleware validateISUPKey():
+Extracts the ISUP Key from the request headers.
+If the key is missing or incorrect, returns 401 Unauthorized or 403 Forbidden.
+If valid, allows the request to proceed.
+The /EventService/ route:
+Processes the clocking data only if authentication succeeds.
+Responds with an acknowledgment (ACK) after processing.

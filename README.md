@@ -2,6 +2,45 @@
 
 ## Required Components for Every Page
 
+
+## techlogin page uses main-db.php for connection
+structure as follows
+## Main Database Connection (main-db.php)
+
+The main database contains the following key tables:
+
+### 1. Customers Table
+- Primary table for customer records
+- Stores company info, account numbers, and client DB references
+- Key fields: customer_id, company_name, email, account_number, client_db, status
+
+### 2. Users Table 
+- Stores all user accounts
+- Includes 2FA configuration
+- Links to customers via customer_id foreign key
+- Key fields: id, email, name, role, status, customer_id
+
+### 3. Account Numbers Table
+- Maps users to account numbers and clock server ports
+- Links to users via user_id foreign key
+- Key fields: id, account_number, user_id, clock_server_port
+
+### 4. Technicians Table
+- Stores technician/admin user accounts
+- Separate from regular users
+- Key fields: id, email, name, role
+
+### Key Relationships:
+- Users -> Customers (Many-to-One)
+- Account Numbers -> Users (Many-to-One)
+
+### Important Notes:
+- Each customer gets their own database named after their account number
+- Clock server ports must be unique
+- User roles and statuses are enforced via string fields
+- Timestamps are tracked for creation and last login
+
+
 ###VERY IMPORTANT
 USE UNIQUE CLASSNAMES FOR EVERYTHING ESPECIALLY MODALS
 
