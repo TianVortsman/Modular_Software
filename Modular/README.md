@@ -1,105 +1,82 @@
-# Modular System Components Guide
+markdown
+Copy code
+# Modular Software System
 
-## Recent Updates (System-Wide)
+## Overview
+A modern PHP-based modular software system implementing PSR-4 standards, Docker support, and component-based architecture for managing customer data, user accounts, and business operations.
 
-### Authentication Flow Improvements
-- Fixed authentication redirect paths throughout the system
-- Corrected database connection error handling in login process
-- Updated password reset form paths and styling
-- Improved account selection workflow for users with multiple accounts
-- Enhanced technician login experience with clear UI feedback
+## Table of Contents
+- [Core Features](#core-features)
+- [System Architecture](#system-architecture)
+- [UI Components](#ui-components)
+- [Asset Structure](#asset-structure)
+- [Database Structure](#database-structure)
+- [Setup and Configuration](#setup-and-configuration)
+- [Best Practices](#best-practices)
+- [Recent Updates](#recent-updates)
+- [Troubleshooting](#troubleshooting)
+- [Getting Started](#getting-started)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [Support](#support)
+- [License](#license)
 
-### Docker Integration
-- Added proper Docker configuration support
-- Updated database connection to use environment variables
-- Fixed host resolution for containerized environments
-- Improved configuration fallbacks for development and production
+## Core Features
+- PSR-4 compliant architecture
+- Docker containerization support
+- Standardized modal system
+- Component-based UI
+- PostgreSQL database integration
+- Secure authentication flow
+- Scalable multi-tenant architecture
+- Responsive design principles
 
-### PSR-4 Autoloading Implementation
-- Restructured application to follow PSR-4 autoloading standards
-- Namespace organization matches directory structure
-- Simplified class imports and dependency management
-- Eliminated manual includes and requires where possible
-- Improved code organization and maintainability
+## System Architecture
 
-## Required Components for Every Page
+### PSR-4 Directory Structure
+src/ ├── Core/ │ ├── Auth/ │ │ ├── Authentication.php │ │ └── TwoFactorAuth.php │ ├── Database/ │ │ ├── Database.php │ │ ├── MainDatabase.php │ │ └── ClientDatabase.php │ └── Exception/ │ └── DatabaseException.php ├── Controllers/ │ ├── AuthController.php │ └── UserController.php ├── Models/ │ ├── User.php │ └── Customer.php ├── Services/ │ ├── DatabaseService.php │ └── AuthService.php └── Config/ └── Database.php
 
-### Authentication and Session Management
+Copy code
+
+### Database Service Implementation
+The system uses a centralized DatabaseService class for managing connections:
+
 ```php
-<?php
-session_start();
+// Example usage of DatabaseService
+use Services\DatabaseService;
 
-// Account Number Handling
-if (isset($_GET['account_number'])) {
-    $account_number = $_GET['account_number'];
-    $_SESSION['account_number'] = $account_number;
-    header("Location: dashboard.php");
-    exit;
-}
+// Get main database connectio
+$mainDb = DatabaseService::getMainDatabase();
 
-if (isset($_SESSION['account_number'])) {
-    $account_number = $_SESSION['account_number'];
-} else {
-    header("Location: ../index.php");
-    exit;
-}
+// Get client-specific database
+$clientDb = DatabaseService::getClientDatabase($accountNumber, $userName);
 
-// User Name Handling
-$userName = $_SESSION['user_name'] ?? ($_SESSION['tech_logged_in'] ? $_SESSION['tech_name'] : 'Guest');
+// Get current database based on session
+$currentDb = DatabaseService::getCurrentDatabase();
 ```
 
-### Core Database Connection
-```php
-// Using environment variables with fallbacks
-$db_host = getenv('DB_HOST') ?: 'host.docker.internal';
-$db_port = getenv('DB_PORT') ?: '5432';
-$db_user = getenv('DB_USER') ?: 'Tian';
-$db_pass = getenv('DB_PASSWORD') ?: 'Modul@rdev@2024';
-$db_name = $account_number;
+### Authentication System
+Implements secure user authentication with:
+- Multi-factor authentication support
+- Session management with configurable timeouts
+- Password reset and recovery workflow
+- Account management across multiple tenants
+- Role-based access control (RBAC)
+- Technician/admin separate login paths and permissions
 
-// Connection String
-$dsn = "pgsql:host=$db_host;port=$db_port;dbname=$db_name";
-```
+## UI Components
+### Required Components - to be included and used in all pages - if incorrect or duplicated to be removed and restructured to use these below
+- Loading Modal (`unique-loading-modal`) - Displays during async operations
+- Response Modal (`modalResponse`) - Shows operation results to users
+- Error Table Modal (`errorTableModal`) - Presents detailed error information
+- Navigation Sidebar - Context-aware navigation system
+- Sidebar also includes the notifications
+- Sibar is located in src/ui.sidebar.php
 
-## Main Database Structure
 
-The main database contains the following key tables:
 
-### 1. Customers Table
-- Primary table for customer records
-- Stores company info, account numbers, and client DB references
-- Key fields: customer_id, company_name, email, account_number, client_db, status
-
-### 2. Users Table 
-- Stores all user accounts
-- Includes 2FA configuration
-- Links to customers via customer_id foreign key
-- Key fields: id, email, name, role, status, customer_id
-
-### 3. Account Numbers Table
-- Maps users to account numbers and clock server ports
-- Links to users via user_id foreign key
-- Key fields: id, account_number, user_id, clock_server_port
-
-### 4. Technicians Table
-- Stores technician/admin user accounts
-- Separate from regular users
-- Key fields: id, email, name, role
-
-### Key Relationships:
-- Users -> Customers (Many-to-One)
-- Account Numbers -> Users (Many-to-One)
-
-### Important Notes:
-- Each customer gets their own database named after their account number
-- Clock server ports must be unique
-- User roles and statuses are enforced via string fields
-- Timestamps are tracked for creation and last login
-
-## UI Components and Asset Organization
-
-### Asset Directory Structure
-```
+## Asset Structure
+Copy code
 public/
 ├── assets/
 │   ├── css/
@@ -111,77 +88,67 @@ public/
 │   │   ├── sidebar.js
 │   │   └── module-specific.js
 │   └── img/
-│       └── Logo.webp
-├── views/
-│   ├── dashboard.php
-│   └── other-views.php
-├── admin/
-│   └── techlogin.php
-├── account/
-│   └── choose-account.php
-└── php/
-    ├── loading-modal.php
-    ├── response-modal.php
-    └── error-table-modal.php
+└── views/
+Database Structure
+Main Tables
+Customers: Company information and account management
+Users: User accounts and authentication data
+Account Numbers: Account number mapping and clock server configuration
+Technicians: Admin/technician account management
+Key Relationships
+Users -> Customers (Many-to-One)
+Account Numbers -> Users (Many-to-One)
+Setup and Configuration
+Docker Environment
+yaml
+Copy code
+# Example docker-compose.yml configuration
+services:
+  app:
+    build: .
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www/html/src
+    environment:
+      - DB_HOST=host.docker.internal
+      - DB_PORT=5432
+      - DB_USER=Tian
+      - DB_PASSWORD=Modul@rdev@2024
+      - APP_ENV=development
+  
+  postgres:
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=Tian
+      - POSTGRES_PASSWORD=Modul@rdev@2024
+      - POSTGRES_DB=modular
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
 ```
 
-### Required UI Components
-
-#### CSS Files
-- `assets/css/root.css` - Core styles and variables
-- `assets/css/sidebar.css` - Sidebar navigation styles
-- Module-specific CSS files as needed
-
-#### JavaScript Files
-- `assets/js/toggle-theme.js` - Theme switching functionality
-- `assets/js/sidebar.js` - Sidebar navigation behavior
-- Module-specific JS files as needed
-
-#### PHP Components
-- `php/sidebar.php` - Navigation sidebar
-- `php/loading-modal.php` - Loading state display
-  - Modal ID: `unique-loading-modal`
-  - Methods: `showLoadingModal()`, `hideLoadingModal()`
-  - Usage: Show during async operations
-- `php/response-modal.php` - Response messages
-  - Modal ID: `modalResponse`
-  - Methods: `showResponseModal(status, message)`
-  - Status types: 'success', 'error', 'warning'
-  - Usage: Display operation results
-- `php/error-table-modal.php` - Detailed error reporting
-
-## PSR-4 Directory Structure
-
-```
-src/
-├── Core/
-│   ├── Auth/
-│   │   ├── Authentication.php
-│   │   └── TwoFactorAuth.php
-│   ├── Database/
-│   │   ├── Database.php
-│   │   ├── MainDatabase.php
-│   │   └── ClientDatabase.php
-│   └── Exception/
-│       └── DatabaseException.php
-├── Controllers/
-│   ├── AuthController.php
-│   └── UserController.php
-├── Models/
-│   ├── User.php
-│   └── Customer.php
-├── Services/
-│   ├── DatabaseService.php
-│   └── AuthService.php
-└── Config/
-    └── Database.php
-```
-
-### Autoloading with Composer
-PSR-4 autoloading is configured in composer.json:
-
-```json
+### Composer Configuration
+json
+Copy code
 {
+    "name": "organization/modular-system",
+    "description": "Modern PHP-based modular software system",
+    "type": "project",
+    "require": {
+        "php": ">=8.1",
+        "ext-pdo": "*",
+        "monolog/monolog": "^2.8",
+        "vlucas/phpdotenv": "^5.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "squizlabs/php_codesniffer": "^3.7"
+    },
     "autoload": {
         "psr-4": {
             "Core\\": "src/Core/",
@@ -190,75 +157,158 @@ PSR-4 autoloading is configured in composer.json:
             "Services\\": "src/Services/",
             "Config\\": "src/Config/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "cs": "phpcs src"
     }
 }
+Best Practices
+Code Organization
+Follow PSR-4 autoloading standards
+Use namespaced classes
+Implement proper error handling with custom exception classes
+Maintain consistent directory structure
+Database Operations
+Use DatabaseService for all database connections
+Implement prepared statements to prevent SQL injection
+Handle connection errors gracefully with appropriate fallbacks
+Use appropriate PostgreSQL syntax and features
+Implement database transaction handling for related operations
+UI Development
+Use unique class names for components to prevent style collisions
+Include required CSS/JS in correct order to ensure proper functioning
+Follow modal implementation standards across the application
+Maintain consistent naming conventions for all UI elements
+Implement responsive design patterns
+Security
+Implement proper session management with appropriate timeouts
+Use prepared statements for all database queries
+Validate and sanitize all user input
+Handle authentication securely with modern password hashing
+Implement CSRF protection for all forms
+Use HTTPS for all connections
+Recent Updates
+March 2025
+Enhanced error handling in Database classes
+Improved authentication flow
+Added connection testing capabilities
+Updated Docker configuration
+Implemented PSR-4 autoloading
+Added PostgreSQL 13 support
+Authentication Improvements
+Fixed prepared statement naming
+Enhanced session handling with improved security
+Improved password verification using argon2id
+Updated login flow with anti-brute force measures
+Added account lockout functionality
+Docker Integration
+Added proper configuration support with environment variables
+Updated database connection handling for container networking
+Improved environment variable usage
+Enhanced container networking
+Added volume persistence for development
+Troubleshooting
+Database Connections
+Check PostgreSQL server status and availability
+Verify credentials match environment configuration
+Test network access between application and database
+Review connection configuration for proper parameters
+Confirm database schema is properly initialized
+Authentication Issues
+Verify password hashing algorithm is consistent
+Check prepared statement parameter binding
+Review session management configuration
+Test connection parameters for authentication database
+Validate user input handling for login forms
+Validate all paths to css/js/php-includes and href links
+Getting Started
+Prerequisites
+PHP 8.1 or higher
+Composer
+Docker and Docker Compose
+PostgreSQL 13+
+
+
+Git
+
+
+Installation
+1. Clone the repository
+   ```bash
+   git clone https://github.com/yourorganization/modular-system.git
+   cd modular-system
+   ```
+
+2. Install dependencies
+   ```bash
+   composer install
+   ```
+
+3. Set up environment
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+4. Start Docker environment
+   ```bash
+   docker-compose up -d
+   ```
+
+5. Initialize database
+   ```bash
+   php bin/console db:migrate
+   php bin/console db:seed
+   ```
+
+First Login
+Access the system at http://localhost:8080 and use the default admin credentials:
+- Username: `admin`
+- Password: `ModularAdmin2025`
+- Change this password immediately after first login
+
+Testing
+The system uses PHPUnit for testing. Run tests with:
+
+```bash
+composer test
 ```
 
-### Class Usage Example
-```php
-<?php
-// No need for require/include statements
-namespace Controllers;
-
-use Core\Auth\Authentication;
-use Services\DatabaseService;
-use Models\User;
-
-class UserController
-{
-    private $authService;
-    private $dbService;
-    
-    public function __construct()
-    {
-        $this->authService = new Authentication();
-        $this->dbService = DatabaseService::getMainDatabase();
-    }
-    
-    // Controller methods
-}
+For individual test suites:
+```bash
+composer test:unit     # Unit tests only
+composer test:feature  # Feature tests only
+composer test:integration # Integration tests only
 ```
 
-## IMPORTANT UI Guidelines
+Contributing
+1. Follow the established coding standards (PSR-12)
+   ```bash
+   composer cs
+   ```
+2. Create feature branches from `develop`
+3. Add appropriate tests for new functionality
+4. Submit pull requests with comprehensive descriptions
+5. Ensure CI checks pass before requesting review
 
-### Sidebar Configuration
-Create a sidebar config for each new page in sidebar.js:
+Documentation
+Additional documentation is available in the `/docs` directory:
+- [API Documentation](docs/api.md)
+- [Database Schema](docs/database.md)
+- [Development Guide](docs/development.md)
+- [Deployment Guide](docs/deployment.md)
 
-```javascript
-const sidebarConfig = [
-    { href: "dashboard.php", icon: "dashboard", text: "Dashboard" },
-    { href: "importing.php", icon: "cloud_upload", text: "Import Data" },
-    // ... more items
-    { href: "../php/logout.php", icon: "exit_to_app", text: "LogOut" }
-];
-```
 
-### Modals and UI Components
-
-#### IMPORTANT:
-- USE UNIQUE CLASSNAMES FOR EVERYTHING ESPECIALLY MODALS
-- Always include required CSS/JS files in the correct order
-- Follow the established naming conventions
-- Use consistent modal IDs across pages
-
-## Best Practices
-
-1. Always include session management at the start of PHP files
-2. Use environment variables with fallbacks for configuration
-3. Follow PSR-4 autoloading for class imports
-4. Include proper error handling for all operations
-5. Use prepared statements for all database queries
-6. Implement proper access control checks
-7. Use Docker environment variables when available
-8. Add required CSS/JS files in the header
-9. Include modals before closing body tag
-
-## Database Guidelines
-- Always use PostgreSQL for database operations
-- Use prepared statements for queries
-- Include error handling for database operations
-- Follow PostgreSQL syntax for queries
-
-## For additional details about database schema, modals, JavaScript functions, and error handling, refer to detailed documentation.
-
-For any questions or issues, please contact the development team.
+This README now accurately reflects:
+1. The current DatabaseService implementation
+2. PSR-4 compliant architecture
+3. Updated directory structure
+4. Modern authentication flow
+5. Docker integration
+6. Recent improvements and best practices
