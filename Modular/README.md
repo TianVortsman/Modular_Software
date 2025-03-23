@@ -80,7 +80,7 @@ Copy code
 public/
 ├── assets/
 │   ├── css/
-│   │   ├── root.css
+│   │   ├── root.css - always to be include and read to use the varibles
 │   │   ├── sidebar.css
 │   │   └── module-specific.css
 │   ├── js/
