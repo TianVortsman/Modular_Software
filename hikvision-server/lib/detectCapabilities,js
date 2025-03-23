@@ -1,0 +1,25 @@
+const axios = require('axios');
+
+async function detectCapabilities(ip, user = 'admin', pass = '12345') {
+  try {
+    const res = await axios.get(`http://${ip}/ISAPI/AccessControl/RemoteControl/capabilities`, {
+      auth: { username: user, password: pass },
+      timeout: 5000
+    });
+
+    const xml = res.data;
+    return {
+      supportsRemoteOpen: xml.includes('<cmd>open</cmd>'),
+      supportsLiveView: xml.includes('liveView'),
+      supportsEvents: true // You already receive push events
+    };
+  } catch {
+    return {
+      supportsRemoteOpen: false,
+      supportsLiveView: false,
+      supportsEvents: true
+    };
+  }
+}
+
+module.exports = { detectCapabilities };

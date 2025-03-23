@@ -1,0 +1,61 @@
+services:
+  # Web service for your PHP application (Apache)
+  web:
+    build: ./modular
+    container_name: modular_web
+    depends_on:
+      - clockserver  # Wait for clockserver to be available
+    volumes:
+      - ./modular:/var/www/html  # Mount your project files (ensure your public folder is inside your project)
+    ports:
+      - "8080:80"         # Access your app at http://localhost:8080
+    environment:
+      # These can be used by your PHP app to connect to the DB
+      DB_HOST: host.docker.internal
+      DB_USER: Tian
+      DB_PASSWORD: Modul@rdev@2024
+      # Your app can choose which database to connect to (modular_software for the main DB
+      # and a different name for each customer)
+    networks:
+      - modular_network
+
+  clockserver:
+    build: ./hikvision-server
+    container_name: modular_clockserver
+    ports:
+      - "3000:3000"      # API port
+      - "10000:10000"    # Customer clock servers
+      - "10001:10001"
+      - "10002:10002"
+      - "10003:10003"
+      - "10004:10004"
+      - "10005:10005"
+      - "10006:10006"
+      - "10007:10007"
+      - "10008:10008"
+      - "10009:10009"
+      - "10010:10010"
+    volumes:
+      - ./hikvision-server:/usr/src/app
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=host.docker.internal
+      - DB_PORT=5432
+      - DB_USER=Tian
+      - DB_PASS=Modul@rdev@2024
+      - DB_NAME=modular_system
+    networks:
+      - modular_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  pgdata:
+
+networks:
+  modular_network:
+    driver: bridge
