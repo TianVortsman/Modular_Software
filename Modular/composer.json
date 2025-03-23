@@ -1,0 +1,16 @@
+{
+    "require": {
+      "phpoffice/phpspreadsheet": "^1.23",
+        "phpmailer/phpmailer": "^6.9",
+        "robthree/twofactorauth": "^1.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/",
+            "App\\Controllers\\": "src/Controllers/",
+            "App\\Core\\": "src/Core/",
+            "App\\Services\\": "src/Services/",
+            "App\\Config\\": "src/Config/"
+        }
+    }
+  }

@@ -1,0 +1,279 @@
+/* Sidebar Styling */
+.modular-sidebar {
+    width: 220px; /* Expanded sidebar width */
+    background-color: var(--color-secondary); /* Background color of the sidebar */
+    padding-top: 20px;
+    position: fixed;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: width var(--transition-speed) ease-in-out; /* Smooth transition for width change */
+    overflow: hidden; /* Prevent content overflow */
+    border-radius: var(--radius-large); /* Rounded corners */
+    box-shadow: 0px 4px 8px var(--shadow-light), 0px -4px 8px var(--shadow-dark), 0px 4px 15px var(--shadow-medium);}
+
+/* Glow effect for sidebar */
+.modular-sidebar::before {
+    content: '';
+    position: absolute;
+    top: -5px; /* Positioning the glow above */
+    left: -5px; /* Positioning the glow to the left */
+    right: -5px; /* Positioning the glow to the right */
+    bottom: -5px; /* Positioning the glow below */
+    border-radius: var(--radius-large); /* Match the border-radius of the sidebar */
+    transition: width var(--transition-speed);
+    background: transparent; /* No background */
+    border: 2px solid rgba(255, 215, 0, 0.7); /* Golden border color */
+    z-index: -1; /* Send glow behind the sidebar */
+    filter: blur(8px); /* Add blur for a glowing effect */
+}
+
+/* Sidebar Logo as Toggle Button */
+.modular-logo {
+    margin-bottom: var(--spacing-large);
+    text-align: center;
+    cursor: pointer; /* Set cursor to pointer for toggle effect */
+    position: relative; /* Position relative for absolute positioning of border */
+}
+
+.modular-logo img {
+    max-width: 100px;
+    border-radius: 50%; /* Make the logo round */
+    transition: max-width var(--transition-speed), border-radius var(--transition-speed); /* Smooth transition for logo size change */
+}
+
+/* Border around the logo */
+.modular-logo::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100px;
+    height: 100px;
+    border: 2px solid rgba(255, 215, 0, 0.7); /* Maintain the golden border color */
+    border-radius: 50%; /* Match the border-radius of the sidebar */
+    filter: blur(6px); /* Reduce blur for a more subtle glow */
+    transition: border-color var(--transition-speed), filter var(--transition-speed); /* Smooth transition for border color and blur */
+    box-shadow: 0px 4px 8px var(--shadow-light), 0px -4px 8px var(--shadow-dark), 0px 4px 15px var(--shadow-medium);
+}
+
+/* Animated border around the logo */
+.modular-logo::before {
+    animation: spin-and-color-change 5s linear infinite; /* Infinite spin and color change */
+}
+
+/* Keyframes for spinning and color change */
+@keyframes spin-and-color-change {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg); /* Start at 0 degrees */
+        border-color: var(--color-primary); /* Start with primary color */
+    }
+    25% {
+        border-color: #FF5733; /* Change to a different color */
+    }
+    50% {
+        transform: translate(-50%, -50%) rotate(180deg); /* Rotate to 180 degrees */
+        border-color: #33FF57; /* Change to another color */
+    }
+    75% {
+        border-color: #3357FF; /* Change to yet another color */
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg); /* Complete the rotation */
+        border-color: var(--color-primary); /* Back to primary color */
+    }
+}
+.collapsed .modular-logo::before {
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(255, 215, 0, 0.7); /* Maintain the golden border color */
+    border-radius: var(--radius-large); /* Match the border-radius of the sidebar */
+    filter: blur(4px); /* Reduce blur for a more subtle glow */
+    transition: border-color var(--transition-speed), filter var(--transition-speed); /* Smooth transition for border color and blur */
+}
+.nav-icon {
+    height: 24px;
+    width: 24px;
+    font-size: 24px; /* Adjust size */
+    margin-right: 8px; /* Space between icon and text */
+    vertical-align: middle; /* Align icon vertically with text */
+    color: var(--color-primary); /* Match your theme */
+}
+
+/* Make Acc no and username look better */
+.modular-user-info {
+    justify-content: space-between;
+    padding: var(--spacing-small);
+    margin-bottom: var(--spacing-large);
+    font-family: var(--font-primary);
+    color: var(--color-text-light);
+    transition: var(--transition-speed);
+}
+
+.modular-user-info p {
+    margin: 5px 0; /* Add vertical space between paragraphs */
+    transition: color var(--transition-speed); /* Smooth transition for color change */
+    text-wrap: nowrap;
+    overflow: hidden;
+}
+
+.modular-user-info p:hover {
+    color: var(--color-hover); /* Change text color to gold on hover */
+}
+
+.modular-user-info p:nth-of-type(1) {
+    cursor: default;
+}
+
+
+.modular-user-info p:nth-of-type(2) {
+    cursor: pointer;
+}
+
+
+/* Navigation Items */
+.modular-nav-items {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    width: 100%; /* Ensure nav items take full width */
+    transition: text var(--transition-speed); /* Smooth transition for sidebar */
+}
+
+.modular-nav-items li {
+    margin: var(--spacing-medium) 0;
+    width: 100%; /* Ensure each list item takes full width */
+}
+
+.modular-nav-items a {
+    transition: var(--transition-speed);
+    transition-delay: 0.5s; /* Delay transition for better effect */
+    text-decoration: none;
+    color: var(--color-text-light);
+    font-size: var(--font-size-large); /* Adjust font size for better readability */
+    display: block;
+    text-align: center;
+    padding: var(--spacing-medium);
+    transition: padding var(--transition-speed); /* Smooth padding adjustment on toggle */
+    width: 100%; /* Ensure link takes full width of the list item */
+}
+
+.modular-nav-items a:hover {
+    background-color: var(--color-hover);
+    border-radius: var(--radius-medium);
+}
+
+/* Ensure the parent container (ul) has no margin/padding and is aligned left */
+ul.modular-nav-items {
+    list-style: none; /* Remove default bullet points */
+    padding: 5px; /* Add padding */
+    margin: 0; /* Remove margin */
+    text-align: left; /* Ensure all children (li) are aligned to the left */
+}
+
+/* Align the li elements to the left */
+ul.modular-nav-items li {
+    width: 100%; /* Take full width of the container */
+}
+
+/* Ensure the anchor inside the li is aligned to the left */
+ul.modular-nav-items li a {
+    display: flex; /* Make the anchor a flex container */
+    align-items: center; /* Align icon and text vertically */
+    text-decoration: none; /* Remove underline */
+}
+
+/* Optional: Make sure the material icons are also aligned */
+ul.modular-nav-items li a .material-icons {
+    margin-right: 10px; /* Add spacing between the icon and text */
+    color: var(--color-primary); /* Match your theme */
+}
+
+/* Active Navigation Item */
+.modular-nav-items a.active {
+    background-color: var(--color-background); /* Change background color when active */
+    color: var(--color-text-light); /* Change text color when active */
+    border-radius: var(--radius-medium); /* Maintain rounded corners */
+    transition: background-color var(--transition-speed), color var(--transition-speed); /* Smooth transition for color changes */
+}
+
+/* Collapsed Sidebar */
+.collapsed {
+    width: 60px; /* Sidebar collapses to 60px */
+    transition: var(--transition-speed) ease-in-out; /* Smooth transition for sidebar */
+}
+
+.collapsed .modular-logo img {
+    max-width: 40px; /* Shrink logo when collapsed */
+    border-radius: 50%; /* Ensure the logo remains round when collapsed */
+}
+
+.collapsed .modular-nav-items a .nav-text,
+.collapsed .modular-user-info {
+    display: none; /* Hide text when collapsed */
+    transition: var(--transition-speed);
+}
+
+.collapsed .modular-nav-items a i {
+    font-size: 24px; /* Keep icons large when collapsed */
+}
+
+/* Sidebar Responsiveness */
+.main-content {
+    margin-left: 220px; /* Adjust for expanded sidebar */
+    transition: margin-left var(--transition-speed) ease-in-out; /* Smooth transition for sidebar */
+}
+
+.collapsed + .modular-main-content {
+    margin-left: 70px; /* Adjust for collapsed sidebar */
+    transition: margin-left var(--transition-speed) ease-in-out; /* Smooth transition for sidebar */
+
+}
+.collapsed + .main-content {
+    margin-left: 80px; /* Adjust for collapsed sidebar */
+    transition: margin-left var(--transition-speed) ease-in-out; /* Smooth transition for sidebar */
+    padding-left: var(--spacing-medium);
+}
+.collapsed + ul.modular-nav-items {
+    padding-left: 0px;
+} 
+.hidden{
+    display: none !important;
+}
+
+.collapsed + .clients-screen {
+    margin-left: 70px; /* Adjust for collapsed sidebar */
+    transition: margin-left var(--transition-speed) ease-in-out; /* Smooth transition for sidebar */
+}
+
+.collapsed + .products-container {
+    margin-left: 70px; /* Adjust for collapsed sidebar */
+    transition: margin-left var(--transition-speed) ease-in-out; /* Smooth transition for sidebar */
+}
+
+
+.collapsed + .container{
+    margin-left: 70px; /* Adjust for collapsed sidebar */
+    transition: margin-left var(--transition-speed) ease-in-out; /* Smooth transition for sidebar */
+}
+
+.collapsed + .sales-reps-container{
+    margin-left: 70px; /* Adjust for collapsed sidebar */
+    transition: margin-left var(--transition-speed) ease-in-out; /* Smooth transition for sidebar */
+}
+
+.collapsed + .sales-content{
+    margin-left: 70px; /* Adjust for collapsed sidebar */
+    transition: margin-left var(--transition-speed) ease-in-out; /* Smooth transition for sidebar */
+}
+
+.collapsed + .screen-container{
+    margin-left: 70px; /* Adjust for collapsed sidebar */
+    transition: margin-left var(--transition-speed) ease-in-out; /* Smooth transition for sidebar */
+}
+
+.collapsed + .dashboard-container{
+    margin-left: 70px; /* Adjust for collapsed sidebar */
+    transition: margin-left var(--transition-speed) ease-in-out; /* Smooth transition for sidebar */
+}

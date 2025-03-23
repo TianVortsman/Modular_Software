@@ -1,0 +1,191 @@
+/* Modal Styles */
+.add-vehicle-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: var(--z-index-modal);
+}
+
+.add-vehicle-modal-content {
+    background-color: var(--color-secondary);
+    width: 90%;
+    max-width: 800px;
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-dark);
+    overflow-y: auto;
+    max-height: 90vh;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Modal Header */
+.add-vehicle-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-medium);
+    background-color: var(--color-primary);
+    color: var(--color-text-dark);
+    border-radius: var(--radius-medium) var(--radius-medium) 0 0;
+}
+
+.add-vehicle-modal-title {
+    font-size: var(--font-size-large);
+    font-family: var(--font-primary);
+    margin: 0;
+}
+
+.add-vehicle-close-btn {
+    background: none;
+    border: none;
+    color: var(--color-text-dark);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: transform var(--transition-speed);
+}
+
+.add-vehicle-close-btn:hover {
+    transform: scale(1.2);
+}
+
+/* Form Styles */
+.add-vehicle-form {
+    padding: var(--spacing-medium);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-medium);
+}
+
+.add-vehicle-fieldset {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-medium);
+    padding: var(--spacing-medium);
+    background-color: var(--color-background);
+}
+
+.add-vehicle-fieldset legend {
+    font-size: var(--font-size-large);
+    color: var(--color-primary);
+    padding: 0 var(--spacing-small);
+}
+
+.add-vehicle-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-small);
+}
+
+.add-vehicle-label {
+    font-size: var(--font-size-small);
+    font-weight: bold;
+    color: var(--color-text-light);
+    padding-top: 5px;
+}
+
+.add-vehicle-input,
+.add-vehicle-textarea,
+.add-vehicle-select {
+    font-size: var(--font-size-base);
+    padding: var(--spacing-small);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small);
+    background-color: var(--input-bg);
+    color: var(--color-text-light);
+    outline: none;
+    transition: border-color var(--transition-speed);
+}
+
+.add-vehicle-input:focus,
+.add-vehicle-textarea:focus,
+.add-vehicle-select:focus {
+    border-color: var(--color-primary);
+}
+
+.add-vehicle-input-file {
+    padding: var(--spacing-small);
+    font-size: var(--font-size-small);
+    background: none;
+    color: var(--color-primary);
+}
+
+.add-vehicle-tooltip {
+    font-size: var(--font-size-small);
+    color: var(--color-text-light);
+    opacity: 0.8;
+}
+
+/* Buttons */
+.add-vehicle-add-service-btn {
+    background-color: var(--color-hover);
+    color: var(--color-text-dark);
+    font-size: var(--font-size-small);
+    border: none;
+    padding: var(--spacing-small) var(--spacing-medium);
+    border-radius: var(--radius-small);
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+
+.add-vehicle-add-service-btn:hover {
+    background-color: var(--color-primary);
+}
+
+.add-vehicle-reset-btn,
+.add-vehicle-submit-btn {
+    font-size: var(--font-size-base);
+    padding: var(--spacing-medium);
+    border: none;
+    border-radius: var(--radius-small);
+    cursor: pointer;
+    width: 100%;
+}
+
+.add-vehicle-reset-btn {
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+.add-vehicle-reset-btn:hover {
+    background-color: var(--color-primary);
+    color: var(--color-text-dark);
+}
+
+.add-vehicle-submit-btn {
+    background-color: var(--color-primary);
+    color: var(--color-text-dark);
+    transition: background-color var(--transition-speed);
+}
+
+.add-vehicle-submit-btn:hover {
+    background-color: var(--color-hover);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .add-vehicle-modal-content {
+        max-width: 95%;
+    }
+
+    .add-vehicle-form-group {
+        flex-direction: column;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

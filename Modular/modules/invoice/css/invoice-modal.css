@@ -1,0 +1,450 @@
+/* Base Styles */
+:root {
+  --background-color: var(--color-background);
+  --text-color: var(--color-text-light);
+  --primary-accent: var(--color-primary);
+  --input-bg: var(--color-secondary);
+  --border-color: var(--color-text-dark);
+  --btn-hover-bg: var(--color-hover);
+  --highlight-color: var(--color-hover);
+}
+
+/* Modal Container */
+.modal-invoice-container {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: var(--z-index-modal);
+}
+
+.modal-invoice-content {
+  background-color: var(--color-secondary);
+  border-radius: var(--radius-medium);
+  width: 90%;
+  max-width: var(--max-width);
+  margin: var(--spacing-small);
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+}
+
+/* Modal Header */
+.modal-invoice-header {
+  background-color: var(--primary-accent);
+  padding: var(--spacing-medium);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--background-color);
+  font-size: var(--font-size-large);
+  height: 60px;
+  margin-bottom: 10px;
+}
+
+.modal-invoice-close {
+  font-size: var(--font-size-large);
+  color: var(--background-color);
+  cursor: pointer;
+  background-color: red;
+  padding: 3px 5px;
+  border-radius: 4px;
+  opacity: 0.5;
+}
+
+.modal-invoice-close:hover {
+  opacity: 1;
+  transform: rotate(180deg) 0.5;
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+/* Modal Body */
+.modal-invoice-body {
+  padding: var(--spacing-medium);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+/* Form */
+.modal-invoice-form {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: var(--spacing-medium);
+}
+
+/* Left Section */
+.modal-invoice-left,
+.modal-invoice-right {
+  width: 48%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-small);
+}
+
+.modal-invoice-table-container{
+  border-radius: 4px;
+}
+
+.modal-invoice-left select,
+.modal-invoice-left input,
+.modal-invoice-right input,
+.modal-invoice-right select,
+.modal-invoice-notes textarea,
+.modal-invoice-table input,
+.modal-invoice-table select,
+.modal-dealership-vehicle-details input,
+.modal-dealership-vehicle-details select,
+.modal-dealership-extras input,
+.modal-dealership-extras select {
+  padding: var(--spacing-small);
+  border: 1px solid var(--border-color);
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  border-radius: var(--radius-small);
+}
+
+/* Invoice Table */
+.modal-invoice-table, 
+.modal-dealership-invoice-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: var(--spacing-medium);
+  box-shadow: var(--shadow-medium);
+  border: 1px solid var(--color-text-dark);
+  border-radius: var(--radius-small);
+  background-color: var(--color-secondary);
+}
+
+.modal-invoice-table th,
+.modal-invoice-table td,
+.modal-dealership-invoice-table th,
+.modal-dealership-invoice-table td {
+  padding: var(--spacing-small);
+  border: 0.5px solid var(--color-hover);
+  border-radius: 4px;
+  text-align: center;
+  background-color: var(--color-secondary);
+  color: var(--text-color);
+}
+
+.modal-invoice-table th,
+.modal-dealership-invoice-table th {
+  font-weight: bold;
+}
+
+/* Totals Section */
+.modal-invoice-totals {
+  margin-top: var(--spacing-medium);
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.invoice-totals {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: var(--spacing-small);
+}
+
+.invoice-totals p {
+  font-size: var(--font-size-large);
+  text-wrap: nowrap;
+}
+
+.subtotal,
+.tax-total,
+.final-total {
+  font-weight: bold;
+  color: var(--color-hover);
+}
+
+/* Footer Section */
+.modal-invoice-footer {
+  padding: var(--spacing-medium);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  width: 100%;
+  background-color: var(--color-secondary);
+  border-top: 1px solid var(--border-color);
+}
+
+.modal-invoice-footer p {
+  color: var(--text-color);
+  font-size: var(--font-size-small);
+}
+
+/* Notes Section */
+.modal-invoice-notes {
+  width: 32%;
+  display: inline-block;
+  margin-right: 2%;
+}
+
+.modal-invoice-notes textarea {
+  width: 100%;
+  height: 100px;
+  padding: var(--spacing-small);
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-small);
+  resize: none;
+}
+
+/* Action Buttons */
+.modal-invoice-buttons {
+  width: 100%;
+  display: flex;
+  gap: var(--spacing-medium);
+  justify-content: flex-start;
+  margin-top: var(--spacing-small);
+  order: -1;
+  flex-wrap: wrap;
+  padding: 0; /* Optional: Add padding to the container if needed */
+}
+
+.modal-invoice-add-item,
+.modal-invoice-add-discount,
+.modal-invoice-clear,
+.modal-invoice-preview,
+.modal-invoice-create {
+  background-color: var(--btn-bg);
+  color: var(--text-color);
+  padding: var(--spacing-small) var(--spacing-medium); /* Adjust this to make buttons smaller */
+  border-radius: var(--radius-small);
+  border: none;
+  cursor: pointer;
+  font-size: var(--font-size-small);
+  width: auto; /* Ensure buttons are not stretched to full width */
+  max-width: 200px;
+  height: fit-content; 
+}
+
+.modal-invoice-add-item:hover,
+.modal-invoice-add-discount:hover,
+.modal-invoice-clear:hover,
+.modal-invoice-preview:hover,
+.modal-invoice-create:hover {
+  background-color: var(--btn-hover-bg);
+}
+
+.total-container{
+  position: relative;
+}
+
+/* Remove Button */
+.remove-row {
+  opacity: 0;
+  visibility: hidden;
+  background-color: #e74c3c;
+  color: var(--color-text-light);
+  border: none;
+  border-radius: var(--radius-small);
+  padding: var(--spacing-small);
+  font-size: var(--font-size-large);
+  cursor: pointer;
+  transition: opacity var(--transition-speed), visibility var(--transition-speed), background-color var(--transition-speed);
+  position: absolute;
+  top: 10%;
+  right: 5%;
+}
+
+.modal-invoice-table tr:hover .remove-row {
+  opacity: 1;
+  visibility: visible;
+}
+
+.remove-row:hover {
+  background-color: #c0392b;
+}
+
+/* Dealership Tables */
+.modal-invoice-table-container .modal-dealership-vehicle-details,
+.modal-invoice-table-container .modal-dealership-extras {
+  background-color: var(--color-secondary);
+  padding: var(--spacing-small);
+  margin-bottom: var(--spacing-medium);
+}
+
+/* Dealership and Extras Tables */
+.modal-invoice-table-container .modal-dealership-vehicle-details,
+.modal-invoice-table-container .modal-dealership-extras {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: var(--spacing-medium);
+  box-shadow: var(--shadow-medium);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-small);
+  background-color: var(--color-secondary);
+}
+
+.modal-invoice-table-container .modal-dealership-vehicle-details th,
+.modal-invoice-table-container .modal-dealership-vehicle-details td,
+.modal-invoice-table-container .modal-dealership-extras th,
+.modal-invoice-table-container .modal-dealership-extras td {
+  padding: var(--spacing-small);
+  border: 0.5px solid var(--highlight-color);
+  text-align: center;
+  color: var(--text-color);
+  background-color: var(--color-secondary);
+}
+
+.modal-invoice-table-container .modal-dealership-vehicle-details th,
+.modal-invoice-table-container .modal-dealership-extras th {
+  font-weight: bold;
+}
+
+
+invoice-number :Hover{
+  cursor: not-allowed;
+}
+
+.search-customer-container input{
+  width: 100%;
+  padding: var(--spacing-small);
+  border: 1px solid var(--border-color);
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  border-radius: var(--radius-small);
+}
+
+
+.search-container {
+  position: relative !important;
+}
+.search-dropdown1, .search-dropdown2 {
+  position: absolute;
+  top: 100%; /* Position the dropdown right below the input */
+  left: 10%;
+  width: 80%; /* Ensure the dropdown matches the width of the input */
+  max-height: 160px;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10001;
+  display: none; /* Hidden by default */
+  font-size: 14px;
+  color: #333;
+}
+
+.search-container2 {
+  position: relative !important; /* Ensure that .search-container2 is the reference point for the dropdowns */
+}
+
+
+
+.search-dropdown3, .search-dropdown4 {
+  position: absolute; /* Ensure these dropdowns are relative to .search-container2 */
+  top: 100%; /* Position the dropdown right below the input */
+  left: 10%;
+  width: 80%;
+  max-height: 160px;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10001;
+  display: none; /* Hidden by default */
+  font-size: 14px;
+  color: #333;
+}
+
+.search-vehicle-container{
+  position: relative !important;
+}
+
+.search-dropdown5, .search-dropdown6{
+  position: absolute;
+  top: 100%; /* Position the dropdown right below the input */
+  left: 10%;
+  width: 80%;
+  max-height: 160px;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10001;
+  display: none; /* Hidden by default */
+  font-size: 14px;
+  color: #333;
+}
+
+
+.search-customer-dropdown{
+  position: absolute;
+  top: 100%; /* Position the dropdown right below the input */
+  left: 10%;
+  width: 80%;
+  max-height: 160px;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10001;
+  display: none; /* Hidden by default */
+  font-size: 14px;
+  color: #333;
+}
+
+
+.search-results-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background-color: var(--background-color);
+}
+
+.search-result-item {
+  padding: 10px;
+  cursor: pointer;
+  color: white; /* Set default text color */
+  align-content: center;
+  justify-content: center;
+  font-weight: 400;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth hover transition */
+  height: 30px;
+}
+
+.search-result-customer{
+  padding: 10px;
+  cursor: pointer;
+  color: white; /* Set default text color */
+  align-content: center;
+  justify-content: center;
+  font-weight: 400;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth hover transition */
+  height: 30px;
+  background-color: #333;
+}
+
+.search-result-customer :hover{
+  background-color: #ffd700; /* Gold hover effect */
+  color: #1a1a1d; /* Dark text for visibility on hover */
+}
+
+.search-result-item :hover {
+  background-color: #ffd700; /* Gold hover effect */
+  color: #1a1a1d; /* Dark text for visibility on hover */
+}
+
+.search-result-item:active {
+  background-color: #e5b100; /* Darker gold on click */
+}
+

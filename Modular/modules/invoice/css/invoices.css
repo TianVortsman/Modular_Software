@@ -1,0 +1,221 @@
+/* Invoices Screen Styles */
+
+body {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-base);
+    color: var(--color-text-light);
+    background-color: var(--color-background);
+    margin: 0;
+    overflow: hidden;
+}
+
+.screen-container {
+    margin-left: var(--sidebar-width);
+    transition: margin-left var(--transition-speed);
+    padding: var(--spacing-large);
+    background-color: var(--color-background);
+    min-height: 100vh;
+}
+
+.invoices-screen h2 {
+    font-size: 2rem;
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-medium);
+}
+
+/* Quick Actions */
+.actions-container {
+    background-color: var(--color-secondary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-large);
+    gap: var(--spacing-medium);
+    flex-wrap: wrap;
+}
+
+.invoices-actions {
+    display: flex;
+    gap: var(--spacing-small);
+}
+
+.invoice-filter{
+    background-color: var(--color-background);
+    padding: var(--spacing-medium);
+    border-radius: var(--radius-medium);
+}
+
+.invoices-screen{
+    background-color: var(--color-secondary);
+    padding: var(--spacing-medium);
+    border-radius: var(--radius-medium);
+    box-shadow: 
+        4px 8px 12px var(--shadow-light),   /* Lighter, smaller shadow */
+        6px 12px 24px var(--shadow-medium), /* Medium shadow for more depth */
+        8px 16px 32px var(--shadow-dark);   /* Darker shadow for added realism */
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-large);
+    align-items: center;
+    justify-content: space-between;
+}
+
+.table-container{
+    width: 100%;
+}
+
+.invoice-table-container{
+    width: 100%;
+}
+
+.invoices-actions .open-invoice-modal,
+.invoices-actions .action-button {
+    padding: var(--spacing-small) var(--spacing-medium);
+    background-color: var(--color-primary);
+    border: none;
+    color: var(--color-text-dark);
+    border-radius: var(--radius-medium);
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+
+.invoices-actions .open-invoice-modal:hover,
+.invoices-actions .action-button:hover {
+    background-color: var(--color-hover);
+}
+
+/* Filter Options */
+.filter-container {
+    background-color: var(--color-secondary);
+    padding: var(--spacing-medium);
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-light);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-large);
+    align-items: center;
+    justify-content: space-between;
+}
+
+.invoice-filter label {
+    color: var(--color-text-light);
+    font-size: var(--font-size-small);
+    margin-right: var(--spacing-small);
+}
+
+.invoice-filter input {
+    padding: var(--spacing-small);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small);
+    background-color: var(--input-bg);
+    color: var(--color-text-light);
+    outline: none;
+    font-size: var(--font-size-small);
+}
+
+.invoice-filter input:focus {
+    border-color: var(--color-primary);
+}
+
+/* Tabs for Invoice Status */
+.tabs-container {
+    width: 100%;
+    background-color: var(--color-background);
+    padding: var(--spacing-medium);
+    border-radius: var(--radius-medium);
+}
+
+.invoice-tabs {
+    display: flex;
+    gap: var(--spacing-small);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.tab-button {
+    padding: var(--spacing-small) var(--spacing-medium);
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-medium);
+    color: var(--color-text-light);
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+.tab-button.active,
+.tab-button:hover {
+    background-color: var(--color-primary);
+    color: var(--color-text-dark);
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-small);
+    margin-left: auto;
+}
+
+.search-container input {
+    padding: var(--spacing-small);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-medium);
+    background-color: var(--input-bg);
+    color: var(--color-text-light);
+    font-size: var(--font-size-small);
+}
+
+.search-container .material-icons {
+    color: var(--color-primary);
+}
+
+/* Table for Invoice Data */
+.table-container {
+    margin-top: var(--spacing-medium);
+    overflow-x: auto;
+}
+
+.invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+    box-shadow: var(--shadow-medium);
+    border-radius: var(--radius-medium);
+    overflow: hidden;
+}
+
+.invoice-table thead {
+    background-color: var(--color-primary);
+    color: var(--color-text-dark);
+    text-align: left;
+    font-size: var(--font-size-small);
+}
+
+.invoice-table th,
+.invoice-table td {
+    padding: var(--spacing-small) var(--spacing-medium);
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+}
+
+.invoice-table tbody tr:hover {
+    background-color: var(--color-secondary);
+}
+
+
+.invoice-table .action-icons {
+    display: flex;
+    gap: var(--spacing-small);
+    justify-content: center;
+}
+
+.invoice-table .icon {
+    cursor: pointer;
+    font-size: var(--font-size-large);
+    color: var(--color-primary);
+    transition: transform 0.2s ease-in-out;
+}
+
+.invoice-table .icon:hover {
+    transform: scale(1.2);
+}

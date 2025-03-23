@@ -1,0 +1,122 @@
+/* General Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-primary);
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+    display: flex;
+}
+
+/* Main Content Styling */
+.modular-main-content {
+    margin-left: var(--sidebar-width);
+    transition: margin-left 0.3s ease-in-out; /* Smooth transition for sidebar */
+    padding: var(--spacing-medium);
+    flex: 1;
+}
+
+/* Header Styling */
+.modular-header {
+    text-align: center;
+    margin-bottom: var(--spacing-large);
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--color-primary);
+    background-color: var(--color-background);
+    padding: var(--spacing-medium) 0;
+    border-radius: var(--radius-large);
+    box-shadow: var(--shadow-medium);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.modular-header p {
+    font-size: var(--font-size-small);
+    color: var(--color-secondary);
+    margin-top: var(--spacing-small);
+    margin-bottom: 0;
+    line-height: var(--line-height);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    color: var(--color-text-light);
+}
+
+/* Module Container */
+.module-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-medium);
+}
+
+/* Individual Module Card Styling */
+.module-card {
+    background: linear-gradient(145deg, var(--color-secondary), var(--color-primary-fade));
+    padding: var(--module-card-padding);
+    border-radius: var(--module-card-border-radius);
+    box-shadow: 2px 6px 8px var(--shadow-light), 2px 3px 4px var(--shadow-dark);
+    transition: transform var(--transition-speed), background-color var(--transition-speed), box-shadow var(--transition-speed);
+    text-decoration: none;
+    color: var(--color-primary);
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.module-card h2 {
+    font-size: 30px;
+    margin-bottom: var(--spacing-small);
+    color: var(--color-h2);
+}
+
+.module-card p {
+    font-size: var(--font-size-small);
+    color: var(--color-text-light);
+}
+
+.module-card:hover {
+    transform: scale(1.1);
+    background-color: var(--color-hover);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 20px var(--color-hover);
+    z-index: 100;
+}
+
+/* Footer Styling */
+.modular-footer {
+    border: 2px solid var(--color-secondary);
+    border-radius: var(--radius-small);
+    text-align: center;
+    padding: var(--spacing-medium);
+    color: var(--color-secondary);
+    background-color: var(--color-secondary);
+    width: 100%;
+    margin-top: 45vh;
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 1200px) {
+    .module-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .module-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .module-container {
+        grid-template-columns: 1fr;
+    }
+}

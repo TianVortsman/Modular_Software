@@ -1,0 +1,191 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-primary);
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+}
+
+.sign-in-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: var(--spacing-medium);
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 15px var(--color-primary), 0 0 30px var(--color-primary);
+    }
+    25% {
+        box-shadow: 0 0 25px var(--color-primary), 0 0 50px var(--color-primary);
+    }
+    50% {
+        box-shadow: 0 0 25px var(--color-primary), 0 0 50px var(--color-primary);
+    }
+    75% {
+        box-shadow: 0 0 15px var(--color-primary), 0 0 30px var(--color-primary);
+    }
+    100% {
+        box-shadow: 0 0 15px var(--color-primary), 0 0 30px var(--color-primary);
+    }
+}
+
+.sign-in-logo img {
+    width: 150px;
+    margin-bottom: var(--spacing-medium);
+    border-radius: var(--radius-large);
+    box-shadow: 0 0 15px var(--color-primary);
+    animation: pulse 3s infinite ease-in-out;
+}
+
+.sign-in-form {
+    background-color: var(--color-secondary);
+    padding: var(--spacing-large);
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-medium);
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.sign-in-form h1 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-medium);
+}
+
+.form-group {
+    margin-bottom: var(--spacing-medium);
+}
+
+.form-group label {
+    display: block;
+    text-align: left;
+    margin-bottom: var(--spacing-small);
+    color: var(--color-primary);
+}
+
+.form-group input {
+    width: 100%;
+    padding: var(--spacing-small);
+    font-size: var(--font-size-base);
+    border: none;
+    border-radius: var(--radius-small);
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+}
+
+.btn-sign-in {
+    width: 100%;
+    padding: var(--spacing-medium);
+    font-size: var(--font-size-large);
+    background-color: var(--color-primary);
+    color: var(--color-text-dark);
+    border: none;
+    border-radius: var(--radius-small);
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+
+.btn-sign-in:hover {
+    background-color: var(--color-hover);
+}
+
+.forgot-password {
+    display: block;
+    margin-top: var(--spacing-small);
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.new-customer {
+    margin-top: var(--spacing-large);
+}
+
+.new-customer a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.new-customer a:hover {
+    text-decoration: underline;
+}
+
+/* Extra styling for an extraordinary feel */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(circle, var(--color-primary) 10%, transparent 80%);
+    opacity: 0.05;
+    z-index: -1;
+}
+
+/* Header Styling for Modular Software */
+.header {
+    text-align: center;
+    margin-bottom: var(--spacing-large);
+}
+
+.software-name {
+    font-size: 3.75rem; /* Scaled using root variables */
+    font-weight: bold;
+    color: var(--color-primary);
+    text-shadow: 0 0 15px var(--color-primary), 0 0 30px var(--color-secondary);
+    transition: transform var(--transition-speed), color var(--transition-speed);
+}
+
+.software-name:hover {
+    transform: scale(1.1);
+    color: var(--color-hover);
+    text-shadow: 0 0 20px var(--color-primary), 0 0 40px var(--color-secondary);
+}
+
+/* Additional Styling for the Account Number Field */
+.form-group #account-number {
+    margin-bottom: var(--spacing-medium);
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+}
+
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+.modal-content {
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+    padding: 20px;
+    margin: 15% auto;
+    width: 300px;
+}
+
+.error-message {
+    background-color: #ffebee;
+    color: #d32f2f;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    border-left: 4px solid #d32f2f;
+}
+
+.error-message p {
+    margin: 0;
+    font-size: 14px;
+}

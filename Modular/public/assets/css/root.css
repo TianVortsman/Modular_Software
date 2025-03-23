@@ -1,0 +1,387 @@
+/* Root Variables */
+:root {           /* Secondary background color */
+    --color-success: #4CAF50;           /* Success color */
+    --color-error: #F44336;             /* Error color */
+    --color-warning: #FFC107;           /* Warning color */
+    --color-danger: #FF0000;            /* Danger color */
+    /* Fonts */
+    --font-primary: 'Roboto', sans-serif;   /* Primary font */
+    --font-secondary: 'Verdana', sans-serif; /* Secondary font */
+    --font-size-base: 16px;                /* Base font size */
+    --font-size-small: 14px;               /* Small text size */
+    --font-size-large: 18px;               /* Large text size */
+    --line-height: 1.5;                    /* Line height */
+
+    /* Spacing */
+    --spacing-small: 0.5rem;               /* Small spacing */
+    --spacing-medium: 1rem;                /* Medium spacing */
+    --spacing-large: 2rem;                 /* Large spacing */
+
+    /* Border Radius */
+    --radius-small: 4px;                   /* Small rounded corners */
+    --radius-medium: 8px;                  /* Medium rounded corners */
+    --radius-large: 16px;                  /* Large rounded corners */
+
+    /* Transitions */
+    --transition-speed: 0.5s;              /* Transition speed for hover effects */
+
+    /* Layout */
+    --max-width: 1200px;                   /* Max width for content */
+    --sidebar-width: 230px;                /* Sidebar width */
+    --header-height: 60px;                 /* Header height */
+    --footer-height: 50px;                 /* Footer height */
+
+    /* Z-Index */
+    --z-index-header: 1000;                /* Header z-index */
+    --z-index-modal: 2000;                 /* Modal z-index */
+    --z-index-tooltip: 3000;               /* Tooltip z-index */
+
+    /* Modules */
+    --module-card-padding: 1rem;           /* Padding for module cards */
+    --module-card-border-radius: 10px;     /* Border radius for module cards */
+
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active,
+    textarea:-webkit-autofill,
+    textarea:-webkit-autofill:hover,
+    textarea:-webkit-autofill:focus,
+    textarea:-webkit-autofill:active{
+        background-color: var(--input-bg) !important;
+        color: var(--color-text-light) !important;
+        -webkit-box-shadow: 0 0 0px 1000px var(--input-bg) inset !important;
+        transition: background-color 5000s ease-in-out 0s;
+        caret-color: var(--color-text-light) !important;
+        -webkit-text-fill-color: var(--color-text-light) !important; /* Critical fix for text color */
+        -webkit-box-shadow: 0 0 0px 1000px var(--input-bg) inset !important;
+        transition: background-color 5000s ease-in-out 0s;
+}
+    
+
+
+}
+
+/* Light Mode Variables */
+:root.light-mode {
+    --color-background: hsl(235 5% 85%); /* Light background */
+    --color-text-light: #000000;         /* Dark text color */
+    --color-primary: #007BFF;           /* Primary accent color */
+    --color-primary-fade:rgba(0, 123, 255, 0.3); /* Primary accent color with opacity */           
+    --color-hover: #0056b3;              /* Darker Blue */
+    --color-secondary: #f0f0f0;          /* Light grey for containers */
+    --color-chart-bg:#f0f0f0;           /* Light chart background */
+    --color-text-dark: #333333;          /* Secondary text */
+    --text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Subtle text shadow */
+    --color-h2: #000000;                 /* H2 color */
+    --chart-bar-paid: #4CAF50; /* Light mode bar color for paid */
+    --chart-bar-overdue: #F44336; /* Light mode bar color for overdue */
+    --chart-grid-color: rgba(0, 0, 0, 0.2); /* Light mode grid lines */
+    --chart-text-color: #000000; /* Light mode text */
+    --border-color:#4A4A4D;
+    --btn-bg:#007BFF;
+    --btn-hover-bg:#0056b3;
+    --shadow-light:rgba(0, 0, 0, 0.2); /* Light shadow */
+    --shadow-medium:rgba(0, 0, 0, 0.3); /* Medium shadow */
+    --shadow-dark: rgba(0, 0, 0, 0.5);  /* Dark shadow */
+}
+
+
+
+:root.light-mode-brown {
+  --color-background: hsl(235 5% 85%); /* Light background */
+  --color-text-light: #000000;         /* Dark text color */
+  --color-primary: #8B4513;            /* Primary accent color (brown) */
+  --color-primary-fade: rgba(139, 69, 19, 0.3); /* Primary accent color with opacity (brown) */
+  --color-hover: #A0522D;              /* Darker brown */
+  --color-secondary: #f0f0f0;          /* Light grey for containers */
+  --color-chart-bg: #f0f0f0;           /* Light chart background */
+  --color-text-dark: #333333;          /* Secondary text */
+  --text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Subtle text shadow */
+  --color-h2: #000000;                 /* H2 color */
+  --chart-bar-paid: #4CAF50;           /* Light mode bar color for paid */
+  --chart-bar-overdue: #F44336;        /* Light mode bar color for overdue */
+  --chart-grid-color: rgba(0, 0, 0, 0.2); /* Light mode grid lines */
+  --chart-text-color: #000000;         /* Light mode text */
+  --border-color: #4A4A4D;
+  --btn-bg: #8B4513;                   /* Button background (brown) */
+  --btn-hover-bg: #A0522D;             /* Button hover background (darker brown) */
+  --shadow-light: rgba(0, 0, 0, 0.2);  /* Light shadow */
+  --shadow-medium: rgba(0, 0, 0, 0.3); /* Medium shadow */
+  --shadow-dark: rgba(0, 0, 0, 0.5);   /* Dark shadow */
+}
+
+
+:root.light-mode-green {
+  --color-background: hsl(235 5% 85%); /* Light background */
+  --color-text-light: #000000;         /* Dark text color */
+  --color-primary: #28a745;            /* Primary accent color (green) */
+  --color-primary-fade: rgba(40, 167, 69, 0.3); /* Primary accent color with opacity (green) */
+  --color-hover: #218838;              /* Darker green */
+  --color-secondary: #f0f0f0;          /* Light grey for containers */
+  --color-chart-bg: #f0f0f0;           /* Light chart background */
+  --color-text-dark: #333333;          /* Secondary text */
+  --text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Subtle text shadow */
+  --color-h2: #000000;                 /* H2 color */
+  --chart-bar-paid: #4CAF50;           /* Light mode bar color for paid */
+  --chart-bar-overdue: #F44336;        /* Light mode bar color for overdue */
+  --chart-grid-color: rgba(0, 0, 0, 0.2); /* Light mode grid lines */
+  --chart-text-color: #000000;         /* Light mode text */
+  --border-color: #4A4A4D;
+  --btn-bg: #28a745;                   /* Button background (green) */
+  --btn-hover-bg: #218838;             /* Button hover background (darker green) */
+  --shadow-light: rgba(0, 0, 0, 0.2);  /* Light shadow */
+  --shadow-medium: rgba(0, 0, 0, 0.3); /* Medium shadow */
+  --shadow-dark: rgba(0, 0, 0, 0.5);   /* Dark shadow */
+}
+
+
+
+:root.dark-mode {
+    --color-chart-bg:rgba(255, 215, 0, 0.6);
+    --color-background: hsl(220 27% 6%); /* Dark background */
+    --color-background-light: hsl(220 27% 10%); /* Slightly lighter background */
+    --color-text-light: #ffffff;         /* Light text on dark mode */
+    --color-primary: #FFD700;            /* Primary accent color */
+    --color-hover: #FFC107;              /* Hover color for interactive elements */
+    --color-primary-fade: #333; /* Primary accent color with opacity */
+    --color-secondary: #333;             /* Dark secondary background */
+    --color-text-dark: #000000;         /* Dark text remains black */
+    --color-h2: #FFD700;                 /* H2 color */
+    --chart-bar-paid: #4CAF50; /* Dark mode bar color for paid */
+    --chart-bar-overdue: #F44336; /* Dark mode bar color for overdue */
+    --chart-grid-color: rgba(255, 255, 255, 0.2); /* Dark mode grid lines */
+    --chart-text-color: #FFFFFF; /* Dark mode text */
+    --input-bg:#2C2C2E;
+    --border-color:#000000;
+    --btn-bg:#4A4A4D;
+    --btn-hover-bg:#333;
+    --shadow-light:rgba(255, 255, 255, 0.2); /* Brighter light shadow */
+    --shadow-medium:rgba(255, 255, 255, 0.3); /* More visible medium shadow */
+    --shadow-dark: rgba(255, 255, 255, 0.5);  /* Stronger dark shadow for depth */  
+    --modal-bg: #1c1c1c;            /* Dark background for modals */
+    --modal-border: #444444;        /* Darker border for modals */
+    --modal-padding: 20px;          /* Padding remains the same */
+    --modal-shadow: rgba(0, 0, 0, 0.7); /* Deeper shadow for dark mode */  
+    --fieldset-border: #444444;     /* Darker border for fieldsets */
+}
+
+
+
+:root.dark-mode-brown {
+  --color-chart-bg: rgba(139, 69, 19, 0.6); /* Brown chart background */
+  --color-background: hsl(220 27% 6%); /* Dark background */
+  --color-background-light: hsl(220 27% 10%); /* Slightly lighter background */
+  --color-text-light: #ffffff; /* Light text on dark mode */
+  --color-primary: #8B4513; /* Primary accent color (brown) */
+  --color-hover: #A0522D; /* Hover color for interactive elements (sienna) */
+  --color-primary-fade: rgba(139, 69, 19, 0.3); /* Primary accent color with opacity (brown) */
+  --color-secondary: #4A4A4D; /* Dark secondary background */
+  --color-text-dark: #000000; /* Dark text remains black */
+  --color-h2: #8B4513; /* H2 color (brown) */
+  --chart-bar-paid: #A0522D; /* Dark mode bar color for paid (sienna) */
+  --chart-bar-overdue: #D2691E; /* Dark mode bar color for overdue (chocolate) */
+  --chart-grid-color: rgba(255, 255, 255, 0.2); /* Dark mode grid lines */
+  --chart-text-color: #FFFFFF; /* Dark mode text */
+  --input-bg: #2C2C2E;
+  --border-color: #000000;
+  --btn-bg: #8B4513; /* Button background (brown) */
+  --btn-hover-bg: #A0522D; /* Button hover background (sienna) */
+  --shadow-light: rgba(255, 255, 255, 0.2); /* Brighter light shadow */
+  --shadow-medium: rgba(255, 255, 255, 0.3); /* More visible medium shadow */
+  --shadow-dark: rgba(255, 255, 255, 0.5); /* Stronger dark shadow for depth */
+}
+
+:root.dark-mode-blue {
+  --color-chart-bg:rgba(0, 123, 255, 0.6);
+  --color-background: hsl(220 27% 6%); /* Dark background */
+  --color-background-light: hsl(220 27% 10%); /* Slightly lighter background */
+  --color-text-light: #ffffff;         /* Light text on dark mode */
+  --color-primary: #007BFF;            /* Primary accent color */
+  --color-hover: #0056b3;              /* Hover color for interactive elements */
+  --color-primary-fade: rgba(0, 123, 255, 0.3); /* Primary accent color with opacity */
+  --color-secondary: #333;             /* Dark secondary background */
+  --color-text-dark: #000000;          /* Dark text remains black */
+  --color-h2: #007BFF;                 /* H2 color */
+  --chart-bar-paid: #4CAF50;           /* Dark mode bar color for paid */
+  --chart-bar-overdue: #F44336;        /* Dark mode bar color for overdue */
+  --chart-grid-color: rgba(255, 255, 255, 0.2); /* Dark mode grid lines */
+  --chart-text-color: #FFFFFF;         /* Dark mode text */
+  --input-bg: #2C2C2E;
+  --border-color: #000000;
+  --btn-bg: #4A4A4D;
+  --btn-hover-bg: #333;
+  --shadow-light: rgba(255, 255, 255, 0.2); /* Brighter light shadow */
+  --shadow-medium: rgba(255, 255, 255, 0.3); /* More visible medium shadow */
+  --shadow-dark: rgba(255, 255, 255, 0.5);  /* Stronger dark shadow for depth */
+  --modal-bg: #1c1c1c;            /* Dark background for modals */
+  --modal-border: #444444;        /* Darker border for modals */
+  --modal-padding: 20px;          /* Padding remains the same */
+  --modal-shadow: rgba(0, 0, 0, 0.7); /* Deeper shadow for dark mode */  
+  --fieldset-border: #444444;     /* Darker border for fieldsets */
+}
+
+:root.dark-mode-red {
+  --color-chart-bg:rgba(255, 0, 0, 0.6);
+  --color-background: hsl(220 27% 6%); /* Dark background */
+  --color-background-light: hsl(220 27% 10%); /* Slightly lighter background */
+  --color-text-light: #ffffff;         /* Light text on dark mode */
+  --color-primary: #FF0000;            /* Primary accent color */
+  --color-hover: #CC0000;              /* Hover color for interactive elements */
+  --color-primary-fade: rgba(255, 0, 0, 0.3); /* Primary accent color with opacity */
+  --color-secondary: #333;             /* Dark secondary background */
+  --color-text-dark: #000000;          /* Dark text remains black */
+  --color-h2: #FF0000;                 /* H2 color */
+  --chart-bar-paid: #4CAF50;           /* Dark mode bar color for paid */
+  --chart-bar-overdue: #F44336;        /* Dark mode bar color for overdue */
+  --chart-grid-color: rgba(255, 255, 255, 0.2); /* Dark mode grid lines */
+  --chart-text-color: #FFFFFF;         /* Dark mode text */
+  --input-bg: #2C2C2E;
+  --border-color: #000000;
+  --btn-bg: #4A4A4D;
+  --btn-hover-bg: #333;
+  --shadow-light: rgba(255, 255, 255, 0.2); /* Brighter light shadow */
+  --shadow-medium: rgba(255, 255, 255, 0.3); /* More visible medium shadow */
+  --shadow-dark: rgba(255, 255, 255, 0.5);  /* Stronger dark shadow for depth */
+}
+
+.hidden {
+    display: none;
+}
+  
+/* Ensure the page takes the full viewport size */
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+  }
+  
+  .material-icons{
+    text-shadow: 1px 2px 5px 3px var(--shadow-dark);
+   }
+
+
+
+   /* Container for the pagination controls */
+.pagination-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: var(--spacing-medium);
+  margin-bottom: var(--spacing-medium);
+}
+
+/* Row per page dropdown */
+.rows-per-page {
+  padding: var(--spacing-small) var(--spacing-medium);
+  margin-right: var(--spacing-medium);
+  font-size: var(--font-size-small);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-small);
+  background-color: var(--color-secondary);
+  color: var(--color-text-dark);
+  cursor: pointer;
+}
+
+.rows-per-page:hover {
+  border-color: var(--color-primary);
+}
+
+/* Pagination button styling */
+.pagination-button {
+  padding: var(--spacing-small) var(--spacing-medium);
+  margin: 0 var(--spacing-small);
+  font-size: var(--font-size-small);
+  cursor: pointer;
+  background-color: var(--color-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-small);
+  transition: background-color var(--transition-speed), border-color var(--transition-speed);
+  color: var(--color-text-dark);
+}
+
+/* Hover effect for pagination buttons */
+.pagination-button:hover {
+  background-color: var(--color-primary);
+  color: var(--color-text-light);
+  border-color: var(--color-primary);
+}
+
+/* Active page button */
+.pagination-button.active {
+  background-color: var(--color-primary);
+  color: var(--color-text-light);
+  border-color: var(--color-primary);
+  font-weight: bold;
+}
+
+/* Disabled pagination button */
+.pagination-button:disabled {
+  background-color: var(--color-secondary);
+  cursor: not-allowed;
+  color: var(--color-text-dark);
+  border-color: var(--color-secondary);
+}
+
+/* Styling for the pagination container */
+.pagination-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-small);
+}
+
+/* Page Info (Showing "Page X of Y") */
+.page-info {
+  font-size: var(--font-size-small);
+  color: var(--color-text-dark);
+  margin-left: var(--spacing-medium);
+}
+
+/* Responsive adjustment for smaller screens */
+@media (max-width: 600px) {
+  .pagination-container {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+
+  .rows-per-page {
+      margin-bottom: var(--spacing-small);
+  }
+
+  .pagination-button {
+      padding: var(--spacing-small) var(--spacing-medium);
+  }
+
+  .page-info {
+      margin-left: 0;
+      margin-top: var(--spacing-small);
+  }
+}
+
+
+
+/* Webkit Browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 12px; /* Vertical scrollbar width */
+  height: 12px; /* Horizontal scrollbar height */
+}
+
+/* Style the scrollbar track */
+::-webkit-scrollbar-track {
+  background-color: var(--color-background); /* Track background color */
+  border-radius: var(--radius-small); /* Rounded corners for the track */
+}
+
+/* Style the scrollbar thumb */
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-primary); /* Thumb color */
+  border-radius: var(--radius-small); /* Rounded corners for the thumb */
+  border: 2px solid var(--color-background); /* Optional: adds spacing between thumb and track */
+}
+
+/* Style the scrollbar thumb on hover */
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-hover); /* Hover thumb color */
+}
+

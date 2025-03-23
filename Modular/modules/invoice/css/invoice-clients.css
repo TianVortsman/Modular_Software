@@ -1,0 +1,521 @@
+.invoice-clients{
+    background-color: var(--color-background);
+}
+
+.screen-container{
+    width: 100%;
+    background-color: var(--color-background);
+}
+.clients-screen {
+    min-height: 100vh; /* Make sure it covers at least 100% of the viewport height */
+    padding: var(--spacing-medium);
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+    display: flex;
+    flex-direction: column; /* Stack the elements vertically */
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-dark);z-index: -1;
+    margin-left: var(--sidebar-width);
+    transition: margin-left 0.3s ease-in-out; /* Smooth transition for sidebar */
+    padding: var(--spacing-medium);
+    width: auto;
+}
+
+.actions-container, .tabs-container {
+    background-color: var(--color-secondary); /* Slightly lighter for actions */
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-medium);
+    padding: var(--spacing-small);
+    margin-bottom: var(--spacing-medium);
+    box-shadow: var(--shadow-light);
+    box-shadow: 
+    4px 8px 12px var(--shadow-light),   /* Lighter, smaller shadow */
+    6px 12px 24px var(--shadow-medium), /* Medium shadow for more depth */
+    8px 16px 32px var(--shadow-dark);   /* Darker shadow for added realism */
+}
+
+h2 {
+    margin-bottom: var(--spacing-small);
+    color: var(--color-h2);
+}
+
+/* Quick Actions */
+.clients-actions {
+    display: flex;
+    margin-bottom: var(--spacing-medium);
+    flex-wrap: wrap;
+}
+
+.filter-container {
+    display: flex;
+    gap: var(--spacing-small);
+    margin-bottom: var(--spacing-medium);
+    background-color: var(--color-background);
+    padding: 5px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 2px var(--shadow-medium);
+}
+
+.action-button, .open-client-modal {
+    background-color: var(--btn-bg);
+    border: none;
+    color: var(--color-text-light);
+    padding: var(--spacing-small) var(--spacing-medium);
+    border-radius: var(--radius-medium);
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+    margin-left: var(--spacing-small);
+}
+
+.action-button:hover {
+    background-color: var(--color-hover);
+}
+
+#client-search {
+    padding: var(--spacing-small);
+    border-radius: var(--radius-medium);
+    border: 1px solid var(--border-color);
+    background-color: var(--input-bg);
+    color: var(--color-text-light);
+}
+
+.search-container {
+    margin-left: auto;
+    gap: 5px;
+    padding: var(--spacing-small);
+    margin-bottom: var(--spacing-medium);
+    display: flex;
+    align-items: center;
+    margin-left: auto; /* Pushes the search input to the far right */
+    background-color: var(--color-background);
+    border-radius: 8px;
+    box-shadow: 2px 2px 2px var(--shadow-medium);
+}
+
+.pagination-container1, .pagination-container2 {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: var(--spacing-medium);
+    margin-bottom: var(--spacing-medium);
+    background-color: var(--color-background);
+}
+
+/* Client Filter Options */
+.client-filter {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-small);
+    margin-bottom: var(--spacing-medium);
+    flex-wrap: wrap;
+}
+
+.client-section1 { 
+    display: none;
+}
+
+.client-section2 { 
+    display: none;
+}
+
+.client-section1.active { 
+    display: block;
+}
+
+.client-section2.active { 
+    display: block;
+}
+
+.clientSectionButton1, .clientSectionButton2 { 
+    background-color: var(--btn-bg);
+    border: none;
+    color: var(--color-text-light);
+    padding: var(--spacing-small) var(--spacing-medium);
+    border-radius: var(--radius-medium);
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+    margin-left: var(--spacing-small);
+}
+
+.clientSectionButton1.active, .clientSectionButton2.active { 
+    background-color: var(--color-primary);
+    color: var(--color-text-dark);
+}
+
+
+
+
+.client-filter input, .client-filter label {
+    color: var(--color-text-light);
+}
+
+/* Client Filter Input Styling */
+#client-filter {
+    padding: var(--spacing-small);
+    width: 100%; /* Adjust width as needed */
+    max-width: 300px; /* Optional: Control max-width */
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-medium);
+    background-color: var(--input-bg); /* Use your input background color */
+    color: var(--color-text-light); /* Use your input text color */
+    outline: none;
+    transition: border-color var(--transition-speed), background-color var(--transition-speed);
+}
+
+#client-filter::placeholder {
+    color: var(--color-text-dark); /* Style placeholder text */
+}
+
+#client-filter:hover {
+    border-color: var(--color-hover); /* Change border color on hover */
+}
+
+#client-filter:focus {
+    border-color: var(--color-primary); /* Highlight border on focus */
+    background-color: var(--color-secondary); /* Optional: Change background on focus */
+}
+
+/* Tab Buttons */
+.clients-tabs {
+    display: flex;
+    gap: var(--spacing-small);
+    margin-bottom: var(--spacing-medium);
+    flex-wrap: wrap;
+}
+
+.tab-button {
+    padding: var(--spacing-small) var(--spacing-medium);
+    background-color: var(--input-bg);
+    color: var(--color-text-light);
+    border: none;
+    border-radius: var(--radius-medium);
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+
+.tab-button.active {
+    background-color: var(--color-primary);
+    color: var(--color-text-dark);
+}
+
+.client-table-container {
+    overflow-y: auto;
+    border-radius: var(--radius-medium); /* Rounded table container */
+}
+
+.client-table, .business-client-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+    box-shadow: var(--shadow-medium);
+    border-radius: var(--radius-medium);
+    overflow: hidden;
+}
+
+.client-table thead, .business-client-table thead {
+    background-color: var(--color-primary);
+    color: var(--color-text-dark);
+    text-align: left;
+    font-size: var(--font-size-large);
+}
+
+.client-table th, .business-client-table th,
+.client-table td, .business-client-table td {
+    padding: var(--spacing-small) var(--spacing-medium);
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+}
+
+.client-table tbody tr:hover, .business-client-table tbody tr:hover {
+    background-color: var(--color-secondary);
+}
+
+.client-table .action-icons, .business-client-table .action-icons {
+    display: flex;
+    gap: var(--spacing-small);
+    justify-content: center;
+}
+
+.client-table .icon, .business-client-table .icon {
+    cursor: pointer;
+    font-size: var(--font-size-large);
+    color: var(--color-primary);
+    transition: transform 0.2s ease-in-out;
+}
+
+.client-table .icon:hover, .business-client-table .icon:hover {
+    transform: scale(1.2);
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    .clients-actions {
+        flex-direction: column;
+        gap: var(--spacing-small);
+    }
+
+    .client-filter {
+        flex-direction: column;
+    }
+
+    .clients-tabs {
+        flex-direction: column;
+    }
+
+    .client-table-container {
+        max-height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .action-button, #client-search {
+        width: 100%;
+    }
+
+    .tab-button {
+        width: 100%;
+        text-align: center;
+    }
+
+    .client-filter {
+        gap: var(--spacing-small);
+    }
+}
+
+
+/* ======================================
+   Modal General Styling
+====================================== */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+    color: var(--color-text-light);
+  }
+  
+  .modal-dialog {
+    margin: 5% auto;       /* Center vertically with some top/bottom margin */
+    max-width: 1200px;      /* Maximum width for larger screens */
+    width: 90%;            /* Responsive width */
+    height: fit-content;
+  }
+  
+  .modal-content {
+    background-color: var(--color-background);
+    padding: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  /* ======================================
+     Modal Header Styling
+  ====================================== */
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 15px;
+  }
+  
+  .modal-header .close {
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  /* ======================================
+     Form Layout: Two Columns Side by Side
+  ====================================== */
+  .form-row {
+    display: flex;
+    flex-wrap: wrap;   /* Allows columns to wrap on smaller screens */
+    gap: 20px;         /* Space between the two columns */
+  }
+  
+  /* Each column will take up roughly half the available width,
+     but with a minimum width to ensure readability. */
+  .form-column {
+    flex: 1 1 45%;     /* Grow, shrink, basis */
+    min-width: 300px;
+  }
+  
+  /* ======================================
+     Fieldset and Form Group Styling
+  ====================================== */
+  fieldset {
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    border-radius: 4px;
+    justify-content: space-between;
+    width: 29%;
+  }
+
+  .additional-info,.basic-info,.address-info,.contact-info {
+    width: auto;
+  }
+  
+  .client-fields {
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  fieldset legend {
+    font-weight: bold;
+    padding: 0 5px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .form-group input[type="text"],
+  .form-group input[type="email"],
+  .form-group input[type="url"],
+  .form-group input[type="number"],
+  .form-group textarea {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--color-text-light);
+    background-color: var(--color-secondary);
+  }
+
+
+  select{
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--color-text-light);
+    background-color: var(--color-secondary);
+  }
+  
+  /* ======================================
+     Form Actions (Submit Button)
+  ====================================== */
+  .form-actions {
+    margin-top: 20px;
+    text-align: right;
+  }
+  
+  .form-actions button {
+    padding: 10px 20px;
+    border: none;
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .form-actions button:hover {
+    background-color: var(--color-primary);
+  }
+  
+  /* ======================================
+     Invoices Section Styling
+     This section sits below the form-row.
+  ====================================== */
+  .invoices-section {
+    margin-top: 30px;
+  }
+  
+  .invoices-section h3 {
+    margin-bottom: 10px;
+  }
+  
+  .invoice-filters {
+    margin-bottom: 15px;
+  }
+  
+  .invoice-filters label {
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  
+  .invoice-filters input {
+    padding: 5px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--color-secondary);
+  }
+  
+  /* Style for the invoices table */
+  .company-invoices-table,
+  .customer-invoices-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+    box-shadow: var(--shadow-medium);
+    border-radius: var(--radius-medium);
+    overflow: hidden;
+  }
+  
+  .company-invoices-table th,
+  .company-invoices-table td,
+  .customer-invoices-table th,
+  .customer-invoices-table td {
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    text-align: left;
+  }
+
+  .company-invoices-table thead,
+  .customer-invoices-table thead {
+    background-color: var(--color-primary);
+    color: var(--color-text-dark);
+  }
+  
+  .company-invoices-table th,
+  .customer-invoices-table th {
+    font-weight: bold;
+  }
+  
+  /* ======================================
+     Optional: Modal Footer Styling
+  ====================================== */
+  .modal-footer {
+    margin-top: 20px;
+    text-align: right;
+  }
+  
+
+#responseModal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#responseModal .modal-content {
+    max-width: 500px;
+    width: 90%;
+    padding: 20px;
+    background-color: var(--color-background);
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-dark);
+    text-align: center;
+    position: relative;
+}
+
+#responseModal .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+}

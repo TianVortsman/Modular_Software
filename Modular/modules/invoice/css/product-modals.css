@@ -1,0 +1,359 @@
+/* ========================= */
+/* Universal Product Modal CSS */
+/* ========================= */
+
+.universal-product-modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: var(--z-index-modal, 999);
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: var(--shadow-dark, rgba(0, 0, 0, 0.4)); /* Semi-transparent overlay */
+}
+
+.universal-product-modal.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal Content */
+.universal-product-modal-content {
+    background-color: var(--modal-bg, var(--color-background));
+    margin: 2% auto;
+    padding: var(--modal-padding, 1.5rem);
+    border-radius: var(--radius-medium, 8px);
+    width: 80%;
+    max-width: 1000px;
+    height: 80vh;
+    max-height: 800px;
+    position: relative;
+    box-shadow: 0 0 20px var(--shadow-dark, rgba(0, 0, 0, 0.7));
+    border: 1px solid var(--modal-border, var(--border-color));
+    color: var(--color-text-light);
+    font-family: var(--font-primary, Arial, sans-serif);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Close (X) */
+.universal-product-modal-close {
+    color: var(--color-text-light);
+    float: right;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color var(--transition-speed, 0.3s) ease;
+    position: absolute;
+    right: 1.5rem;
+    top: 1rem;
+}
+
+.universal-product-modal-close:hover,
+.universal-product-modal-close:focus {
+    color: var(--color-hover);
+    text-decoration: none;
+}
+
+/* Title */
+.universal-product-modal-title {
+    margin-top: 0;
+    margin-bottom: var(--spacing-medium, 1rem);
+    font-size: 1.4rem;
+    font-weight: bold;
+    text-align: center;
+    color: var(--color-h2);
+}
+
+/* Form */
+.universal-product-modal-form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Layout */
+.upm-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    gap: 1.5rem;
+}
+
+/* Image Dropzone */
+.upm-image-dropzone {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    margin: 0 auto;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-medium, 4px);
+    background-color: var(--input-bg);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+}
+
+.upm-image-dropzone:hover {
+    border-color: var(--color-primary);
+}
+
+.upm-image-dropzone.drag-over {
+    border-color: var(--color-primary);
+    background-color: rgba(var(--color-primary-rgb), 0.1);
+}
+
+.upm-image-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+    position: relative;
+}
+
+.upm-dropzone-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+}
+
+.upm-image-dropzone:hover .upm-dropzone-overlay {
+    opacity: 1;
+}
+
+.upm-dropzone-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.upm-dropzone-text {
+    text-align: center;
+}
+
+.upm-dropzone-text span {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.upm-image-input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 3;
+}
+
+/* When an image is uploaded, show the overlay only on hover */
+.upm-image-dropzone.has-image .upm-dropzone-overlay {
+    opacity: 0;
+}
+
+.upm-image-dropzone.has-image:hover .upm-dropzone-overlay {
+    opacity: 1;
+}
+
+/* Essential Info */
+.upm-essential-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Tabs Section */
+.upm-tabs-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Tab Navigation */
+.upm-tab-nav {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.upm-tab-btn {
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--color-text-light);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.upm-tab-btn:hover {
+    color: var(--color-primary);
+}
+
+.upm-tab-btn.upm-active {
+    border-bottom-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+/* Tab Content */
+.upm-tab-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.upm-tab-pane {
+    display: none;
+    padding: 0.5rem;
+}
+
+.upm-tab-pane.upm-active {
+    display: block;
+}
+
+/* Fields */
+.upm-field {
+    margin-bottom: 1rem;
+}
+
+.upm-field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--color-text-light);
+}
+
+.upm-field input,
+.upm-field select,
+.upm-field textarea {
+    width: 90%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small, 4px);
+    background-color: var(--input-bg);
+    color: var(--color-text-light);
+    font-family: var(--font-primary, Arial, sans-serif);
+}
+
+.upm-field textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.upm-notes-textarea {
+    min-height: 200px;
+}
+
+/* Type Specific Sections */
+.universal-product-fieldset-part,
+.universal-product-fieldset-service,
+.upm-bundle-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.universal-product-fieldset-part h3,
+.universal-product-fieldset-service h3,
+.upm-bundle-section h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: var(--color-h3);
+}
+
+/* Buttons container */
+.universal-product-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--spacing-medium, 1rem);
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Buttons */
+.btn-universal-product-save,
+.btn-universal-product-cancel,
+.btn-universal-product-delete {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    border-radius: var(--radius-small, 4px);
+    font-family: var(--font-primary, Arial, sans-serif);
+    color: var(--color-text-light);
+    transition: background-color var(--transition-speed, 0.3s) ease;
+    font-weight: 600;
+}
+
+/* Save Button */
+.btn-universal-product-save {
+    background-color: var(--btn-bg, var(--color-primary));
+}
+.btn-universal-product-save:hover {
+    background-color: var(--btn-hover-bg, var(--color-hover));
+}
+
+/* Cancel Button */
+.btn-universal-product-cancel {
+    background-color: var(--color-secondary);
+}
+.btn-universal-product-cancel:hover {
+    background-color: var(--btn-bg, var(--color-primary));
+}
+
+/* Delete Button */
+.btn-universal-product-delete {
+    background-color: var(--color-danger);
+}
+.btn-universal-product-delete:hover {
+    background-color: var(--color-danger-hover);
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .upm-layout {
+        flex-direction: column;
+    }
+    
+    .upm-image-section {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding-right: 0;
+        padding-bottom: 1rem;
+    }
+    
+    .upm-image-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .universal-product-modal-content {
+        width: 95%;
+        height: 90vh;
+    }
+}
