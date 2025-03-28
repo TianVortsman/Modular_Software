@@ -273,7 +273,14 @@ ul.modular-nav-items li a .material-icons {
     transition: margin-left var(--transition-speed) ease-in-out; /* Smooth transition for sidebar */
 }
 
-.collapsed + .dashboard-container{
-    margin-left: 70px; /* Adjust for collapsed sidebar */
-    transition: margin-left var(--transition-speed) ease-in-out; /* Smooth transition for sidebar */
+/* Add this rule for when the dashboard container itself has the collapsed class */
+.dashboard-container.collapsed {
+    margin-left: 70px !important;
+    transition: margin-left var(--transition-speed) ease-in-out;
 }
+
+/* Keep the existing rule for backward compatibility */
+.collapsed + .dashboard-container {
+    margin-left: 70px;
+    transition: margin-left var(--transition-speed) ease-in-out;
+} 

@@ -31,6 +31,10 @@ $isAccountClickable = $sidebarManager->isAccountClickable();
                 <?php else: ?>
                     <p><strong>Account:</strong> <?= htmlspecialchars($accountNumber) ?></p>
                 <?php endif; ?>
+                <!-- Tutorial Button -->
+                <div class="tutorial-button" id="tutorial-button">
+                    <i class="material-icons">help_outline</i>
+                </div>
                 <!-- Notifications Bell -->
                 <div class="notification-bell" id="notification-bell">
                     <i class="material-icons">notifications</i>
@@ -42,6 +46,7 @@ $isAccountClickable = $sidebarManager->isAccountClickable();
             <li><a href="/public/views/settings.php"><i class="material-icons nav-icon" id="settings-button" >settings</i> <span class="nav-text">Settings</span></a></li>
             <li><a href="/public/views/export.php"><i class="material-icons nav-icon" id="import-button" >upload</i> <span class="nav-text">Exporting</span></a></li>
             <li><a href="/public/views/import.php"><i class="material-icons nav-icon" id="export-button" >download</i> <span class="nav-text">Importing</span></a></li>
+            <li><a href="#" onclick="startTutorialForCurrentPage()"><i class="material-icons nav-icon" id="tutorial-button">help_outline</i> <span class="nav-text">Tutorial</span></a></li>
             <li><a href="<?= $logoutUrl ?>"><i class="material-icons nav-icon" id="exit-button" >exit_to_app</i> <span class="nav-text">LogOut</span></a></li> 
         </ul>
     </nav>
@@ -315,3 +320,44 @@ $isAccountClickable = $sidebarManager->isAccountClickable();
             }
         }
     </style>
+
+    <!-- Add Tutorial Button Styles -->
+    <style>
+        /* Tutorial Button Styles */
+        .tutorial-button {
+            position: absolute;
+            top: 15px;
+            right: 45px; /* Position it to the left of the notification bell */
+            cursor: pointer;
+            color: var(--color-text-light);
+            transition: color 0.3s ease;
+        }
+        
+        .tutorial-button:hover {
+            color: var(--color-primary);
+        }
+        
+        /* When tutorial is completed */
+        [data-tutorial-completed="true"] .tutorial-button {
+            opacity: 0.5;
+        }
+    </style>
+
+    <!-- Add this script after the tutorial button -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tutorialButton = document.getElementById('tutorial-button');
+        if (tutorialButton) {
+            tutorialButton.addEventListener('click', function() {
+                // If tutorial engine is not ready, wait for it
+                if (!window.tutorialEngine) {
+                    document.addEventListener('tutorialEngineReady', function() {
+                        document.dispatchEvent(new CustomEvent('startTutorial'));
+                    }, { once: true });
+                } else {
+                    document.dispatchEvent(new CustomEvent('startTutorial'));
+                }
+            });
+        }
+    });
+    </script>

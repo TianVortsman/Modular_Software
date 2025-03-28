@@ -6,6 +6,8 @@ class ScheduleManager {
         this.shifts = [];
         this.draggedShift = null;
         this.employees = [];
+        this.rosters = [];
+        this.currentRoster = null;
         this.init();
         this.initDoubleClick();
     }
@@ -107,6 +109,9 @@ class ScheduleManager {
                 
                 btn.classList.add('active');
                 document.getElementById(`${tabId}-tab`).classList.add('active');
+
+                // Refresh the drag and drop functionality when switching tabs
+                this.initDragAndDrop();
             });
         });
     }
@@ -132,63 +137,95 @@ class ScheduleManager {
     }
 
     initDragAndDrop() {
-        // Initialize drag and drop for shift items
-        document.addEventListener('dragstart', (e) => {
-            if (e.target.classList.contains('shift-item')) {
-                this.draggedShift = e.target;
-                e.target.classList.add('dragging');
-                e.dataTransfer.effectAllowed = 'move';
-            }
-        });
-
-        document.addEventListener('dragend', (e) => {
-            if (e.target.classList.contains('shift-item')) {
-                e.target.classList.remove('dragging');
-                this.draggedShift = null;
-            }
-        });
-
-        // Initialize drop zones
-        const dropZones = document.querySelectorAll('.shift-drop-zone');
-        dropZones.forEach(zone => {
-            zone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                zone.classList.add('drag-over');
+        // Initialize drag events for all shift items
+        const shiftItems = document.querySelectorAll('.shift-item');
+        shiftItems.forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                this.draggedShift = item;
+                item.classList.add('dragging');
+                e.dataTransfer.setData('text/plain', item.dataset.shiftId);
             });
 
-            zone.addEventListener('dragleave', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                zone.classList.remove('drag-over');
-            });
-
-            zone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                zone.classList.remove('drag-over');
-                
+            item.addEventListener('dragend', () => {
                 if (this.draggedShift) {
-                    const shiftId = this.draggedShift.dataset.shiftId;
-                    const day = zone.closest('.day-column').dataset.day;
-                    this.handleShiftDrop(shiftId, day, zone);
+                    this.draggedShift.classList.remove('dragging');
+                    this.draggedShift = null;
                 }
             });
         });
+
+        // Initialize drop zones for work week
+        const workWeekDropZones = document.querySelectorAll('.work-week .shift-drop-zone');
+        workWeekDropZones.forEach(zone => {
+            this.initializeDropZone(zone, 'workweek');
+        });
+
+        // Initialize drop zones for monthly calendar
+        const calendarDropZones = document.querySelectorAll('.calendar-day');
+        calendarDropZones.forEach(zone => {
+            this.initializeDropZone(zone, 'calendar');
+        });
     }
 
-    handleShiftDrop(shiftId, day, dropZone) {
-        const shift = this.findShift(shiftId);
-        if (!shift) return;
+    initializeDropZone(zone, type) {
+        // First, remove all existing event listeners
+        const newZone = zone.cloneNode(true);
+        zone.parentNode.replaceChild(newZone, zone);
+        zone = newZone;
 
-        // Remove shift from current day if it exists
-        this.removeShiftFromDay(shiftId);
+        // Add dragover event
+        zone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            zone.classList.add('drag-over');
+        });
 
-        // Add shift to new day
-        if (this.currentTemplate) {
-            this.currentTemplate.shifts[day].push(shift);
-            dropZone.insertAdjacentHTML('beforeend', this.createShiftElement(shift));
-        }
+        // Add dragleave event
+        zone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            zone.classList.remove('drag-over');
+        });
+
+        // Add drop event with single handler
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            zone.classList.remove('drag-over');
+
+            const shiftId = e.dataTransfer.getData('text/plain');
+            if (!shiftId || !this.draggedShift) return;
+
+            // Check for duplicates
+            const existingShift = zone.querySelector(`[data-shift-id="${shiftId}"]`);
+            if (existingShift) return;
+
+            // Create new shift element with compact display
+            const newShift = this.createShiftElement({
+                id: shiftId,
+                name: this.draggedShift.querySelector('.shift-name')?.textContent || 'Shift',
+                time: this.draggedShift.querySelector('.shift-time')?.textContent || '',
+                color: this.draggedShift.querySelector('.shift-color')?.style.background || ''
+            }, 'compact');
+
+            // Add the new shift to the drop zone
+            if (type === 'workweek') {
+                zone.appendChild(newShift);
+                this.initializeDraggableShift(newShift);
+            } else if (type === 'calendar') {
+                const shiftContainer = zone.querySelector('.shift-container');
+                if (shiftContainer) {
+                    // Remove empty message if it exists
+                    const emptyMessage = shiftContainer.querySelector('.empty-day-message');
+                    if (emptyMessage) {
+                        emptyMessage.remove();
+                    }
+
+                    shiftContainer.appendChild(newShift);
+                    this.initializeDraggableShift(newShift);
+                }
+            }
+        });
     }
 
     renderTemplates() {
@@ -246,22 +283,48 @@ class ScheduleManager {
         });
     }
 
-    createShiftElement(shift) {
-        return `
-            <div class="shift-item" draggable="true" data-shift-id="${shift.id}">
-                <div class="shift-icon" style="background: ${shift.color}">
-                    <i class="material-icons">schedule</i>
+    createShiftElement(shiftData, type = 'library') {
+        const shiftElement = document.createElement('div');
+        shiftElement.className = 'shift-item';
+        shiftElement.draggable = true;
+        shiftElement.dataset.shiftId = shiftData.id;
+
+        // Different HTML structure based on where the shift is being displayed
+        if (type === 'library') {
+            shiftElement.innerHTML = `
+                <div class="shift-content">
+                    <div class="shift-color" style="background: ${shiftData.color}"></div>
+                    <div class="shift-details">
+                        <div class="shift-name">${shiftData.name}</div>
+                        <div class="shift-time">${shiftData.time}</div>
+                        <div class="shift-rules">${shiftData.rules || ''}</div>
+                    </div>
                 </div>
-                <div class="shift-details">
-                    <div class="shift-time">${shift.startTime} - ${shift.endTime}</div>
-                    <div class="shift-name">${shift.name}</div>
-                    ${shift.rules ? `<div class="shift-rules">${shift.rules}</div>` : ''}
+            `;
+        } else {
+            // Compact version for work week and calendar
+            shiftElement.innerHTML = `
+                <div class="shift-content">
+                    <div class="shift-color" style="background: ${shiftData.color}"></div>
+                    <div class="shift-details">
+                        <div class="shift-name">${shiftData.name}</div>
+                        <div class="shift-time">${shiftData.time}</div>
+                    </div>
                 </div>
-                <button class="remove-shift" onclick="event.stopPropagation();">
-                    <i class="material-icons">close</i>
-                </button>
-            </div>
-        `;
+            `;
+        }
+
+        // Add remove button
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-shift';
+        removeBtn.innerHTML = '<i class="material-icons">close</i>';
+        removeBtn.onclick = (e) => {
+            e.stopPropagation();
+            shiftElement.remove();
+        };
+        shiftElement.appendChild(removeBtn);
+
+        return shiftElement;
     }
 
     createNewTemplate() {
@@ -294,17 +357,16 @@ class ScheduleManager {
         const shiftList = document.querySelector('.shift-list');
         if (!shiftList) return;
 
-        shiftList.innerHTML = this.shifts.map(shift => `
-            <div class="shift-item" draggable="true" data-shift-id="${shift.id}">
-                <div class="shift-icon" style="background: ${shift.color}">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="shift-details">
-                    <div class="shift-time">${shift.startTime} - ${shift.endTime}</div>
-                    <div class="shift-name">${shift.name}</div>
-                </div>
-            </div>
-        `).join('');
+        shiftList.innerHTML = this.shifts.map(shift => {
+            const shiftElement = this.createShiftElement({
+                id: shift.id,
+                name: shift.name,
+                time: `${shift.startTime} - ${shift.endTime}`,
+                color: shift.color,
+                rules: shift.rules || `${shift.breakDuration || '30'} min break @ ${shift.breakTime || 'midshift'}`
+            }, 'library');
+            return shiftElement.outerHTML;
+        }).join('');
 
         // Reinitialize drag and drop
         this.initDragAndDrop();
@@ -466,27 +528,7 @@ class ScheduleManager {
 
         // Add cells for each day of the month
         for (let i = 1; i <= lastDay.getDate(); i++) {
-            const dayCell = document.createElement('div');
-            dayCell.className = 'calendar-day';
-            const currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), i);
-            const dateString = currentDate.toISOString().split('T')[0];
-            
-            dayCell.innerHTML = `
-                <div class="day-number">${i}</div>
-                <div class="shift-drop-zone" data-date="${dateString}"></div>
-            `;
-
-            // Add today's date highlight
-            const today = new Date();
-            if (currentDate.toDateString() === today.toDateString()) {
-                dayCell.classList.add('today');
-            }
-
-            // Add weekend highlight
-            if (currentDate.getDay() === 0 || currentDate.getDay() === 6) {
-                dayCell.classList.add('weekend');
-            }
-
+            const dayCell = this.createDayCell(i, this.currentDate.getFullYear(), this.currentDate.getMonth());
             calendarGrid.appendChild(dayCell);
         }
 
@@ -502,19 +544,145 @@ class ScheduleManager {
         this.initDragAndDrop();
     }
 
-    saveRoster() {
-        // TODO: Implement roster saving
-        console.log('Saving roster');
+    createDayCell(day, year, month) {
+        const currentDate = new Date(year, month, day);
+        const dateString = currentDate.toISOString().split('T')[0];
+        const isWeekend = currentDate.getDay() === 0 || currentDate.getDay() === 6;
+        const isToday = currentDate.toDateString() === new Date().toDateString();
+
+        const dayCell = document.createElement('div');
+        dayCell.className = `calendar-day${isWeekend ? ' weekend' : ''}${isToday ? ' today' : ''}`;
+        
+        // Add day number
+        const dayNumber = document.createElement('div');
+        dayNumber.className = 'day-number';
+        dayNumber.textContent = day;
+        dayCell.appendChild(dayNumber);
+
+        // Add shift container
+        const shiftContainer = document.createElement('div');
+        shiftContainer.className = 'shift-container';
+        
+        // Add shifts if they exist for this date
+        if (this.currentRoster && this.currentRoster.shifts[dateString]) {
+            this.currentRoster.shifts[dateString].forEach(shift => {
+                const shiftElement = this.createRosterShiftElement(shift);
+                shiftContainer.appendChild(shiftElement);
+            });
+        } else {
+            const emptyMessage = document.createElement('div');
+            emptyMessage.className = 'empty-day-message';
+            emptyMessage.textContent = 'No shifts';
+            shiftContainer.appendChild(emptyMessage);
+        }
+
+        dayCell.appendChild(shiftContainer);
+
+        // Make the cell a drop target for shifts
+        this.makeDropTarget(dayCell, dateString);
+
+        return dayCell;
     }
 
-    exportRoster() {
-        // TODO: Implement roster export
-        console.log('Exporting roster');
+    createRosterShiftElement(shift) {
+        const shiftElement = document.createElement('div');
+        shiftElement.className = 'roster-shift';
+        shiftElement.draggable = true;
+        shiftElement.dataset.shiftId = shift.id;
+
+        shiftElement.innerHTML = `
+            <div class="shift-info">
+                <div class="shift-time">${shift.startTime} - ${shift.endTime}</div>
+                <div class="shift-employees">${shift.employees ? shift.employees.join(', ') : 'No employees assigned'}</div>
+            </div>
+        `;
+
+        // Add drag event listeners
+        shiftElement.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', shift.id);
+            shiftElement.classList.add('dragging');
+        });
+
+        shiftElement.addEventListener('dragend', () => {
+            shiftElement.classList.remove('dragging');
+        });
+
+        return shiftElement;
     }
 
-    printRoster() {
-        // TODO: Implement roster printing
-        console.log('Printing roster');
+    makeDropTarget(element, date) {
+        element.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            element.classList.add('drag-over');
+        });
+
+        element.addEventListener('dragleave', () => {
+            element.classList.remove('drag-over');
+        });
+
+        element.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            element.classList.remove('drag-over');
+
+            const shiftId = e.dataTransfer.getData('text/plain');
+            await this.assignShiftToDate(shiftId, date);
+        });
+    }
+
+    async assignShiftToDate(shiftId, date) {
+        if (!this.currentRoster) return;
+
+        try {
+            const response = await fetch('api/roster-assignments.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    rosterId: this.currentRoster.id,
+                    shiftId,
+                    date
+                })
+            });
+
+            if (!response.ok) throw new Error('Failed to assign shift');
+
+            // Update local data
+            if (!this.currentRoster.shifts[date]) {
+                this.currentRoster.shifts[date] = [];
+            }
+            
+            const shift = this.findShift(shiftId);
+            if (shift) {
+                this.currentRoster.shifts[date].push(shift);
+                this.updateCalendar();
+                this.showSuccess('Shift assigned successfully');
+            }
+        } catch (error) {
+            this.showError('Failed to assign shift: ' + error.message);
+        }
+    }
+
+    // Add method to handle shift removal
+    removeShift(shiftElement) {
+        if (shiftElement && shiftElement.parentNode) {
+            shiftElement.remove();
+        }
+    }
+
+    initializeDraggableShift(shiftElement) {
+        shiftElement.addEventListener('dragstart', (e) => {
+            this.draggedShift = shiftElement;
+            shiftElement.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', shiftElement.dataset.shiftId);
+        });
+
+        shiftElement.addEventListener('dragend', () => {
+            if (this.draggedShift) {
+                this.draggedShift.classList.remove('dragging');
+                this.draggedShift = null;
+            }
+        });
     }
 
     openModal(modalId) {
@@ -971,11 +1139,241 @@ class ScheduleManager {
             payPeriodsForm.addEventListener('submit', (e) => this.handlePayPeriodSubmit(e));
         }
     }
+
+    async loadRosters() {
+        try {
+            const response = await fetch('api/rosters.php');
+            if (!response.ok) throw new Error('Failed to load rosters');
+            this.rosters = await response.json();
+            this.renderRosterDropdown();
+        } catch (error) {
+            this.showError('Failed to load rosters: ' + error.message);
+        }
+    }
+
+    renderRosterDropdown() {
+        const rosterSelect = document.getElementById('rosterSelect');
+        if (!rosterSelect) return;
+
+        // Clear existing options except the first one
+        while (rosterSelect.options.length > 1) {
+            rosterSelect.remove(1);
+        }
+
+        // Add roster options
+        this.rosters.forEach(roster => {
+            const option = document.createElement('option');
+            option.value = roster.id;
+            option.textContent = roster.name;
+            rosterSelect.appendChild(option);
+        });
+    }
+
+    async createNewRoster() {
+        const newRoster = {
+            id: this.rosters.length + 1,
+            name: 'New Roster',
+            shifts: {}
+        };
+
+        try {
+            const response = await fetch('api/rosters.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newRoster)
+            });
+
+            if (!response.ok) throw new Error('Failed to create roster');
+
+            this.rosters.push(newRoster);
+            this.renderRosterDropdown();
+            
+            // Select the new roster
+            const rosterSelect = document.getElementById('rosterSelect');
+            if (rosterSelect) {
+                rosterSelect.value = newRoster.id;
+                this.loadRoster(newRoster.id);
+            }
+
+            this.showSuccess('New roster created successfully');
+        } catch (error) {
+            this.showError('Failed to create roster: ' + error.message);
+        }
+    }
+
+    async loadRoster(rosterId) {
+        const roster = this.rosters.find(r => r.id === parseInt(rosterId));
+        if (!roster) return;
+
+        this.currentRoster = roster;
+        this.updateCalendar();
+    }
+
+    updateCalendar() {
+        const calendarGrid = document.getElementById('calendarGrid');
+        if (!calendarGrid) return;
+
+        const year = this.currentDate.getFullYear();
+        const month = this.currentDate.getMonth();
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+
+        calendarGrid.innerHTML = '';
+
+        // Add empty cells for days before the first of the month
+        for (let i = 0; i < firstDay.getDay(); i++) {
+            const emptyDay = document.createElement('div');
+            emptyDay.className = 'calendar-day empty';
+            calendarGrid.appendChild(emptyDay);
+        }
+
+        // Add cells for each day of the month
+        for (let i = 1; i <= lastDay.getDate(); i++) {
+            const dayCell = this.createDayCell(i, year, month);
+            calendarGrid.appendChild(dayCell);
+        }
+
+        // Add empty cells for days after the last day of the month
+        const remainingDays = 7 - lastDay.getDay() - 1;
+        for (let i = 0; i < remainingDays; i++) {
+            const emptyDay = document.createElement('div');
+            emptyDay.className = 'calendar-day empty';
+            calendarGrid.appendChild(emptyDay);
+        }
+    }
+
+    createDayCell(day, year, month) {
+        const currentDate = new Date(year, month, day);
+        const dateString = currentDate.toISOString().split('T')[0];
+        const isWeekend = currentDate.getDay() === 0 || currentDate.getDay() === 6;
+        const isToday = currentDate.toDateString() === new Date().toDateString();
+
+        const dayCell = document.createElement('div');
+        dayCell.className = `calendar-day${isWeekend ? ' weekend' : ''}${isToday ? ' today' : ''}`;
+        
+        // Add day number
+        const dayNumber = document.createElement('div');
+        dayNumber.className = 'day-number';
+        dayNumber.textContent = day;
+        dayCell.appendChild(dayNumber);
+
+        // Add shift container
+        const shiftContainer = document.createElement('div');
+        shiftContainer.className = 'shift-container';
+        
+        // Add shifts if they exist for this date
+        if (this.currentRoster && this.currentRoster.shifts[dateString]) {
+            this.currentRoster.shifts[dateString].forEach(shift => {
+                const shiftElement = this.createRosterShiftElement(shift);
+                shiftContainer.appendChild(shiftElement);
+            });
+        } else {
+            const emptyMessage = document.createElement('div');
+            emptyMessage.className = 'empty-day-message';
+            emptyMessage.textContent = 'No shifts';
+            shiftContainer.appendChild(emptyMessage);
+        }
+
+        dayCell.appendChild(shiftContainer);
+
+        // Make the cell a drop target for shifts
+        this.makeDropTarget(dayCell, dateString);
+
+        return dayCell;
+    }
+
+    createRosterShiftElement(shift) {
+        const shiftElement = document.createElement('div');
+        shiftElement.className = 'roster-shift';
+        shiftElement.draggable = true;
+        shiftElement.dataset.shiftId = shift.id;
+
+        shiftElement.innerHTML = `
+            <div class="shift-info">
+                <div class="shift-time">${shift.startTime} - ${shift.endTime}</div>
+                <div class="shift-employees">${shift.employees ? shift.employees.join(', ') : 'No employees assigned'}</div>
+            </div>
+        `;
+
+        // Add drag event listeners
+        shiftElement.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', shift.id);
+            shiftElement.classList.add('dragging');
+        });
+
+        shiftElement.addEventListener('dragend', () => {
+            shiftElement.classList.remove('dragging');
+        });
+
+        return shiftElement;
+    }
+
+    makeDropTarget(element, date) {
+        element.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            element.classList.add('drag-over');
+        });
+
+        element.addEventListener('dragleave', () => {
+            element.classList.remove('drag-over');
+        });
+
+        element.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            element.classList.remove('drag-over');
+
+            const shiftId = e.dataTransfer.getData('text/plain');
+            await this.assignShiftToDate(shiftId, date);
+        });
+    }
+
+    async assignShiftToDate(shiftId, date) {
+        if (!this.currentRoster) return;
+
+        try {
+            const response = await fetch('api/roster-assignments.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    rosterId: this.currentRoster.id,
+                    shiftId,
+                    date
+                })
+            });
+
+            if (!response.ok) throw new Error('Failed to assign shift');
+
+            // Update local data
+            if (!this.currentRoster.shifts[date]) {
+                this.currentRoster.shifts[date] = [];
+            }
+            
+            const shift = this.findShift(shiftId);
+            if (shift) {
+                this.currentRoster.shifts[date].push(shift);
+                this.updateCalendar();
+                this.showSuccess('Shift assigned successfully');
+            }
+        } catch (error) {
+            this.showError('Failed to assign shift: ' + error.message);
+        }
+    }
+
+    // Add method to handle shift removal
+    removeShift(shiftElement) {
+        if (shiftElement && shiftElement.parentNode) {
+            shiftElement.remove();
+        }
+    }
 }
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new ScheduleManager();
+    const scheduleManager = new ScheduleManager();
 });
 
 // Shift Modal Tab Management

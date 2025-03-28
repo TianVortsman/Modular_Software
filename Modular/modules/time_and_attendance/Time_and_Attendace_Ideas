@@ -1,0 +1,612 @@
+✅ Time & Attendance System Summary
+The most advanced, flexible, and user-friendly T&A system on the market.
+
+🧱 CORE FOUNDATION
+✅ Minimum Setup Support
+If the user sets up only a pay period and imports employees, the system still fully functions.
+
+Default fallback rules apply:
+
+🔁 Employees are placed on "Open Shift" with:
+
+No strict start/end time
+
+Cross-day clock-in/out support
+
+Auto-pairing logic for in/out based on:
+
+Max 20 working hours per shift
+
+If exceeded, new clock-in = fresh IN punch, not OUT for last one
+
+🕑 SHIFT & SCHEDULE LOGIC
+✅ Open Shifts (Default Behavior)
+Allows clocking anytime
+
+System intelligently calculates actual worked hours
+
+Used when no shift schedule is defined
+
+Comes with default OT and rounding profiles per pay period type
+
+✅ Smart Shift Matching Engine
+User can assign multiple shifts per day
+
+System matches clocking to best-fit shift using:
+
+Time proximity
+
+Shift start windows + grace
+
+Clock-in/out containment
+
+If no shift matches:
+
+System assigns "Default Shift" for the day
+
+Or falls back to “Open Shift”
+
+✅ Shift Priority Rules
+Shifts ordered by priority (top-down) per day
+
+Manual default shift setting available for each day
+
+Logic evaluates from priority → default → fallback
+
+📅 SCHEDULING OPTIONS
+✅ Weekly Grid Scheduler
+Visual Mon–Sun layout
+
+Drag/drop shifts into daily slots
+
+Can assign multiple shifts to one day
+
+Select a default shift for each day
+
+✅ Calendar / Roster View
+Manual shift scheduling by date
+
+Assign employees to shifts directly on calendar
+
+Clone/paste templates or previous schedules
+
+Supports roster-based companies, rotating patterns, seasonal scheduling
+
+📆 PAY PERIODS ENGINE
+Types Supported:
+
+Weekly, Bi-weekly, Monthly, Custom
+
+Configurable:
+
+Start day/date
+
+Separate date range for Overtime Tracking
+
+Can link:
+
+Employees or Groups
+
+Overtime profiles
+
+Rounding profiles
+
+🕓 ROUNDING PROFILE ENGINE
+Reusable rounding definitions
+
+Supports:
+
+Grace period before/after shift
+
+Round to nearest, up, down (X minutes)
+
+Option: round early punches to shift start without generating OT
+
+Option: disable early clock-in impact
+
+⏱️ OVERTIME PROFILE ENGINE
+Reusable overtime definitions
+
+Supports:
+
+Daily / Weekly / Monthly thresholds
+
+Weekend/Holiday multipliers
+
+Separate date range (independent from regular pay)
+
+Linkable to:
+
+Pay Periods
+
+Employees
+
+Groups
+
+Smart OT detection based on assigned shift or fallback rules
+
+👥 EMPLOYEE GROUPING
+Create unlimited custom groups
+
+Assign default:
+
+Pay Period
+
+Shift rules
+
+Overtime/Rounding profiles
+
+Used for filtering, bulk scheduling, reporting
+
+📋 ATTENDANCE VIEWER
+Show per-employee, per-day data
+
+Includes:
+
+Shift details
+
+Clock-in/out
+
+Calculated time
+
+Overtime
+
+Deviations (late, early, absent)
+
+Leave overlays
+
+Flags for:
+
+Manual edits
+
+Incomplete punches
+
+Conflicts
+
+🏝️ LEAVE MANAGEMENT
+Supports:
+
+Paid Leave
+
+Unpaid Leave
+
+Sick Leave
+
+Half-Day / Custom Leave Types
+
+Can:
+
+Overlay on attendance viewer
+
+Auto-exclude from OT
+
+Block shift matching on leave days
+
+💳 FLEXIBLE TIME BANKING (NEW)
+Employees can bank extra hours worked
+
+Used for:
+
+Time-off redemption
+
+Reduced future working hours
+
+Rules:
+
+Set thresholds (e.g. max bankable per week)
+
+Can show available time bank balance in reports
+
+📤 EXPORTING & INTEGRATION
+Export Reports:
+
+By Pay Period
+
+Filtered (OT only, leave only, regular hours)
+
+CSV, PDF, JSON
+
+Optional integration with Payroll/HR systems
+
+
+
+CORE FOUNDATION
+✅ Automatic Public Holiday Injection
+All South African standard public holidays are preloaded into the system yearly
+
+System auto-updates annually — no manual config needed for most companies
+
+✅ Manual Override & Customization
+Admins can:
+
+Add company-specific public holidays
+
+Disable irrelevant holidays
+
+Modify default holiday names/dates
+
+🕹️ HOLIDAY BEHAVIOR RULES
+✅ Shift-Based Public Holiday Categorization
+Each shift can define how to treat a holiday if it lands on that day
+
+Configurable Time Category assignment per shift for:
+
+Holiday Worked
+
+Holiday Not Worked
+
+Holiday OT
+
+Example:
+vbnet
+Copy
+Edit
+Shift: Night Shift
+→ On Public Holiday: Assign to “PH Overtime”
+→ If Weekend + PH: Override with “PH + Weekend OT”
+✅ Weekend Detection Logic
+System auto-detects if a public holiday falls on a Saturday or Sunday
+
+Optional behavior:
+
+If PH lands on Sunday → rollover to Monday
+
+Company toggle: “Enable PH rollover to Monday if on Sunday” ✅
+
+Configurable per holiday, not global only
+
+🧮 TIME CATEGORY ENGINE
+✅ Default Categories (Editable)
+Normal Time – Rate 1.0
+
+Overtime 1.5 – Rate 1.5
+
+Overtime 2.0 – Rate 2.0
+
+PH Worked – Rate 1.0
+
+PH Not Worked – Rate 1.0
+
+PH Overtime – Rate 2.0
+
+✅ Custom Time Categories
+Admins can create custom categories like:
+
+“Sunday OT @ 2.5x”
+
+“Travel Time”
+
+“Call-Out OT”
+
+For each category:
+
+Name
+
+Description
+
+Rate multiplier (e.g., 1.25, 1.50, 2.00)
+
+Color tag (for reporting/visuals)
+
+🛠️ FLEXIBLE TIME ALLOCATION (MANUAL)
+✅ Manual Timecard Adjustments
+Admins/Managers can add manual time blocks to timecards:
+
+Select Time Category (e.g. “Overtime 1.5”)
+
+Input hours (e.g. “2 hours”)
+
+Add reason/comment
+
+Use cases:
+
+Missed punch due to technical or operational issues
+
+Allowances, bonuses, or compensations
+
+Approved manual top-ups
+
+Example:
+pgsql
+Copy
+Edit
+John missed clock-out for extra 2 hrs
+→ Admin adds “2h Overtime 1.5x” to timecard
+→ Notes: “System outage - confirmed with supervisor”
+
+
+ Employee Details Modal Engine Summary
+The central hub for all employee-specific setup, scheduling, and feature access — modular, powerful, and customizable.
+
+🧱 MODAL DESIGN STRUCTURE
+✅ Multi-Tab Layout (Tabbed Interface)
+The employee modal is designed with tabbed navigation to separate core data, shift setup, HR, mobile, and module-based features.
+
+📁 CORE TABS (ALWAYS VISIBLE)
+1️⃣ Personal Details
+First Name, Last Name
+
+Initials, Title, Gender
+
+DOB, ID Number / Passport
+
+Contact Details
+
+Address
+
+2️⃣ Organization
+Company / Business Unit
+
+Department / Division
+
+Employee Group Assignment
+
+Reporting Line / Supervisor
+
+Employment Type (Full-time, Contractor, etc.)
+
+3️⃣ Employment Details
+Hire Date, Probation End
+
+Job Title
+
+Employee Number
+
+Employment Status (Active, Suspended, Terminated)
+
+Pay Period Type (weekly/monthly)
+
+Default Shift Profile
+
+Default OT & Rounding Profiles
+
+4️⃣ Schedule & Roster
+View Assigned Shifts (weekly grid or calendar)
+
+Assign shift templates
+
+Assign roster directly via calendar
+
+Override default shifts
+
+Future schedule planner
+
+5️⃣ Termination
+Termination Date
+
+Reason for Termination
+
+Final Pay Period Config
+
+Exit Comments / Notes
+
+Archive Option
+
+📲 OPTIONAL FEATURE-BASED TABS
+These are hidden by default and only enabled when the related module or feature is licensed/purchased.
+
+6️⃣ Mobile Clocking Setup (Extra Feature – sold separately)
+Toggle: Enable Mobile Clocking ✅
+
+Set allowed IP / GPS location
+
+Device pairing options
+
+Clock-in method:
+
+Geofence
+
+QR Scan
+
+Manual Approval Required
+
+7️⃣ Leave & Balances (Leave Module Required)
+Leave Type Entitlements
+
+Accrual Rules
+
+Used vs Remaining
+
+Leave History Log
+
+Carry Over Balance Setup
+
+8️⃣ HR & Documentation (HR Module Required)
+Upload & store:
+
+Contracts
+
+Certificates
+
+Warnings / Disciplinary
+
+HR Notes
+
+Set Document Expiry / Reminder
+
+Emergency Contacts
+
+Medical / Disability Info (optional)
+
+Recruitment pipeline history (if included)
+
+🔒 MODULE VISIBILITY LOGIC
+Tab	Required Module/Feature
+Mobile Clocking Setup	Mobile Clocking Feature
+Leave & Balances	Leave Management Module
+HR & Documentation	HR Core or HR Pro Module
+Tabs will be automatically hidden if the module is not enabled
+
+System will show "Upgrade to Access" CTA or lock icon if restricted
+
+🧾 FUTURE EXPANDABILITY
+Easy to add more tabs (e.g., Payroll, Benefits)
+
+Tab configuration could become permission-based per role
+
+Each tab could have an API-ready structure for modular loading
+
+🔍 USER FLOW EXAMPLE
+HR user clicks on employee → Modal opens
+
+Personal Details preloaded
+
+Admin clicks "Schedule & Roster" to assign shifts
+
+If Leave Module is enabled, admin clicks “Leave & Balances” → Updates entitlement
+
+If Mobile Clocking enabled, they go to “Mobile Clocking Setup” → Pair phone
+
+For termination → “Termination” tab sets final working day
+
+Let me know if you want:
+
+A wireframe of this modal layout
+
+A feature toggle config table
+
+This added to your Excalidraw canvas too
+
+Ready to keep building these out — just drop your next idea 👇
+
+🧠 INTELLIGENT SYSTEM BEHAVIOR
+Feature	Behavior
+No Setup	Open Shift auto-applied
+Clock Across Days	Open Shift logic supports it
+20 Hour Cutoff	Auto-detects new shift punch
+Shifts Missing	Falls back to defaults
+Multiple Shifts Per Day	Picks best-match or fallback
+Manual Scheduling	Roster overrides smart matching
+Edge Case Friendly	Designed to “just work”
+Leave	Blocks shift and OT calculations
+Time Banking	Tracks surplus hours with flexible rules
+Public Holiday Lands on Sunday	Auto-rollover to Monday (if enabled)
+Multiple Holidays in One Week	All categorized and tagged separately
+Shift on PH + Weekend	Rules can cascade → PH + Weekend OT
+No Clock on PH	Auto-categorize under "PH Not Worked"
+Worked PH	Tagged under “PH Worked” or “PH OT”
+Manual Additions	Logged with reason & user info
+Holidays Per Region (Future)	Scoped filtering coming (if needed)
+Feature	Behavior
+New Employee	Loads with only core tabs active
+Module Purchased Later	Tab dynamically appears
+Terminated Employees	Tabs become read-only or archived
+Leave Module Disabled	Leave tab hidden across system
+Responsive UI	Tabbed view on wide screens, accordion on mobile/tablet
+
+
+ Multi-Level Approval Engine Summary
+A highly configurable, secure, and controlled approval system for timecards and overtime — tailored per customer.
+
+🧱 CORE PURPOSE
+To control the flow of time and overtime data before it reaches payroll, by introducing multi-stage approvals, with customer-specific rules managed centrally from your admin dashboard (techlogin).
+
+🧾 APPROVAL TYPES
+✅ 1. Timecard Approval
+Full shift records must be approved before export to payroll.
+
+Admin can configure per customer:
+
+Does this customer require timecard approval?
+
+Always Approved (no action needed)
+
+Always Unapproved (needs manual approval)
+
+How many levels of approval?
+
+0 (auto)
+
+1–3 (flexible, set per client)
+
+✅ 2. Overtime Approval
+OT calculations must be reviewed and approved separately from normal time.
+
+Admin can configure per customer:
+
+OT must be:
+
+Always Approved (auto-applies)
+
+Always Unapproved (must review manually)
+
+Set approval levels for OT:
+
+From 1 to 3 levels (Supervisor → Manager → Admin)
+
+🛠️ CONFIGURATION PANEL (via techlogin)
+📋 Per-Customer Setup Includes:
+Require Timecard Approval: ✅ / ❌
+
+Timecard Approval Levels: 0 → 3
+
+Require OT Approval: ✅ / ❌
+
+OT Approval Levels: 0 → 3
+
+Default OT Status: Approved / Unapproved
+
+Default Timecard Status: Approved / Unapproved
+
+✅ Customers cannot access or modify this
+✅ Controlled only via internal management dashboard (techlogin)
+
+🧍‍♂️ APPROVER ROLES & WORKFLOW
+Role	Approval Rights
+Supervisor	Can approve individual timecards or OT per employee
+Manager	Can approve groups/departments
+Admin	Final approval + export permissions
+Approval UI includes:
+
+✅ Approve
+
+❌ Reject
+
+📝 Comment field
+
+🔁 Reassign for re-approval
+
+📤 PAYROLL EXPORT CONDITIONS
+Timecard data can only be exported when...
+
+✅ All required approval levels are completed
+
+✅ No pending overtime approvals (if required)
+
+✅ No blocked/incomplete punches
+
+⚠️ Export button disabled or flagged until all conditions are met
+
+🧠 SMART ENGINE BEHAVIOR
+Scenario	Result
+Timecard set as “Always Approved”	Instantly marked as ready for export
+Overtime “Always Unapproved”	Always goes into OT queue for review
+2-level approval set	Supervisor approves → Manager must confirm
+Only 1 approval level required	First approval finalizes the record
+Customer not using OT	OT approval flow skipped entirely
+📊 REPORTING & TRACKING
+Approval logs (who, when, what changed)
+
+Timecards & OT with pending status are visible
+
+Filter timecards by approval stage
+
+Export reports show approval history
+
+🔐 CONTROLLED ACCESS (via techlogin)
+Only your internal team (system managers) can:
+
+Configure approval rules
+
+Change approval level requirements
+
+Toggle auto-approval per customer
+
+Customers (end-users) cannot access this config
+
+🧩 FUTURE-READY
+Supports escalation workflows (“X days with no approval → escalate”)
+
+Potential to enable notifications/reminders for pending approvals
+
+Could be extended to leave requests or clocking exceptions

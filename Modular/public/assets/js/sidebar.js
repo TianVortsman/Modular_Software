@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
             { href: "/modules/time_and_attendance/views/schedules.php", icon: "calendar_today", text: "Schedules" }
         ],
         "timecards": [
-            { href: "/modules/time_and_attendance/dashboard-TA.php", icon: "dashboard", text: "Dashboard" },
+            { href: "/modules/time_and_attendance/views/dashboard-TA.php", icon: "dashboard", text: "Dashboard", },
             { href: "/modules/time_and_attendance/views/employees.php", icon: "people", text: "Employees" },
             { href: "/modules/time_and_attendance/views/timecards.php", icon: "access_time", text: "Timecards", active: true },
             { href: "/modules/time_and_attendance/views/mobile-clocking.php", icon: "phone_android", text: "Mobile Clocking" },
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
             { href: "/modules/time_and_attendance/views/schedules.php", icon: "calendar_today", text: "Schedules" }
         ],
         "schedules": [
-            { href: "/modules/time_and_attendance/dashboard-TA.php", icon: "dashboard", text: "Dashboard" },
+            { href: "/modules/time_and_attendance/views/dashboard-TA.php", icon: "dashboard", text: "Dashboard", },
             { href: "/modules/time_and_attendance/views/employees.php", icon: "people", text: "Employees" },
             { href: "/modules/time_and_attendance/views/timecards.php", icon: "access_time", text: "Timecards" },
             { href: "/modules/time_and_attendance/views/mobile-clocking.php", icon: "phone_android", text: "Mobile Clocking" },
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
             { href: "/modules/time_and_attendance/views/schedules.php", icon: "calendar_today", text: "Schedules", active: true }
         ],
         "TA-employees": [
-            { href: "/public/modules/timeatime_and_attendancendatt/dashboard-TA.php", icon: "dashboard", text: "Dashboard", },
+            { href: "/modules/time_and_attendance/views/dashboard-TA.php", icon: "dashboard", text: "Dashboard", },
             { href: "#", icon: "person_add", text: "Add Employee", onclick: "openAddEmployeeModal()" },
             { href: "/modules/time_and_attendance/views/import-employees.php", icon: "upload_file", text: "Import Employees" }
         ],
@@ -231,6 +231,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!sidebar) return;
 
+        // Check if tutorial is completed
+        const isTutorialCompleted = localStorage.getItem(`tutorial-done-${bodyId}`);
+        if (isTutorialCompleted) {
+            document.body.setAttribute('data-tutorial-completed', 'true');
+        }
+
         // Clear existing items
         sidebar.innerHTML = '';
 
@@ -314,6 +320,10 @@ document.addEventListener('DOMContentLoaded', function () {
             targetId: '.dashboard-container',
             toggleClasses: ['collapsed']
         },
+        'TA-employees':{
+            targetId: '.dashboard-container',
+            toggleClasses: ['collapsed']
+        },
         'invoice-setup':{
             targetId: '.container',
             toggleClasses: ['collapsed']
@@ -387,75 +397,77 @@ function checkMultipleAccounts() {
  * Notification System
  */
 function initializeNotifications() {
-    const notificationBell = document.getElementById('notification-bell');
-    const notificationsModal = document.getElementById('notifications-modal');
-    const closeNotificationsBtn = document.querySelector('.close-notifications');
-    const markAllReadBtn = document.getElementById('mark-all-read');
-    const loadMoreBtn = document.getElementById('load-more-notifications');
-    const tabButtons = document.querySelectorAll('.tab-button');
-    
-    // Current state variables
-    let currentTab = 'all';
-    let currentPage = 1;
-    const notificationsPerPage = 10;
-    
-    // Toggle notifications modal when bell is clicked
-    if (notificationBell) {
-        notificationBell.addEventListener('click', () => {
-            notificationsModal.classList.remove('hidden');
-            notificationsModal.classList.add('visible');
-            
-            // Load notifications if this is the first open
-            if (document.querySelector('.no-notifications')) {
+    try {
+        // Wrap the initialization in try-catch
+        updateNotificationCount().catch(error => {
+            console.warn('Failed to initialize notifications:', error);
+        });
+        const notificationBell = document.getElementById('notification-bell');
+        const notificationsModal = document.getElementById('notifications-modal');
+        const closeNotificationsBtn = document.querySelector('.close-notifications');
+        const markAllReadBtn = document.getElementById('mark-all-read');
+        const loadMoreBtn = document.getElementById('load-more-notifications');
+        const tabButtons = document.querySelectorAll('.tab-button');
+        
+        // Current state variables
+        let currentTab = 'all';
+        let currentPage = 1;
+        const notificationsPerPage = 10;
+        
+        // Toggle notifications modal when bell is clicked
+        if (notificationBell) {
+            notificationBell.addEventListener('click', () => {
+                notificationsModal.classList.remove('hidden');
+                notificationsModal.classList.add('visible');
+                
+                // Load notifications if this is the first open
+                if (document.querySelector('.no-notifications')) {
+                    loadNotifications(currentTab, currentPage, true);
+                }
+            });
+        }
+        
+        // Close notifications modal when close button is clicked
+        if (closeNotificationsBtn) {
+            closeNotificationsBtn.addEventListener('click', () => {
+                notificationsModal.classList.remove('visible');
+                notificationsModal.classList.add('hidden');
+            });
+        }
+        
+        // Handle tab switching
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all tabs
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                button.classList.add('active');
+                
+                // Update current tab and reload notifications
+                currentTab = button.getAttribute('data-tab');
+                currentPage = 1;
                 loadNotifications(currentTab, currentPage, true);
-            }
+            });
         });
+        
+        // Handle mark all as read
+        if (markAllReadBtn) {
+            markAllReadBtn.addEventListener('click', () => {
+                markAllNotificationsAsRead();
+            });
+        }
+        
+        // Handle load more
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', () => {
+                currentPage++;
+                loadNotifications(currentTab, currentPage, false);
+            });
+        }
+    } catch (error) {
+        console.warn('Error in notification initialization:', error);
     }
-    
-    // Close notifications modal when close button is clicked
-    if (closeNotificationsBtn) {
-        closeNotificationsBtn.addEventListener('click', () => {
-            notificationsModal.classList.remove('visible');
-            notificationsModal.classList.add('hidden');
-        });
-    }
-    
-    // Handle tab switching
-    tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            // Remove active class from all tabs
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            
-            // Add active class to clicked tab
-            button.classList.add('active');
-            
-            // Update current tab and reload notifications
-            currentTab = button.getAttribute('data-tab');
-            currentPage = 1;
-            loadNotifications(currentTab, currentPage, true);
-        });
-    });
-    
-    // Handle mark all as read
-    if (markAllReadBtn) {
-        markAllReadBtn.addEventListener('click', () => {
-            markAllNotificationsAsRead();
-        });
-    }
-    
-    // Handle load more
-    if (loadMoreBtn) {
-        loadMoreBtn.addEventListener('click', () => {
-            currentPage++;
-            loadNotifications(currentTab, currentPage, false);
-        });
-    }
-    
-    // Fetch notifications count on load and periodically
-    updateNotificationCount();
-    
-    // Poll for new notifications every minute
-    setInterval(updateNotificationCount, 60000);
 }
 
 /**
@@ -688,25 +700,30 @@ function markAllNotificationsAsRead() {
 /**
  * Update the notification count badge
  */
-function updateNotificationCount() {
-    fetch('/src/api/notifications.php?action=count')
-        .then(response => response.json())
-        .then(data => {
-            const countElement = document.getElementById('notification-count');
-            if (countElement) {
-                countElement.textContent = data.count;
-                
-                // Show/hide the badge based on count
-                if (data.count > 0) {
-                    countElement.style.display = 'flex';
-                } else {
-                    countElement.style.display = 'none';
-                }
+async function updateNotificationCount() {
+    try {
+        const response = await fetch('/src/api/notifications.php?action=count');
+        if (!response.ok) {
+            // Silently fail for 404s and other errors
+            console.warn('Notification service unavailable');
+            return;
+        }
+        const data = await response.json();
+        const countElement = document.getElementById('notification-count');
+        if (countElement) {
+            countElement.textContent = data.count;
+            
+            // Show/hide the badge based on count
+            if (data.count > 0) {
+                countElement.style.display = 'flex';
+            } else {
+                countElement.style.display = 'none';
             }
-        })
-        .catch(error => {
-            console.error('Error fetching notification count:', error);
-        });
+        }
+    } catch (error) {
+        // Silently fail and log warning
+        console.warn('Error updating notifications:', error);
+    }
 }
 
 

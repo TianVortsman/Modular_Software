@@ -553,8 +553,13 @@ CREATE TABLE IF NOT EXISTS public.employees
     biometric_id character varying(100) COLLATE pg_catalog."default",
     emergency_contact_name character varying(100) COLLATE pg_catalog."default",
     emergency_contact_phone character varying(20) COLLATE pg_catalog."default",
+    emergency_contact_relation character varying(50) COLLATE pg_catalog."default",
+    emergency_contact_email character varying(100) COLLATE pg_catalog."default",
     address text COLLATE pg_catalog."default",
-    clock_number integer NOT NULL,
+    clock_number character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    date_of_birth date,
+    gender character varying(10) DEFAULT 'male',
+    badge_number character varying(50),
     CONSTRAINT employees_pkey PRIMARY KEY (employee_id),
     CONSTRAINT employees_email_key UNIQUE (email)
 );
@@ -819,6 +824,33 @@ CREATE TABLE IF NOT EXISTS public.unknown_clockings
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT unknown_clockings_pkey PRIMARY KEY (id)
 );
+
+-- Employee address table
+CREATE TABLE IF NOT EXISTS public.employee_address
+(
+    employee_address_id serial NOT NULL,
+    employee_id integer NOT NULL,
+    addr_id integer NOT NULL,
+    updated_by integer,
+    created_at timestamp without time zone DEFAULT now(),
+    updated_at timestamp without time zone DEFAULT now(),
+    deleted_at timestamp without time zone,
+    CONSTRAINT employee_address_pkey PRIMARY KEY (employee_address_id),
+    CONSTRAINT fk_employee_addr FOREIGN KEY (employee_id)
+        REFERENCES public.employees (employee_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT fk_employee_addr_fk FOREIGN KEY (addr_id)
+        REFERENCES public.address (addr_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+);
+
+-- Employee address indexes
+CREATE INDEX IF NOT EXISTS idx_employee_address_employee_id
+    ON public.employee_address(employee_id);
+CREATE INDEX IF NOT EXISTS idx_employee_address_addr_id
+    ON public.employee_address(addr_id);
 
 -- =============================================
 -- PART 2: CREATE ALL INDEXES

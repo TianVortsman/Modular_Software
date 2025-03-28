@@ -68,6 +68,8 @@
     --color-background: hsl(235 5% 85%); /* Light background */
     --color-text-light: #000000;         /* Dark text color */
     --color-primary: #007BFF;           /* Primary accent color */
+    --color-primary-light: #4da3ff;     /* Lighter primary color */
+    --color-primary-dark: #0056b3;      /* Darker primary color */
     --color-primary-fade:rgba(0, 123, 255, 0.3); /* Primary accent color with opacity */           
     --color-hover: #0056b3;              /* Darker Blue */
     --color-secondary: #f0f0f0;          /* Light grey for containers */
@@ -93,6 +95,8 @@
   --color-background: hsl(235 5% 85%); /* Light background */
   --color-text-light: #000000;         /* Dark text color */
   --color-primary: #8B4513;            /* Primary accent color (brown) */
+  --color-primary-light: #a05f2c;      /* Lighter primary color */
+  --color-primary-dark: #663010;       /* Darker primary color */
   --color-primary-fade: rgba(139, 69, 19, 0.3); /* Primary accent color with opacity (brown) */
   --color-hover: #A0522D;              /* Darker brown */
   --color-secondary: #f0f0f0;          /* Light grey for containers */
@@ -117,6 +121,8 @@
   --color-background: hsl(235 5% 85%); /* Light background */
   --color-text-light: #000000;         /* Dark text color */
   --color-primary: #28a745;            /* Primary accent color (green) */
+  --color-primary-light: #34ce57;      /* Lighter primary color */
+  --color-primary-dark: #1e7e34;       /* Darker primary color */
   --color-primary-fade: rgba(40, 167, 69, 0.3); /* Primary accent color with opacity (green) */
   --color-hover: #218838;              /* Darker green */
   --color-secondary: #f0f0f0;          /* Light grey for containers */
@@ -144,6 +150,8 @@
     --color-background-light: hsl(220 27% 10%); /* Slightly lighter background */
     --color-text-light: #ffffff;         /* Light text on dark mode */
     --color-primary: #FFD700;            /* Primary accent color */
+    --color-primary-light: #ffe147;      /* Lighter primary color */
+    --color-primary-dark: #ccac00;       /* Darker primary color */
     --color-hover: #FFC107;              /* Hover color for interactive elements */
     --color-primary-fade: #333; /* Primary accent color with opacity */
     --color-secondary: #333;             /* Dark secondary background */
@@ -175,6 +183,8 @@
   --color-background-light: hsl(220 27% 10%); /* Slightly lighter background */
   --color-text-light: #ffffff; /* Light text on dark mode */
   --color-primary: #8B4513; /* Primary accent color (brown) */
+  --color-primary-light: #a05f2c; /* Lighter primary color */
+  --color-primary-dark: #663010; /* Darker primary color */
   --color-hover: #A0522D; /* Hover color for interactive elements (sienna) */
   --color-primary-fade: rgba(139, 69, 19, 0.3); /* Primary accent color with opacity (brown) */
   --color-secondary: #4A4A4D; /* Dark secondary background */
@@ -199,6 +209,8 @@
   --color-background-light: hsl(220 27% 10%); /* Slightly lighter background */
   --color-text-light: #ffffff;         /* Light text on dark mode */
   --color-primary: #007BFF;            /* Primary accent color */
+  --color-primary-light: #4da3ff;      /* Lighter primary color */
+  --color-primary-dark: #0056b3;       /* Darker primary color */
   --color-hover: #0056b3;              /* Hover color for interactive elements */
   --color-primary-fade: rgba(0, 123, 255, 0.3); /* Primary accent color with opacity */
   --color-secondary: #333;             /* Dark secondary background */
@@ -228,6 +240,8 @@
   --color-background-light: hsl(220 27% 10%); /* Slightly lighter background */
   --color-text-light: #ffffff;         /* Light text on dark mode */
   --color-primary: #FF0000;            /* Primary accent color */
+  --color-primary-light: #ff4d4d;      /* Lighter primary color */
+  --color-primary-dark: #cc0000;       /* Darker primary color */
   --color-hover: #CC0000;              /* Hover color for interactive elements */
   --color-primary-fade: rgba(255, 0, 0, 0.3); /* Primary accent color with opacity */
   --color-secondary: #333;             /* Dark secondary background */

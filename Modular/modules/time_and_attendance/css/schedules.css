@@ -6,16 +6,19 @@ body {
 .schedule-container {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    width: auto;
+    height: 100vh;
     margin-left: var(--sidebar-width);
     transition: margin-left var(--transition-speed) ease-in-out;
     background: var(--color-background);
     color: var(--color-text-light);
+    padding: var(--spacing-medium);
+    padding-right: var(--spacing-medium);
+    overflow: hidden;
 }
 
 .schedule-container.collapsed {
     margin-left: 70px;
+    width: calc(100% - 100px);
 }
 
 /* Header Section */
@@ -84,6 +87,7 @@ body {
     flex-direction: column;
     overflow: hidden;
     padding: var(--spacing-medium);
+    padding-right: 0;
 }
 
 .schedule-tab.active {
@@ -101,34 +105,47 @@ body {
 }
 
 .tab-content {
-    display: flex;
-    flex: 1;
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
     gap: var(--spacing-medium);
+    height: calc(100vh - 200px);
     overflow: hidden;
+    padding-right: 0;
 }
 
 /* Template Controls */
 .template-controls {
     display: flex;
-    gap: var(--spacing-small);
+    justify-content: space-between;
     align-items: center;
+    padding: var(--spacing-medium);
+    background: linear-gradient(to right, var(--color-primary-dark), var(--color-primary));
+    border-radius: var(--radius-medium);
+    box-shadow: 0 2px 4px var(--shadow-medium);
+    margin-bottom: var(--spacing-medium);
 }
 
 .template-dropdown {
+    min-width: 250px;
     padding: var(--spacing-small) var(--spacing-medium);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-small);
     background: var(--color-background);
     color: var(--color-text-light);
-    font-size: var(--font-size-medium);
+    font-size: var(--font-size-base);
     cursor: pointer;
-    min-width: 200px;
+    transition: all var(--transition-speed) ease;
 }
 
-.template-dropdown:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+.template-dropdown:hover {
+    border-color: var(--color-primary-light);
+    box-shadow: 0 0 0 2px var(--color-primary-fade);
+}
+
+.template-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-small);
 }
 
 /* Action Buttons */
@@ -158,149 +175,193 @@ body {
 
 /* Work Week */
 .work-week {
+    width: 95%;
+    min-width: 0;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: var(--spacing-small);
     padding: var(--spacing-medium);
-    overflow-y: auto;
-    max-height: 600px;
     background: var(--color-secondary);
     border-radius: var(--radius-medium);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px var(--shadow-medium);
+    margin-bottom: var(--spacing-medium);
+    margin-right: var(--spacing-small);
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .day-column {
+    min-width: 0;
+    width: 100%;
     display: flex;
     flex-direction: column;
     background: var(--color-background);
+    border-radius: var(--radius-medium);
+    overflow: hidden;
+    box-shadow: 0 2px 4px var(--shadow-light);
+    transition: all var(--transition-speed) ease;
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-small);
-    min-height: 200px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.day-column:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--shadow-medium);
 }
 
 .day-header {
-    padding: var(--spacing-small);
-    border-bottom: 1px solid var(--border-color);
+    background: linear-gradient(to right, var(--color-primary-dark), var(--color-primary));
+    padding: var(--spacing-medium);
     text-align: center;
-    background: var(--color-background);
-    border-radius: var(--radius-small) var(--radius-small) 0 0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .day-header h4 {
     margin: 0;
-    color: var(--color-text-light);
+    color: #ffffff;
     font-weight: 600;
+    text-shadow: var(--text-shadow);
+    font-size: var(--font-size-base);
 }
 
 .shift-drop-zone {
     flex: 1;
+    min-height: 200px;
+    width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
     padding: var(--spacing-small);
-    min-height: 150px;
-    border: 2px dashed var(--border-color);
-    border-radius: var(--radius-small);
-    margin: var(--spacing-small);
-    transition: all var(--transition-speed) ease;
     background: var(--color-background);
+    border: 2px dashed var(--border-color);
+    margin: var(--spacing-small);
+    border-radius: var(--radius-small);
+    transition: all var(--transition-speed) ease;
 }
 
 .shift-drop-zone:hover {
-    border-color: var(--color-primary);
     background: var(--color-primary-fade);
+    border-color: var(--color-primary);
 }
 
 .shift-drop-zone.drag-over {
-    border-color: var(--color-primary);
     background: var(--color-primary-fade);
+    border-color: var(--color-primary);
     transform: scale(1.02);
 }
 
 /* Shift Items */
 .shift-item {
-    display: flex;
-    align-items: center;
-    padding: 8px;
-    margin-bottom: 8px;
-    background: var(--surface-color);
-    border-radius: 4px;
+    position: relative;
+    background: var(--color-secondary);
+    border-radius: var(--radius-small);
+    margin-bottom: var(--spacing-small);
+    padding: var(--spacing-small);
     cursor: move;
-    transition: all 0.2s ease;
+    transition: all var(--transition-speed) ease;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 4px var(--shadow-light);
 }
 
-.shift-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.shift-item.dragging {
-    opacity: 0.5;
-    transform: scale(0.95);
-}
-
-.shift-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
+.shift-content {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 12px;
+    align-items: flex-start;
+    gap: var(--spacing-small);
 }
 
-.shift-icon i {
-    color: white;
-    font-size: 18px;
+.shift-color {
+    width: 4px;
+    height: 100%;
+    border-radius: 2px;
+    flex-shrink: 0;
+    align-self: stretch;
 }
 
 .shift-details {
     flex: 1;
-}
-
-.shift-time {
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin-bottom: 2px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .shift-name {
-    font-weight: 500;
-    color: var(--text-primary);
+    font-weight: 600;
+    color: var(--color-text-light);
+    font-size: var(--font-size-base);
+}
+
+.shift-time {
+    color: var(--color-primary);
+    font-size: var(--font-size-small);
+    font-family: var(--font-primary);
 }
 
 .shift-rules {
-    font-size: 12px;
-    color: var(--text-secondary);
-    margin-top: 4px;
+    color: var(--color-text-light);
+    font-size: 11px;
+    opacity: 0.7;
     font-style: italic;
 }
 
-.remove-shift {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 50%;
+/* Hover and Drag States */
+.shift-item:hover {
+    transform: translateX(4px);
+    box-shadow: -2px 2px 4px var(--shadow-medium);
+    background: var(--color-primary-fade);
+}
+
+.shift-item.dragging {
+    opacity: 0.7;
+    transform: scale(0.95);
+    box-shadow: 0 4px 8px var(--shadow-medium);
+}
+
+/* Shift Drop Zone Enhancements */
+.shift-drop-zone .shift-item {
+    margin: var(--spacing-small) 0;
+}
+
+.shift-drop-zone:empty::before {
+    content: 'Drop shifts here';
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    height: 100%;
+    color: var(--color-text-light);
+    opacity: 0.5;
+    font-style: italic;
+    pointer-events: none;
 }
 
-.remove-shift:hover {
-    background: var(--surface-hover);
-    color: var(--error-color);
+/* Shift Library Scroll Area */
+.shift-list {
+    padding: var(--spacing-medium);
+    overflow-y: auto;
+    max-height: calc(100vh - 300px);
+}
+
+.shift-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.shift-list::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 3px;
+}
+
+.shift-list::-webkit-scrollbar-track {
+    background: var(--color-background);
 }
 
 /* Monthly Calendar */
 .monthly-calendar {
+    width: 100%;
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     background: var(--color-secondary);
     border-radius: var(--radius-medium);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px var(--shadow-medium);
 }
 
 .calendar-header {
@@ -330,19 +391,16 @@ body {
 }
 
 .calendar-day {
-    background: var(--color-secondary);
-    min-height: 120px;
-    padding: var(--spacing-small);
-    border-radius: var(--radius-small);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    min-height: 180px;
+    background: var(--color-background);
+    padding: var(--spacing-medium);
+    transition: all var(--transition-speed) ease;
     display: flex;
     flex-direction: column;
-    gap: 4px;
 }
 
-.calendar-day.empty {
-    background: var(--color-background);
-    min-height: 120px;
+.calendar-day:hover {
+    background: var(--color-primary-fade);
 }
 
 .calendar-day.today {
@@ -370,12 +428,13 @@ body {
 
 .calendar-day .shift-drop-zone {
     flex: 1;
-    min-height: 80px;
+    min-height: 150px;
     border: 2px dashed var(--border-color);
     border-radius: var(--radius-small);
-    padding: 4px;
+    padding: var(--spacing-small);
     background: var(--color-background);
     transition: all var(--transition-speed) ease;
+    overflow-y: auto;
 }
 
 .calendar-day .shift-drop-zone:hover {
@@ -391,40 +450,43 @@ body {
 
 /* Shift Library */
 .shift-library {
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 200px);
     width: 280px;
-    background: var(--color-secondary);
-    border-radius: var(--radius-medium);
     display: flex;
     flex-direction: column;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: var(--color-secondary);
+    border-radius: var(--radius-medium);
+    box-shadow: 0 4px 6px var(--shadow-medium);
+    overflow: hidden;
 }
 
 .panel-header {
+    background: linear-gradient(to right, var(--color-primary-dark), var(--color-primary));
     padding: var(--spacing-medium);
     border-bottom: 1px solid var(--border-color);
-    background: var(--color-secondary);
-    border-radius: var(--radius-medium) var(--radius-medium) 0 0;
 }
 
 .panel-header h3 {
+    color: #ffffff;
     margin: 0;
-    color: var(--color-text-light);
-    font-weight: 600;
+    text-shadow: var(--text-shadow);
 }
 
 .shift-list {
+    flex: 1;
     padding: var(--spacing-medium);
     overflow-y: auto;
-    max-height: 600px;
 }
 
 /* Template List Panel */
 .template-list {
-    width: 280px;
-    background: var(--color-secondary);
-    border-right: 1px solid var(--border-color);
+    width: 100%;
     display: flex;
     flex-direction: column;
+    gap: var(--spacing-medium);
+    padding-bottom: var(--spacing-large);
 }
 
 .template-items {
@@ -433,16 +495,10 @@ body {
 }
 
 .template-item {
+    width: 100%;
     display: flex;
-    align-items: center;
-    gap: var(--spacing-small);
-    padding: var(--spacing-small);
-    margin-bottom: var(--spacing-small);
-    background: var(--color-background);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-small);
-    cursor: pointer;
-    transition: all var(--transition-speed) ease;
+    flex-direction: column;
+    gap: var(--spacing-medium);
 }
 
 .template-item:hover {
@@ -459,32 +515,48 @@ body {
 
 /* Template Editor */
 .template-editor {
-    flex: 1;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    gap: var(--spacing-medium);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: var(--spacing-medium);
+    padding-bottom: var(--spacing-large);
+    margin-right: var(--spacing-medium);
 }
 
 .editor-header {
+    width: 95%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: var(--spacing-medium);
-    background: var(--color-secondary);
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: var(--spacing-medium);
+    background: linear-gradient(to right, var(--color-primary-dark), var(--color-primary));
     border-radius: var(--radius-medium);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px var(--shadow-medium);
+    margin-bottom: var(--spacing-small);
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .template-name-input {
-    font-size: var(--font-size-large);
-    padding: var(--spacing-small);
+    max-width: 300px;
+    min-width: 200px;
+    flex-shrink: 1;
+    background: var(--color-background);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-small);
-    background: var(--color-background);
+    padding: var(--spacing-small) var(--spacing-medium);
     color: var(--color-text-light);
-    width: 300px;
+    font-size: var(--font-size-base);
+    transition: all var(--transition-speed) ease;
+}
+
+.template-name-input:focus {
+    border-color: var(--color-primary-light);
+    box-shadow: 0 0 0 2px var(--color-primary-fade);
+    outline: none;
 }
 
 .editor-actions {
@@ -497,51 +569,197 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
     padding: var(--spacing-medium);
-    background: var(--color-secondary);
+    background: linear-gradient(to right, var(--color-primary-dark), var(--color-primary));
     border-radius: var(--radius-medium);
+    box-shadow: 0 2px 4px var(--shadow-medium);
     margin-bottom: var(--spacing-medium);
+}
+
+.roster-template-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-medium);
+}
+
+.roster-dropdown {
+    min-width: 200px;
+    padding: var(--spacing-small) var(--spacing-medium);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small);
+    background: var(--color-background);
+    color: var(--color-text-light);
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+}
+
+.roster-dropdown:hover {
+    border-color: var(--color-primary-light);
+    box-shadow: 0 0 0 2px var(--color-primary-fade);
 }
 
 .month-navigation {
     display: flex;
     align-items: center;
     gap: var(--spacing-medium);
+    background: var(--color-background);
+    padding: var(--spacing-small) var(--spacing-medium);
+    border-radius: var(--radius-medium);
+    box-shadow: 0 2px 4px var(--shadow-light);
 }
 
 .month-navigation h2 {
     margin: 0;
-    font-size: var(--font-size-large);
-    color: var(--color-text-light);
     min-width: 200px;
     text-align: center;
+    color: var(--color-text-light);
+    font-weight: 600;
+    text-shadow: var(--text-shadow);
 }
 
 .nav-btn {
-    background: var(--color-background);
-    border: 1px solid var(--border-color);
-    color: var(--color-text-light);
-    cursor: pointer;
-    padding: var(--spacing-small);
-    border-radius: var(--radius-small);
-    transition: all var(--transition-speed) ease;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    background: var(--color-primary);
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
 }
 
 .nav-btn:hover {
-    background: var(--color-hover);
-    color: var(--color-text-light);
-    border-color: var(--color-primary);
+    background: var(--color-primary-light);
+    transform: scale(1.1);
 }
 
-.roster-actions {
+.monthly-calendar {
+    background: var(--color-secondary);
+    border-radius: var(--radius-medium);
+    box-shadow: 0 4px 6px var(--shadow-medium);
+    overflow: hidden;
+    margin-top: var(--spacing-medium);
+}
+
+.calendar-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: linear-gradient(to right, var(--color-primary-dark), var(--color-primary));
+    padding: var(--spacing-medium);
+}
+
+.calendar-header div {
+    color: #ffffff;
+    font-weight: 600;
+    text-align: center;
+    padding: var(--spacing-small);
+    text-shadow: var(--text-shadow);
+}
+
+.calendar-body {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: var(--border-color);
+    padding: 1px;
+}
+
+.calendar-day {
+    min-height: 150px;
+    background: var(--color-background);
+    padding: var(--spacing-small);
+    transition: all var(--transition-speed) ease;
+}
+
+.calendar-day:hover {
+    background: var(--color-primary-fade);
+}
+
+.calendar-day.today {
+    background: var(--color-primary-fade);
+    border: 2px solid var(--color-primary);
+}
+
+.calendar-day.weekend {
+    background: var(--color-background-light);
+}
+
+.day-number {
     display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    background: var(--color-primary);
+    color: #ffffff;
+    border-radius: 50%;
+    margin-bottom: var(--spacing-small);
+    font-weight: 600;
+}
+
+.calendar-day.weekend .day-number {
+    background: var(--color-primary-dark);
+}
+
+.shift-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     gap: var(--spacing-small);
+    margin-top: var(--spacing-small);
+    min-height: 120px;
+    overflow-y: auto;
+}
+
+.roster-shift {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-small);
+    background: var(--color-secondary);
+    border-radius: var(--radius-small);
+    border-left: 4px solid var(--color-primary);
+    cursor: move;
+    transition: all var(--transition-speed) ease;
+}
+
+.roster-shift:hover {
+    transform: translateX(4px);
+    box-shadow: -4px 2px 4px var(--shadow-light);
+}
+
+.roster-shift.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
+}
+
+.shift-info {
+    flex: 1;
+    font-size: var(--font-size-small);
+}
+
+.shift-time {
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.shift-employees {
+    font-size: 12px;
+    color: var(--color-text-light);
+    opacity: 0.8;
+}
+
+.empty-day-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--color-text-light);
+    opacity: 0.5;
+    font-style: italic;
 }
 
 /* Modal Styles */
@@ -858,33 +1076,46 @@ body {
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
-    .shift-tab-buttons {
-        flex-wrap: wrap;
-    }
-    
-    .shift-tab-btn {
-        flex: 1 1 calc(50% - 5px);
-        justify-content: center;
-    }
-
-    .modal-content {
-        width: 95%;
-        margin: 10px;
+@media (max-width: 1400px) {
+    .work-week {
+        gap: var(--spacing-small);
     }
 }
 
-@media (max-width: 480px) {
-    .shift-tab-btn {
-        flex: 1 1 100%;
+@media (max-width: 1200px) {
+    .work-week {
+        gap: 4px;
+    }
+    
+    .shift-drop-zone {
+        padding: 8px;
+        margin: 4px;
+    }
+}
+
+@media (max-width: 768px) {
+    .schedule-container {
+        padding: var(--spacing-small);
     }
 
-    .modal-footer {
-        flex-wrap: wrap;
+    .tab-content {
+        grid-template-columns: 1fr;
     }
 
-    .modal-footer button {
-        flex: 1 1 100%;
+    .work-week {
+        grid-template-columns: repeat(7, minmax(80px, 1fr));
+        gap: var(--spacing-small);
+        padding: var(--spacing-small);
+    }
+
+    .shift-library {
+        position: relative;
+        width: 100%;
+        height: 300px;
+    }
+
+    .template-editor {
+        padding-right: 0;
     }
 }
 
@@ -947,122 +1178,6 @@ body {
     to {
         transform: translateX(0);
         opacity: 1;
-    }
-}
-
-/* Responsive Design Improvements */
-@media (max-width: 1200px) {
-    .work-week {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-@media (max-width: 992px) {
-    .work-week {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    
-    .template-controls {
-        flex-wrap: wrap;
-    }
-    
-    .template-dropdown {
-        width: 100%;
-    }
-}
-
-@media (max-width: 768px) {
-    .schedule-container {
-        margin-left: 0;
-    }
-
-    .schedule-header {
-        flex-direction: column;
-        gap: var(--spacing-medium);
-    }
-
-    .schedule-tabs {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .template-controls {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .template-dropdown {
-        width: 100%;
-    }
-
-    .work-week {
-        grid-template-columns: 1fr;
-    }
-
-    .calendar-body {
-        grid-template-columns: 1fr;
-    }
-
-    .shift-library {
-        position: fixed;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        z-index: var(--z-index-modal);
-        transform: translateX(-100%);
-        transition: transform var(--transition-speed) ease;
-        width: 100%;
-        max-width: 300px;
-    }
-
-    .shift-library.active {
-        transform: translateX(0);
-    }
-
-    .shift-library-toggle {
-        display: block;
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: var(--z-index-modal);
-        background: var(--color-primary);
-        color: var(--color-text-light);
-        border: none;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .monthly-calendar {
-        margin-left: 0;
-    }
-
-    .calendar-day {
-        min-height: 100px;
-    }
-
-    .calendar-header {
-        display: none;
-    }
-
-    .month-navigation {
-        flex-direction: column;
-        gap: var(--spacing-small);
-    }
-
-    .month-navigation h2 {
-        min-width: auto;
-    }
-
-    .roster-controls {
-        flex-direction: column;
-        gap: var(--spacing-medium);
-    }
-
-    .roster-actions {
-        width: 100%;
-        justify-content: center;
     }
 }
 
@@ -1365,4 +1480,435 @@ body {
     .add-btn {
         width: 100%;
     }
+}
+
+/* Work Week Tab Enhancements */
+.template-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-medium);
+    background: linear-gradient(to right, var(--color-primary-dark), var(--color-primary));
+    border-radius: var(--radius-medium);
+    box-shadow: 0 2px 4px var(--shadow-medium);
+    margin-bottom: var(--spacing-medium);
+}
+
+.template-dropdown {
+    min-width: 250px;
+    padding: var(--spacing-small) var(--spacing-medium);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small);
+    background: var(--color-background);
+    color: var(--color-text-light);
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+}
+
+.template-dropdown:hover {
+    border-color: var(--color-primary-light);
+    box-shadow: 0 0 0 2px var(--color-primary-fade);
+}
+
+.template-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-small);
+}
+
+.work-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: var(--spacing-medium);
+    padding: var(--spacing-medium);
+    background: var(--color-secondary);
+    border-radius: var(--radius-medium);
+    box-shadow: 0 4px 6px var(--shadow-medium);
+}
+
+.day-column {
+    background: var(--color-background);
+    border-radius: var(--radius-medium);
+    overflow: hidden;
+    box-shadow: 0 2px 4px var(--shadow-light);
+    transition: all var(--transition-speed) ease;
+    border: 1px solid var(--border-color);
+}
+
+.day-column:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--shadow-medium);
+}
+
+.day-header {
+    background: linear-gradient(to right, var(--color-primary-dark), var(--color-primary));
+    padding: var(--spacing-medium);
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.day-header h4 {
+    margin: 0;
+    color: #ffffff;
+    font-weight: 600;
+    text-shadow: var(--text-shadow);
+    font-size: var(--font-size-base);
+}
+
+.shift-drop-zone {
+    min-height: 200px;
+    padding: var(--spacing-medium);
+    background: var(--color-background);
+    border: 2px dashed var(--border-color);
+    margin: var(--spacing-small);
+    border-radius: var(--radius-small);
+    transition: all var(--transition-speed) ease;
+    width: auto;
+}
+
+.shift-drop-zone:hover {
+    background: var(--color-primary-fade);
+    border-color: var(--color-primary);
+}
+
+.shift-drop-zone.drag-over {
+    background: var(--color-primary-fade);
+    border-color: var(--color-primary);
+    transform: scale(1.02);
+}
+
+.shift-item {
+    background: var(--color-secondary);
+    border-radius: var(--radius-small);
+    margin-bottom: var(--spacing-small);
+    padding: 4px 8px;
+    cursor: move;
+    transition: all var(--transition-speed) ease;
+    border-left: 3px solid var(--color-primary);
+    box-shadow: 0 1px 2px var(--shadow-light);
+    font-size: 11px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.shift-item:hover {
+    transform: translateX(4px);
+    box-shadow: -4px 2px 4px var(--shadow-light);
+}
+
+.shift-item.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
+}
+
+.shift-details {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.shift-time {
+    font-weight: 600;
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--color-primary);
+}
+
+.shift-name {
+    font-weight: 600;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.shift-rules {
+    display: none;
+}
+
+.remove-shift {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 16px;
+    height: 16px;
+    background: none;
+    border: none;
+    color: var(--color-text-light);
+    opacity: 0.6;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-speed) ease;
+    font-size: 14px;
+}
+
+.remove-shift i {
+    font-size: 12px;
+}
+
+/* Template Editor Enhancements */
+.template-editor {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-medium);
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-medium);
+    background: linear-gradient(to right, var(--color-primary-dark), var(--color-primary));
+    border-radius: var(--radius-medium);
+    box-shadow: 0 2px 4px var(--shadow-medium);
+}
+
+.template-name-input {
+    background: var(--color-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small);
+    padding: var(--spacing-small) var(--spacing-medium);
+    color: var(--color-text-light);
+    font-size: var(--font-size-base);
+    min-width: 300px;
+    transition: all var(--transition-speed) ease;
+}
+
+.template-name-input:focus {
+    border-color: var(--color-primary-light);
+    box-shadow: 0 0 0 2px var(--color-primary-fade);
+    outline: none;
+}
+
+.editor-actions {
+    display: flex;
+    gap: var(--spacing-small);
+}
+
+/* Empty State Styling */
+.shift-drop-zone:empty::before {
+    content: 'Drop shifts here';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--color-text-light);
+    opacity: 0.5;
+    font-style: italic;
+}
+
+/* Weekend Styling */
+.day-column[data-day='saturday'] .day-header,
+.day-column[data-day='sunday'] .day-header {
+    background: linear-gradient(to right, var(--color-primary-dark), var(--color-primary-light));
+}
+
+/* Shift Library Enhancements */
+.shift-library {
+    background: var(--color-secondary);
+    border-radius: var(--radius-medium);
+    box-shadow: 0 4px 6px var(--shadow-medium);
+    overflow: hidden;
+    width: 280px;
+}
+
+.panel-header {
+    background: linear-gradient(to right, var(--color-primary-dark), var(--color-primary));
+    padding: var(--spacing-medium);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.panel-header h3 {
+    color: #ffffff;
+    margin: 0;
+    text-shadow: var(--text-shadow);
+}
+
+.shift-list {
+    padding: var(--spacing-medium);
+    overflow-y: auto;
+}
+
+/* Work Week Shift Styling */
+.work-week .shift-item {
+    background: var(--color-secondary);
+    border-radius: var(--radius-small);
+    margin-bottom: var(--spacing-small);
+    padding: 4px 8px;
+    cursor: move;
+    transition: all var(--transition-speed) ease;
+    border-left: 3px solid var(--color-primary);
+    box-shadow: 0 1px 2px var(--shadow-light);
+    font-size: 11px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.work-week .shift-content {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.work-week .shift-details {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.work-week .shift-name {
+    font-weight: 600;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.work-week .shift-time {
+    font-size: 10px;
+    opacity: 0.8;
+    white-space: nowrap;
+}
+
+.work-week .shift-rules {
+    display: none;
+}
+
+/* Monthly Calendar Shift Styling */
+.calendar-day .shift-item {
+    padding: 4px 8px;
+    margin-bottom: 4px;
+    background: var(--color-secondary);
+    border-radius: var(--radius-small);
+    border-left: 3px solid var(--color-primary);
+    box-shadow: 0 1px 2px var(--shadow-light);
+    height: 24px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    font-size: 11px;
+}
+
+.calendar-day .shift-info {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.calendar-day .shift-time {
+    font-weight: 600;
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--color-primary);
+}
+
+.calendar-day .shift-employees {
+    display: none;
+}
+
+/* Shift Container in Calendar */
+.shift-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 4px;
+    min-height: 120px;
+    overflow-y: auto;
+    padding: 2px;
+}
+
+.roster-shift {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-small);
+    background: var(--color-secondary);
+    border-radius: var(--radius-small);
+    border-left: 4px solid var(--color-primary);
+    cursor: move;
+    transition: all var(--transition-speed) ease;
+}
+
+.roster-shift:hover {
+    transform: translateX(4px);
+    box-shadow: -4px 2px 4px var(--shadow-light);
+}
+
+.roster-shift.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
+}
+
+.shift-info {
+    flex: 1;
+    font-size: var(--font-size-small);
+}
+
+.shift-time {
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.shift-employees {
+    font-size: 12px;
+    color: var(--color-text-light);
+    opacity: 0.8;
+}
+
+/* Remove Button Adjustments */
+.remove-shift {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 16px;
+    height: 16px;
+    background: none;
+    border: none;
+    color: var(--color-text-light);
+    opacity: 0.6;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-speed) ease;
+    font-size: 14px;
+}
+
+.remove-shift i {
+    font-size: 12px;
+}
+
+/* Drop Zone Adjustments */
+.shift-drop-zone {
+    padding: 4px;
+    margin: 4px;
+}
+
+/* Shift Library Adjustments */
+.shift-library .shift-item {
+    padding: 6px 10px;
+    height: 32px;
 }

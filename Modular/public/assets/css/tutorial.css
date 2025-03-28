@@ -1,0 +1,221 @@
+.tutorial-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+}
+
+.tutorial-tooltip {
+    position: fixed;
+    background: var(--color-background);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-medium);
+    padding: 15px;
+    max-width: 300px;
+    z-index: 9999;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tutorial-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.tutorial-header h3 {
+    margin: 0;
+    color: var(--color-primary);
+}
+
+.tutorial-counter {
+    color: var(--color-text-light);
+    font-size: 0.9em;
+}
+
+.tutorial-content {
+    color: var(--color-text-light);
+    margin: 10px 0;
+    line-height: 1.4;
+}
+
+.tutorial-controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.tutorial-controls button {
+    padding: 5px 15px;
+    border: none;
+    border-radius: var(--radius-small);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tutorial-back {
+    background: var(--color-secondary);
+    color: var(--color-text-light);
+}
+
+.tutorial-skip {
+    background: var(--color-secondary);
+    color: var(--color-text-light);
+}
+
+.tutorial-next {
+    background: var(--color-primary);
+    color: var(--color-text-dark);
+}
+
+.tutorial-highlight {
+    position: relative;
+    z-index: 9999;
+    box-shadow: 0 0 0 4px var(--color-primary);
+    border-radius: var(--radius-small);
+}
+
+/* Tutorial button styles */
+#tutorial-button {
+    color: var(--color-primary);
+    transition: color 0.3s ease;
+}
+
+#tutorial-button:hover {
+    color: var(--color-hover);
+}
+
+/* Dim tutorial button if completed */
+[data-tutorial-completed="true"] #tutorial-button {
+    opacity: 0.5;
+}
+
+/* Employee table specific styles during tutorial */
+.tutorial-target {
+    position: relative;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb), 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(var(--color-primary-rgb), 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb), 0);
+    }
+}
+
+/* Style for disabled interactions during tutorial */
+.tutorial-active .employee-row:not(.tutorial-target) {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+/* Style for form field highlights during tutorial */
+.tutorial-highlight[type="text"],
+.tutorial-highlight[type="email"],
+.tutorial-highlight[type="tel"] {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
+}
+
+/* Arrow base styles */
+.tutorial-tooltip::after {
+    content: '';
+    position: absolute;
+    border: 8px solid transparent;
+}
+
+/* Arrow positions */
+.tutorial-tooltip-top::after {
+    border-top-color: var(--color-background);
+    bottom: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tutorial-tooltip-bottom::after {
+    border-bottom-color: var(--color-background);
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tutorial-tooltip-left::after {
+    border-left-color: var(--color-background);
+    right: -16px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.tutorial-tooltip-right::after {
+    border-right-color: var(--color-background);
+    left: -16px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Adjusted arrow positions for edge cases */
+.tutorial-tooltip[data-original-placement="top"][data-actual-placement="left"]::after {
+    left: 16px;
+    transform: none;
+}
+
+.tutorial-tooltip[data-original-placement="top"][data-actual-placement="right"]::after {
+    left: auto;
+    right: 16px;
+    transform: none;
+}
+
+.tutorial-tooltip[data-original-placement="bottom"][data-actual-placement="left"]::after {
+    left: 16px;
+    transform: none;
+}
+
+.tutorial-tooltip[data-original-placement="bottom"][data-actual-placement="right"]::after {
+    left: auto;
+    right: 16px;
+    transform: none;
+}
+
+.tutorial-tooltip[data-original-placement="left"][data-actual-placement="top"]::after {
+    top: 16px;
+    transform: none;
+}
+
+.tutorial-tooltip[data-original-placement="left"][data-actual-placement="bottom"]::after {
+    top: auto;
+    bottom: 16px;
+    transform: none;
+}
+
+.tutorial-tooltip[data-original-placement="right"][data-actual-placement="top"]::after {
+    top: 16px;
+    transform: none;
+}
+
+.tutorial-tooltip[data-original-placement="right"][data-actual-placement="bottom"]::after {
+    top: auto;
+    bottom: 16px;
+    transform: none;
+}
+
+/* Ensure tooltip content is readable */
+.tutorial-content {
+    margin: 10px 0;
+    line-height: 1.4;
+}
+
+/* Make sure tooltips don't get too small on mobile */
+@media screen and (max-width: 768px) {
+    .tutorial-tooltip {
+        max-width: calc(100vw - 40px);
+        width: auto;
+    }
+} 

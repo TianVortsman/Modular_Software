@@ -23,9 +23,6 @@ if (isset($_SESSION['account_number'])) {
 }
 
 $userName = $_SESSION['user_name'] ?? ($_SESSION['tech_logged_in'] ? $_SESSION['tech_name'] : 'Guest');
-
-// Include the database connection
-include('../../../php/db.php');
 $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple_accounts'] : false;
 ?>
 
@@ -36,20 +33,18 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Employee Management - Time and Attendance</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="../../../css/root.css">
-  <link rel="stylesheet" href="../../../css/sidebar.css">
+  <link rel="stylesheet" href="../../../public/assets/css/root.css">
+  <link rel="stylesheet" href="../../../public/assets/css/sidebar.css">
   <link rel="stylesheet" href="../css/modals.css">
   <link rel="stylesheet" href="../css/employees.css">
   <link rel="stylesheet" href="../css/employee-modal.css">
-  <script src="../../../js/sidebar.js"></script>
-  <script src="../../../js/toggle-theme.js"></script>
+  <link rel="stylesheet" href="../../../public/assets/css/tutorial.css">
 </head>
 <body id="TA-employees">
   <!-- Sidebar -->
-  <?php include('../../../main/sidebar.php') ?>
-  
-  <div class="dashboard-container">
-    <!-- Header Section with Employee Count and License Info -->
+  <?php include('../../../src/ui/sidebar.php') ?>
+  <div class="dashboard-container" id="dashboard-container">
+
     <section id="employee-summary" class="widget-section">
       <div class="widget-container">
         <div class="widget" id="employee-count-widget">
@@ -90,26 +85,22 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
         </div>
       </div>
     </section>
-
-    <!-- Employee Management Section -->
-    <section id="employee-management" class="widget-section">
-      <h2>Employee Management</h2>
-      
-      <!-- Action Buttons -->
-      <div class="action-buttons">
-        <div class="search-container">
-          <input type="text" id="employee-search" placeholder="Search employees...">
-          <span class="material-icons search-icon">search</span>
-        </div>
-      </div>
       
       <!-- Main Tabs -->
       <div class="page-tabs-container">
         <div class="page-tabs-header">
-          <button class="page-tab-button active" data-tab="active" role="tab" aria-selected="true" aria-controls="active-tab">Active</button>
-          <button class="page-tab-button" data-tab="terminated" role="tab" aria-selected="false" aria-controls="terminated-tab">Terminated</button>
-          <button class="page-tab-button" data-tab="incomplete" role="tab" aria-selected="false" aria-controls="incomplete-tab">Incomplete</button>
-          <button class="page-tab-button" data-tab="all" role="tab" aria-selected="false" aria-controls="all-tab">All Employees</button>
+          <button class="page-tab-button active" data-tab="active" role="tab" aria-selected="true" aria-controls="active-tab">
+            <i class="material-icons">check_circle</i> Active
+          </button>
+          <button class="page-tab-button" data-tab="terminated" role="tab" aria-selected="false" aria-controls="terminated-tab">
+            <i class="material-icons">cancel</i> Terminated
+          </button>
+          <button class="page-tab-button" data-tab="incomplete" role="tab" aria-selected="false" aria-controls="incomplete-tab">
+            <i class="material-icons">error_outline</i> Incomplete
+          </button>
+          <button class="page-tab-button" data-tab="all" role="tab" aria-selected="false" aria-controls="all-tab">
+            <i class="material-icons">group</i> All Employees
+          </button>
         </div>
         
         <!-- Tab Content -->
@@ -118,8 +109,12 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
           <div class="page-tab-pane active" id="active-tab" role="tabpanel">
             <!-- Sub-tabs for Active Employees -->
             <div class="page-subtabs-header">
-              <button class="page-subtab-button active" data-subtab="permanent" role="tab" aria-selected="true" aria-controls="permanent-tab">Permanent</button>
-              <button class="page-subtab-button" data-subtab="temporary" role="tab" aria-selected="false" aria-controls="temporary-tab">Temporary</button>
+              <button class="page-subtab-button active" data-subtab="permanent" role="tab" aria-selected="true" aria-controls="permanent-tab">
+                <i class="material-icons">business</i> Permanent
+              </button>
+              <button class="page-subtab-button" data-subtab="temporary" role="tab" aria-selected="false" aria-controls="temporary-tab">
+                <i class="material-icons">timer</i> Temporary
+              </button>
             </div>
             
             <!-- Permanent Employees Sub-tab -->
@@ -338,12 +333,28 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
   </div>
 </div>
 <?php 
-    include '../../../php/loading-modal.php';
-    include '../../../php/response-modal.php';
-    include '../../../php/error-table-modal.php';
-    include 'add-employee-modal.php';
-    include '../modals/employee-modal.php'
+    include '../../../src/ui/loading-modal.php';
+    include '../../../src/ui/response-modal.php';
+    include '../../../src/ui/error-table-modal.php';
+    include '../modals/add-employee-modal.php';
+    include '../modals/employee-modal.php';
 ?>
+  <!-- Load scripts in correct order -->
+  <script src="../../../public/assets/js/sidebar.js"></script>
+  <script src="../../../public/assets/js/toggle-theme.js"></script>
   <script src="../js/employees.js"></script>
+  <!-- Load tutorial scripts last -->
+  <script src="../../../public/assets/js/tutorial/tutorial-data.js"></script>
+  <script src="../../../public/assets/js/tutorial/tutorial-engine.js"></script>
+  <!-- After all scripts are loaded -->
+  <script>
+  // Debug check for modal functions
+  document.addEventListener('DOMContentLoaded', () => {
+      console.log('Modal functions available:', {
+          openAddEmployeeModal: typeof openAddEmployeeModal === 'function',
+          openEmployeeModal: typeof openEmployeeModal === 'function'
+      });
+  });
+  </script>
   </body>
   </html>
