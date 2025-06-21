@@ -1,0 +1,15 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "Modular_Software",
+            "group": "1",
+            "database": "ACC002",
+            "username": "Tian",
+            "password": "Modul@rdev@2024"
+        }
+    ]
+}

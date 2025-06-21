@@ -59,22 +59,24 @@ function getRecentActivity($conn) {
         // First, get recent attendance records
         $attendanceQuery = "
             SELECT 
-                ar.attendance_id as id,
-                ar.date_time,
-                ar.clock_number,
-                ar.device_id,
-                ar.verify_mode,
-                ar.verify_status,
-                ar.major_event_type,
-                ar.minor_event_type,
-                ar.status,
+                ta.attendance_id as id,
+                ta.attendance_date as date_time,
+                tc.clocking_time,
+                tc.clocking_method as device_id,
+                tc.clocking_type as verify_mode,
+                tc.clocking_status as verify_status,
+                tc.clocking_type as major_event_type,
+                tc.clocking_method as minor_event_type,
+                ta.attendance_status as status,
                 CONCAT(e.first_name, ' ', e.last_name) as employee_name
             FROM 
-                attendance_records ar
+                time.time_attendance ta
             LEFT JOIN 
-                employees e ON ar.employee_id = e.employee_id
+                core.employees e ON ta.employee_id = e.employee_id
+            LEFT JOIN
+                time.time_clocking tc ON ta.employee_id = tc.employee_id AND ta.attendance_date = tc.clocking_date
             ORDER BY 
-                ar.date_time DESC
+                ta.attendance_date DESC, tc.clocking_time DESC
             LIMIT 20
         ";
         
@@ -96,7 +98,7 @@ function getRecentActivity($conn) {
                 'Unknown' as status,
                 NULL as employee_name
             FROM 
-                unknown_clockings uc
+                time.unknown_clockings uc
             ORDER BY 
                 uc.date_time DESC
             LIMIT 20
@@ -136,7 +138,12 @@ function getDashboardStats($conn) {
         $today = date('Y-m-d');
         
         // Get total employees
-        $employeeQuery = "SELECT COUNT(*) as total FROM employees WHERE status = 'active'";
+        $employeeQuery = "
+            SELECT COUNT(*) as total 
+            FROM core.employees e
+            LEFT JOIN core.employee_employment ee ON e.employee_id = ee.employee_id
+            WHERE ee.status = 'active'
+        ";
         $employeeStmt = $conn->prepare($employeeQuery);
         $employeeStmt->execute();
         $totalEmployees = $employeeStmt->fetch(PDO::FETCH_ASSOC)['total'];
@@ -144,9 +151,9 @@ function getDashboardStats($conn) {
         // Get clocked in today count
         $clockedInQuery = "
             SELECT COUNT(DISTINCT employee_id) as total 
-            FROM attendance_records 
-            WHERE date = :today 
-            AND status = 'Present'
+            FROM time.time_attendance 
+            WHERE attendance_date = :today 
+            AND attendance_status = 'Present'
         ";
         $clockedInStmt = $conn->prepare($clockedInQuery);
         $clockedInStmt->bindParam(':today', $today);
@@ -154,14 +161,14 @@ function getDashboardStats($conn) {
         $clockedInToday = $clockedInStmt->fetch(PDO::FETCH_ASSOC)['total'];
         
         // Get late arrivals today
-        // Assuming shift start time is stored somewhere or using a default of 8:00 AM
         $lateQuery = "
-            SELECT COUNT(DISTINCT employee_id) as total 
-            FROM attendance_records ar
-            JOIN employees e ON ar.employee_id = e.employee_id
-            WHERE ar.date = :today
-            AND ar.time_in > '08:00:00'::time
-            AND ar.status = 'Present'
+            SELECT COUNT(DISTINCT ta.employee_id) as total 
+            FROM time.time_attendance ta
+            JOIN core.employees e ON ta.employee_id = e.employee_id
+            JOIN time.time_clocking tc ON ta.employee_id = tc.employee_id AND ta.attendance_date = tc.clocking_date
+            WHERE ta.attendance_date = :today
+            AND tc.clocking_time > '08:00:00'::time
+            AND ta.attendance_status = 'Present'
         ";
         $lateStmt = $conn->prepare($lateQuery);
         $lateStmt->bindParam(':today', $today);
@@ -170,10 +177,10 @@ function getDashboardStats($conn) {
         
         // Get average check-in time for today
         $avgTimeQuery = "
-            SELECT TO_CHAR(AVG(time_in::time), 'HH24:MI') as avg_time
-            FROM attendance_records
-            WHERE date = :today
-            AND time_in IS NOT NULL
+            SELECT TO_CHAR(AVG(tc.clocking_time::time), 'HH24:MI') as avg_time
+            FROM time.time_clocking tc
+            WHERE tc.clocking_date = :today
+            AND tc.clocking_time IS NOT NULL
         ";
         $avgTimeStmt = $conn->prepare($avgTimeQuery);
         $avgTimeStmt->bindParam(':today', $today);
@@ -183,12 +190,13 @@ function getDashboardStats($conn) {
         // Calculate absences (employees who haven't clocked in today)
         $absentQuery = "
             SELECT COUNT(*) as total
-            FROM employees e
-            WHERE e.status = 'active'
+            FROM core.employees e
+            JOIN core.employee_employment ee ON e.employee_id = ee.employee_id
+            WHERE ee.status = 'active'
             AND e.employee_id NOT IN (
                 SELECT DISTINCT employee_id
-                FROM attendance_records
-                WHERE date = :today
+                FROM time.time_attendance
+                WHERE attendance_date = :today
             )
         ";
         $absentStmt = $conn->prepare($absentQuery);
@@ -198,16 +206,13 @@ function getDashboardStats($conn) {
         
         // Build the response data
         $stats = [
-            'totalEmployees' => (int)$totalEmployees,
-            'clockedInToday' => (int)$clockedInToday,
-            'lateArrivals' => (int)$lateArrivals,
-            'overtimeHours' => 0, // Placeholder, calculate if you have overtime data
-            'avgCheckinTime' => $avgCheckinTime,
-            'absentToday' => (int)$absentToday,
-            'onLeave' => 0, // Placeholder, calculate if you have leave tracking
+            'total_employees' => (int)$totalEmployees,
+            'clocked_in_today' => (int)$clockedInToday,
+            'late_arrivals' => (int)$lateArrivals,
+            'average_checkin' => $avgCheckinTime,
+            'absent_today' => (int)$absentToday
         ];
         
-        // Return success response with stats
         httpResponse(200, 'Dashboard stats retrieved successfully', [
             'success' => true,
             'stats' => $stats
@@ -222,221 +227,32 @@ function getDashboardStats($conn) {
  */
 function getAccessActivity($conn) {
     try {
-        // First check if access_events table exists
-        $tableCheck = "
-            SELECT EXISTS (
-                SELECT FROM information_schema.tables 
-                WHERE table_name = 'access_events'
-            ) as table_exists
+        $query = "
+            SELECT 
+                ae.id,
+                ae.date_time,
+                ae.device_id,
+                ae.major_event_type,
+                ae.minor_event_type,
+                ae.raw_data,
+                CONCAT(e.first_name, ' ', e.last_name) as employee_name
+            FROM 
+                access.access_events ae
+            LEFT JOIN 
+                core.employees e ON ae.raw_data->>'employee_id' = e.employee_id::text
+            ORDER BY 
+                ae.date_time DESC
+            LIMIT 20
         ";
         
-        $checkStmt = $conn->prepare($tableCheck);
-        $checkStmt->execute();
-        $tableExists = $checkStmt->fetch(PDO::FETCH_ASSOC)['table_exists'];
+        $stmt = $conn->prepare($query);
+        $stmt->execute();
+        $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
-        if ($tableExists === 't' || $tableExists === true || $tableExists === '1') {
-            // First check if card_number column exists
-            $columnCheck = "
-                SELECT EXISTS (
-                    SELECT column_name FROM information_schema.columns 
-                    WHERE table_name = 'access_events' AND column_name = 'card_number'
-                ) as column_exists
-            ";
-            
-            $columnStmt = $conn->prepare($columnCheck);
-            $columnStmt->execute();
-            $hasCardNumber = $columnStmt->fetch(PDO::FETCH_ASSOC)['column_exists'];
-            
-            if ($hasCardNumber === 't' || $hasCardNumber === true || $hasCardNumber === '1') {
-                // Use card_number if it exists
-                $query = "
-                    SELECT 
-                        ae.id as access_id,
-                        e.employee_id,
-                        CONCAT(e.first_name, ' ', e.last_name) as employee_name,
-                        e.clock_number,
-                        ae.card_number,
-                        ae.date_time,
-                        ae.major_event_type,
-                        ae.minor_event_type,
-                        ae.device_id,
-                        COALESCE(ae.device_name, 'Unknown Device') as device_name,
-                        COALESCE(ae.location, 'Unknown Location') as location
-                    FROM 
-                        access_events ae
-                    LEFT JOIN 
-                        employees e ON ae.card_number = e.clock_number
-                    ORDER BY 
-                        ae.date_time DESC
-                    LIMIT 20
-                ";
-            } else {
-                // No card_number column, try to extract data from raw_data JSON field
-                $query = "
-                    SELECT 
-                        ae.id as access_id,
-                        (raw_data->>'employeeId')::integer as employee_id,
-                        COALESCE(
-                            (SELECT CONCAT(e.first_name, ' ', e.last_name) 
-                             FROM employees e 
-                             WHERE e.employee_id = (raw_data->>'employeeId')::integer
-                             OR e.clock_number::text = (raw_data->>'cardNo')::text
-                             OR e.clock_number::text = (raw_data->>'employeeNoString')::text
-                            ),
-                            COALESCE(raw_data->>'personName', 'Unknown')
-                        ) as employee_name,
-                        COALESCE(
-                            raw_data->>'employeeNoString', 
-                            raw_data->>'cardNo', 
-                            NULL
-                        ) as clock_number,
-                        COALESCE(
-                            raw_data->>'cardNo', 
-                            raw_data->>'employeeNoString', 
-                            NULL
-                        ) as card_number,
-                        ae.date_time,
-                        ae.major_event_type,
-                        ae.minor_event_type,
-                        ae.device_id,
-                        COALESCE(raw_data->>'deviceName', 'Unknown Device') as device_name,
-                        COALESCE(raw_data->>'doorName', raw_data->>'deviceName', 'Unknown Location') as location
-                    FROM 
-                        access_events ae
-                    ORDER BY 
-                        ae.date_time DESC
-                    LIMIT 20
-                ";
-            }
-            
-            $stmt = $conn->prepare($query);
-            $stmt->execute();
-            $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            // Return success response with activities
-            httpResponse(200, 'Access activity retrieved successfully', [
-                'success' => true,
-                'activities' => $activities
-            ]);
-        } else {
-            // Check if we can use attendance_records with major_event_type = 1 as fallback
-            $fallbackQuery = "
-                SELECT 
-                    ar.attendance_id as access_id,
-                    ar.employee_id,
-                    CONCAT(e.first_name, ' ', e.last_name) as employee_name,
-                    ar.clock_number,
-                    ar.clock_number as card_number, 
-                    ar.date_time,
-                    ar.major_event_type,
-                    ar.minor_event_type,
-                    ar.device_id,
-                    'Main Entry' as device_name,
-                    'Front Door' as location
-                FROM 
-                    attendance_records ar
-                LEFT JOIN 
-                    employees e ON ar.employee_id = e.employee_id
-                WHERE 
-                    ar.major_event_type = 1 
-                ORDER BY 
-                    ar.date_time DESC
-                LIMIT 20
-            ";
-            
-            try {
-                $fallbackStmt = $conn->prepare($fallbackQuery);
-                $fallbackStmt->execute();
-                $activities = $fallbackStmt->fetchAll(PDO::FETCH_ASSOC);
-                
-                if (count($activities) > 0) {
-                    // If we found access events in attendance_records
-                    httpResponse(200, 'Access activity retrieved from attendance records', [
-                        'success' => true,
-                        'activities' => $activities
-                    ]);
-                    return;
-                }
-            } catch (PDOException $e) {
-                // Ignore fallback errors and proceed to mock data
-            }
-            
-            // No access_events table or fallback data, provide sample data for development
-            // Get a list of employees to use in mock data
-            $employeeQuery = "
-                SELECT 
-                    employee_id, 
-                    CONCAT(first_name, ' ', last_name) as employee_name,
-                    clock_number
-                FROM 
-                    employees 
-                LIMIT 5
-            ";
-            
-            $empStmt = $conn->prepare($employeeQuery);
-            $empStmt->execute();
-            $employees = $empStmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            // If no employees found, create mock employees
-            if (empty($employees)) {
-                $employees = [
-                    ['employee_id' => 1, 'employee_name' => 'John Smith', 'clock_number' => '1001'],
-                    ['employee_id' => 2, 'employee_name' => 'Jane Doe', 'clock_number' => '1002'],
-                    ['employee_id' => 3, 'employee_name' => 'Robert Johnson', 'clock_number' => '1003']
-                ];
-            }
-            
-            // Generate mock access events using real employees
-            $mockActivities = [];
-            $deviceNames = ['Main Entrance', 'Side Door', 'Parking Garage', 'Office Floor 1', 'Office Floor 2'];
-            $locations = ['Front Desk', 'Employee Entrance', 'Parking Level B1', 'Reception', 'Executive Suite'];
-            $eventTypes = [
-                ['major' => 1, 'minor' => 1, 'name' => 'Card Swipe'],
-                ['major' => 1, 'minor' => 2, 'name' => 'Door Open'],
-                ['major' => 1, 'minor' => 4, 'name' => 'Access Granted'],
-                ['major' => 1, 'minor' => 5, 'name' => 'Access Denied']
-            ];
-            
-            // Current timestamp for generating recent events
-            $now = time();
-            
-            for ($i = 0; $i < 20; $i++) {
-                // Pick a random employee
-                $employee = $employees[array_rand($employees)];
-                // Pick a random event type
-                $eventType = $eventTypes[array_rand($eventTypes)];
-                // Generate a random time in the last 24 hours
-                $timeOffset = rand(0, 24 * 60 * 60);
-                $eventTime = date('Y-m-d H:i:s', $now - $timeOffset);
-                // Pick random device and location
-                $deviceIndex = array_rand($deviceNames);
-                
-                $mockActivities[] = [
-                    'access_id' => $i + 1,
-                    'employee_id' => $employee['employee_id'],
-                    'employee_name' => $employee['employee_name'],
-                    'clock_number' => $employee['clock_number'],
-                    'card_number' => $employee['clock_number'], // Using clock number as card number
-                    'date_time' => $eventTime,
-                    'major_event_type' => $eventType['major'],
-                    'minor_event_type' => $eventType['minor'],
-                    'device_id' => 'DEV' . str_pad($deviceIndex + 1, 3, '0', STR_PAD_LEFT),
-                    'device_name' => $deviceNames[$deviceIndex],
-                    'location' => $locations[$deviceIndex]
-                ];
-            }
-            
-            // Sort by date_time descending to show most recent first
-            usort($mockActivities, function($a, $b) {
-                return strtotime($b['date_time']) - strtotime($a['date_time']);
-            });
-            
-            httpResponse(200, 'Simulated access activity (development mode)', [
-                'success' => true,
-                'activities' => $mockActivities,
-                'note' => 'Using mock data as access_events table was not found'
-            ]);
-        }
+        httpResponse(200, 'Access activity retrieved successfully', [
+            'success' => true,
+            'activities' => $activities
+        ]);
     } catch (PDOException $e) {
         httpResponse(500, 'Database error: ' . $e->getMessage());
     }

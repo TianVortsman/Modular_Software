@@ -585,38 +585,47 @@
 
 /* Modern Form Controls */
 #employee-details-modal .form-group {
-    margin-bottom: 18px;
-    position: relative;
+    margin-bottom: var(--spacing-medium);
 }
 
 #employee-details-modal .form-group label {
     display: block;
-    margin-bottom: 8px;
-    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-small);
     font-weight: 500;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
+    color: var(--input-label-color); /* Use the new variable for consistent visibility */
+    font-size: 0.875rem;
 }
 
-#employee-details-modal .form-group input,
+#employee-details-modal .form-group input[type="text"],
+#employee-details-modal .form-group input[type="email"],
+#employee-details-modal .form-group input[type="tel"],
+#employee-details-modal .form-group input[type="date"],
+#employee-details-modal .form-group input[type="number"],
 #employee-details-modal .form-group select,
 #employee-details-modal .form-group textarea {
-    width: 90%;
-    padding: 12px 16px;
+    width: 100%;
+    max-width: 100%; /* Ensure it doesn't extend beyond container */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    padding: 8px 12px; /* Reduced padding for a more compact look */
     border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background-color: var(--color-background);
-    color: var(--color-text);
-    font-size: 0.95rem;
-    transition: all 0.2s ease;
+    border-radius: 20px; /* Significantly more rounded corners for a modern look */
+    background-color: var(--input-bg); /* Darker background color for inputs */
+    color: var(--color-text-light);
+    font-size: 0.9rem; /* Adjusted font size */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#employee-details-modal .form-group textarea {
+    min-height: 100px;
+    resize: vertical;
 }
 
 #employee-details-modal .form-group input:focus,
 #employee-details-modal .form-group select:focus,
 #employee-details-modal .form-group textarea:focus {
-    outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.15);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.3);
 }
 
 #employee-details-modal .form-group input:hover,
@@ -1423,33 +1432,93 @@ input:checked + .slider:before {
 /* Organization Tab Improvements */
 /* Organizational Hierarchy visualization */
 .org-visual-hierarchy {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Center items for better visual flow */
+  gap: 15px; /* Space between hierarchy nodes */
   padding: 20px 0;
   background-color: rgba(var(--primary-rgb), 0.03);
   border-radius: 10px;
   margin-bottom: 20px;
+  align-items: center;
 }
 
 .org-hierarchy-node {
-  margin-bottom: 10px;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background-color: var(--color-background-light); /* Lighter background for nodes */
+  border: 1px solid var(--border-color); /* Subtle border */
+  margin-bottom: 0; /* Remove individual margin */
+  padding: 12px 18px; /* Adjusted padding */
+  border-radius: var(--radius-medium); /* Use root variable */
+  box-shadow: var(--shadow-light); /* Use root variable for shadow */
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 150px;
+  flex: 1; /* Allow nodes to grow */
 }
 
 .org-hierarchy-node:hover {
-  transform: translateX(5px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-medium); /* Stronger shadow on hover */
+}
+
+.org-hierarchy-node .org-node-icon {
+  font-size: 2rem; /* Larger icon */
+  color: var(--color-primary);
+  margin-bottom: 8px;
+}
+
+.org-hierarchy-node .org-node-label {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.org-hierarchy-node .org-node-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-small);
+  background-color: var(--input-bg); /* Use input background variable */
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+  appearance: none; /* Remove default select arrow */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M287%2C197.8L156.4%2C67.2c-5.1-5.1-13.4-5.1-18.5%2C0L5.4%2C197.8c-5.1%2C5.1-5.1%2C13.4%2C0%2C18.5c5.1%2C5.1%2C13.4%2C5.1%2C18.5%2C0L147.6%2C94.2c5.1-5.1%2C13.4-5.1%2C18.5%2C0l123.6%2C123.6c5.1%2C5.1%2C13.4%2C5.1%2C18.5%2C0C292.1%2C211.2%2C292.1%2C202.9%2C287%2C197.8z%22%2F%3E%3C%2Fsvg%3E'); /* Custom arrow */
+  background-repeat: no-repeat;
+  background-position: right 8px top 50%;
+  background-size: 12px auto;
+  cursor: pointer;
+}
+
+.org-hierarchy-node .org-node-select:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
+}
+
+.org-hierarchy-connector {
+  width: 20px;
+  height: 2px;
+  background-color: var(--border-color);
+  margin: 0 10px; /* Space between nodes and connectors */
 }
 
 /* Manager Card Improvements */
 .reporting-manager-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
   position: relative;
-  padding: 20px;
-  border-radius: 10px;
+  padding: 15px;
+  border-radius: var(--radius-medium);
   background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.05) 0%, rgba(var(--primary-rgb), 0.02) 100%);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-  margin-bottom: 20px;
+  box-shadow: var(--shadow-light);
+  margin-bottom: 15px; /* Smaller margin */
   overflow: hidden;
 }
 
@@ -1459,14 +1528,18 @@ input:checked + .slider:before {
   top: 0;
   left: 0;
   height: 100%;
-  width: 5px;
+  width: 4px; /* Slightly thinner */
   background-color: var(--color-primary);
-  border-radius: 10px 0 0 10px;
+  border-radius: var(--radius-medium) 0 0 var(--radius-medium);
 }
 
 .manager-avatar {
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  border: 4px solid white;
+  width: 60px; /* Smaller avatar */
+  height: 60px; /* Smaller avatar */
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: var(--shadow-medium);
+  border: 3px solid white; /* Thinner border */
   transition: all 0.3s ease;
 }
 
@@ -1474,16 +1547,90 @@ input:checked + .slider:before {
   transform: scale(1.05);
 }
 
-.direct-reports {
-  padding: 15px;
-  background-color: rgba(var(--background-rgb), 0.5);
-  border-radius: 8px;
-  border: 1px solid rgba(var(--border-rgb), 0.1);
+.manager-details {
+  flex-grow: 1;
 }
 
-.count-badge {
-  font-weight: 600;
+.manager-details label {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  margin-bottom: 5px;
+  display: block;
+}
+
+.manager-details select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-small);
+  background-color: var(--input-bg);
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M287%2C197.8L156.4%2C67.2c-5.1-5.1-13.4-5.1-18.5%2C0L5.4%2C197.8c-5.1%2C5.1-5.1%2C13.4%2C0%2C18.5c5.1%2C5.1%2C13.4%2C5.1%2C18.5%2C0L147.6%2C94.2c5.1-5.1%2C13.4-5.1%2C18.5%2C0l123.6%2C123.6c5.1%2C5.1%2C13.4%2C5.1%2C18.5%2C0C292.1%2C211.2%2C292.1%2C202.9%2C287%2C197.8z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right 8px top 50%;
+  background-size: 12px auto;
+  cursor: pointer;
+}
+
+.manager-details select:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
+}
+
+.manager-quick-actions {
+  display: flex;
+  gap: 5px;
+  margin-top: 10px; /* Space between select and actions */
+}
+
+.micro-action {
+  background-color: var(--color-primary-fade);
+  border: none;
+  border-radius: var(--radius-small);
+  padding: 5px;
+  font-size: 0.8rem;
+  cursor: pointer;
   color: var(--color-primary);
+  transition: all 0.2s ease;
+}
+
+.micro-action:hover {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.micro-action i {
+  font-size: 1rem;
+}
+
+.direct-reports {
+  padding: 12px; /* Smaller padding */
+  background-color: var(--color-secondary); /* Use secondary background */
+  border-radius: var(--radius-medium);
+  border: 1px solid var(--border-color);
+  margin-top: 15px; /* Smaller margin */
+}
+
+.direct-reports h5 {
+  font-size: 1rem;
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: var(--color-text-dark);
+}
+
+.direct-reports-list {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+}
+
+.direct-reports-list p.no-data {
+  font-style: italic;
+  color: var(--color-text-light);
 }
 
 /* Employee Tags Improvements */
@@ -1544,51 +1691,117 @@ input:checked + .slider:before {
 }
 
 .balance-cards {
-  margin-top: 30px;
-  gap: 25px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 20px;
 }
 
 .balance-card {
-  padding: 25px 20px;
-  transition: all 0.4s ease;
-  border-radius: 15px;
+  background-color: var(--color-secondary);
+  border-radius: var(--radius-medium);
+  padding: 15px;
+  flex-basis: calc(16.66% - 15px); /* Allows 6 cards per row with gap */
+  flex-grow: 1;
+  min-width: 150px; /* Adjusted minimum width for smaller cards */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .balance-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
 .balance-card-header {
-  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
 .balance-card-header i {
-  font-size: 24px;
-  margin-right: 15px;
+  font-size: 1.5rem;
+  color: var(--color-primary);
+}
+
+.balance-card-header span {
+  font-weight: 600;
+  color: var(--color-text-dark);
+  font-size: 0.95rem;
 }
 
 .balance-card-value {
-  margin-bottom: 20px;
+  text-align: center;
+  margin: 10px 0;
 }
 
 .balance-number {
-  font-size: 3rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: var(--color-primary);
+}
+
+.balance-unit {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  margin-left: 5px;
 }
 
 .balance-card-footer {
-  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  margin-top: 10px;
 }
 
-.used-balance {
-  font-weight: 500;
+.used-balance strong {
+  color: var(--color-text-dark);
 }
 
 .balance-progress-bar {
-  height: 8px;
-  border-radius: 4px;
+  height: 6px;
+  background-color: rgba(var(--border-rgb), 0.1);
+  border-radius: 3px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.balance-progress {
+  height: 100%;
+  background-color: var(--color-primary);
+  border-radius: 3px;
+}
+
+/* Responsive adjustments for leave cards */
+@media (max-width: 1200px) {
+  .balance-card {
+    flex-basis: calc(20% - 15px); /* 5 cards per row */
+  }
+}
+
+@media (max-width: 992px) {
+  .balance-card {
+    flex-basis: calc(33.33% - 15px); /* 3 cards per row */
+  }
+}
+
+@media (max-width: 768px) {
+  .balance-card {
+    flex-basis: calc(50% - 15px); /* 2 cards per row */
+  }
+}
+
+@media (max-width: 480px) {
+  .balance-card {
+    flex-basis: 100%; /* 1 card per row */
+  }
 }
 
 /* Leave timeline */
@@ -2196,4 +2409,140 @@ input:checked + .slider:before {
 .employee-details-tabs {
     flex-grow: 1; /* Takes remaining space */
     overflow-y: auto; /* Enables scrolling for the tab content */
+}
+
+/* Small input style for schedule tab */
+.inline-inputs-container {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.inline-inputs-container .form-group {
+    flex: 1;
+    min-width: 140px; /* Adjusted min-width for inline inputs */
+    margin-bottom: 0;
+}
+
+.inline-inputs-container .form-group label {
+    font-size: 0.85rem;
+}
+
+/* Modal Footer */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-medium);
+    padding: var(--spacing-medium) var(--spacing-large);
+    border-top: 1px solid var(--border-color);
+    background-color: var(--color-secondary);
+    border-radius: 0 0 var(--radius-large) var(--radius-large);
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.03);
+}
+
+.modal-footer .btn-cancel, .modal-footer .btn-save {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    border-radius: var(--radius-medium); /* More rounded buttons */
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-footer .btn-cancel {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--color-text-dark);
+}
+
+.modal-footer .btn-cancel:hover {
+    background-color: var(--color-background-light);
+}
+
+.modal-footer .btn-save {
+    background-color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    color: white;
+}
+
+.modal-footer .btn-save:hover {
+    background-color: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
+}
+
+/* Responsive adjustments for overall modal layout */
+@media (max-width: 992px) {
+    #employee-details-modal .employee-details-layout {
+        flex-direction: column;
+    }
+
+    #employee-details-modal .employee-profile-section {
+        width: 100%;
+        position: static;
+        margin-bottom: 20px;
+    }
+
+    #employee-details-modal .employee-details-tabs {
+        width: 100%;
+    }
+
+    .org-visual-hierarchy .org-hierarchy-node .org-node-select, /* Apply 20px border-radius to these selects */
+    .reporting-manager-card .manager-details select {
+        border-radius: 20px; /* Rounded corners for org and manager selects */
+    }
+
+    .org-visual-hierarchy {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .org-hierarchy-connector {
+        width: 2px;
+        height: 20px;
+        margin: 10px 0;
+    }
+
+    .org-hierarchy-node {
+        width: 100%;
+        min-width: unset;
+    }
+}
+
+@media (max-width: 768px) {
+    #employee-details-modal .modal-content {
+        max-width: 95%;
+        height: 95vh;
+    }
+
+    #employee-details-modal .modal-header,
+    #employee-details-modal .modal-body,
+    #employee-details-modal .modal-footer {
+        padding: var(--spacing-medium);
+    }
+
+    #employee-details-modal .emp-details-tab-nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    #employee-details-modal .form-row {
+        flex-direction: column;
+    }
+
+    #employee-details-modal .form-column {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    #employee-details-modal .modal-header h2 {
+        font-size: 1.2rem;
+    }
+
+    #employee-details-modal .modal-close {
+        width: 30px;
+        height: 30px;
+        font-size: 1rem;
+    }
 }

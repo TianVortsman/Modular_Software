@@ -3,6 +3,8 @@ namespace Modules\TimeAndAttendance\Controllers;
 
 // Fix imports to use the correct App namespace
 use \PDO;
+use \PDOException;
+use \Exception;
 use App\Services\DatabaseService;
 use App\Core\Exception\DatabaseException;
 
@@ -77,127 +79,196 @@ class EmployeeListController extends BaseEmployeeController
     public function getEmployees($filters = [], $page = 1, $perPage = 20)
     {
         try {
-            // Calculate offset for pagination
             $offset = ($page - 1) * $perPage;
             
-            // Build query conditions based on filters
-            $conditions = [];
+            // Base query with joins to related tables
+            $query = "
+                SELECT 
+                    e.employee_id,
+                    e.first_name,
+                    e.last_name,
+                    e.employee_number,
+                    e.is_sales,
+                    ec.email,
+                    ec.phone,
+                    ee.hire_date,
+                    ee.termination_date,
+                    p.position_name as position,
+                    d.department_name as department,
+                    dv.division_name as division,
+                    g.group_name as group,
+                    cc.cost_center_name as cost_center,
+                    et.type_name as employment_type,
+                    ee.status,
+                    a.addr_line_1,
+                    a.addr_line_2,
+                    a.suburb,
+                    a.city,
+                    a.province,
+                    a.country,
+                    a.postcode,
+                    CASE 
+                        WHEN ee.employment_id IS NULL THEN 'incomplete'
+                        WHEN ee.termination_date < CURRENT_DATE THEN 'terminated'
+                        WHEN ee.status = 'active' THEN 'active'
+                        ELSE LOWER(ee.status)
+                    END as display_status
+                FROM core.employees e
+                LEFT JOIN core.employee_contact ec ON e.employee_id = ec.employee_id
+                LEFT JOIN core.employee_employment ee ON e.employee_id = ee.employee_id
+                LEFT JOIN core.positions p ON ee.position_id = p.position_id
+                LEFT JOIN core.departments d ON ee.department_id = d.department_id
+                LEFT JOIN core.divisions dv ON ee.division_id = dv.division_id
+                LEFT JOIN core.groups g ON ee.group_id = g.group_id
+                LEFT JOIN core.cost_centers cc ON ee.cost_center_id = cc.cost_center_id
+                LEFT JOIN core.employment_types et ON ee.employment_type_id = et.type_id
+                LEFT JOIN core.address a ON ec.address_id = a.addr_id
+                WHERE 1=1
+            ";
+            
             $params = [];
             
+            // Add filters
             if (!empty($filters['status'])) {
-                $conditions[] = "e.status = :status";
+                if ($filters['status'] === 'incomplete') {
+                    $query .= " AND ee.employment_id IS NULL";
+                } else if ($filters['status'] === 'terminated') {
+                    $query .= " AND ee.termination_date < CURRENT_DATE";
+                } else {
+                    $query .= " AND LOWER(ee.status) = LOWER(:status)";
                 $params[':status'] = $filters['status'];
             }
+            }
             
-            // Modified filter for department which is a string column, not a foreign key
-            if (!empty($filters['department'])) {
-                $conditions[] = "e.department LIKE :department";
-                $params[':department'] = '%' . $filters['department'] . '%';
+            if (!empty($filters['department_id'])) {
+                $query .= " AND ee.department_id = :department_id";
+                $params[':department_id'] = $filters['department_id'];
+            }
+            
+            if (!empty($filters['employment_type'])) {
+                $query .= " AND LOWER(et.type_name) = LOWER(:employment_type)";
+                $params[':employment_type'] = $filters['employment_type'];
             }
             
             if (!empty($filters['search'])) {
-                $conditions[] = "(e.first_name LIKE :search OR e.last_name LIKE :search OR e.employee_number LIKE :search)";
-                $params[':search'] = '%' . $filters['search'] . '%';
+                $searchTerm = '%' . $filters['search'] . '%';
+                $query .= " AND (
+                    LOWER(e.first_name) LIKE LOWER(:search) OR
+                    LOWER(e.last_name) LIKE LOWER(:search) OR
+                    LOWER(e.employee_number) LIKE LOWER(:search) OR
+                    LOWER(p.position_name) LIKE LOWER(:search) OR
+                    LOWER(d.department_name) LIKE LOWER(:search)
+                )";
+                $params[':search'] = $searchTerm;
             }
             
-            // Build WHERE clause
-            $whereClause = empty($conditions) ? "" : "WHERE " . implode(" AND ", $conditions);
-            
-            // Get total count for pagination using executeQuery instead of prepare
-            $countQuery = "SELECT COUNT(*) FROM employees e $whereClause";
+            // Get total count for pagination
+            $countQuery = "SELECT COUNT(*) as total FROM ($query) as subquery";
             $countStmt = $this->db->executeQuery($countQuery, $params);
-            $totalCount = $countStmt->fetchColumn();
+            $totalCount = $this->db->fetchRow($countStmt)['total'];
             
-            // Modified query - removed joins to non-existent tables
-            $query = "
-                SELECT e.*
-                FROM employees e
-                $whereClause
-                ORDER BY e.last_name, e.first_name
-                LIMIT :limit OFFSET :offset
-            ";
+            // If no employees found, return empty result with pagination
+            if ($totalCount === 0) {
+                return [
+                    'employees' => [],
+                    'pagination' => [
+                        'current_page' => $page,
+                        'per_page' => $perPage,
+                        'total_pages' => 0,
+                        'total_items' => 0
+                    ],
+                    'message' => 'No employees found'
+                ];
+            }
             
-            // Add pagination params
-            $allParams = array_merge($params, [
-                ':limit' => $perPage,
-                ':offset' => $offset
-            ]);
+            // Add pagination
+            $query .= " ORDER BY e.last_name, e.first_name LIMIT :limit OFFSET :offset";
+            $params[':limit'] = $perPage;
+            $params[':offset'] = $offset;
             
-            // Use executeQuery instead of prepare+execute
-            $stmt = $this->db->executeQuery($query, $allParams);
-            
-            // Use fetchAll method from Database class
+            // Execute main query
+            $stmt = $this->db->executeQuery($query, $params);
             $employees = $this->db->fetchAll($stmt);
-            
-            // Calculate pagination info
-            $totalPages = ceil($totalCount / $perPage);
             
             return [
                 'employees' => $employees,
                 'pagination' => [
-                    'total' => $totalCount,
-                    'per_page' => $perPage,
                     'current_page' => $page,
-                    'total_pages' => $totalPages,
-                    'has_more' => $page < $totalPages
+                    'per_page' => $perPage,
+                    'total_pages' => ceil($totalCount / $perPage),
+                    'total_items' => $totalCount
                 ]
             ];
         } catch (\PDOException $e) {
-            $this->handleDatabaseError($e, 'listing employees', false);
+            $this->handleDatabaseError($e, 'getting employees list', false);
             return [
                 'employees' => [],
                 'pagination' => [
-                    'total' => 0,
+                    'current_page' => 1,
                     'per_page' => $perPage,
-                    'current_page' => $page,
                     'total_pages' => 0,
-                    'has_more' => false
-                ]
+                    'total_items' => 0
+                ],
+                'message' => 'No employees found'
             ];
         }
     }
     
     /**
-     * Get employee distribution statistics
-     * 
-     * @return array Stats about employee distribution
+     * Get employee statistics including total, by status, and by department
+     *
+     * @return array Employee statistics
      */
     public function getEmployeeStats()
     {
         try {
-            // Get total count
-            $countStmt = $this->db->query("SELECT COUNT(*) FROM employees");
-            $totalCount = $countStmt->fetchColumn();
+            $stats = [];
             
-            // Get counts by status
-            $statusStmt = $this->db->query("
-                SELECT status, COUNT(*) as count
-                FROM employees
-                GROUP BY status
-            ");
-            $statusCounts = $statusStmt->fetchAll(PDO::FETCH_KEY_PAIR);
-            
-            // Get counts by department
-            $deptStmt = $this->db->query("
-                SELECT d.department_name, COUNT(*) as count
-                FROM employees e
-                JOIN departments d ON e.department_id = d.department_id
+            // Get total employees
+            $query = "SELECT COUNT(*) as count FROM core.employees";
+            $stmt = $this->db->executeQuery($query);
+            $stats['total'] = $this->db->fetchRow($stmt)['count'];
+
+            // Get employees by status
+            $query = "
+                SELECT ee.status, COUNT(*) as count 
+                FROM core.employees e
+                LEFT JOIN core.employee_employment ee ON e.employee_id = ee.employee_id
+                GROUP BY ee.status
+            ";
+            $stmt = $this->db->executeQuery($query);
+            $stats['by_status'] = $this->db->fetchAll($stmt);
+
+            // Get employees by department
+            $query = "
+                SELECT d.department_name, COUNT(*) as count 
+                FROM core.employees e
+                LEFT JOIN core.employee_employment ee ON e.employee_id = ee.employee_id
+                LEFT JOIN core.departments d ON ee.department_id = d.department_id
                 GROUP BY d.department_name
-                ORDER BY count DESC
-            ");
-            $departmentCounts = $deptStmt->fetchAll(PDO::FETCH_KEY_PAIR);
+            ";
+            $stmt = $this->db->executeQuery($query);
+            $stats['by_department'] = $this->db->fetchAll($stmt);
             
-            return [
-                'total' => $totalCount,
-                'by_status' => $statusCounts,
-                'by_department' => $departmentCounts
-            ];
+            // Get employees by employment type
+            $query = "
+                SELECT et.type_name, COUNT(*) as count 
+                FROM core.employees e
+                LEFT JOIN core.employee_employment ee ON e.employee_id = ee.employee_id
+                LEFT JOIN core.employment_types et ON ee.employment_type_id = et.type_id
+                GROUP BY et.type_name
+            ";
+            $stmt = $this->db->executeQuery($query);
+            $stats['by_employment_type'] = $this->db->fetchAll($stmt);
+            
+            return $stats;
         } catch (\PDOException $e) {
             $this->handleDatabaseError($e, 'getting employee statistics', false);
             return [
                 'total' => 0,
                 'by_status' => [],
-                'by_department' => []
+                'by_department' => [],
+                'by_employment_type' => []
             ];
         }
     }
@@ -217,132 +288,101 @@ class EmployeeDetailsController extends BaseEmployeeController
     public function getEmployeeDetails($employeeId)
     {
         try {
-            // Updated query to include date_of_birth, gender, badge_number and other fields
             $query = "
-                SELECT e.employee_id, e.employee_number, e.clock_number, 
-                    e.first_name, e.last_name, e.hire_date, e.date_of_birth, e.gender,
-                    e.email, e.phone_number, e.badge_number,
-                    e.department, e.position, e.division, e.group_name, e.cost_center,
-                    e.employment_type, e.work_schedule_type, e.status, e.biometric_id,
-                    e.emergency_contact_name, e.emergency_contact_phone, 
-                    e.emergency_contact_relation, e.emergency_contact_email,
-                    a.addr_id, a.addr_line_1, a.addr_line_2, a.suburb, a.city, a.province, 
-                    a.country, a.postcode
-                FROM employees e
-                LEFT JOIN employee_address ea ON e.employee_id = ea.employee_id
-                LEFT JOIN address a ON ea.addr_id = a.addr_id
+                SELECT 
+                    -- Core employee data
+                    e.employee_id,
+                    e.first_name,
+                    e.last_name,
+                    e.employee_number,
+                    e.clock_number,
+                    e.is_sales,
+                    
+                    -- Contact information
+                    ec.email,
+                    ec.phone,
+                    
+                    -- Emergency contact
+                    eec.contact_name as emergency_contact_name,
+                    eec.contact_phone as emergency_contact_phone,
+                    eec.contact_relation as emergency_contact_relation,
+                    eec.contact_email as emergency_contact_email,
+                    
+                    -- Personal information
+                    ep.title,
+                    ep.id_number,
+                    ep.date_of_birth,
+                    ep.gender,
+                    
+                    -- Employment information
+                    ee.hire_date,
+                    ee.termination_date,
+                    ee.status,
+                    ee.manager_id,
+                    
+                    -- Organizational structure
+                    p.position_name as position,
+                    d.department_name as department,
+                    dv.division_name as division,
+                    g.group_name as \"group\",
+                    cc.cost_center_name as cost_center,
+                    s.site_name as site,
+                    t.team_name as team,
+                    
+                    -- Employment details
+                    et.type_name as employment_type,
+                    ct.type_name as contract_type,
+                    pp.period_name as pay_period,
+                    al.level_name as access_level,
+                    tc.category_name as time_category,
+                    st.type_name as shift_type,
+                    
+                    -- Address information
+                    a.addr_line_1,
+                    a.addr_line_2,
+                    a.suburb,
+                    a.city,
+                    a.province,
+                    a.country,
+                    a.postcode,
+                    
+                    -- Roles
+                    er.role_name,
+                    er.module,
+                    er.active as role_active
+                    
+                FROM core.employees e
+                LEFT JOIN core.employee_contact ec ON e.employee_id = ec.employee_id
+                LEFT JOIN core.employee_emergency_contact eec ON e.employee_id = eec.employee_id
+                LEFT JOIN core.employee_personal ep ON e.employee_id = ep.employee_id
+                LEFT JOIN core.employee_employment ee ON e.employee_id = ee.employee_id
+                LEFT JOIN core.positions p ON ee.position_id = p.position_id
+                LEFT JOIN core.departments d ON ee.department_id = d.department_id
+                LEFT JOIN core.divisions dv ON ee.division_id = dv.division_id
+                LEFT JOIN core.groups g ON ee.group_id = g.group_id
+                LEFT JOIN core.cost_centers cc ON ee.cost_center_id = cc.cost_center_id
+                LEFT JOIN core.sites s ON ee.site_id = s.site_id
+                LEFT JOIN core.teams t ON ee.team_id = t.team_id
+                LEFT JOIN core.employment_types et ON ee.employment_type_id = et.type_id
+                LEFT JOIN core.contract_types ct ON ee.contract_type_id = ct.type_id
+                LEFT JOIN core.pay_periods pp ON ee.pay_period_id = pp.period_id
+                LEFT JOIN core.access_levels al ON ee.access_level_id = al.level_id
+                LEFT JOIN core.time_categories tc ON ee.time_category_id = tc.category_id
+                LEFT JOIN core.shift_types st ON ee.shift_type_id = st.type_id
+                LEFT JOIN core.address a ON ec.address_id = a.addr_id
+                LEFT JOIN core.employee_roles er ON e.employee_id = er.employee_id
                 WHERE e.employee_id = :employee_id
             ";
-            
-            // Use executeQuery instead of prepare + bindParam + execute
+
             $stmt = $this->db->executeQuery($query, [':employee_id' => $employeeId]);
             $employee = $this->db->fetchRow($stmt);
-            
-            if (!$employee) {
-                return null;
+
+            if ($employee) {
+                return $this->formatEmployeeData($employee);
             }
-            
-            // Format date of birth to ensure it's in the right format for the frontend
-            if (!empty($employee['date_of_birth'])) {
-                // Ensure date is in YYYY-MM-DD format
-                $date = new \DateTime($employee['date_of_birth']);
-                $employee['date_of_birth'] = $date->format('Y-m-d');
-            }
-            
-            // Format address into a structured object
-            if (!empty($employee['addr_id'])) {
-                $employee['address'] = [
-                    'id' => $employee['addr_id'],
-                    'line1' => $employee['addr_line_1'],
-                    'line2' => $employee['addr_line_2'],
-                    'suburb' => $employee['suburb'],
-                    'city' => $employee['city'],
-                    'state' => $employee['province'],
-                    'country' => $employee['country'],
-                    'postal' => $employee['postcode']
-                ];
-                
-                // Remove individual address fields from the employee object
-                unset($employee['addr_id']);
-                unset($employee['addr_line_1']);
-                unset($employee['addr_line_2']);
-                unset($employee['suburb']);
-                unset($employee['city']);
-                unset($employee['province']);
-                unset($employee['country']);
-                unset($employee['postcode']);
-            } else {
-                $employee['address'] = null;
-            }
-            
-            // Format emergency contact info into a structured object
-            if (!empty($employee['emergency_contact_name'])) {
-                $employee['emergencyContact'] = [
-                    'name' => $employee['emergency_contact_name'],
-                    'phone' => $employee['emergency_contact_phone'],
-                    'relationship' => $employee['emergency_contact_relation'],
-                    'email' => $employee['emergency_contact_email']
-                ];
-                
-                // Remove individual emergency contact fields
-                unset($employee['emergency_contact_name']);
-                unset($employee['emergency_contact_phone']);
-                unset($employee['emergency_contact_relation']);
-                unset($employee['emergency_contact_email']);
-            } else {
-                $employee['emergencyContact'] = null;
-            }
-            
-            // Get leave balances if the table exists
-            try {
-                $leaveQuery = "
-                    SELECT lt.leave_type_name as leave_type, lb.balance
-                    FROM leave_balances lb
-                    JOIN leave_types lt ON lb.leave_type_id = lt.leave_type_id
-                    WHERE lb.employee_id = :employee_id
-                ";
-                $leaveStmt = $this->db->executeQuery($leaveQuery, [':employee_id' => $employeeId]);
-                $employee['leave_balances'] = $this->db->fetchAll($leaveStmt);
-            } catch (\Exception $e) {
-                // Table might not exist yet, just provide empty data
-                $employee['leave_balances'] = [];
-            }
-            
-            // Get leave history if the table exists
-            try {
-                $historyQuery = "
-                    SELECT lt.leave_type_name as leave_type, lr.start_date, lr.end_date, lr.status
-                    FROM leave_requests lr
-                    JOIN leave_types lt ON lr.leave_type_id = lt.leave_type_id
-                    WHERE lr.employee_id = :employee_id
-                    ORDER BY lr.start_date DESC
-                ";
-                $historyStmt = $this->db->executeQuery($historyQuery, [':employee_id' => $employeeId]);
-                $employee['leave_history'] = $this->db->fetchAll($historyStmt);
-            } catch (\Exception $e) {
-                // Table might not exist yet, just provide empty data
-                $employee['leave_history'] = [];
-            }
-            
-            // Get devices if the table exists
-            try {
-                $deviceQuery = "
-                    SELECT device_name, device_type
-                    FROM devices
-                    WHERE assigned_to = :employee_id
-                ";
-                $deviceStmt = $this->db->executeQuery($deviceQuery, [':employee_id' => $employeeId]);
-                $employee['devices'] = $this->db->fetchAll($deviceStmt);
-            } catch (\Exception $e) {
-                // Table might not exist yet, just provide empty data
-                $employee['devices'] = [];
-            }
-            
-            // Apply consistent formatting before returning
-            return $this->formatEmployeeData($employee);
+            return null;
         } catch (\PDOException $e) {
-            // Handle error
-            error_log('Error fetching employee details: ' . $e->getMessage());
+            $this->handleDatabaseError($e, 'fetching employee details', false);
             return null;
         }
     }
@@ -355,38 +395,44 @@ class EmployeeDetailsController extends BaseEmployeeController
      */
     private function formatEmployeeData($employee)
     {
-        // Ensure all expected fields exist even if null
-        $defaults = [
-            'employee_id' => null,
-            'employee_number' => null,
-            'clock_number' => null,
-            'first_name' => null,
-            'last_name' => null,
-            'date_of_birth' => null,
-            'hire_date' => null,
-            'email' => null,
-            'phone_number' => null,
-            'gender' => 'male',
-            'badge_number' => null,
-            'department' => null,
-            'position' => null,
-            'division' => null,
-            'group_name' => null,
-            'cost_center' => null,
-            'status' => 'active',
-            'employment_type' => 'Permanent',
-            'work_schedule_type' => 'Open',
-            'biometric_id' => null,
-            'address' => null,
-            'emergencyContact' => null,
-            'leave_balances' => [],
-            'leave_history' => [],
-            'devices' => []
-        ];
-        
-        // Merge with defaults
-        $employee = array_merge($defaults, $employee);
-        
+        // Format address data
+        $address = null;
+        if ($employee['addr_line_1']) {
+            $address = [
+                'line1' => $employee['addr_line_1'],
+                'line2' => $employee['addr_line_2'],
+                'suburb' => $employee['suburb'],
+                'city' => $employee['city'],
+                'province' => $employee['province'],
+                'country' => $employee['country'],
+                'postcode' => $employee['postcode']
+            ];
+        }
+
+        // Format emergency contact data
+        $emergencyContact = null;
+        if ($employee['emergency_contact_name']) {
+            $emergencyContact = [
+                'name' => $employee['emergency_contact_name'],
+                'phone' => $employee['emergency_contact_phone'],
+                'relationship' => $employee['emergency_contact_relation'],
+                'email' => $employee['emergency_contact_email']
+            ];
+        }
+
+        // Remove address and emergency contact fields from main data
+        $addressFields = ['addr_line_1', 'addr_line_2', 'suburb', 'city', 'province', 'country', 'postcode'];
+        $emergencyFields = ['emergency_contact_name', 'emergency_contact_phone', 'emergency_contact_relation', 'emergency_contact_email'];
+        $fieldsToRemove = array_merge($addressFields, $emergencyFields);
+
+        foreach ($fieldsToRemove as $field) {
+            unset($employee[$field]);
+        }
+
+        // Add formatted address and emergency contact
+        $employee['address'] = $address;
+        $employee['emergencyContact'] = $emergencyContact;
+
         return $employee;
     }
 }
@@ -405,95 +451,90 @@ class EmployeeActionController extends BaseEmployeeController
     public function addEmployee($employeeData)
     {
         try {
-            // Check if employee with same number already exists
-            $checkQuery = "SELECT COUNT(*) FROM employees WHERE employee_number = :employee_number";
+            // Check for duplicate employee number
+            $checkQuery = "
+                SELECT COUNT(*) as count 
+                FROM core.employees 
+                WHERE employee_number = :employee_number 
+                OR (clock_number IS NOT NULL AND clock_number = :clock_number)
+            ";
             $checkStmt = $this->db->executeQuery($checkQuery, [
-                ':employee_number' => $employeeData['employee_number']
+                ':employee_number' => $employeeData['employee_number'],
+                ':clock_number' => $employeeData['clock_number'] ?? null
             ]);
-            $exists = (int)$checkStmt->fetchColumn();
+            $result = $this->db->fetchRow($checkStmt);
             
-            if ($exists > 0) {
+            if ($result['count'] > 0) {
+                // Check which field caused the duplicate
+                $specificCheckQuery = "
+                    SELECT 
+                        CASE 
+                            WHEN employee_number = :employee_number THEN 'employee_number'
+                            WHEN clock_number = :clock_number THEN 'clock_number'
+                        END as duplicate_field
+                    FROM core.employees 
+                    WHERE employee_number = :employee_number 
+                    OR (clock_number IS NOT NULL AND clock_number = :clock_number)
+                ";
+                $specificCheckStmt = $this->db->executeQuery($specificCheckQuery, [
+                    ':employee_number' => $employeeData['employee_number'],
+                    ':clock_number' => $employeeData['clock_number'] ?? null
+                ]);
+                $duplicateField = $this->db->fetchRow($specificCheckStmt)['duplicate_field'];
+                
                 return [
                     'success' => false,
-                    'message' => 'Employee number already exists'
+                    'message' => "Duplicate {$duplicateField} found. Please use a different value."
                 ];
             }
-            
-            $this->db->beginTransaction();
-            
-            // Process address data if provided
-            $addrId = null;
-            if (!empty($employeeData['address'])) {
-                $addressData = [
-                    'addr_line_1' => $employeeData['address']['line1'] ?? '',
-                    'addr_line_2' => $employeeData['address']['line2'] ?? '',
-                    'suburb' => $employeeData['address']['suburb'] ?? ($employeeData['address']['neighborhood'] ?? ''),
-                    'city' => $employeeData['address']['city'] ?? '',
-                    'province' => $employeeData['address']['state'] ?? '',
-                    'country' => $employeeData['address']['country'] ?? '',
-                    'postcode' => $employeeData['address']['postal'] ?? ''
-                ];
-                
-                // First create address
-                $addrFields = array_keys($addressData);
-                $addrPlaceholders = array_map(function($field) {
-                    return ":$field";
-                }, $addrFields);
-                
-                $addrInsertQuery = "INSERT INTO address (" . implode(", ", $addrFields) . ") 
-                                   VALUES (" . implode(", ", $addrPlaceholders) . ") RETURNING addr_id";
-                
-                $addrParams = [];
-                foreach ($addressData as $field => $value) {
-                    $addrParams[":$field"] = $value;
+
+            // Helper function to convert to boolean
+            $toBoolean = function($value) {
+                if (is_bool($value)) return $value;
+                if (is_string($value)) {
+                    $value = strtolower(trim($value));
+                    return $value === 'true' || $value === '1' || $value === 'yes';
                 }
-                
-                $addrStmt = $this->db->executeQuery($addrInsertQuery, $addrParams);
-                $addrId = $addrStmt->fetchColumn();
-            }
-            
-            // Insert employee data
+                return (bool)$value;
+            };
+
+            // Convert is_sales to proper boolean
+            $isSales = $toBoolean($employeeData['is_sales'] ?? false);
+
+            // Log the values for debugging
+            error_log("Employee data before insert: " . json_encode($employeeData));
+            error_log("is_sales value after conversion: " . ($isSales ? 'true' : 'false'));
+
+            // Insert new employee
             $query = "
-                INSERT INTO employees (
-                    employee_number, clock_number, first_name, last_name, 
-                    department, position, status, employment_type
+                INSERT INTO core.employees (
+                    first_name, 
+                    last_name, 
+                    employee_number, 
+                    clock_number,
+                    is_sales
                 ) VALUES (
-                    :employee_number, :clock_number, :first_name, :last_name,
-                    :department, :position, :status, :employment_type
+                    :first_name, 
+                    :last_name, 
+                    :employee_number, 
+                    :clock_number,
+                    :is_sales
                 ) RETURNING employee_id
             ";
             
-            // Set default values
-            $department = $employeeData['department'] ?? '';
-            $position = $employeeData['position'] ?? '';
-            $status = $employeeData['status'] ?? 'active';
-            $employmentType = $employeeData['employment_type'] ?? 'Permanent';
-            
-            // Use executeQuery instead of prepare/bindParam/execute
             $params = [
-                ':employee_number' => $employeeData['employee_number'],
-                ':clock_number' => $employeeData['clock_number'],
                 ':first_name' => $employeeData['first_name'],
                 ':last_name' => $employeeData['last_name'],
-                ':department' => $department,
-                ':position' => $position,
-                ':status' => $status,
-                ':employment_type' => $employmentType
+                ':employee_number' => $employeeData['employee_number'],
+                ':clock_number' => $employeeData['clock_number'] ?? null,
+                ':is_sales' => $isSales ? 'true' : 'false'  // Convert to PostgreSQL boolean string
             ];
             
+            // Log the SQL parameters for debugging
+            error_log("SQL parameters: " . json_encode($params));
+            
             $stmt = $this->db->executeQuery($query, $params);
-            $employeeId = $stmt->fetchColumn();
-            
-            // Link address to employee if we have an address
-            if ($addrId) {
-                $linkQuery = "INSERT INTO employee_address (employee_id, addr_id) VALUES (:employee_id, :addr_id)";
-                $this->db->executeQuery($linkQuery, [
-                    ':employee_id' => $employeeId,
-                    ':addr_id' => $addrId
-                ]);
-            }
-            
-            $this->db->commit();
+            $employeeId = $this->db->fetchRow($stmt)['employee_id'];
             
             return [
                 'success' => true,
@@ -501,136 +542,504 @@ class EmployeeActionController extends BaseEmployeeController
                 'message' => 'Employee added successfully'
             ];
         } catch (\PDOException $e) {
-            if (method_exists($this->db, 'rollback')) {
-                $this->db->rollback();
-            }
+            error_log("Database error adding employee: " . $e->getMessage());
             return [
                 'success' => false,
-                'message' => 'Failed to add employee: ' . $e->getMessage()
+                'message' => 'An error occurred while adding the employee. Please try again.'
+            ];
+        } catch (\Exception $e) {
+            error_log("Error adding employee: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
             ];
         }
     }
     
     /**
-     * Update an employee
+     * Transform frontend data to match database schema
+     */
+    private function transformEmployeeData($data) {
+        try {
+            // Parse address if it's a JSON string
+            $address = null;
+            if (isset($data['address'])) {
+                if (is_string($data['address'])) {
+                    $address = json_decode($data['address'], true);
+                } else if (is_array($data['address'])) {
+                    $address = $data['address'];
+                }
+            }
+            
+            // Parse emergency contact if it's a JSON string
+            $emergencyContact = null;
+            if (isset($data['emergency_contact'])) {
+                if (is_string($data['emergency_contact'])) {
+                    $emergencyContact = json_decode($data['emergency_contact'], true);
+                } else if (is_array($data['emergency_contact'])) {
+                    $emergencyContact = $data['emergency_contact'];
+                }
+            }
+            
+            // Helper function to convert to boolean
+            $toBoolean = function($value) {
+                if (is_bool($value)) return $value;
+                if (is_string($value)) {
+                    $value = strtolower(trim($value));
+                    return $value === 'true' || $value === '1' || $value === 'yes';
+                }
+                return (bool)$value;
+            };
+            
+            // Transform the data to match the schema
+            $transformed = [
+                // core.employees fields
+                'first_name' => $data['first_name'] ?? null,
+                'last_name' => $data['last_name'] ?? null,
+                'employee_number' => $data['employee_number'] ?? null,
+                'clock_number' => $data['clock_number'] ?? null,
+                'is_sales' => $toBoolean($data['is_sales'] ?? false),
+                
+                // core.employee_contact fields
+                'email' => $data['email'] ?? null,
+                'phone' => $data['phone_number'] ?? null,
+                
+                // core.employee_personal fields
+                'date_of_birth' => $data['date_of_birth'] ?? null,
+                'gender' => $data['gender'] ?? null,
+                'id_number' => $data['id_number'] ?? null,
+                
+                // core.employee_employment fields
+                'hire_date' => $data['hire_date'] ?? null,
+                'termination_date' => $data['termination_date'] ?? null,
+                'status' => $data['status'] ?? 'active',
+                
+                // core.address fields
+                'address' => $address ? [
+                    'line1' => $address['line1'] ?? null,
+                    'line2' => $address['line2'] ?? null,
+                    'suburb' => $address['suburb'] ?? null,
+                    'city' => $address['city'] ?? null,
+                    'province' => $address['province'] ?? null,
+                    'country' => $address['country'] ?? null,
+                    'postcode' => $address['postcode'] ?? null
+                ] : null,
+                
+                // core.employee_emergency_contact fields
+                'emergency_contact' => $emergencyContact ? [
+                    'name' => $emergencyContact['name'] ?? null,
+                    'phone' => $emergencyContact['phone'] ?? null,
+                    'relation' => $emergencyContact['relation'] ?? null,
+                    'email' => $emergencyContact['email'] ?? null
+                ] : null
+            ];
+            
+            // Log the transformed data for debugging
+            error_log("Transformed employee data: " . json_encode($transformed));
+            
+            return $transformed;
+        } catch (Exception $e) {
+            error_log("Error transforming employee data: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Update employee information
      * 
      * @param int $employeeId Employee ID
-     * @param array $employeeData Updated data
+     * @param array $employeeData Employee data to update
      * @return array Result status
      */
     public function updateEmployee($employeeId, $employeeData)
     {
         try {
             $this->db->beginTransaction();
-            
-            // Get flattened data with separated employee and address info
-            $data = $this->flattenEmployeeData($employeeData);
-            $employeeFields = $data['employee'];
-            $addressData = $data['address'];
-            
-            // Update employee data
-            if (!empty($employeeFields)) {
-                $updateFields = [];
-                $params = [];
-                
-                foreach ($employeeFields as $field => $value) {
-                    // Skip fields that don't map directly to database columns
-                    if ($field !== 'employee_id' && $field !== 'csrf_token' && $field !== 'fullName') {
-                        // Allow null values for emergency contact fields
-                        if (strpos($field, 'emergency_contact_') === 0 || 
-                            ($field === 'date_of_birth' || $field === 'hire_date') && ($value === '' || $value === null)) {
-                            if ($value === '') {
-                                $value = null;
-                            }
-                        }
-                        
-                        $updateFields[] = "$field = :$field";
-                        $params[":$field"] = $value;
-                    }
+
+            // Helper function to convert to PostgreSQL boolean
+            $toPostgresBoolean = function($value) {
+                if (is_bool($value)) return $value ? 'true' : 'false';
+                if (is_string($value)) {
+                    $value = strtolower(trim($value));
+                    return ($value === 'true' || $value === '1' || $value === 'yes') ? 'true' : 'false';
                 }
-                
-                if (!empty($updateFields)) {
-                    $updateQuery = "UPDATE employees SET " . implode(", ", $updateFields) . " WHERE employee_id = :employee_id";
-                    $params[':employee_id'] = $employeeId;
-                    
-                    // Add this before executing the query in updateEmployee()
-                    error_log("Update Query: " . $updateQuery);
-                    error_log("Parameters: " . print_r($params, true));
-                    
-                    $this->db->executeQuery($updateQuery, $params);
+                return $value ? 'true' : 'false';
+            };
+
+            // Helper function to handle dates
+            $handleDate = function($date) {
+                if (empty($date) || $date === '' || $date === null) {
+                    return null;
                 }
+                if ($date instanceof \DateTime) {
+                    return $date->format('Y-m-d');
+                }
+                try {
+                    $dateObj = new \DateTime($date);
+                    return $dateObj->format('Y-m-d');
+                } catch (\Exception $e) {
+                    error_log("Invalid date format: " . $date);
+                    return null;
+                }
+            };
+
+            // Helper function to handle email
+            $handleEmail = function($email) {
+                if (empty($email) || $email === '' || $email === null) {
+                    return null;
+                }
+                $email = trim(strtolower($email));
+                if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    return $email;
+                }
+                error_log("Invalid email format: " . $email);
+                return null;
+            };
+
+            // First, check if employee_contact record exists
+            $checkContactQuery = "
+                SELECT contact_id 
+                FROM core.employee_contact 
+                WHERE employee_id = :employee_id
+            ";
+            
+            $checkContactStmt = $this->db->executeQuery($checkContactQuery, [':employee_id' => $employeeId]);
+            $existingContact = $this->db->fetchRow($checkContactStmt);
+
+            if ($existingContact) {
+                // Update existing contact
+                $query = "
+                    UPDATE core.employee_contact 
+                    SET 
+                        email = :email,
+                        phone = :phone,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE employee_id = :employee_id
+                ";
+            } else {
+                // Insert new contact
+                $query = "
+                    INSERT INTO core.employee_contact 
+                    (employee_id, email, phone, created_at, updated_at)
+                    VALUES 
+                    (:employee_id, :email, :phone, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                ";
             }
             
-            // Handle address data
-            if (!empty($addressData)) {
-                // Check if employee already has an address
-                $checkQuery = "SELECT ea.employee_address_id, ea.addr_id 
-                              FROM employee_address ea 
-                              WHERE ea.employee_id = :employee_id 
-                              AND ea.deleted_at IS NULL";
-                $checkStmt = $this->db->executeQuery($checkQuery, [':employee_id' => $employeeId]);
-                $existingAddress = $this->db->fetchRow($checkStmt);
-                
-                if ($existingAddress) {
-                    // Update existing address
-                    $addrId = $existingAddress['addr_id'];
-                    
-                    $addrUpdateFields = [];
-                    $addrParams = [];
-                    
-                    foreach ($addressData as $field => $value) {
-                        $addrUpdateFields[] = "$field = :$field";
-                        $addrParams[":$field"] = $value;
-                    }
-                    
-                    if (!empty($addrUpdateFields)) {
-                        $addrUpdateQuery = "UPDATE address SET " . implode(", ", $addrUpdateFields) . ", updated_at = NOW() WHERE addr_id = :addr_id";
-                        $addrParams[':addr_id'] = $addrId;
-                        
-                        $this->db->executeQuery($addrUpdateQuery, $addrParams);
-                    }
-                } else {
-                    // Insert new address and link to employee
-                    
-                    // First create address
-                    $addrFields = array_keys($addressData);
-                    $addrPlaceholders = array_map(function($field) {
-                        return ":$field";
-                    }, $addrFields);
-                    
-                    $addrInsertQuery = "INSERT INTO address (" . implode(", ", $addrFields) . ") 
-                                       VALUES (" . implode(", ", $addrPlaceholders) . ") RETURNING addr_id";
-                    
-                    $addrParams = [];
-                    foreach ($addressData as $field => $value) {
-                        $addrParams[":$field"] = $value;
-                    }
-                    
-                    $addrStmt = $this->db->executeQuery($addrInsertQuery, $addrParams);
-                    $addrId = $addrStmt->fetchColumn();
-                    
-                    // Then link to employee
-                    $linkQuery = "INSERT INTO employee_address (employee_id, addr_id) VALUES (:employee_id, :addr_id)";
-                    $this->db->executeQuery($linkQuery, [
+            $params = [
+                ':employee_id' => $employeeId,
+                ':email' => $handleEmail($employeeData['email'] ?? null),
+                ':phone' => $employeeData['phone'] ?? null
+            ];
+            
+            $this->db->executeQuery($query, $params);
+
+            // Update core employee data
+            $query = "
+                UPDATE core.employees 
+                SET 
+                    first_name = :first_name,
+                    last_name = :last_name,
+                    employee_number = :employee_number,
+                    clock_number = :clock_number,
+                    is_sales = :is_sales
+                WHERE employee_id = :employee_id
+            ";
+            
+            $params = [
+                ':employee_id' => $employeeId,
+                ':first_name' => $employeeData['first_name'],
+                ':last_name' => $employeeData['last_name'],
+                ':employee_number' => $employeeData['employee_number'],
+                ':clock_number' => $employeeData['clock_number'] ?? null,
+                ':is_sales' => $toPostgresBoolean($employeeData['is_sales'] ?? false)
+            ];
+            
+            $this->db->executeQuery($query, $params);
+
+            // Update or insert emergency contact
+            $checkEmergencyQuery = "
+                SELECT emergency_contact_id 
+                FROM core.employee_emergency_contact 
+                WHERE employee_id = :employee_id
+            ";
+            
+            $checkEmergencyStmt = $this->db->executeQuery($checkEmergencyQuery, [':employee_id' => $employeeId]);
+            $existingEmergency = $this->db->fetchRow($checkEmergencyStmt);
+
+            if ($existingEmergency) {
+                $query = "
+                    UPDATE core.employee_emergency_contact 
+                    SET 
+                        contact_name = :contact_name,
+                        contact_phone = :contact_phone,
+                        contact_relation = :contact_relation,
+                        contact_email = :contact_email,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE employee_id = :employee_id
+                ";
+            } else {
+                $query = "
+                    INSERT INTO core.employee_emergency_contact 
+                    (employee_id, contact_name, contact_phone, contact_relation, contact_email, created_at, updated_at)
+                    VALUES 
+                    (:employee_id, :contact_name, :contact_phone, :contact_relation, :contact_email, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                ";
+            }
+            
+            $params = [
+                ':employee_id' => $employeeId,
+                ':contact_name' => $employeeData['emergency_contact_name'] ?? null,
+                ':contact_phone' => $employeeData['emergency_contact_phone'] ?? null,
+                ':contact_relation' => $employeeData['emergency_contact_relation'] ?? null,
+                ':contact_email' => $handleEmail($employeeData['emergency_contact_email'] ?? null)
+            ];
+            
+            $this->db->executeQuery($query, $params);
+
+            // Update or insert personal information
+            $checkPersonalQuery = "
+                SELECT personal_id 
+                FROM core.employee_personal 
+                WHERE employee_id = :employee_id
+            ";
+            
+            $checkPersonalStmt = $this->db->executeQuery($checkPersonalQuery, [':employee_id' => $employeeId]);
+            $existingPersonal = $this->db->fetchRow($checkPersonalStmt);
+
+            if ($existingPersonal) {
+                $query = "
+                    UPDATE core.employee_personal 
+                    SET 
+                        title = :title,
+                        id_number = :id_number,
+                        date_of_birth = :date_of_birth,
+                        gender = :gender,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE employee_id = :employee_id
+                ";
+            } else {
+                $query = "
+                    INSERT INTO core.employee_personal 
+                    (employee_id, title, id_number, date_of_birth, gender, created_at, updated_at)
+                    VALUES 
+                    (:employee_id, :title, :id_number, :date_of_birth, :gender, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                ";
+            }
+            
+            $params = [
+                ':employee_id' => $employeeId,
+                ':title' => $employeeData['title'] ?? null,
+                ':id_number' => $employeeData['id_number'] ?? null,
+                ':date_of_birth' => $handleDate($employeeData['date_of_birth'] ?? null),
+                ':gender' => $employeeData['gender'] ?? 'male'
+            ];
+            
+            $this->db->executeQuery($query, $params);
+
+            // Update or insert employment information
+            $checkEmploymentQuery = "
+                SELECT employment_id 
+                FROM core.employee_employment 
+                WHERE employee_id = :employee_id
+            ";
+            
+            $checkEmploymentStmt = $this->db->executeQuery($checkEmploymentQuery, [':employee_id' => $employeeId]);
+            $existingEmployment = $this->db->fetchRow($checkEmploymentStmt);
+
+            // Get IDs for organizational structure
+            $getPositionId = "
+                SELECT position_id FROM core.positions WHERE position_name = :position_name
+            ";
+            $positionStmt = $this->db->executeQuery($getPositionId, [':position_name' => $employeeData['position_name'] ?? '']);
+            $positionId = $this->db->fetchRow($positionStmt)['position_id'] ?? null;
+
+            $getDivisionId = "
+                SELECT division_id FROM core.divisions WHERE division_name = :division_name
+            ";
+            $divisionStmt = $this->db->executeQuery($getDivisionId, [':division_name' => $employeeData['division_name'] ?? '']);
+            $divisionId = $this->db->fetchRow($divisionStmt)['division_id'] ?? null;
+
+            $getDepartmentId = "
+                SELECT department_id FROM core.departments WHERE department_name = :department_name
+            ";
+            $departmentStmt = $this->db->executeQuery($getDepartmentId, [':department_name' => $employeeData['department_name'] ?? '']);
+            $departmentId = $this->db->fetchRow($departmentStmt)['department_id'] ?? null;
+
+            $getGroupId = "
+                SELECT group_id FROM core.groups WHERE group_name = :group_name
+            ";
+            $groupStmt = $this->db->executeQuery($getGroupId, [':group_name' => $employeeData['group_name'] ?? '']);
+            $groupId = $this->db->fetchRow($groupStmt)['group_id'] ?? null;
+
+            $getCostCenterId = "
+                SELECT cost_center_id FROM core.cost_centers WHERE cost_center_name = :cost_center_name
+            ";
+            $costCenterStmt = $this->db->executeQuery($getCostCenterId, [':cost_center_name' => $employeeData['cost_center_name'] ?? '']);
+            $costCenterId = $this->db->fetchRow($costCenterStmt)['cost_center_id'] ?? null;
+
+            $getSiteId = "
+                SELECT site_id FROM core.sites WHERE site_name = :site_name
+            ";
+            $siteStmt = $this->db->executeQuery($getSiteId, [':site_name' => $employeeData['site_name'] ?? '']);
+            $siteId = $this->db->fetchRow($siteStmt)['site_id'] ?? null;
+
+            $getTeamId = "
+                SELECT team_id FROM core.teams WHERE team_name = :team_name
+            ";
+            $teamStmt = $this->db->executeQuery($getTeamId, [':team_name' => $employeeData['team_name'] ?? '']);
+            $teamId = $this->db->fetchRow($teamStmt)['team_id'] ?? null;
+
+            $getManagerId = "
+                SELECT employee_id FROM core.employees 
+                WHERE first_name = :manager_first_name 
+                AND last_name = :manager_last_name
+            ";
+            $managerStmt = $this->db->executeQuery($getManagerId, [
+                ':manager_first_name' => $employeeData['manager_first_name'] ?? '',
+                ':manager_last_name' => $employeeData['manager_last_name'] ?? ''
+            ]);
+            $managerId = $this->db->fetchRow($managerStmt)['employee_id'] ?? null;
+
+            // Get IDs for employment types
+            $getEmploymentTypeId = "
+                SELECT type_id FROM core.employment_types WHERE type_name = :type_name
+            ";
+            $employmentTypeStmt = $this->db->executeQuery($getEmploymentTypeId, [':type_name' => $employeeData['employment_type'] ?? '']);
+            $employmentTypeId = $this->db->fetchRow($employmentTypeStmt)['type_id'] ?? null;
+
+            $getContractTypeId = "
+                SELECT type_id FROM core.contract_types WHERE type_name = :type_name
+            ";
+            $contractTypeStmt = $this->db->executeQuery($getContractTypeId, [':type_name' => $employeeData['contract_type'] ?? '']);
+            $contractTypeId = $this->db->fetchRow($contractTypeStmt)['type_id'] ?? null;
+
+            $getPayPeriodId = "
+                SELECT period_id FROM core.pay_periods WHERE period_name = :period_name
+            ";
+            $payPeriodStmt = $this->db->executeQuery($getPayPeriodId, [':period_name' => $employeeData['pay_period'] ?? '']);
+            $payPeriodId = $this->db->fetchRow($payPeriodStmt)['period_id'] ?? null;
+
+            $getAccessLevelId = "
+                SELECT level_id FROM core.access_levels WHERE level_name = :level_name
+            ";
+            $accessLevelStmt = $this->db->executeQuery($getAccessLevelId, [':level_name' => $employeeData['access_level'] ?? '']);
+            $accessLevelId = $this->db->fetchRow($accessLevelStmt)['level_id'] ?? null;
+
+            $getTimeCategoryId = "
+                SELECT category_id FROM core.time_categories WHERE category_name = :category_name
+            ";
+            $timeCategoryStmt = $this->db->executeQuery($getTimeCategoryId, [':category_name' => $employeeData['time_category'] ?? '']);
+            $timeCategoryId = $this->db->fetchRow($timeCategoryStmt)['category_id'] ?? null;
+
+            $getShiftTypeId = "
+                SELECT type_id FROM core.shift_types WHERE type_name = :type_name
+            ";
+            $shiftTypeStmt = $this->db->executeQuery($getShiftTypeId, [':type_name' => $employeeData['shift_type'] ?? '']);
+            $shiftTypeId = $this->db->fetchRow($shiftTypeStmt)['type_id'] ?? null;
+
+            if ($existingEmployment) {
+                $query = "
+                    UPDATE core.employee_employment 
+                    SET 
+                        hire_date = :hire_date,
+                        termination_date = :termination_date,
+                        position_id = :position_id,
+                        division_id = :division_id,
+                        department_id = :department_id,
+                        group_id = :group_id,
+                        cost_center_id = :cost_center_id,
+                        site_id = :site_id,
+                        team_id = :team_id,
+                        manager_id = :manager_id,
+                        status = :status,
+                        employment_type_id = :employment_type_id,
+                        contract_type_id = :contract_type_id,
+                        pay_period_id = :pay_period_id,
+                        access_level_id = :access_level_id,
+                        time_category_id = :time_category_id,
+                        shift_type_id = :shift_type_id,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE employee_id = :employee_id
+                ";
+            } else {
+                $query = "
+                    INSERT INTO core.employee_employment 
+                    (employee_id, hire_date, termination_date, position_id, division_id, department_id, 
+                    group_id, cost_center_id, site_id, team_id, manager_id, status, employment_type_id, 
+                    contract_type_id, pay_period_id, access_level_id, time_category_id, shift_type_id, 
+                    created_at, updated_at)
+                    VALUES 
+                    (:employee_id, :hire_date, :termination_date, :position_id, :division_id, :department_id,
+                    :group_id, :cost_center_id, :site_id, :team_id, :manager_id, :status, :employment_type_id,
+                    :contract_type_id, :pay_period_id, :access_level_id, :time_category_id, :shift_type_id,
+                    CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                ";
+            }
+            
+            $params = [
+                ':employee_id' => $employeeId,
+                ':hire_date' => $handleDate($employeeData['hire_date'] ?? null),
+                ':termination_date' => $handleDate($employeeData['termination_date'] ?? null),
+                ':position_id' => $positionId,
+                ':division_id' => $divisionId,
+                ':department_id' => $departmentId,
+                ':group_id' => $groupId,
+                ':cost_center_id' => $costCenterId,
+                ':site_id' => $siteId,
+                ':team_id' => $teamId,
+                ':manager_id' => $managerId,
+                ':status' => $employeeData['status'] ?? 'active',
+                ':employment_type_id' => $employmentTypeId,
+                ':contract_type_id' => $contractTypeId,
+                ':pay_period_id' => $payPeriodId,
+                ':access_level_id' => $accessLevelId,
+                ':time_category_id' => $timeCategoryId,
+                ':shift_type_id' => $shiftTypeId
+            ];
+            
+            $this->db->executeQuery($query, $params);
+
+            // Update or insert roles
+            if (isset($employeeData['roles']) && is_array($employeeData['roles'])) {
+                // First, delete existing roles
+                $deleteRolesQuery = "
+                    DELETE FROM core.employee_roles 
+                    WHERE employee_id = :employee_id
+                ";
+                $this->db->executeQuery($deleteRolesQuery, [':employee_id' => $employeeId]);
+
+                // Then insert new roles
+                $insertRoleQuery = "
+                    INSERT INTO core.employee_roles 
+                    (employee_id, role_name, module, active, created_at, updated_at)
+                    VALUES 
+                    (:employee_id, :role_name, :module, :active, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                ";
+
+                foreach ($employeeData['roles'] as $role) {
+                    $roleParams = [
                         ':employee_id' => $employeeId,
-                        ':addr_id' => $addrId
-                    ]);
+                        ':role_name' => $role['role_name'],
+                        ':module' => $role['module'],
+                        ':active' => $toPostgresBoolean($role['active'] ?? true)
+                    ];
+                    $this->db->executeQuery($insertRoleQuery, $roleParams);
                 }
             }
-            
+
             $this->db->commit();
             
             return [
                 'success' => true,
                 'message' => 'Employee updated successfully'
             ];
-        } catch (\Exception $e) {
-            if (method_exists($this->db, 'rollback')) {
-                $this->db->rollback();
-            }
+        } catch (\PDOException $e) {
+            $this->db->rollBack();
+            $this->handleDatabaseError($e, 'updating employee', false);
             return [
                 'success' => false,
-                'message' => 'Error updating employee: ' . $e->getMessage()
+                'message' => 'Failed to update employee: ' . $e->getMessage()
             ];
         }
     }
@@ -671,78 +1080,126 @@ class EmployeeActionController extends BaseEmployeeController
      */
     private function flattenEmployeeData($employeeData) {
         $result = [];
-        $addressData = null;
+        $addressData = [];
+        $addrId = $employeeData['address']['id'] ?? null; // Capture addr_id if exists
         
-        // Process personal details
-        if (isset($employeeData['personalDetails'])) {
-            $personal = $employeeData['personalDetails'];
-            
-            // Only include non-empty fields
-            if (!empty($personal['email'])) {
-                $result['email'] = $personal['email'];
-            }
-            
-            if (!empty($personal['phone'])) {
-                $result['phone_number'] = $personal['phone'];
-            }
-            
-            // Extract address data to be inserted into address table
-            if (isset($personal['address']) && !empty($personal['address']['line1'])) {
-                $addressData = [
-                    'addr_line_1' => $personal['address']['line1'] ?? '',
-                    'addr_line_2' => $personal['address']['line2'] ?? '',
-                    'suburb' => $personal['address']['suburb'] ?? ($personal['address']['neighborhood'] ?? ''),
-                    'city' => $personal['address']['city'] ?? '',
-                    'province' => $personal['address']['state'] ?? '',
-                    'country' => $personal['address']['country'] ?? '',
-                    'postcode' => $personal['address']['postal'] ?? ''
-                ];
-            }
-            
-            // Date of birth if provided and not empty
-            if (isset($personal['dob']) && !empty($personal['dob'])) {
-                $result['date_of_birth'] = $personal['dob'];
-            }
-            
-            // Emergency contact details - process even if some fields are empty
-            if (isset($personal['emergencyContact'])) {
-                $result['emergency_contact_name'] = $personal['emergencyContact']['name'] ?? null;
-                $result['emergency_contact_phone'] = $personal['emergencyContact']['phone'] ?? null;
-                $result['emergency_contact_relation'] = $personal['emergencyContact']['relationship'] ?? null;
-                $result['emergency_contact_email'] = $personal['emergencyContact']['email'] ?? null;
+        // Direct mapping of employee fields from frontend data
+        $employeeFieldsMap = [
+            'employee_number', 'clock_number', 'first_name', 'last_name',
+            'date_of_birth', 'gender', 'email', 'phone_number', 'badge_number',
+            'department', 'position', 'division', 'group', 'cost_center',
+            'employment_type', 'work_week', 'status',
+            'hire_date', 'title', 'id_number', 'rate_type', 'rate',
+            'overtime', 'pay_period'
+        ];
+
+        foreach ($employeeFieldsMap as $field) {
+            if (isset($employeeData[$field])) {
+                $result[$field] = $employeeData[$field];
             }
         }
-        
-        // Process employment details
-        if (isset($employeeData['employmentDetails'])) {
-            $employment = $employeeData['employmentDetails'];
-            
-            // Only include non-empty fields
-            if (!empty($employment['jobTitle'])) {
-                $result['position'] = $employment['jobTitle'];
-            }
-            
-            if (!empty($employment['department'])) {
-                $result['department'] = $employment['department'];
-            }
-            
-            if (!empty($employment['hireDate'])) {
-                $result['hire_date'] = $employment['hireDate'];
-            }
-            
-            if (!empty($employment['status'])) {
-                $result['status'] = $employment['status'];
-            }
-            
-            if (!empty($employment['employmentType'])) {
-                $result['employment_type'] = $employment['employmentType'];
-            }
+
+        // Emergency Contact fields
+        if (isset($employeeData['emergency_contact'])) {
+            $emergencyContact = $employeeData['emergency_contact'];
+            $result['emergency_contact_name'] = $emergencyContact['name'] ?? null;
+            $result['emergency_contact_phone'] = $emergencyContact['phone'] ?? null;
+            $result['emergency_contact_relation'] = $emergencyContact['relation'] ?? null;
+            $result['emergency_contact_email'] = $emergencyContact['email'] ?? null;
         }
+
+        // Address fields
+        if (isset($employeeData['address'])) {
+            $address = $employeeData['address'];
+            $addressData['addr_line_1'] = $address['line1'] ?? null;
+            $addressData['addr_line_2'] = $address['line2'] ?? null;
+            $addressData['suburb'] = $address['suburb'] ?? null;
+            $addressData['city'] = $address['city'] ?? null;
+            $addressData['province'] = $address['province'] ?? null;
+            $addressData['country'] = $address['country'] ?? null;
+            $addressData['postcode'] = $address['postcode'] ?? null;
+        }
+
+        // Filter out empty strings and nulls for addressData to avoid updating with empty values
+        $addressData = array_filter($addressData, function($value) { return $value !== null && $value !== ''; });
         
-        // Return both employee data and address data
         return [
             'employee' => $result,
-            'address' => $addressData
+            'address' => $addressData,
+            'addr_id' => $addrId
         ];
+    }
+
+    public function createEmployee($data) {
+        try {
+            $this->db->beginTransaction();
+
+            // Log the incoming data
+            error_log("Creating employee with data: " . json_encode($data));
+
+            // Insert into employees table
+            $query = "
+                INSERT INTO core.employees (
+                    first_name,
+                    last_name,
+                    employee_number,
+                    is_sales
+                ) VALUES (
+                    :first_name,
+                    :last_name,
+                    :employee_number,
+                    :is_sales
+                ) RETURNING employee_id
+            ";
+
+            $params = [
+                ':first_name' => $data['first_name'],
+                ':last_name' => $data['last_name'],
+                ':employee_number' => $data['employee_number'],
+                ':is_sales' => $data['is_sales'] ?? false
+            ];
+
+            error_log("Executing employee insert with params: " . json_encode($params));
+            $stmt = $this->db->executeQuery($query, $params);
+            $employeeId = $this->db->fetchRow($stmt)['employee_id'];
+            error_log("Created employee with ID: " . $employeeId);
+
+            // Insert into employee_employment table
+            $query = "
+                INSERT INTO core.employee_employment (
+                    employee_id,
+                    status,
+                    hire_date
+                ) VALUES (
+                    :employee_id,
+                    'active',
+                    CURRENT_DATE
+                )
+            ";
+
+            $employmentParams = [':employee_id' => $employeeId];
+            error_log("Executing employment insert with params: " . json_encode($employmentParams));
+            $this->db->executeQuery($query, $employmentParams);
+            error_log("Created employment record for employee ID: " . $employeeId);
+
+            $this->db->commit();
+            error_log("Transaction committed successfully");
+            return ['success' => true, 'employee_id' => $employeeId];
+
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            error_log("Error creating employee: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return [
+                'success' => false, 
+                'message' => 'Failed to create employee: ' . $e->getMessage()
+            ];
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            error_log("Unexpected error creating employee: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return [
+                'success' => false, 
+                'message' => 'An unexpected error occurred: ' . $e->getMessage()
+            ];
+        }
     }
 } 

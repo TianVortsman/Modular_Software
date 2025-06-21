@@ -20,13 +20,13 @@ document.addEventListener('DOMContentLoaded', function () {
         ],
         "invoice-dashboard": [
             { href: "/public/views/dashboard.php", icon: "home", text: "Home" },
-            { href: "/public/modules/invoice/pages/invoices.php", icon: "description", text: "Invoices" },
-            { href: "/public/modules/invoice/pages/invoice-products.php", icon: "inventory_2", text: "Products" },
-            { href: "/public/modules/invoice/pages/invoice-clients.php", icon: "people", text: "Clients" },
-            { href: "/public/modules/invoice/pages/invoice-payments.php", icon: "payment", text: "Payments" },
-            { href: "/public/modules/invoice/pages/invoice-reports.php", icon: "bar_chart", text: "Reports" },
-            { href: "/public/modules/invoice/pages/invoice-setup.php", icon: "build", text: "Setup" },
-            { href: "/public/modules/invoice/pages/sales-reps.php", icon: "group", text: "Sales Reps" }
+            { href: "/modules/invoice/views/invoices.php", icon: "description", text: "Invoices" },
+            { href: "/modules/invoice/views/invoice-products.php", icon: "inventory_2", text: "Products" },
+            { href: "/modules/invoice/views/invoice-clients.php", icon: "people", text: "Clients" },
+            { href: "/modules/invoice/views/invoice-payments.php", icon: "payment", text: "Payments" },
+            { href: "/modules/invoice/views/invoice-reports.php", icon: "bar_chart", text: "Reports" },
+            { href: "/modules/invoice/views/invoice-setup.php", icon: "build", text: "Setup" },
+            { href: "/modules/invoice/views/sales-reps.php", icon: "group", text: "Sales Reps" }
         ],
         "settings": [
             { href: "/public/views/dashboard.php", icon: "home", text: "Home" },
@@ -45,12 +45,12 @@ document.addEventListener('DOMContentLoaded', function () {
             { href: "#access-control-settings", icon: "lock", text: "Access Control", onclick: "activateSection('access-control-settings')" }
         ],
         "invoice-clients": [
-            { href: "/public/modules/invoice/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
+            { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
             { href: "#", icon: "person_add", text: "Add Client", onclick: "openAddClientModal()" },
-            { href: "/public/modules/invoice/pages/invoice-payments.php", icon: "payment", text: "Payment Reminder" }
+            { href: "/modules/invoice/views/invoice-payments.php", icon: "payment", text: "Payment Reminder" }
         ],
         "invoice-products": [
-            { href: "/public/modules/invoice/invoice-dashboard.php", icon: "dashboard", text: "Dashboard"},
+            { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard"},
             { href: "#", icon: "category", text: "Products", tab: "products", class: "sidebar-button", onclick: "fetchProducts('products')" },
             { href: "#", icon: "build", text: "Parts", tab: "parts", class: "sidebar-button", onclick: "fetchProducts('parts')" },
             { href: "#", icon: "directions_car", text: "Vehicles", tab: "vehicles", class: "sidebar-button", onclick: "fetchProducts('vehicles')" },
@@ -58,14 +58,14 @@ document.addEventListener('DOMContentLoaded', function () {
             { href: "#", icon: "remove_circle_outline", text: "Services", tab: "services", class: "sidebar-button", onclick: "fetchProducts('services')" }
         ],
         "payments":[
-            { href: "/public/modules/invoice/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
+            { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
         ],
         "sales-reps":[
-            { href: "/public/modules/invoice/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
+            { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
             { href: "#", icon: "person_add", text: "Add Sales Rep", onclick: "openAddSalesRepModal()" }
         ],
         "invoice-reports":[
-            { href: "/public/modules/invoice/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
+            { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
             { href: "#sales-reports", icon: "bar_chart", text: "Sales Reports", onclick: "activateSection('sales-reports')" },
             { href: "#tax-reports", icon: "receipt", text: "Tax Reports", onclick: "activateSection('tax-reports')" },
             { href: "#income-reports", icon: "attach_money", text: "Income Reports", onclick: "activateSection('income-reports')" },
@@ -84,10 +84,10 @@ document.addEventListener('DOMContentLoaded', function () {
             { href: "/public/modules/accounting/pages/journal-entries.php", icon: "edit", text: "Journal Entries" }
         ],
         "invoices": [
-            { href: "/public/modules/invoice/invoice-dashboard.php", icon: "dashboard", text: "Dashboard", },
+            { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard", },
         ],
         "invoice-setup": [
-            { href: "/public/modules/invoice/invoice-dashboard.php", icon: "dashboard", text: "Dashboard", },
+            { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard", },
         ],
         "TandA": [
             { href: "/public/views/dashboard.php", icon: "home", text: "Home" },

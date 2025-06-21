@@ -5,6 +5,16 @@ Copy code
 ## Overview
 A modern PHP-based modular software system implementing PSR-4 standards, Docker support, and component-based architecture for managing customer data, user accounts, and business operations.
 
+// Initialize the storage system
+Storage::init();
+
+// Upload a file
+$path = "products/{$accountNumber}/{$filename}";
+$storedPath = Storage::upload($path, $_FILES['image']);
+
+// Get the public URL
+$publicUrl = Storage::getPublicUrl($storedPath);
+
 ## Table of Contents
 - [Core Features](#core-features)
 - [System Architecture](#system-architecture)
@@ -301,7 +311,7 @@ volumes:
 
 ### First Login
 Access the system at http://localhost:8080 and use the default admin credentials:
-- Username: `admin`
+- Username: `Tian`
 - Password: `ModularAdmin2025`
 - Change this password immediately after first login
 

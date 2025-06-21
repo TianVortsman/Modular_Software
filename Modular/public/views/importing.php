@@ -519,7 +519,7 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
 
                 showLoadingModal('Processing import...');
 
-                const response = await fetch('../php/process-import.php', {
+                const response = await fetch('/src/Core/Imports/process-import.php', {
                     method: 'POST',
                     body: formData
                 });

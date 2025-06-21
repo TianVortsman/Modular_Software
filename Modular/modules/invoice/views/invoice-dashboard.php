@@ -8,8 +8,8 @@ if (isset($_GET['account_number'])) {
     // Store the account number in the session
     $_SESSION['account_number'] = $account_number;
 
-    // Optionally, redirect to remove the query parameter from the URL
-    header("Location: dashboard.php");
+    // Redirect to remove the query parameter from the URL
+    header("Location: dashboard-TA.php");
     exit;
 }
 
@@ -18,15 +18,12 @@ if (isset($_SESSION['account_number'])) {
     $account_number = $_SESSION['account_number'];
 } else {
     // Redirect to login or show an error if no account number is found
-    header("Location: techlogin.php");
+    header("Location: ../../index.php");
     exit;
 }
 
 $userName = $_SESSION['user_name'] ?? ($_SESSION['tech_logged_in'] ? $_SESSION['tech_name'] : 'Guest');
 $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple_accounts'] : false;
-
-// Include the database connection
-include('../../php/db.php');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -34,19 +31,19 @@ include('../../php/db.php');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoicing & Billing Dashboard</title>
-    <link rel="stylesheet" href="../../css/reset.css">
-    <link rel="stylesheet" href="../../css/root.css">
-    <link rel="stylesheet" href="../../css/sidebar.css">
-    <link rel="stylesheet" href="css/invoice-dashboard.css">
+    <link rel="stylesheet" href="../../../public/assets/css/reset.css">
+    <link rel="stylesheet" href="../../../public/assets/css/root.css">
+    <link rel="stylesheet" href="../../../public/assets/css/sidebar.css">
+    <link rel="stylesheet" href="../css/invoice-dashboard.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="../../js/toggle-theme.js" type="module"></script>
-    <link rel="stylesheet" href="css/invoice-modal.css">
+    <script src="../../../public/assets/js/toggle-theme.js" type="module"></script>
+    <link rel="stylesheet" href="../css/invoice-modal.css">
 </head>
 <body id="invoice-dashboard">
     <div class="dashboard-container">
         <!-- Sidebar -->
-        <?php include('../../main/sidebar.php'); ?>
+        <?php include('../../../src/UI/sidebar.php'); ?>
         <!-- Main Content -->
         <div class="main-content" id="main-content">
             <div class="header">
@@ -218,11 +215,11 @@ include('../../php/db.php');
     <footer>
         <p>&copy; 2024 Modular Software. All rights reserved.</p>
     </footer>
-    <?php include('modals/invoice-modal.php'); ?>
-    <script src="js/invoice-modal.js"></script>
-    <script src="../../js/sidebar.js"></script>
-    <script src="js/invoice-charts.js" type="module"></script>
-    <script src="js/invoice-data.js"></script>
+    <?php include('../modals/invoice-modal.php'); ?>
+    <script src="../js/invoice-modal.js"></script>
+    <script src="../../../public/assets/js/sidebar.js"></script>
+    <script src="../js/invoice-charts.js" type="module"></script>
+    <script src="../js/invoice-data.js"></script>
     <script>var multipleAccounts = <?= json_encode($multiple_accounts); ?>; </script>
 </body>
 </html>

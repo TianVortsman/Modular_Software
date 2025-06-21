@@ -1,0 +1,50 @@
+-- Active: 1741884749776@@127.0.0.1@5432@ACC002
+-- Access Schema
+CREATE SCHEMA IF NOT EXISTS access;
+
+-- Base Tables (No Dependencies)
+CREATE TABLE IF NOT EXISTS access.devices ();
+ALTER TABLE access.devices ADD COLUMN IF NOT EXISTS device_id VARCHAR(255) PRIMARY KEY;
+ALTER TABLE access.devices ADD COLUMN IF NOT EXISTS device_name VARCHAR(100) NOT NULL;
+ALTER TABLE access.devices ADD COLUMN IF NOT EXISTS device_type VARCHAR(50) NOT NULL;
+ALTER TABLE access.devices ADD COLUMN IF NOT EXISTS device_status VARCHAR(50) DEFAULT 'active';
+ALTER TABLE access.devices ADD COLUMN IF NOT EXISTS device_model VARCHAR(100);
+ALTER TABLE access.devices ADD COLUMN IF NOT EXISTS device_serial VARCHAR(100);
+ALTER TABLE access.devices ADD COLUMN IF NOT EXISTS device_firmware VARCHAR(50);
+ALTER TABLE access.devices ADD COLUMN IF NOT EXISTS device_ip VARCHAR(15);
+ALTER TABLE access.devices ADD COLUMN IF NOT EXISTS device_mac VARCHAR(17);
+ALTER TABLE access.devices ADD COLUMN IF NOT EXISTS device_location VARCHAR(255);
+ALTER TABLE access.devices ADD COLUMN IF NOT EXISTS device_notes TEXT;
+ALTER TABLE access.devices ADD COLUMN IF NOT EXISTS last_updated TIMESTAMP;
+ALTER TABLE access.devices ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE access.devices ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE access.devices ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP;
+
+-- Dependent Tables
+CREATE TABLE IF NOT EXISTS access.door_config ();
+ALTER TABLE access.door_config ADD COLUMN IF NOT EXISTS door_id SERIAL PRIMARY KEY;
+ALTER TABLE access.door_config ADD COLUMN IF NOT EXISTS device_id VARCHAR(255) NOT NULL REFERENCES access.devices(device_id);
+ALTER TABLE access.door_config ADD COLUMN IF NOT EXISTS door_number INTEGER DEFAULT 1;
+ALTER TABLE access.door_config ADD COLUMN IF NOT EXISTS door_name VARCHAR(100);
+ALTER TABLE access.door_config ADD COLUMN IF NOT EXISTS unlock_duration INTEGER DEFAULT 5;
+ALTER TABLE access.door_config ADD COLUMN IF NOT EXISTS door_status VARCHAR(50) DEFAULT 'closed';
+ALTER TABLE access.door_config ADD COLUMN IF NOT EXISTS last_updated TIMESTAMP;
+
+CREATE TABLE IF NOT EXISTS access.device_actions ();
+ALTER TABLE access.device_actions ADD COLUMN IF NOT EXISTS id SERIAL PRIMARY KEY;
+ALTER TABLE access.device_actions ADD COLUMN IF NOT EXISTS device_id VARCHAR(255) NOT NULL REFERENCES access.devices(device_id);
+ALTER TABLE access.device_actions ADD COLUMN IF NOT EXISTS action_type VARCHAR(50) NOT NULL;
+ALTER TABLE access.device_actions ADD COLUMN IF NOT EXISTS status VARCHAR(50) NOT NULL;
+ALTER TABLE access.device_actions ADD COLUMN IF NOT EXISTS details JSONB;
+ALTER TABLE access.device_actions ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+CREATE TABLE IF NOT EXISTS access.access_events ();
+ALTER TABLE access.access_events ADD COLUMN IF NOT EXISTS id SERIAL PRIMARY KEY;
+ALTER TABLE access.access_events ADD COLUMN IF NOT EXISTS date_time TIMESTAMP NOT NULL;
+ALTER TABLE access.access_events ADD COLUMN IF NOT EXISTS device_id VARCHAR(50);
+ALTER TABLE access.access_events ADD COLUMN IF NOT EXISTS major_event_type INTEGER;
+ALTER TABLE access.access_events ADD COLUMN IF NOT EXISTS minor_event_type INTEGER;
+ALTER TABLE access.access_events ADD COLUMN IF NOT EXISTS raw_data JSONB;
+ALTER TABLE access.access_events ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+

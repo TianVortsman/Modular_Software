@@ -7,8 +7,11 @@ services:
       - clockserver  # Wait for clockserver to be available
     volumes:
       - ./modular:/var/www/html  # Mount your project files (ensure your public folder is inside your project)
+      - ./Uploads:/var/www/html/Uploads  # Mount uploads directory for local storage
     ports:
       - "8080:80"         # Access your app at http://localhost:8080
+    env_file:
+      - .env  # Load environment variables from .env file
     environment:
       # These can be used by your PHP app to connect to the DB
       DB_HOST: host.docker.internal
@@ -16,6 +19,10 @@ services:
       DB_PASSWORD: Modul@rdev@2024
       # Your app can choose which database to connect to (modular_software for the main DB
       # and a different name for each customer)
+    command: >
+      bash -c "mkdir -p /var/www/html/Uploads && 
+               chmod -R 777 /var/www/html/Uploads && 
+               apache2-foreground"
     networks:
       - modular_network
 

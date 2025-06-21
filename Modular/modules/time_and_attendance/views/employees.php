@@ -88,19 +88,32 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
       
       <!-- Main Tabs -->
       <div class="page-tabs-container">
-        <div class="page-tabs-header">
-          <button class="page-tab-button active" data-tab="active" role="tab" aria-selected="true" aria-controls="active-tab">
-            <i class="material-icons">check_circle</i> Active
-          </button>
-          <button class="page-tab-button" data-tab="terminated" role="tab" aria-selected="false" aria-controls="terminated-tab">
-            <i class="material-icons">cancel</i> Terminated
-          </button>
-          <button class="page-tab-button" data-tab="incomplete" role="tab" aria-selected="false" aria-controls="incomplete-tab">
-            <i class="material-icons">error_outline</i> Incomplete
-          </button>
-          <button class="page-tab-button" data-tab="all" role="tab" aria-selected="false" aria-controls="all-tab">
-            <i class="material-icons">group</i> All Employees
-          </button>
+        <div class="page-tabs-header-wrapper">
+          <div class="page-tabs-header">
+            <button class="page-tab-button active" data-tab="active" role="tab" aria-selected="true" aria-controls="active-tab">
+              <i class="material-icons">check_circle</i> Active
+            </button>
+            <button class="page-tab-button" data-tab="terminated" role="tab" aria-selected="false" aria-controls="terminated-tab">
+              <i class="material-icons">cancel</i> Terminated
+            </button>
+            <button class="page-tab-button" data-tab="incomplete" role="tab" aria-selected="false" aria-controls="incomplete-tab">
+              <i class="material-icons">error_outline</i> Incomplete
+            </button>
+            <button class="page-tab-button" data-tab="all" role="tab" aria-selected="false" aria-controls="all-tab">
+              <i class="material-icons">group</i> All Employees
+            </button>
+          </div>
+          <div class="show-entries-container">
+              Show
+              <select id="perPageSelect">
+                  <option value="20">20</option>
+                  <option value="40">40</option>
+                  <option value="60">60</option>
+                  <option value="80">80</option>
+                  <option value="100">100</option>
+              </select>
+              entries
+          </div>
         </div>
         
         <!-- Tab Content -->

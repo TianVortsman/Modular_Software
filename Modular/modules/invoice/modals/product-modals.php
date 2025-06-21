@@ -22,10 +22,10 @@
               <div class="upm-dropzone-text">
                 <span>Drag & drop image here</span>
                 <span>or click to upload</span>
+                <span class="upm-dropzone-hint">Supported formats: JPG, PNG, GIF, WEBP</span>
               </div>
             </div>
-            <input type="file" name="item_image" id="universalItemImage" accept="image/*" class="upm-image-input">
-            <input type="hidden" name="image_url" id="universalItemImageUrl">
+            <input type="file" name="item_image" id="universalItemImage" accept="image/jpeg,image/png,image/gif,image/webp" class="upm-image-input">
           </div>
           
           <!-- Essential Product Info -->
@@ -80,12 +80,16 @@
                 <input type="text" name="barcode" id="universalItemBarcode" placeholder="Barcode">
               </div>
               <div class="upm-field">
-                <label for="universalItemProduct_type">Category:</label>
-                <input type="text" name="product_type" id="universalItemProduct_type" placeholder="Product Category">
+                <label for="universalItemType">Type:</label>
+                <select name="type_id" id="universalItemType" required></select>
               </div>
               <div class="upm-field">
-                <label for="universalItemSubCategory">Sub-Category:</label>
-                <input type="text" name="sub_category" id="universalItemSubCategory" placeholder="Product Sub-Category">
+                <label for="universalItemCategory">Category:</label>
+                <select name="category_id" id="universalItemCategory" required></select>
+              </div>
+              <div class="upm-field">
+                <label for="universalItemSubcategory">Subcategory:</label>
+                <select name="subcategory_id" id="universalItemSubcategory"></select>
               </div>
             </div>
 

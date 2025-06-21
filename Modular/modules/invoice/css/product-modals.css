@@ -98,6 +98,9 @@
     cursor: pointer;
     transition: all 0.3s ease;
     margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .upm-image-dropzone:hover {
@@ -112,9 +115,9 @@
 .upm-image-preview {
     width: 100%;
     height: 100%;
-    object-fit: contain;
     z-index: 1;
     position: relative;
+    box-sizing: border-box;
 }
 
 .upm-dropzone-overlay {
@@ -132,6 +135,7 @@
     opacity: 0;
     transition: opacity 0.3s ease;
     z-index: 2;
+    pointer-events: none;
 }
 
 .upm-image-dropzone:hover .upm-dropzone-overlay {
@@ -154,13 +158,14 @@
 
 .upm-image-input {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    opacity: 0;
-    cursor: pointer;
-    z-index: 3;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 /* When an image is uploaded, show the overlay only on hover */
@@ -190,47 +195,53 @@
 /* Tab Navigation */
 .upm-tab-nav {
     display: flex;
+    gap: 0.5rem;
     border-bottom: 1px solid var(--border-color);
     margin-bottom: 1rem;
-    overflow-x: auto;
-    scrollbar-width: thin;
+    padding-bottom: 0.5rem;
 }
 
 .upm-tab-btn {
-    padding: 0.75rem 1rem;
-    background: none;
+    padding: 0.5rem 1rem;
     border: none;
-    border-bottom: 3px solid transparent;
+    background: none;
     color: var(--color-text-light);
     cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s ease;
-    white-space: nowrap;
+    border-radius: var(--radius-small);
+    transition: all 0.3s ease;
 }
 
 .upm-tab-btn:hover {
-    color: var(--color-primary);
+    background-color: var(--color-hover);
+    color: var(--color-text);
 }
 
 .upm-tab-btn.upm-active {
-    border-bottom-color: var(--color-primary);
-    color: var(--color-primary);
+    background-color: var(--color-primary);
+    color: var(--color-background);
 }
 
 /* Tab Content */
-.upm-tab-content {
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 0.5rem;
-}
-
 .upm-tab-pane {
     display: none;
-    padding: 0.5rem;
+    padding: 1rem;
+    animation: fadeIn 0.3s ease;
 }
 
 .upm-tab-pane.upm-active {
     display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Tab Section Layout */
+.upm-tab-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.5rem;
 }
 
 /* Fields */

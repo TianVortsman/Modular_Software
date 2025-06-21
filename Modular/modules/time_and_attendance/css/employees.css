@@ -355,24 +355,30 @@ body{
 
 /* Page Level Tabs */
 .page-tabs-container {
-  background: var(--color-secondary);
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: var(--color-secondary);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-small);
   margin-bottom: 30px;
-  overflow: hidden;
   position: relative;
-  min-height: 900px;
 }
 
 .page-tabs-header {
   display: flex;
-  background: rgba(0, 0, 0, 0.15);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border);
   overflow-x: auto;
-  scrollbar-width: none;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
   position: relative;
-  padding: 0 15px;
+  width: 100%;
 }
 
 .page-tabs-header::-webkit-scrollbar {
@@ -425,9 +431,66 @@ body{
   transform: scaleX(1);
 }
 
-.page-tab-content {
-  padding: 25px;
+/* Flex container for header and dropdown */
+.page-tabs-header-wrapper {
+  display: flex;
+  justify-content: space-between; /* Distribute space between tabs and dropdown */
+  align-items: center;
+  margin-bottom: 20px; /* Space between header/dropdown and tab content */
+}
+
+.show-entries-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   color: var(--color-text-light);
+  font-size: 0.9rem;
+  margin-left: auto; /* Pushes it to the right */
+  padding-right: 15px; /* Add some padding to the right */
+}
+
+.show-entries-container select {
+  width: 60px;
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+  cursor: pointer;
+  appearance: none; /* Remove default dropdown arrow */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%23a0a0a0" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); /* Custom arrow */
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 20px;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.show-entries-container select option {
+  background-color: var(--color-background);
+  color: var(--color-text-light);
+  padding: 10px;
+}
+
+.show-entries-container select option:checked {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.show-entries-container select:hover {
+  border-color: var(--color-primary);
+}
+
+.show-entries-container select:focus {
+  outline: none;
+  border-color: var(--color-primary-dark);
+  box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
+}
+
+.page-tab-content {
+  padding-top: 0; /* Remove top padding as the header moved up */
 }
 
 .page-tab-pane {
@@ -692,6 +755,19 @@ body{
   .pagination {
     flex-direction: column;
     gap: 16px;
+    align-items: flex-start;
+  }
+
+  .show-entries-container {
+    margin-left: 0;
+    padding-right: 0;
+    justify-content: center;
+    width: 100%;
+    margin-top: 15px;
+  }
+
+  .page-tabs-header-wrapper {
+    flex-direction: column;
     align-items: flex-start;
   }
 }

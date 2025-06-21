@@ -1,0 +1,31 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Do not include root/global styling in component CSS files. Styles go in a dedicated root file.
+
+Use unique and explicit class names: To avoid CSS conflicts between modules.
+
+Separate add/edit modal logic: Different functions for add vs edit (like you wanted for image upload).
+
+Use data attributes on modals to track mode: Example: data-mode="add" or "edit" to dynamically switch behavior.
+
+Always reset modal forms on open/close: To prevent stale data.
+
+Keep API endpoint URLs consistent and parameterized: Use /api/products.php?action=add or edit accordingly.
+
+Use async/await or Promises consistently for API calls.
+
+Centralize repeated logic: Like image upload handled through a single method but parameterized for mode.
+
+Handle errors gracefully: Show user-friendly alerts and log for debugging.
+
+Always validate user input and file types before sending.
+
+Keep modal tabs navigation controlled via JS, with clear active states.
+
+
+
+
+

@@ -7,29 +7,29 @@
     /* Fonts */
     --font-primary: 'Roboto', sans-serif;   /* Primary font */
     --font-secondary: 'Verdana', sans-serif; /* Secondary font */
-    --font-size-base: 16px;                /* Base font size */
-    --font-size-small: 14px;               /* Small text size */
-    --font-size-large: 18px;               /* Large text size */
-    --line-height: 1.5;                    /* Line height */
+    --font-size-base: 14px;                /* Base font size - reduced from 16px */
+    --font-size-small: 12px;               /* Small text size - reduced from 14px */
+    --font-size-large: 16px;               /* Large text size - reduced from 18px */
+    --line-height: 1.4;                    /* Line height - reduced from 1.5 */
 
     /* Spacing */
-    --spacing-small: 0.5rem;               /* Small spacing */
-    --spacing-medium: 1rem;                /* Medium spacing */
-    --spacing-large: 2rem;                 /* Large spacing */
+    --spacing-small: 0.375rem;             /* Small spacing - reduced from 0.5rem */
+    --spacing-medium: 0.75rem;             /* Medium spacing - reduced from 1rem */
+    --spacing-large: 1.5rem;               /* Large spacing - reduced from 2rem */
 
     /* Border Radius */
-    --radius-small: 4px;                   /* Small rounded corners */
-    --radius-medium: 8px;                  /* Medium rounded corners */
-    --radius-large: 16px;                  /* Large rounded corners */
+    --radius-small: 3px;                   /* Small rounded corners - reduced from 4px */
+    --radius-medium: 6px;                  /* Medium rounded corners - reduced from 8px */
+    --radius-large: 12px;                  /* Large rounded corners - reduced from 16px */
 
     /* Transitions */
-    --transition-speed: 0.5s;              /* Transition speed for hover effects */
+    --transition-speed: 0.3s;              /* Transition speed - reduced from 0.5s */
 
     /* Layout */
     --max-width: 1200px;                   /* Max width for content */
-    --sidebar-width: 230px;                /* Sidebar width */
-    --header-height: 60px;                 /* Header height */
-    --footer-height: 50px;                 /* Footer height */
+    --sidebar-width: 200px;                /* Sidebar width - reduced from 230px */
+    --header-height: 50px;                 /* Header height - reduced from 60px */
+    --footer-height: 40px;                 /* Footer height - reduced from 50px */
 
     /* Z-Index */
     --z-index-header: 1000;                /* Header z-index */
@@ -37,8 +37,8 @@
     --z-index-tooltip: 3000;               /* Tooltip z-index */
 
     /* Modules */
-    --module-card-padding: 1rem;           /* Padding for module cards */
-    --module-card-border-radius: 10px;     /* Border radius for module cards */
+    --module-card-padding: 0.75rem;         /* Padding for module cards - reduced from 1rem */
+    --module-card-border-radius: 8px;       /* Border radius for module cards - reduced from 10px */
 
 
     input:-webkit-autofill,
@@ -87,6 +87,8 @@
     --shadow-light:rgba(0, 0, 0, 0.2); /* Light shadow */
     --shadow-medium:rgba(0, 0, 0, 0.3); /* Medium shadow */
     --shadow-dark: rgba(0, 0, 0, 0.5);  /* Dark shadow */
+    --input-bg: #2C2C2E; /* Consistent dark background for inputs in light mode */
+    --input-label-color: #f0f0f0; /* Light text for labels on dark inputs */
 }
 
 
@@ -173,6 +175,7 @@
     --modal-padding: 20px;          /* Padding remains the same */
     --modal-shadow: rgba(0, 0, 0, 0.7); /* Deeper shadow for dark mode */  
     --fieldset-border: #444444;     /* Darker border for fieldsets */
+    --input-label-color: #ffffff; /* White text for labels on dark inputs */
 }
 
 

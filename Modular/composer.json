@@ -10,7 +10,8 @@
             "App\\Controllers\\": "src/Controllers/",
             "App\\Core\\": "src/Core/",
             "App\\Services\\": "src/Services/",
-            "App\\Config\\": "src/Config/"
+            "App\\Config\\": "src/Config/",
+            "Modules\\": "modules/"
         }
     }
   }

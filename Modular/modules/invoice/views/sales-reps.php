@@ -8,8 +8,8 @@ if (isset($_GET['account_number'])) {
     // Store the account number in the session
     $_SESSION['account_number'] = $account_number;
 
-    // Optionally, redirect to remove the query parameter from the URL
-    header("Location: dashboard.php");
+    // Redirect to remove the query parameter from the URL
+    header("Location: dashboard-TA.php");
     exit;
 }
 
@@ -18,41 +18,38 @@ if (isset($_SESSION['account_number'])) {
     $account_number = $_SESSION['account_number'];
 } else {
     // Redirect to login or show an error if no account number is found
-    header("Location: techlogin.php");
+    header("Location: ../../index.php");
     exit;
 }
 
 $userName = $_SESSION['user_name'] ?? ($_SESSION['tech_logged_in'] ? $_SESSION['tech_name'] : 'Guest');
-
-// Include the database connection
-include('../../../php/db.php');
+$multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple_accounts'] : false;
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sales Representatives</title>
-    <link rel="stylesheet" href="../../../css/reset.css">
-    <link rel="stylesheet" href="../../../css/root.css">
-    <link rel="stylesheet" href="../../../css/sidebar.css">
+    <link rel="stylesheet" href="../../../public/assets/css/reset.css">
+    <link rel="stylesheet" href="../../../public/assets/css/root.css">
+    <link rel="stylesheet" href="../../../public/assets/css/sidebar.css">
     <link rel="stylesheet" href="../css/sales-reps.css">
     <link rel="stylesheet" href="../css/sales-reps-modal.css">
     <link rel="stylesheet" href="../css/add-sales-rep-modal.css">
+    <link rel="stylesheet" href="../css/invoice-modal.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="icon" href="../../path/to/favicon.ico" type="image/x-icon">
-    <script src="../../../js/toggle-theme.js" type="module"></script>
-    <script src="../../../js/sidebar.js"></script>
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- ApexCharts -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
+    <script src="../../../public/assets/js/toggle-theme.js" type="module"></script>
+    <script src="../../../public/assets/js/sidebar.js"></script>
+    <script src="../js/invoice-modal.js"></script>
+    <script src="../js/invoice-data.js"></script>
 </head>
 <body class="dashboard" id="sales-reps">
     <!-- Sidebar -->
-     <?php include('../../../main/sidebar.php'); ?> 
+     <?php include('../../../src/UI/sidebar.php'); ?> 
     <div class="sales-content">
         <header class="header">
             <div class="logo">📊</div>

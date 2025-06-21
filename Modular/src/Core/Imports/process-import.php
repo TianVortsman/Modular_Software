@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once 'db.php';
-require_once '../vendor/autoload.php';
+require_once '../Database/ClientDatabase.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once 'import_functions.php';
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -53,6 +53,11 @@ try {
     if (!in_array($file['type'], $allowedTypes)) {
         handleError('Invalid file type. Please upload an Excel file (.xlsx or .xls)', [], 400);
     }
+
+    // Get the database connection using ClientDatabase
+    $userName = $_SESSION['user_name'] ?? 'Guest';
+    $dbInstance = \App\Core\Database\ClientDatabase::getInstance($account_number, $userName);
+    $conn = $dbInstance->connect();
 
     // Load the Excel file
     try {

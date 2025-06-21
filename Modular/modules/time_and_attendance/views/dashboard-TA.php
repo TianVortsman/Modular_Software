@@ -42,8 +42,98 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
   <link rel="stylesheet" href="../css/modals.css">
   <script src="../../../public/assets/js/sidebar.js"></script>
   <script src="../../../public/assets/js/toggle-theme.js" type="module"></script>
+  <script>
+    // Custom Right-Click Menu Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const contextMenu = document.querySelector('.context-menu');
+        const mainContent = document.getElementById('main-content');
+        
+        // Hide context menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!contextMenu.contains(e.target)) {
+                contextMenu.classList.remove('active');
+            }
+        });
+
+        // Prevent default context menu
+        mainContent.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            
+            // Get click coordinates
+            const x = e.clientX;
+            const y = e.clientY;
+            
+            // Position the menu
+            contextMenu.style.left = `${x}px`;
+            contextMenu.style.top = `${y}px`;
+            
+            // Show the menu
+            contextMenu.classList.add('active');
+        });
+
+        // Handle menu item clicks
+        const menuItems = contextMenu.querySelectorAll('.context-menu-item:not(.disabled)');
+        menuItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                // Get the action type from the menu item
+                const action = this.textContent.trim().toLowerCase();
+                
+                // Handle different actions
+                switch(action) {
+                    case 'edit':
+                        // Handle edit action
+                        console.log('Edit clicked');
+                        break;
+                    case 'delete':
+                        // Handle delete action
+                        console.log('Delete clicked');
+                        break;
+                    // Add more cases as needed
+                }
+                
+                // Hide the menu after action
+                contextMenu.classList.remove('active');
+            });
+        });
+
+        // Handle submenu hover
+        const submenuItems = contextMenu.querySelectorAll('.context-menu-item.has-submenu');
+        submenuItems.forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                const submenu = this.querySelector('.submenu');
+                if (submenu) {
+                    // Position submenu
+                    const rect = this.getBoundingClientRect();
+                    submenu.style.top = '0';
+                    submenu.style.left = '100%';
+                }
+            });
+        });
+    });
+  </script>
 </head>
 <body id="TandA">
+<div class="context-menu">
+    <div class="context-menu-item">
+        <span class="material-icons">edit</span>
+        Edit
+    </div>
+    <div class="context-menu-item">
+        <span class="material-icons">delete</span>
+        Delete
+    </div>
+    <div class="context-menu-divider"></div>
+    <div class="context-menu-item has-submenu">
+        <span class="material-icons">more_vert</span>
+        More Options
+        <div class="submenu">
+            <div class="context-menu-item">Option 1</div>
+            <div class="context-menu-item">Option 2</div>
+        </div>
+    </div>
+</div>
   <div class="dashboard-container">
     <!-- Sidebar -->
     <?php include('../../../src/UI/sidebar.php'); ?>

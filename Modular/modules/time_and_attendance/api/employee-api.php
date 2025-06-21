@@ -10,14 +10,25 @@ header('Content-Type: application/json');
 // Use the correct absolute path based on Docker container configuration
 require_once '/var/www/html/vendor/autoload.php';
 
-// Manually include the controller files since they're not in the PSR-4 autoloader configuration
-require_once __DIR__ . '/../Controllers/EmployeeManagementController.php';
+// Log the current directory and file paths for debugging
+error_log("Current directory: " . __DIR__);
+error_log("Controller path: " . __DIR__ . '/../controllers/EmployeeManagementController.php');
 
-// If DatabaseException isn't found, create a simple compatibility class
-if (!class_exists('App\Core\Exception\DatabaseException')) {
-    class CompatibilityDatabaseException extends \Exception {}
-    class_alias('CompatibilityDatabaseException', 'App\Core\Exception\DatabaseException');
+// Manually include the controller files since they're not in the PSR-4 autoloader configuration
+if (!file_exists(__DIR__ . '/../controllers/EmployeeManagementController.php')) {
+    error_log("Controller file not found at: " . __DIR__ . '/../controllers/EmployeeManagementController.php');
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Server configuration error: Controller file not found'
+    ]);
+    exit;
 }
+
+require_once __DIR__ . '/../controllers/EmployeeManagementController.php';
+
+// Log loaded classes for debugging
+error_log("Loaded classes: " . print_r(get_declared_classes(), true));
 
 use Modules\TimeAndAttendance\Controllers\EmployeeListController;
 use Modules\TimeAndAttendance\Controllers\EmployeeDetailsController;
@@ -42,25 +53,36 @@ try {
     // Route to the appropriate controller based on action
     switch ($action) {
         case 'list':
-            // Get employees list with pagination
-            $controller = new EmployeeListController();
-            
-            // Extract pagination params
-            $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
-            $perPage = isset($_GET['per_page']) ? min(100, max(10, (int)$_GET['per_page'])) : 20;
-            
-            // Build filters
-            $filters = [];
-            if (isset($_GET['status'])) $filters['status'] = $_GET['status'];
-            if (isset($_GET['department_id'])) $filters['department_id'] = $_GET['department_id'];
-            if (isset($_GET['search'])) $filters['search'] = $_GET['search'];
-            
-            $result = $controller->getEmployees($filters, $page, $perPage);
-            echo json_encode([
-                'success' => true,
-                'data' => $result['employees'],
-                'pagination' => $result['pagination']
-            ]);
+            try {
+                // Get employees list with pagination
+                $controller = new EmployeeListController();
+                
+                // Extract pagination params
+                $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+                $perPage = isset($_GET['per_page']) ? min(100, max(10, (int)$_GET['per_page'])) : 20;
+                
+                // Build filters
+                $filters = [];
+                if (isset($_GET['status'])) $filters['status'] = $_GET['status'];
+                if (isset($_GET['department_id'])) $filters['department_id'] = $_GET['department_id'];
+                if (isset($_GET['search'])) $filters['search'] = $_GET['search'];
+                if (isset($_GET['employment_type'])) $filters['employment_type'] = $_GET['employment_type'];
+                
+                $result = $controller->getEmployees($filters, $page, $perPage);
+                echo json_encode([
+                    'success' => true,
+                    'data' => $result['employees'],
+                    'pagination' => $result['pagination'],
+                    'message' => $result['message'] ?? null
+                ]);
+            } catch (Exception $e) {
+                error_log("Employee list error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+                http_response_code(500);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Error loading employees: ' . $e->getMessage()
+                ]);
+            }
             break;
             
         case 'details':
@@ -131,39 +153,89 @@ try {
             break;
             
         case 'update':
-            // Handle update employee
-            if ($_SERVER['REQUEST_METHOD'] !== 'PUT' && $_SERVER['REQUEST_METHOD'] !== 'POST') {
-                http_response_code(405);
+            try {
+                // Handle update employee
+                if ($_SERVER['REQUEST_METHOD'] !== 'PUT' && $_SERVER['REQUEST_METHOD'] !== 'POST') {
+                    http_response_code(405);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Method not allowed. Use PUT for updating employees'
+                    ]);
+                    exit;
+                }
+                
+                if (!isset($_GET['id'])) {
+                    http_response_code(400);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Employee ID is required'
+                    ]);
+                    exit;
+                }
+                
+                $employeeId = (int)$_GET['id'];
+                error_log("Processing update for employee ID: " . $employeeId);
+                
+                // Get JSON input
+                $jsonInput = file_get_contents('php://input');
+                error_log("Raw input for employee update: " . $jsonInput);
+                
+                if (empty($jsonInput)) {
+                    http_response_code(400);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'No data provided for update'
+                    ]);
+                    exit;
+                }
+                
+                $employeeData = json_decode($jsonInput, true);
+                
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    http_response_code(400);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Invalid JSON data: ' . json_last_error_msg()
+                    ]);
+                    exit;
+                }
+                
+                error_log("Decoded employee data: " . print_r($employeeData, true));
+                
+                // Validate CSRF token (if implemented)
+                if (isset($employeeData['csrf_token'])) {
+                    unset($employeeData['csrf_token']);
+                }
+                
+                try {
+                    error_log("Creating EmployeeActionController instance");
+                    $controller = new EmployeeActionController();
+                    
+                    error_log("Calling updateEmployee with ID: " . $employeeId);
+                    $result = $controller->updateEmployee($employeeId, $employeeData);
+                    
+                    if (!$result['success']) {
+                        error_log("Update failed: " . $result['message']);
+                        http_response_code(500);
+                    }
+                    
+                    echo json_encode($result);
+                } catch (Exception $e) {
+                    error_log("Controller error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+                    http_response_code(500);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Error in controller: ' . $e->getMessage()
+                    ]);
+                }
+            } catch (Exception $e) {
+                error_log("Error updating employee: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+                http_response_code(500);
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Method not allowed. Use PUT for updating employees'
+                    'message' => 'Error updating employee: ' . $e->getMessage()
                 ]);
-                exit;
             }
-            
-            if (!isset($_GET['id'])) {
-                http_response_code(400);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Employee ID is required'
-                ]);
-                exit;
-            }
-            
-            $employeeId = (int)$_GET['id'];
-            
-            // Get JSON input
-            $jsonInput = file_get_contents('php://input');
-            $employeeData = json_decode($jsonInput, true);
-            
-            // Validate CSRF token (if implemented)
-            if (isset($employeeData['csrf_token'])) {
-                unset($employeeData['csrf_token']);
-            }
-            
-            $controller = new EmployeeActionController();
-            $result = $controller->updateEmployee($employeeId, $employeeData);
-            echo json_encode($result);
             break;
             
         case 'delete':

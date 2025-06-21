@@ -213,7 +213,11 @@
                     <div class="org-node-icon"><i class="material-icons">business</i></div>
                     <div class="org-node-content">
                       <span class="org-node-label">Company</span>
-                      <span class="org-node-value">Acme Corporation</span>
+                      <select id="employee-company" class="org-node-select">
+                        <option value="">Select Company</option>
+                        <option value="acme">Acme Corporation</option>
+                        <option value="globex">Globex Inc.</option>
+                      </select>
                     </div>
                   </div>
                   <div class="org-hierarchy-connector"></div>
@@ -237,6 +241,26 @@
                     </div>
                   </div>
                   <div class="org-hierarchy-connector"></div>
+                  <div class="org-hierarchy-node group">
+                    <div class="org-node-icon"><i class="material-icons">group_work</i></div>
+                    <div class="org-node-content">
+                      <span class="org-node-label">Group</span>
+                      <select id="employee-group" class="org-node-select">
+                        <option value="">Select Group</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="org-hierarchy-connector"></div>
+                  <div class="org-hierarchy-node cost-centre">
+                    <div class="org-node-icon"><i class="material-icons">account_balance_wallet</i></div>
+                    <div class="org-node-content">
+                      <span class="org-node-label">Cost Centre</span>
+                      <select id="employee-cost-centre" class="org-node-select">
+                        <option value="">Select Cost Centre</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="org-hierarchy-connector"></div>
                   <div class="org-hierarchy-node team">
                     <div class="org-node-icon"><i class="material-icons">people</i></div>
                     <div class="org-node-content">
@@ -246,36 +270,20 @@
                       </select>
                     </div>
                   </div>
-                </div>
-              </div>
-              
-              <div class="form-row">
-                <div class="form-column">
-                  <div class="form-card">
-                    <h4>Additional Classifications</h4>
-                    <div class="form-group">
-                      <label>Cost Centre:</label>
-                      <select id="employee-cost-centre">
-                        <option value="">Select Cost Centre</option>
-                      </select>
-                    </div>
-                    
-                    <div class="form-group">
-                      <label>Group:</label>
-                      <select id="employee-group">
-                        <option value="">Select Group</option>
-                      </select>
-                    </div>
-                    
-                    <div class="form-group">
-                      <label>Location:</label>
-                      <select id="employee-location">
+                  <div class="org-hierarchy-connector"></div>
+                  <div class="org-hierarchy-node location">
+                    <div class="org-node-icon"><i class="material-icons">location_on</i></div>
+                    <div class="org-node-content">
+                      <span class="org-node-label">Location</span>
+                      <select id="employee-location" class="org-node-select">
                         <option value="">Select Location</option>
                       </select>
                     </div>
                   </div>
                 </div>
-                
+              </div>
+              
+              <div class="form-row">
                 <div class="form-column">
                   <div class="form-card">
                     <h4>Management & Reporting</h4>
@@ -358,7 +366,7 @@
               <div class="form-row">
                 <div class="form-column">
                   <div class="form-group">
-                    <label>Work Pattern:</label>
+                    <label>Work Week:</label>
                     <select id="work-pattern">
                       <option value="standard">Standard Week (Mon-Fri)</option>
                       <option value="rotating">Rotating Shift</option>
@@ -369,7 +377,7 @@
                   </div>
 
                   <div class="form-group">
-                    <label>Roster Template:</label>
+                    <label>Monthly Template:</label>
                     <select id="roster-template">
                       <option value="">Select Roster Template</option>
                       <option value="day">Day Shift (8AM-4PM)</option>
@@ -380,31 +388,33 @@
                   </div>
 
                   <div class="form-group">
-                    <label>Rotation Pattern:</label>
-                    <select id="rotation-pattern">
-                      <option value="none">No Rotation</option>
-                      <option value="weekly">Weekly Rotation</option>
-                      <option value="biweekly">Bi-weekly Rotation</option>
-                      <option value="monthly">Monthly Rotation</option>
+                    <label>Pay Period:</label>
+                    <select id="employee-pay-period">
+                      <option value="weekly">Weekly</option>
+                      <option value="biweekly">Bi-Weekly</option>
+                      <option value="monthly">Monthly</option>
+                      <option value="custom">Custom</option>
                     </select>
                   </div>
                 </div>
 
                 <div class="form-column">
-                  <div class="form-group">
-                    <label>Standard Hours:</label>
-                    <input type="number" id="standard-hours" value="40" min="0" max="168" step="0.5">
-                  </div>
+                  
+                </div>
+              </div>
 
-                  <div class="form-group">
-                    <label>Break Duration (minutes):</label>
-                    <input type="number" id="break-duration" value="60" min="0" max="480" step="15">
-                  </div>
-
-                  <div class="form-group">
-                    <label>Grace Period (minutes):</label>
-                    <input type="number" id="grace-period" value="15" min="0" max="60" step="5">
-                  </div>
+              <div class="inline-inputs-container">
+                <div class="form-group small-input">
+                  <label>Standard Hours:</label>
+                  <input type="number" id="standard-hours" value="40" min="0" max="168" step="0.5">
+                </div>
+                <div class="form-group small-input">
+                  <label>Break Duration (min):</label>
+                  <input type="number" id="break-duration" value="60" min="0" max="480" step="15">
+                </div>
+                <div class="form-group small-input">
+                  <label>Grace Period (min):</label>
+                  <input type="number" id="grace-period" value="15" min="0" max="60" step="5">
                 </div>
               </div>
 
@@ -573,6 +583,14 @@
                       <input type="checkbox" id="gps-tracking">
                       <span class="slider round"></span>
                     </label>
+                  </div>
+                  <div class="form-group">
+                    <label>Mobile Device OS:</label>
+                    <input type="text" id="mobile-device-os" placeholder="e.g., iOS, Android">
+                  </div>
+                  <div class="form-group">
+                    <label>Device ID:</label>
+                    <input type="text" id="device_id" placeholder="Unique device identifier">
                   </div>
                   <div class="form-group toggle-group">
                     <label>Biometric Authentication:</label>
@@ -848,6 +866,10 @@
                         <option value="other">Other</option>
                       </select>
                     </div>
+                    <div class="form-group">
+                      <label>Last Day Worked:</label>
+                      <input type="date" id="last-day-worked">
+                    </div>
                   </div>
                   <div class="form-column">
                     <div class="form-group">
@@ -868,6 +890,10 @@
                 <div class="form-group">
                   <label>Additional Notes:</label>
                   <textarea id="termination-notes" placeholder="Enter any additional notes regarding termination"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Exit Interview Notes:</label>
+                  <textarea id="exit-interview-notes" placeholder="Enter any notes from the exit interview"></textarea>
                 </div>
                 <div class="form-actions">
                   <button id="process-termination" class="btn-danger">Process Termination</button>
@@ -1101,6 +1127,16 @@
                     </div>
                     
                     <div class="form-group">
+                      <label>Role:</label>
+                      <select id="role-select">
+                        <option value="">Select Role</option>
+                        <option value="admin">Administrator</option>
+                        <option value="manager">Manager</option>
+                        <option value="employee">Employee</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
                       <label>Time Restriction:</label>
                       <select id="time-restriction">
                         <option value="none">No Restrictions</option>
@@ -1124,6 +1160,19 @@
                       <label>Badge ID:</label>
                       <input type="text" id="badge-id">
                     </div>
+
+                    <div class="form-group">
+                      <label>Fingerprint ID:</label>
+                      <input type="text" id="fingerprint-id-input" placeholder="Enter Fingerprint ID">
+                    </div>
+                    <div class="form-group">
+                      <label>RFID ID:</label>
+                      <input type="text" id="rfid-id-input" placeholder="Enter RFID ID">
+                    </div>
+                    <div class="form-group">
+                      <label>Facial Recognition ID:</label>
+                      <input type="text" id="facial-recognition-id-input" placeholder="Enter Facial Recognition ID">
+                    </div>
                     
                     <div class="form-group toggle-group">
                       <label>Biometric Access:</label>
@@ -1146,6 +1195,20 @@
               
               <div class="form-card">
                 <h4>Zone Access</h4>
+                <div class="form-group">
+                  <label>Access Zones:</label>
+                  <select id="access-zones-select" multiple>
+                    <option value="">Select Access Zones</option>
+                    <option value="zone-1">Main Entrance</option>
+                    <option value="zone-2">Office Area - General</option>
+                    <option value="zone-3">Break Room</option>
+                    <option value="zone-4">Server Room</option>
+                    <option value="zone-5">Executive Suite</option>
+                    <option value="zone-6">R&D Lab</option>
+                    <option value="zone-7">Warehouse</option>
+                    <option value="zone-8">Parking Garage</option>
+                  </select>
+                </div>
                 <div class="zone-selection">
                   <div class="zone-list">
                     <h5>Available Zones</h5>

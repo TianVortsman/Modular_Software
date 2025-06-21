@@ -2033,3 +2033,116 @@ body {
     opacity: 0.3;
 }
 */ 
+
+/* Period Info Card */
+.period-info-card {
+    background-color: rgba(0, 0, 0, 0.02);
+    border-radius: var(--border-radius);
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.period-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.period-info-header h3 {
+    font-size: 1.25rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.period-info-header .material-icons {
+    color: var(--color-primary);
+}
+
+.period-dates {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+}
+
+/* Clockings Display */
+.clockings-row {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.clockings-container {
+    padding: 1rem;
+}
+
+.clockings-container h4 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.clockings-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.clockings-table th,
+.clockings-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+}
+
+.clockings-table th {
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Toggle button for clockings */
+.toggle-clockings {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.toggle-clockings:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.toggle-clockings .material-icons {
+    font-size: 1.25rem;
+    color: var(--color-text-secondary);
+}
+
+/* Highlight weekend days */
+tr.day-row[data-day="Saturday"],
+tr.day-row[data-day="Sunday"] {
+    background-color: rgba(var(--color-primary-rgb), 0.05);
+}
+
+/* Responsive styles for the clockings display */
+@media (max-width: 768px) {
+    .clockings-container {
+        padding: 0.5rem;
+    }
+    
+    .clockings-table {
+        font-size: 0.8rem;
+    }
+    
+    .clockings-table th,
+    .clockings-table td {
+        padding: 0.375rem;
+    }
+} 

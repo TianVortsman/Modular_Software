@@ -1,76 +1,47 @@
 <?php
 session_start();
-require '../../../php/db.php'; // Ensure this file initializes $conn
-require_once '../../../vendor/autoload.php';
-require_once '../../../php/import_functions.php'; // Add the new import functions file
 
-use PhpOffice\PhpSpreadsheet\IOFactory;
-
-// Ensure PDO throws exceptions (if not already set in db.php)
-$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-// Initialize global messages arrays
-$errors = [];
-$successMessages = [];
-
-// Verify database connection
-try {
-    $conn->query('SELECT 1');
-} catch (PDOException $e) {
-    die("Database connection failed: " . $e->getMessage());
-}
-
-// Check if an Excel file was uploaded
-if (isset($_FILES['excel_file']) && is_uploaded_file($_FILES['excel_file']['tmp_name'])) {
-    $file = $_FILES['excel_file']['tmp_name'];
-    try {
-        $spreadsheet = IOFactory::load($file);
-        
-        // Import functions will be called from the centralized location
-        $errors = array_merge($errors, importProducts($spreadsheet, $conn));
-        $errors = array_merge($errors, importCompanies($spreadsheet, $conn));
-        $errors = array_merge($errors, importCustomers($spreadsheet, $conn));
-        $errors = array_merge($errors, importVehicles($spreadsheet, $conn));
-    } catch (Exception $e) {
-        $errors[] = "Error loading Excel file: " . $e->getMessage();
-    }
-} else {
-    $errors[] = "No Excel file uploaded.";
-}
-
-// Session management for account number and user
+// Check if account number is in the query parameters
 if (isset($_GET['account_number'])) {
-    // Sanitize the input
-    $account_number = filter_input(INPUT_GET, 'account_number', FILTER_SANITIZE_STRING);
+    $account_number = $_GET['account_number'];
+
+    // Store the account number in the session
     $_SESSION['account_number'] = $account_number;
+
     // Redirect to remove the query parameter from the URL
-    header("Location: invoice-setup.php");
+    header("Location: dashboard-TA.php");
     exit;
 }
 
+// If the account number is already in the session, use it
 if (isset($_SESSION['account_number'])) {
     $account_number = $_SESSION['account_number'];
 } else {
-    // Redirect to login if no account number is found
-    header("Location: index.php");
+    // Redirect to login or show an error if no account number is found
+    header("Location: ../../index.php");
     exit;
 }
 
-$userName = $_SESSION['user_name'] ?? (($_SESSION['tech_logged_in'] ?? false) ? $_SESSION['tech_name'] : 'Guest');
+$userName = $_SESSION['user_name'] ?? ($_SESSION['tech_logged_in'] ? $_SESSION['tech_name'] : 'Guest');
+$multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple_accounts'] : false;
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Import Products &amp; Display</title>
-    <link rel="stylesheet" href="../../../css/root.css">
-    <link rel="stylesheet" href="../../../css/sidebar.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Setup</title>
+    <link rel="stylesheet" href="../../../public/assets/css/reset.css">
+    <link rel="stylesheet" href="../../../public/assets/css/root.css">
+    <link rel="stylesheet" href="../../../public/assets/css/sidebar.css">
     <link rel="stylesheet" href="../css/invoice-setup.css">
+    <link rel="stylesheet" href="../css/invoice-modal.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="../../../js/toggle-theme.js"></script>
-    <script src="../../../js/sidebar.js"></script>
-    <!-- Include the improved JavaScript file or embed the script below -->
-    <script src="path/to/your/improved.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../../../public/assets/js/toggle-theme.js" type="module"></script>
+    <script src="../../../public/assets/js/sidebar.js"></script>
+    <script src="../js/invoice-modal.js"></script>
+    <script src="../js/invoice-data.js"></script>
     <style>
         /* Optional inline CSS for error display and grids */
         .js-error-log { color: red; margin-top: 20px; }
@@ -79,7 +50,7 @@ $userName = $_SESSION['user_name'] ?? (($_SESSION['tech_logged_in'] ?? false) ? 
     </style>
 </head>
 <body id="invoice-setup">
-    <?php include('../../../main/sidebar.php'); ?>
+    <?php include('../../../src/UI/sidebar.php'); ?>
     <div class="container">
         <h1>Import Products from Excel</h1>
         <div class="form-box">

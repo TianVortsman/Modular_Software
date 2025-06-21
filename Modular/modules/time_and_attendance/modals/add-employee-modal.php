@@ -52,6 +52,11 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label for="isSales">Sales Employee</label>
+                        <input type="checkbox" id="isSales" name="isSales">
+                    </div>
+
                     <div class="form-notice">
                         <i class="material-icons notice-icon">info</i>
                         <p>Enter the essential employee information. You can add more details later in the employee profile.</p>

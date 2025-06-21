@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once '../../../vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 // Helper function to handle duplicate key errors
@@ -684,228 +684,291 @@ function importTimeAndAttEmployees($conn, $data) {
     $successCount = 0;
     $errors = [];
     
-    try {
-        // Start transaction
-        $conn->beginTransaction();
+    // Skip header row
+    $headerRow = array_shift($data);
+    
+    foreach ($data as $index => $row) {
+        $rowNum = $index + 2; // Adding 2 because index starts at 0 and we skipped header row
         
-        // Skip header row
-        $headerRow = array_shift($data);
-        
-        // Debug: Print the header row
-        error_log("Header Row: " . print_r($headerRow, true));
-        
-        foreach ($data as $index => $row) {
-            $rowNum = $index + 2; // Adding 2 because index starts at 0 and we skipped header row
+        try {
+            // Start a new transaction for each record
+            $conn->beginTransaction();
             
-            try {
-                // Debug: Print each row being processed
-                error_log("Processing Row " . $rowNum . ": " . print_r($row, true));
-                
-                // Extract required data
-                $firstName = trim($row[0] ?? '');
-                $lastName = trim($row[1] ?? '');
-                $employeeNumber = trim($row[2] ?? '');
-                $clockNumber = $row[3] ?? null;
-                
-                // Validate required fields
-                $validationErrors = [];
-                if (empty($firstName)) $validationErrors[] = "First Name is required";
-                if (empty($lastName)) $validationErrors[] = "Last Name is required";
-                if (empty($employeeNumber)) $validationErrors[] = "Employee Number is required";
-                if (!isset($clockNumber)) $validationErrors[] = "Clock Number is required";
-                
-                if (!empty($validationErrors)) {
-                    $errors[] = [
-                        'row' => $rowNum,
-                        'data' => json_encode($row),
-                        'message' => implode(', ', $validationErrors)
-                    ];
-                    continue;
-                }
+            // Extract data based on Excel column order
+            $title = trim($row[0] ?? '');
+            $gender = trim($row[1] ?? '');
+            $firstName = trim($row[2] ?? '');
+            $lastName = trim($row[3] ?? '');
+            $idNumber = trim($row[4] ?? '');
+            $employeeNumber = trim($row[5] ?? '');
+            $clockNumber = $row[6] ?? null;
+            $email = !empty($row[7]) ? filter_var(trim($row[7]), FILTER_SANITIZE_EMAIL) : null;
+            $phoneNumber = trim($row[8] ?? '');
+            $hireDate = !empty($row[9]) ? trim($row[9]) : date('Y-m-d');
+            $division = trim($row[10] ?? '');
+            $groupName = trim($row[11] ?? '');
+            $department = trim($row[12] ?? '');
+            $costCenter = trim($row[13] ?? '');
+            $position = trim($row[14] ?? '');
+            $rateType = trim($row[15] ?? '');
+            $rate = isset($row[16]) && is_numeric(str_replace(['R',' ','ZAR'], '', $row[16])) ? floatval(preg_replace('/[^0-9.]/', '', $row[16])) : null;
+            $overtime = trim($row[17] ?? '');
+            $status = trim($row[18] ?? 'active');
+            $employmentType = trim($row[19] ?? 'Permanent');
+            $workScheduleType = trim($row[20] ?? 'Open');
+            $payPeriod = trim($row[21] ?? '');
+            $emergencyContactName = trim($row[22] ?? '');
+            $emergencyContactPhone = trim($row[23] ?? '');
+            $address = trim($row[24] ?? '');
+            $biometricId = null; // Not present in this Excel, set to null
 
-                // Validate clock number is numeric
-                if (!is_numeric($clockNumber)) {
-                    $errors[] = [
-                        'row' => $rowNum,
-                        'data' => json_encode($row),
-                        'message' => "Clock Number must be numeric"
-                    ];
-                    continue;
-                }
-                $clockNumber = intval($clockNumber);
-
-                // Extract optional data with validation
-                $email = !empty($row[4]) ? filter_var(trim($row[4]), FILTER_SANITIZE_EMAIL) : null;
-                if ($email && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $errors[] = [
-                        'row' => $rowNum,
-                        'data' => json_encode($row),
-                        'message' => "Invalid email format"
-                    ];
-                    continue;
-                }
-
-                $phoneNumber = trim($row[5] ?? '');
-                $hireDate = !empty($row[6]) ? trim($row[6]) : date('Y-m-d');
-                if (!empty($row[6]) && !strtotime($hireDate)) {
-                    $errors[] = [
-                        'row' => $rowNum,
-                        'data' => json_encode($row),
-                        'message' => "Invalid hire date format"
-                    ];
-                    continue;
-                }
-
-                $division = trim($row[7] ?? '');
-                $groupName = trim($row[8] ?? '');
-                $department = trim($row[9] ?? '');
-                $costCenter = trim($row[10] ?? '');
-                $positionId = !empty($row[11]) ? intval($row[11]) : null;
-                $status = trim($row[12] ?? 'active');
-                $employmentType = trim($row[13] ?? 'Permanent');
-                $workScheduleType = trim($row[14] ?? 'Open');
-                $biometricId = trim($row[15] ?? '');
-                $emergencyContactName = trim($row[16] ?? '');
-                $emergencyContactPhone = trim($row[17] ?? '');
-                $address = trim($row[18] ?? '');
-
-                // Validate status
-                $validStatuses = ['active', 'inactive', 'terminated'];
-                if (!in_array(strtolower($status), $validStatuses)) {
-                    $errors[] = [
-                        'row' => $rowNum,
-                        'data' => json_encode($row),
-                        'message' => "Invalid status. Must be one of: " . implode(', ', $validStatuses)
-                    ];
-                    continue;
-                }
-
-                // Validate employment type
-                $validEmploymentTypes = ['Permanent', 'Contract'];
-                if (!in_array($employmentType, $validEmploymentTypes)) {
-                    $errors[] = [
-                        'row' => $rowNum,
-                        'data' => json_encode($row),
-                        'message' => "Invalid employment type. Must be one of: " . implode(', ', $validEmploymentTypes)
-                    ];
-                    continue;
-                }
-
-                // Validate work schedule type
-                $validWorkScheduleTypes = ['Open', 'Fixed', 'Rotating'];
-                if (!in_array($workScheduleType, $validWorkScheduleTypes)) {
-                    $errors[] = [
-                        'row' => $rowNum,
-                        'data' => json_encode($row),
-                        'message' => "Invalid work schedule type. Must be one of: " . implode(', ', $validWorkScheduleTypes)
-                    ];
-                    continue;
-                }
-
-                // Check for duplicate employee number
-                $checkStmt = $conn->prepare("SELECT COUNT(*) FROM employees WHERE employee_number = ?");
-                $checkStmt->execute([$employeeNumber]);
-                if ($checkStmt->fetchColumn() > 0) {
-                    $errors[] = [
-                        'row' => $rowNum,
-                        'data' => json_encode($row),
-                        'message' => "Employee number already exists"
-                    ];
-                    continue;
-                }
-
-                // Insert into employees table with all fields
-                $query = "INSERT INTO employees (
-                    first_name, last_name, employee_number, clock_number, 
-                    email, phone_number, hire_date, division, 
-                    group_name, department, cost_center, position_id,
-                    status, employment_type, work_schedule_type, biometric_id,
-                    emergency_contact_name, emergency_contact_phone, address,
-                    created_at, updated_at
-                ) VALUES (
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-                    NOW(), NOW()
-                )";
-                
-                $params = [
-                    $firstName, $lastName, $employeeNumber, $clockNumber,
-                    $email, $phoneNumber, $hireDate, $division,
-                    $groupName, $department, $costCenter, $positionId,
-                    $status, $employmentType, $workScheduleType, $biometricId,
-                    $emergencyContactName, $emergencyContactPhone, $address
-                ];
-                
-                $stmt = $conn->prepare($query);
-                
-                if ($stmt->execute($params)) {
-                    $successCount++;
-                    $messages[] = "Successfully imported employee: $firstName $lastName";
-                    error_log("Successfully imported employee: $firstName $lastName");
-                } else {
-                    $error = $stmt->errorInfo();
-                    $errors[] = [
-                        'row' => $rowNum,
-                        'data' => json_encode($row),
-                        'message' => "Database error: " . ($error[2] ?? 'Unknown error')
-                    ];
-                }
-            } catch (PDOException $e) {
+            // Validate required fields
+            $validationErrors = [];
+            if (empty($firstName)) $validationErrors[] = "First Name is required";
+            if (empty($lastName)) $validationErrors[] = "Last Name is required";
+            if (empty($employeeNumber)) $validationErrors[] = "Employee Number is required";
+            if (!isset($clockNumber)) $validationErrors[] = "Clock Number is required";
+            if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $validationErrors[] = "Invalid email format";
+            }
+            if (!empty($hireDate) && !strtotime($hireDate)) {
+                $validationErrors[] = "Invalid hire date format";
+            }
+            if (!is_numeric($clockNumber)) {
+                $validationErrors[] = "Clock Number must be numeric";
+            }
+            
+            if (!empty($validationErrors)) {
                 $errors[] = [
                     'row' => $rowNum,
                     'data' => json_encode($row),
-                    'message' => "Database error: " . $e->getMessage()
+                    'message' => implode(', ', $validationErrors)
                 ];
-            }
-        }
-        
-        // Commit transaction if there were no errors
-        if (empty($errors)) {
-            $conn->commit();
-            return [
-                'success' => true,
-                'message' => "Successfully imported $successCount employees",
-                'errors' => [],
-                'successCount' => $successCount,
-                'totalRows' => count($data)
-            ];
-        } else {
-            // If there were some successful imports along with errors
-            if ($successCount > 0) {
-                $conn->commit();
-                return [
-                    'success' => true,
-                    'message' => "Imported $successCount employees with some errors",
-                    'errors' => $errors,
-                    'successCount' => $successCount,
-                    'totalRows' => count($data)
-                ];
-            } else {
-                // If no successful imports, rollback
                 $conn->rollBack();
-                return [
-                    'success' => false,
-                    'message' => "Import failed: No employees were imported",
-                    'errors' => $errors,
-                    'successCount' => 0,
-                    'totalRows' => count($data ?? [])
-                ];
+                continue;
             }
+
+            // Check for duplicate employee number
+            $checkStmt = $conn->prepare("SELECT COUNT(*) FROM core.employees WHERE employee_number = ?");
+            $checkStmt->execute([$employeeNumber]);
+            if ($checkStmt->fetchColumn() > 0) {
+                $errors[] = [
+                    'row' => $rowNum,
+                    'data' => json_encode($row),
+                    'message' => "Employee number already exists"
+                ];
+                $conn->rollBack();
+                continue;
+            }
+
+            // 1. Insert into core.employees
+            $employeeQuery = "
+                INSERT INTO core.employees (
+                    first_name,
+                    last_name,
+                    employee_number,
+                    is_sales
+                ) VALUES (
+                    :first_name,
+                    :last_name,
+                    :employee_number,
+                    :is_sales
+                ) RETURNING employee_id
+            ";
+            
+            $employeeParams = [
+                ':first_name' => $firstName,
+                ':last_name' => $lastName,
+                ':employee_number' => $employeeNumber,
+                ':is_sales' => false
+            ];
+            
+            $stmt = $conn->prepare($employeeQuery);
+            $stmt->execute($employeeParams);
+            $employeeId = $conn->lastInsertId();
+
+            // 2. Insert into core.employee_contact
+            if (!empty($email) || !empty($phoneNumber)) {
+                $contactQuery = "
+                    INSERT INTO core.employee_contact (
+                        employee_id,
+                        email,
+                        phone_number
+                    ) VALUES (
+                        :employee_id,
+                        :email,
+                        :phone_number
+                    )
+                ";
+                
+                $contactParams = [
+                    ':employee_id' => $employeeId,
+                    ':email' => $email,
+                    ':phone_number' => $phoneNumber
+                ];
+                
+                $stmt = $conn->prepare($contactQuery);
+                $stmt->execute($contactParams);
+            }
+
+            // 3. Insert into core.employee_personal
+            if (!empty($gender)) {
+                $personalQuery = "
+                    INSERT INTO core.employee_personal (
+                        employee_id,
+                        gender
+                    ) VALUES (
+                        :employee_id,
+                        :gender
+                    )
+                ";
+                
+                $personalParams = [
+                    ':employee_id' => $employeeId,
+                    ':gender' => $gender
+                ];
+                
+                $stmt = $conn->prepare($personalQuery);
+                $stmt->execute($personalParams);
+            }
+
+            // 4. Insert into core.employee_employment
+            $employmentQuery = "
+                INSERT INTO core.employee_employment (
+                    employee_id,
+                    hire_date,
+                    position,
+                    department,
+                    division,
+                    group,
+                    cost_center,
+                    employment_type,
+                    status,
+                    work_week,
+                    title,
+                    id_number,
+                    rate_type,
+                    rate,
+                    overtime,
+                    pay_period
+                ) VALUES (
+                    :employee_id,
+                    :hire_date,
+                    :position,
+                    :department,
+                    :division,
+                    :group,
+                    :cost_center,
+                    :employment_type,
+                    :status,
+                    :work_week,
+                    :title,
+                    :id_number,
+                    :rate_type,
+                    :rate,
+                    :overtime,
+                    :pay_period
+                )
+            ";
+            
+            $employmentParams = [
+                ':employee_id' => $employeeId,
+                ':hire_date' => $hireDate,
+                ':position' => $position,
+                ':department' => $department,
+                ':division' => $division,
+                ':group' => $groupName,
+                ':cost_center' => $costCenter,
+                ':employment_type' => $employmentType,
+                ':status' => $status,
+                ':work_week' => $workScheduleType,
+                ':title' => $title,
+                ':id_number' => $idNumber,
+                ':rate_type' => $rateType,
+                ':rate' => $rate,
+                ':overtime' => $overtime,
+                ':pay_period' => $payPeriod
+            ];
+            
+            $stmt = $conn->prepare($employmentQuery);
+            $stmt->execute($employmentParams);
+
+            // 5. Insert into core.employee_emergency_contact if emergency contact data exists
+            if (!empty($emergencyContactName) || !empty($emergencyContactPhone)) {
+                $emergencyQuery = "
+                    INSERT INTO core.employee_emergency_contact (
+                        employee_id,
+                        contact_name,
+                        contact_phone
+                    ) VALUES (
+                        :employee_id,
+                        :contact_name,
+                        :contact_phone
+                    )
+                ";
+                
+                $emergencyParams = [
+                    ':employee_id' => $employeeId,
+                    ':contact_name' => $emergencyContactName,
+                    ':contact_phone' => $emergencyContactPhone
+                ];
+                
+                $stmt = $conn->prepare($emergencyQuery);
+                $stmt->execute($emergencyParams);
+            }
+
+            // 6. Handle address if provided
+            if (!empty($address)) {
+                // First insert into core.address
+                $addressQuery = "
+                    INSERT INTO core.address (
+                        addr_line_1
+                    ) VALUES (
+                        :addr_line_1
+                    ) RETURNING addr_id
+                ";
+                
+                $addressParams = [
+                    ':addr_line_1' => $address
+                ];
+                
+                $stmt = $conn->prepare($addressQuery);
+                $stmt->execute($addressParams);
+                $addressId = $conn->lastInsertId();
+                
+                // Then update employee_contact with the address_id
+                $updateContactQuery = "
+                    UPDATE core.employee_contact 
+                    SET address_id = :address_id 
+                    WHERE employee_id = :employee_id
+                ";
+                
+                $stmt = $conn->prepare($updateContactQuery);
+                $stmt->execute([
+                    ':address_id' => $addressId,
+                    ':employee_id' => $employeeId
+                ]);
+            }
+            
+            $conn->commit();
+            $successCount++;
+            $messages[] = "Successfully imported employee: $firstName $lastName";
+            
+        } catch (PDOException $e) {
+            $errors[] = [
+                'row' => $rowNum,
+                'data' => json_encode($row),
+                'message' => "Database error: " . $e->getMessage()
+            ];
+            $conn->rollBack();
         }
-        
-    } catch (Exception $e) {
-        // Rollback transaction on critical error
-        $conn->rollBack();
-        error_log("Critical import error: " . $e->getMessage());
-        return [
-            'success' => false,
-            'message' => "Critical error during import: " . $e->getMessage(),
-            'errors' => [[
-                'row' => 'N/A',
-                'data' => 'N/A',
-                'message' => $e->getMessage()
-            ]],
-            'successCount' => $successCount,
-            'totalRows' => count($data ?? [])
-        ];
     }
+    
+    return [
+        'success' => $successCount > 0,
+        'message' => $successCount > 0 ? "Imported $successCount employees" . ($errors ? " with some errors" : "") : "No employees were imported",
+        'errors' => $errors,
+        'successCount' => $successCount,
+        'totalRows' => count($data)
+    ];
 } 

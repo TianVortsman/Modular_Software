@@ -1,5 +1,6 @@
 <?php
 session_start();
+$accountNumber = $_SESSION['account_number'] ?? 'ACC002';
 
 // Check if account number is in the query parameters
 if (isset($_GET['account_number'])) {
@@ -8,7 +9,8 @@ if (isset($_GET['account_number'])) {
     // Store the account number in the session
     $_SESSION['account_number'] = $account_number;
 
-    // Optionally, redirect to remove the query parameter from the URL
+    // Redirect to remove the query parameter from the URL
+    header("Location: dashboard-TA.php");
     exit;
 }
 
@@ -17,34 +19,35 @@ if (isset($_SESSION['account_number'])) {
     $account_number = $_SESSION['account_number'];
 } else {
     // Redirect to login or show an error if no account number is found
-    header("Location: index.php");
+    header("Location: ../../index.php");
     exit;
 }
 
 $userName = $_SESSION['user_name'] ?? ($_SESSION['tech_logged_in'] ? $_SESSION['tech_name'] : 'Guest');
-
-// Include the database connection
-include('../../../php/db.php');
+$multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple_accounts'] : false;
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products Screen</title>
-    <link rel="stylesheet" href="../../../css/reset.css">
-    <link rel="stylesheet" href="../../../css/root.css">
-    <link rel="stylesheet" href="../../../css/sidebar.css">
+    <meta name="account-number" content="<?php echo htmlspecialchars($accountNumber); ?>">
+    <title>Invoice Products</title>
+    <link rel="stylesheet" href="../../../public/assets/css/reset.css">
+    <link rel="stylesheet" href="../../../public/assets/css/root.css">
+    <link rel="stylesheet" href="../../../public/assets/css/sidebar.css">
     <link rel="stylesheet" href="../css/invoice-products.css">
     <link rel="stylesheet" href="../css/vehicle-details.css">
     <link rel="stylesheet" href="../css/add-vehicle.css">
     <link rel="stylesheet" href="../css/product-modals.css">
-    <script src="../../../js/toggle-theme.js" type="module"></script>
+    <link rel="stylesheet" href="../css/invoice-modal.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="../../../js/sidebar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../../../public/assets/js/toggle-theme.js" type="module"></script>
+    <script src="../../../public/assets/js/sidebar.js"></script>
 </head>
 <body id="invoice-products">
-<?php include('../../../main/sidebar.php') ?>
+<?php include('../../../src/UI/sidebar.php') ?>
 <div class="products-container">
         <header class="header">
             <div class="header-left">
@@ -61,7 +64,7 @@ include('../../../php/db.php');
 
             <!-- Products Section -->
             <div class="tab-content active" id="products">
-            <button onclick="openAddProductModal()" class="add-products-open-btn">Add Products</button>
+            <button onclick="openAddProductModal('product')" class="add-products-open-btn">Add Products</button>
                 <h2>Products</h2>
                 <div class="products-grid" id="products-grid">
 
@@ -79,7 +82,7 @@ include('../../../php/db.php');
 
             <!-- Parts Section -->
             <div class="tab-content" id="parts">
-            <button onclick="openAddPartModal()" class="add-parts-open-btn">Add Parts</button>
+            <button onclick="openAddProductModal('part')" class="add-parts-open-btn">Add Parts</button>
                 <h2>Parts</h2>
                 <div class="products-grid" id="parts-grid">
 
@@ -88,7 +91,7 @@ include('../../../php/db.php');
 
             <!-- Extras Section -->
             <div class="tab-content" id="extras">
-            <button onclick="openAddExtraModal()" class="add-extras-open-btn">Add Extras</button>
+            <button onclick="openAddProductModal('extra')" class="add-extras-open-btn">Add Extras</button>
                 <h2>Extras</h2>
                 <div class="products-grid" id="extras-grid">
 
@@ -97,7 +100,7 @@ include('../../../php/db.php');
 
             <!-- Services Section -->
             <div class="tab-content" id="services">
-            <button onclick="openAddServiceModal()" class="add-services-open-btn">Add Services</button>
+            <button onclick="openAddProductModal('service')" class="add-services-open-btn">Add Services</button>
                 <h2>Services</h2>
                 <div class="products-grid" id="services-grid">
                     
@@ -144,14 +147,9 @@ include('../../../php/db.php');
     </div>
 </div>
 </div>
-<?php include('../modals/vehicle-details-modal.php') ?>
-<?php include('../modals/add-vehicle-modal.php') ?>
-<?php include('../../../php/loading-modal.php') ?>
-<?php include('../../../php/response-modal.php') ?>
+<?php include('../../../src/UI/loading-modal.php') ?>
+<?php include('../../../src/UI/response-modal.php') ?>
 <?php include('../modals/product-modals.php') ?>
-<script src="../js/vehicle-modal.js"></script>
-<script src="../js/add-vehicle.js"></script>
 <script src="../js/product-modals.js"></script>
-<script src="../js/fetch-products.js"></script>
 </body>
 </html>

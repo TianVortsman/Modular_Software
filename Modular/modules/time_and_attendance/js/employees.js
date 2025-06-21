@@ -64,6 +64,7 @@ class TabManager {
         this.contentSelector = options.contentSelector;
         this.activeClass = options.activeClass || 'active';
         this.dataAttribute = options.dataAttribute || 'data-tab';
+        this.onTabChange = options.onTabChange; // New callback for tab change
         this.transitionDuration = 300; // ms - match with CSS animation duration
         this.init();
     }
@@ -78,6 +79,12 @@ class TabManager {
                 this.switchTab(button);
             });
         });
+
+        // Set initial active tab if none is set
+        const activeButton = container.querySelector(`.${this.activeClass}`);
+        if (!activeButton && buttons.length > 0) {
+            this.switchTab(buttons[0]);
+        }
     }
 
     switchTab(selectedButton) {
@@ -97,8 +104,8 @@ class TabManager {
             pane.classList.contains(this.activeClass)
         );
         
-        // If the selected tab is already active, do nothing
-        if (activePane === targetPane) return;
+        // Always proceed to update UI and call callback, even if the tab is already active
+        // if (activePane === targetPane) return; // Removed this line
         
         // Update ARIA attributes
         allButtons.forEach(btn => {
@@ -110,7 +117,7 @@ class TabManager {
         selectedButton.setAttribute('aria-selected', 'true');
         
         // Elegant transition
-        if (activePane) {
+        if (activePane && activePane !== targetPane) { // Only animate if switching to a different tab
             // Start fade out of current pane
             activePane.style.animation = 'fadeOut 0.2s ease forwards';
             
@@ -124,8 +131,16 @@ class TabManager {
                 targetPane.style.animation = 'fadeIn 0.3s ease forwards';
             }, 200); // Match this with the fadeOut animation duration
         } else {
-            // No active pane, just show the target
+            // No active pane, or same active pane, just show the target
             targetPane.classList.add(this.activeClass);
+            if (!activePane) { // If there was no active pane initially, also trigger fadeIn
+                targetPane.style.animation = 'fadeIn 0.3s ease forwards';
+            }
+        }
+
+        // Execute callback if provided (always call it)
+        if (this.onTabChange) {
+            this.onTabChange(tabId);
         }
     }
 }
@@ -135,7 +150,35 @@ const pageTabManager = new TabManager({
     containerSelector: '.page-tabs-container',
     buttonSelector: '.page-tab-button',
     contentSelector: '.page-tab-pane',
-    dataAttribute: 'data-tab'
+    dataAttribute: 'data-tab',
+    onTabChange: (tabId) => {
+        let filters = {};
+        console.log(`Main tab changed to: ${tabId}`);
+        if (tabId === 'active') {
+            // Activate the first sub-tab when the active main tab is selected
+            const permanentSubTabButton = document.querySelector('.page-subtab-button[data-subtab="permanent"]');
+            if (permanentSubTabButton) {
+                // Calling switchSubTab will trigger onSubTabChange, which then calls loadEmployees
+                subTabManager.switchSubTab(permanentSubTabButton);
+            } else {
+                // Fallback if sub-tab button not found, load all active
+                console.log('Fallback: Loading all active employees because permanent sub-tab button not found.');
+                loadEmployees(1, { status: 'active' });
+            }
+        } else if (tabId === 'terminated') {
+            filters.status = 'terminated';
+            console.log('Loading employees with filters:', filters);
+            loadEmployees(1, filters);
+        } else if (tabId === 'incomplete') {
+            filters.status = 'incomplete';
+            console.log('Loading employees with filters:', filters);
+            loadEmployees(1, filters);
+        } else if (tabId === 'all') {
+            // No status filter for 'all' tab
+            console.log('Loading all employees.');
+            loadEmployees(1, {});
+        }
+    }
 });
 
 // Initialize employee modal tabs
@@ -154,6 +197,7 @@ class SubTabManager {
         this.paneSelector = options.paneSelector;
         this.activeClass = options.activeClass || 'active';
         this.dataAttribute = options.dataAttribute;
+        this.onSubTabChange = options.onSubTabChange; // New callback for sub-tab change
         
         this.init();
     }
@@ -170,6 +214,12 @@ class SubTabManager {
                 this.switchSubTab(button);
             });
         });
+
+        // Set initial active sub-tab if none is set
+        const activeButton = containers[0].querySelector(`.${this.activeClass}`);
+        if (!activeButton && containers[0].querySelectorAll(this.buttonSelector).length > 0) {
+            this.switchSubTab(containers[0].querySelectorAll(this.buttonSelector)[0]);
+        }
     }
 
     switchSubTab(selectedButton) {
@@ -199,15 +249,30 @@ class SubTabManager {
         if (targetPane) {
             targetPane.classList.add(this.activeClass);
         }
+
+        // Execute callback if provided (always call it)
+        if (this.onSubTabChange) {
+            this.onSubTabChange(tabId);
+        }
     }
 }
 
-// Initialize sub-tabs for permanent/temporary employees
-const employeeSubTabManager = new SubTabManager({
+// Initialize sub-tabs for active employees
+const subTabManager = new SubTabManager({
     containerSelector: '.page-subtabs-header',
     buttonSelector: '.page-subtab-button',
     paneSelector: '.page-subtab-pane',
-    dataAttribute: 'data-subtab'
+    dataAttribute: 'data-subtab',
+    onSubTabChange: (subTabId) => {
+        let filters = { status: 'active' }; // Always active for these sub-tabs
+        if (subTabId === 'permanent') {
+            filters.employment_type = 'Permanent';
+        } else if (subTabId === 'temporary') {
+            filters.employment_type = 'Temporary';
+        }
+        console.log(`Sub-tab changed to: ${subTabId}. Loading employees with filters:`, filters);
+        loadEmployees(1, filters);
+    }
 });
 
 // Employee Modal Manager
@@ -299,6 +364,12 @@ class EmployeeModalManager {
     }
 
     saveEmployeeData() {
+        // Prevent double submission
+        const saveButton = this.modal.querySelector('.btn-save');
+        if (saveButton) {
+            saveButton.disabled = true;
+        }
+
         // Show loading modal
         const loadingModal = document.getElementById('loadingModal');
         if (loadingModal) {
@@ -308,6 +379,15 @@ class EmployeeModalManager {
         const formData = this.collectFormData();
         const employeeId = this.currentEmployeeId;
         
+        if (!employeeId) {
+            showNotification('Invalid employee ID', 'error');
+            if (saveButton) saveButton.disabled = false;
+            if (loadingModal) loadingModal.classList.add('hidden');
+            return;
+        }
+
+        console.log('Sending update request for employee:', employeeId, formData);
+        
         // Make API call to save data
         fetch(`../api/employee-api.php?action=update&id=${employeeId}`, {
             method: 'PUT',
@@ -316,7 +396,15 @@ class EmployeeModalManager {
             },
             body: JSON.stringify(formData)
         })
-        .then(response => response.json())
+        .then(async response => {
+            const text = await response.text();
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.error('Failed to parse response:', text);
+                throw new Error('Invalid server response');
+            }
+        })
         .then(result => {
             // Hide loading modal
             if (loadingModal) {
@@ -340,48 +428,72 @@ class EmployeeModalManager {
             }
             
             console.error('Error saving employee data:', error);
-            showNotification(error.message, 'error');
+            showNotification(error.message || 'Failed to save employee details', 'error');
+        })
+        .finally(() => {
+            // Re-enable save button
+            if (saveButton) {
+                saveButton.disabled = false;
+            }
         });
     }
 
     collectFormData() {
-        return {
-            personalDetails: {
-                fullName: document.getElementById('employee-full-name').textContent,
-                dob: document.getElementById('employee-dob').value,
-                email: document.getElementById('employee-email').value,
-                phone: document.getElementById('employee-phone').value,
-                address: {
-                    line1: document.getElementById('employee-address1').value,
-                    line2: document.getElementById('employee-address2').value,
-                    city: document.getElementById('employee-city').value,
-                    state: document.getElementById('employee-state').value,
-                    postal: document.getElementById('employee-postal').value,
-                    country: document.getElementById('employee-country').value
-                },
-                emergencyContact: {
-                    name: document.getElementById('emergency-name').value,
-                    relationship: document.getElementById('emergency-relation').value,
-                    phone: document.getElementById('emergency-phone').value,
-                    email: document.getElementById('emergency-email').value
-                }
+        // Helper to safely get value from an element
+        const getVal = (id, property = 'value', defaultValue = null) => {
+            const el = document.getElementById(id);
+            return el ? (property === 'checked' ? el.checked : el[property]) : defaultValue;
+        };
+
+        // Helper to get checked radio button value by name
+        const getRadioVal = (name, defaultValue = null) => {
+            const selected = document.querySelector(`input[name="${name}"]:checked`);
+            return selected ? selected.value : defaultValue;
+        };
+
+        const formData = {
+            // core.employees fields
+            first_name: getVal('employee-full-name', 'textContent').split(' ')[0],
+            last_name: getVal('employee-full-name', 'textContent').split(' ').slice(1).join(' '),
+            employee_number: getVal('employee-payroll-number', 'textContent'),
+            clock_number: getVal('employee-clock-number', 'textContent'),
+            is_sales: getVal('is-sales', 'checked', false),
+
+            // core.employee_contact fields
+            email: getVal('employee-email'),
+            phone_number: getVal('employee-phone'),
+            
+            // core.employee_personal fields
+            date_of_birth: getVal('employee-dob'),
+            gender: getRadioVal('gender'),
+            id_number: getVal('employee-id-number'),
+            
+            // core.employee_employment fields
+            hire_date: getVal('employee-hire-date'),
+            termination_date: getVal('termination-date'),
+            status: getVal('employee-status'),
+            
+            // core.address fields
+            address: {
+                line1: getVal('employee-address1'),
+                line2: getVal('employee-address2'),
+                suburb: getVal('employee-city'),
+                city: getVal('employee-city'),
+                province: getVal('employee-state'),
+                postcode: getVal('employee-postal'),
+                country: getVal('employee-country')
             },
-            employmentDetails: {
-                payrollNumber: document.getElementById('employee-payroll-number').textContent,
-                clockNumber: document.getElementById('employee-clock-number').textContent,
-                jobTitle: document.getElementById('employee-job-title').value,
-                department: document.getElementById('employee-department').value,
-                location: document.getElementById('employee-location').value
-            },
-            mobileSettings: {
-                gpsTracking: document.getElementById('gps-tracking').checked,
-                biometricAuth: document.getElementById('biometric-auth').checked,
-                manualEntry: document.getElementById('manual-entry').checked,
-                offlineMode: document.getElementById('offline-mode').checked,
-                photoVerification: document.getElementById('photo-verification').checked,
-                geofencingType: document.getElementById('geofencing-type').value
+            
+            // core.employee_emergency_contact fields
+            emergency_contact: {
+                name: getVal('emergency-name'),
+                relation: getVal('emergency-relation'),
+                phone: getVal('emergency-phone'),
+                email: getVal('emergency-email')
             }
         };
+        
+        return formData;
     }
 
     async fetchEmployeeData(employeeId) {
@@ -396,7 +508,18 @@ class EmployeeModalManager {
                 loadingModal.classList.remove('hidden');
             }
             
-            const response = await fetch(`../api/employee-api.php?action=details&id=${employeeId}`);
+            // Use the same path structure as the working list endpoint
+            const url = `../api/employee-api.php?action=details&id=${employeeId}`;
+            console.log('Fetching employee details from:', url);
+            
+            const response = await fetch(url, {
+                method: 'GET',
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
             if (!response.ok) throw new Error('Failed to fetch employee data');
             
             const result = await response.json();
@@ -409,67 +532,181 @@ class EmployeeModalManager {
             
             const employee = result.data;
             
-            // Safely set field values - only if the element and data property exist
-            this.setFieldValue('employee-full-name', `${employee.first_name} ${employee.last_name}`);
+            // --- Employee Profile Section --- 
+            this.setFieldValue('employee-full-name', `${employee.first_name || ''} ${employee.last_name || ''}`);
             this.setFieldValue('employee-payroll-number', employee.employee_number);
             this.setFieldValue('employee-clock-number', employee.clock_number);
             this.setFieldValue('employee-badge-number', employee.badge_number, 'Not Set');
-            this.setFieldValue('employee-gender', employee.gender, 'male');
             
-            // Personal Details
+            // Gender radio buttons
+            if (employee.gender) {
+                const genderMale = document.getElementById('gender-male');
+                const genderFemale = document.getElementById('gender-female');
+                if (genderMale) genderMale.checked = employee.gender.toLowerCase() === 'male';
+                if (genderFemale) genderFemale.checked = employee.gender.toLowerCase() === 'female';
+                updateProfilePlaceholder(employee.gender.toLowerCase()); // Update profile image based on gender
+            } else {
+                 updateProfilePlaceholder('male'); // Default to male if gender is null
+            }
+
+            // Status handling (existing)
+            this.updateEmployeeStatus(employee.status || 'active');
+
+            // --- Personal Details Tab ---
             this.setFieldValue('employee-dob', employee.date_of_birth);
             this.setFieldValue('employee-email', employee.email);
             this.setFieldValue('employee-phone', employee.phone_number);
-            this.setFieldValue('employee-address1', employee.address_line1);
-            this.setFieldValue('employee-address2', employee.address_line2);
-            this.setFieldValue('employee-city', employee.city);
-            this.setFieldValue('employee-state', employee.state);
-            this.setFieldValue('employee-postal', employee.postal_code);
-            this.setFieldValue('employee-country', employee.country);
-            
-            // Only set these fields if they exist in the API response
-            if (employee.emergency_contact_name) {
-                this.setFieldValue('emergency-name', employee.emergency_contact_name);
-                this.setFieldValue('emergency-relation', employee.emergency_contact_relation);
-                this.setFieldValue('emergency-phone', employee.emergency_contact_phone);
-                this.setFieldValue('emergency-email', employee.emergency_contact_email);
+
+            // Address fields
+            if (employee.address) {
+                try {
+                    const addressObj = JSON.parse(employee.address);
+                    this.setFieldValue('employee-address1', addressObj.line1);
+                    this.setFieldValue('employee-address2', addressObj.line2);
+                    this.setFieldValue('employee-city', addressObj.city);
+                    this.setFieldValue('employee-state', addressObj.province);
+                    this.setFieldValue('employee-postal', addressObj.postcode);
+                    this.setFieldValue('employee-country', addressObj.country);
+                } catch (e) {
+                    console.warn('Error parsing address JSON:', e, employee.address);
+                    // Fallback to plain text address or clear fields
+                    this.setFieldValue('employee-address1', employee.address);
+                    this.setFieldValue('employee-address2', '');
+                    this.setFieldValue('employee-city', '');
+                    this.setFieldValue('employee-state', '');
+                    this.setFieldValue('employee-postal', '');
+                    this.setFieldValue('employee-country', '');
+                }
+            } else {
+                // Clear address fields if no address data
+                this.setFieldValue('employee-address1', '');
+                this.setFieldValue('employee-address2', '');
+                this.setFieldValue('employee-city', '');
+                this.setFieldValue('employee-state', '');
+                this.setFieldValue('employee-postal', '');
+                this.setFieldValue('employee-country', '');
             }
             
-            // Organization fields
-            this.setFieldValue('employee-division', employee.division_id);
-            this.setFieldValue('employee-department', employee.department_id);
-            this.setFieldValue('employee-group', employee.employee_group);
-            this.setFieldValue('employee-cost-centre', employee.cost_centre);
-            this.setFieldValue('employee-location', employee.location_id);
-            this.setFieldValue('employee-team', employee.team_id);
+            // Emergency Contact fields
+            if (employee.emergency_contact) {
+                this.setFieldValue('emergency-name', employee.emergency_contact.name);
+                this.setFieldValue('emergency-relation', employee.emergency_contact.relation);
+                this.setFieldValue('emergency-phone', employee.emergency_contact.phone);
+                this.setFieldValue('emergency-email', employee.emergency_contact.email);
+            } else {
+                // Clear emergency contact fields if no data
+                this.setFieldValue('emergency-name', '');
+                this.setFieldValue('emergency-relation', '');
+                this.setFieldValue('emergency-phone', '');
+                this.setFieldValue('emergency-email', '');
+            }
+            
+            // --- Organization Tab ---
+            this.setFieldValue('employee-company', employee.company);
+            this.setFieldValue('employee-division', employee.division);
+            this.setFieldValue('employee-department', employee.department);
+            this.setFieldValue('employee-group', employee.group);
+            this.setFieldValue('employee-cost-centre', employee.cost_center);
+            this.setFieldValue('employee-location', employee.location);
             this.setFieldValue('employee-manager', employee.manager_id);
             
-            // Employment Details
-            this.setFieldValue('employee-job-title', employee.position_name);
+            // --- Employment Tab ---
+            this.setFieldValue('employee-job-title', employee.position);
             this.setFieldValue('employee-hire-date', employee.hire_date);
-            this.setFieldValue('employee-contract-type', employee.contract_type, 'permanent');
-            this.setFieldValue('employee-status', employee.status, 'active');
+            this.setFieldValue('employee-contract-type', employee.employment_type);
+            this.setFieldValue('employee-title', employee.title);
+            this.setFieldValue('employee-id-number', employee.id_number);
+            this.setFieldValue('employee-rate-type', employee.rate_type);
+            this.setFieldValue('employee-rate', employee.rate);
             
-            // Update modern status card
-            this.updateEmployeeStatus(employee.status || 'active');
+            // Overtime checkbox
+            const allowOvertimeCheckbox = document.getElementById('allow-overtime');
+            if (allowOvertimeCheckbox) {
+                allowOvertimeCheckbox.checked = employee.overtime === 'Yes';
+            }
+
+            this.setFieldValue('employee-pay-period', employee.pay_period);
+
+            // --- Schedule Tab ---
+            this.setFieldValue('work-pattern', employee.work_week);
+            this.setFieldValue('roster-template', employee.monthly_roster);
+            this.setFieldValue('standard-hours', employee.standard_hours);
+            this.setFieldValue('break-duration', employee.break_duration);
+            this.setFieldValue('grace-period', employee.grace_period);
             
-            // Only process these sections if they exist in the API response
-            if (employee.leave_balances) {
-                this.updateLeaveBalances(employee.leave_balances);
+            // Flexible Hours checkbox
+            const flexibleHoursCheckbox = document.getElementById('flexible-hours');
+            if (flexibleHoursCheckbox) {
+                flexibleHoursCheckbox.checked = employee.flexible_hours === 'Yes';
+            }
+
+            // --- Termination Tab (mostly not in DDL)
+            this.setFieldValue('termination-date', employee.termination_date);
+            this.setFieldValue('termination-reason', employee.termination_reason);
+            this.setFieldValue('last-day-worked', employee.last_day_worked);
+            const eligibleForRehireCheckbox = document.getElementById('eligible-for-rehire');
+            if (eligibleForRehireCheckbox) {
+                eligibleForRehireCheckbox.checked = employee.eligible_for_rehire === 'Yes';
+            }
+            this.setFieldValue('settlement-date', employee.final_settlement_date);
+            this.setFieldValue('termination-notes', employee.termination_notes);
+            this.setFieldValue('exit-interview-notes', employee.exit_interview_notes);
+
+            // --- Mobile Setup Tab ---
+            this.setFieldValue('mobile-device-os', employee.mobile_device_os);
+            this.setFieldValue('device_id', employee.device_id);
+            const gpsTrackingCheckbox = document.getElementById('gps-tracking');
+            if (gpsTrackingCheckbox) {
+                gpsTrackingCheckbox.checked = employee.gps_tracking === 'Yes';
+            }
+            const biometricAuthCheckbox = document.getElementById('biometric-auth');
+            if (biometricAuthCheckbox) {
+                biometricAuthCheckbox.checked = employee.biometric_auth === 'Yes';
+            }
+            const manualEntryCheckbox = document.getElementById('manual-entry');
+            if (manualEntryCheckbox) {
+                manualEntryCheckbox.checked = employee.manual_entry === 'Yes';
+            }
+            const offlineModeCheckbox = document.getElementById('offline-mode');
+            if (offlineModeCheckbox) {
+                offlineModeCheckbox.checked = employee.offline_mode === 'Yes';
+            }
+            const photoVerificationCheckbox = document.getElementById('photo-verification');
+            if (photoVerificationCheckbox) {
+                photoVerificationCheckbox.checked = employee.photo_verification === 'Yes';
+            }
+            this.setFieldValue('geofencing-type', employee.geofencing_type);
+
+            // --- Access Control Tab ---
+            this.setFieldValue('security-level', employee.security_level);
+            this.setFieldValue('role-select', employee.role);
+            this.setFieldValue('time-restriction', employee.time_restriction);
+            const weekendAccessCheckbox = document.getElementById('weekend-access');
+            if (weekendAccessCheckbox) {
+                weekendAccessCheckbox.checked = employee.weekend_access === 'Yes';
+            }
+            this.setFieldValue('badge-id', employee.badge_number);
+            this.setFieldValue('fingerprint-id-input', employee.fingerprint_id);
+            this.setFieldValue('rfid-id-input', employee.rfid_id);
+            this.setFieldValue('facial-recognition-id-input', employee.facial_recognition_id);
+            const biometricAccessCheckbox = document.getElementById('biometric-access');
+            if (biometricAccessCheckbox) {
+                biometricAccessCheckbox.checked = employee.biometric_access === 'Yes';
+            }
+            const mobileAccessCheckbox = document.getElementById('mobile-access');
+            if (mobileAccessCheckbox) {
+                mobileAccessCheckbox.checked = employee.mobile_access === 'Yes';
             }
             
-            if (employee.leave_history) {
-                this.updateLeaveHistory(employee.leave_history);
+            // Set selected access zones
+            const accessZonesSelect = document.getElementById('access-zones-select');
+            if (accessZonesSelect && Array.isArray(employee.access_zones)) {
+                Array.from(accessZonesSelect.options).forEach(option => {
+                    option.selected = employee.access_zones.includes(option.value);
+                });
             }
-            
-            if (employee.devices) {
-                this.updateDevices(employee.devices);
-            }
-            
-            if (employee.mobile_settings) {
-                this.updateMobileSettings(employee.mobile_settings);
-            }
-            
+            this.syncZoneHighlights(); // Sync visual highlights with selected zones
+
             // Set the first tab as active
             const firstTab = document.querySelector('.emp-details-tab-button');
             if (firstTab) {
@@ -481,9 +718,6 @@ class EmployeeModalManager {
                 });
                 modalTabManager.switchTab(firstTab);
             }
-            
-            // Set gender in the new radio buttons
-            this.updateGenderSelection(employee.gender || 'male');
             
         } catch (error) {
             console.error('Error fetching employee data:', error);
@@ -499,28 +733,49 @@ class EmployeeModalManager {
 
     // Helper method to safely set field values
     setFieldValue(elementId, value, defaultValue = '') {
+        console.log(`Attempting to set field: ${elementId} with value: ${value}`);
         const element = document.getElementById(elementId);
-        if (!element) return;
-        
-        if (element.tagName === 'INPUT') {
-            if (element.type === 'checkbox') {
-                element.checked = !!value;
-            } else {
-                element.value = value || defaultValue;
+        if (element) {
+            if (element.tagName === 'INPUT' || element.tagName === 'SELECT' || element.tagName === 'TEXTAREA') {
+                if (element.type === 'radio') {
+                    // For radio buttons, the value should be set by checking the correct one
+                    // This is handled in fetchEmployeeData, but good to keep in mind for generic setFieldValue
+                    // For now, let's assume individual radio inputs are handled directly in fetchEmployeeData.
+                } else if (element.type === 'checkbox') {
+                    element.checked = (value === 'Yes' || value === true);
+                } else if (element.type === 'date') {
+                    // Format date to YYYY-MM-DD for date inputs
+                    element.value = value ? new Date(value).toISOString().split('T')[0] : '';
+                } else {
+                    element.value = value !== null ? value : defaultValue;
+                }
+            } else if (element.tagName === 'SPAN' || element.tagName === 'H3') {
+                element.textContent = value !== null ? value : defaultValue;
             }
-        } else if (element.tagName === 'SELECT') {
-            element.value = value || defaultValue;
+            console.log(`Successfully set field: ${elementId}`);
         } else {
-            element.textContent = value || defaultValue;
+            console.warn(`Element with ID: ${elementId} not found.`);
         }
     }
 
     // Helper methods for updating specific sections
     updateLeaveBalances(leaveBalances) {
-        leaveBalances.forEach(balance => {
-            const input = document.getElementById(`${balance.leave_type.toLowerCase()}-leave`);
-            if (input) input.value = balance.balance;
-        });
+        // Iterate over the balances and update the corresponding HTML elements
+        if (leaveBalances && Array.isArray(leaveBalances)) {
+            leaveBalances.forEach(balance => {
+                const type = balance.leave_type.toLowerCase().replace(/ /g, '-'); // e.g., 'Annual Leave' -> 'annual-leave'
+                this.setFieldValue(`${type}-balance`, balance.balance);
+                this.setFieldValue(`${type}-used`, balance.used);
+                
+                // Update progress bar (assuming total leave is balance + used for percentage)
+                const total = balance.balance + balance.used;
+                const progressBar = document.querySelector(`.balance-card.${type} .balance-progress`);
+                if (progressBar) {
+                    const percentage = total > 0 ? (balance.used / total) * 100 : 0;
+                    progressBar.style.width = `${percentage}%`;
+                }
+            });
+        }
     }
 
     updateLeaveHistory(leaveHistory) {
@@ -764,7 +1019,30 @@ document.addEventListener('DOMContentLoaded', () => {
     initEmployeeOverviewModal();
     new EmployeeModalManager();
     initSearch();
-    loadEmployees(); // Initial load
+
+    // Explicitly load employees for the initial active tab
+    // This part should be simple and direct to ensure data loads on page refresh.
+    const initialMainTabId = document.querySelector('.page-tab-button.active')?.dataset.tab || 'active'; // Default to 'active'
+    let initialFilters = {};
+
+    if (initialMainTabId === 'active') {
+        const initialSubTabId = document.querySelector('.page-subtab-button.active')?.dataset.subtab || 'permanent'; // Default to 'permanent'
+        initialFilters.status = 'active';
+        if (initialSubTabId === 'permanent') {
+            initialFilters.employment_type = 'Permanent';
+        } else if (initialSubTabId === 'temporary') {
+            initialFilters.employment_type = 'Temporary';
+        }
+    } else if (initialMainTabId === 'terminated') {
+        initialFilters.status = 'terminated';
+    } else if (initialMainTabId === 'incomplete') {
+        initialFilters.status = 'incomplete';
+    } else if (initialMainTabId === 'all') {
+        // No status filter for 'all' tab
+    }
+    
+    console.log('Initial page load. Loading employees with filters:', initialFilters);
+    loadEmployees(1, initialFilters);
 });
 
 // Employee Management Functions
@@ -775,7 +1053,8 @@ async function loadEmployees(page = 1, filters = {}) {
         if (loadingModal) {
             loadingModal.classList.remove('hidden');
         }
-        
+        console.log('loadEmployees called with filters:', filters);
+
         // Build query string for filters
         const queryParams = new URLSearchParams({
             action: 'list',
@@ -808,7 +1087,13 @@ async function loadEmployees(page = 1, filters = {}) {
             throw new Error(result.message || 'Failed to load employees');
         }
         
-        displayEmployees(result.data);
+        // Display employees or show "No employees found" message
+        if (result.message === 'No employees found' || !result.data || result.data.length === 0) {
+            displayEmployees([]);
+            showNotification('No employees found', 'info');
+        } else {
+            displayEmployees(result.data);
+        }
         updatePagination(result.pagination);
     } catch (error) {
         // Hide loading indicator
@@ -823,8 +1108,9 @@ async function loadEmployees(page = 1, filters = {}) {
 }
 
 function displayEmployees(employees) {
-    const tables = {
-        active: document.querySelector('#permanent-tab .main-employee-table tbody'),
+    // Get all table bodies
+    const tableBodies = {
+        permanent: document.querySelector('#permanent-tab .main-employee-table tbody'),
         temporary: document.querySelector('#temporary-tab .main-employee-table tbody'),
         terminated: document.querySelector('#terminated-tab .main-employee-table tbody'),
         incomplete: document.querySelector('#incomplete-tab .main-employee-table tbody'),
@@ -832,69 +1118,63 @@ function displayEmployees(employees) {
     };
 
     // Clear existing rows
-    Object.values(tables).forEach(table => {
-        if (table) table.innerHTML = '';
+    Object.values(tableBodies).forEach(tbody => {
+        if (tbody) tbody.innerHTML = '';
     });
 
     // If no employees, show message
     if (!employees || employees.length === 0) {
-        Object.values(tables).forEach(table => {
-            if (table) {
-                table.innerHTML = `
+        Object.values(tableBodies).forEach(tbody => {
+            if (tbody) {
+                tbody.innerHTML = `
                     <tr>
-                        <td colspan="6" class="no-data">No employees found</td>
+                        <td colspan="7" class="no-data">No employees found</td>
                     </tr>
                 `;
             }
         });
         
         // Update stats with zeros
-        updateEmployeeStats([]);
+        updateEmployeeStats();
         return;
     }
 
     // Populate tables
     employees.forEach(employee => {
         const row = createEmployeeRow(employee);
+        console.log(`Processing employee: ${employee.first_name} ${employee.last_name}, Status: ${employee.display_status}, Employment Type: ${employee.employment_type}`);
         
         // Add to appropriate tables based on status and employment type
-        if (employee.status === 'active') {
-            if (employee.employment_type === 'Temporary' && tables.temporary) {
+        if (employee.display_status?.toLowerCase() === 'active') {
+            if (employee.employment_type?.toLowerCase() === 'temporary' && tableBodies.temporary) {
                 const clonedRow = row.cloneNode(true);
                 addRowEventListeners(clonedRow, employee);
-                tables.temporary.appendChild(clonedRow);
-            } else if (tables.active) {
+                tableBodies.temporary.appendChild(clonedRow);
+            } else if (tableBodies.permanent) {
                 const clonedRow = row.cloneNode(true);
                 addRowEventListeners(clonedRow, employee);
-                tables.active.appendChild(clonedRow);
+                tableBodies.permanent.appendChild(clonedRow);
             }
-        } else if (employee.status === 'terminated' && tables.terminated) {
+        } else if (employee.display_status?.toLowerCase() === 'terminated' && tableBodies.terminated) {
             const clonedRow = row.cloneNode(true);
             addRowEventListeners(clonedRow, employee);
-            tables.terminated.appendChild(clonedRow);
-        } else if (employee.status === 'incomplete' && tables.incomplete) {
+            tableBodies.terminated.appendChild(clonedRow);
+        } else if (employee.display_status?.toLowerCase() === 'incomplete' && tableBodies.incomplete) {
             const clonedRow = row.cloneNode(true);
             addRowEventListeners(clonedRow, employee);
-            tables.incomplete.appendChild(clonedRow);
+            tableBodies.incomplete.appendChild(clonedRow);
         }
         
         // Always add to the "all" table
-        if (tables.all) {
+        if (tableBodies.all) {
             const clonedRow = row.cloneNode(true);
             addRowEventListeners(clonedRow, employee);
-            tables.all.appendChild(clonedRow);
+            tableBodies.all.appendChild(clonedRow);
         }
     });
 
     // Update employee statistics
-    updateEmployeeStats(employees);
-}
-
-function addRowEventListeners(row, employee) {
-    row.addEventListener('dblclick', () => {
-        console.log('Double-clicked employee row:', employee.employee_id);
-        openEmployeeModal(employee.employee_id);
-    });
+    updateEmployeeStats();
 }
 
 function createEmployeeRow(employee) {
@@ -903,17 +1183,42 @@ function createEmployeeRow(employee) {
     row.dataset.employeeId = employee.employee_id;
     
     const hireDate = employee.hire_date ? new Date(employee.hire_date).toLocaleDateString() : '';
+    const endDate = employee.end_date ? new Date(employee.end_date).toLocaleDateString() : '';
     
-    row.innerHTML = `
+    // Base columns that are common to all tables
+    const baseColumns = `
         <td>${employee.employee_number || ''}</td>
         <td>${employee.first_name} ${employee.last_name}</td>
         <td>${employee.department || ''}</td>
         <td>${employee.position || ''}</td>
         <td>${hireDate}</td>
-        <td><span class="status-badge ${employee.status || 'active'}">${employee.status || 'Active'}</span></td>
     `;
     
+    // Additional columns based on status
+    if (employee.display_status?.toLowerCase() === 'terminated') {
+        row.innerHTML = baseColumns + `
+            <td>${endDate}</td>
+            <td>${employee.termination_reason || ''}</td>
+        `;
+    } else if (employee.employment_type?.toLowerCase() === 'temporary') {
+        row.innerHTML = baseColumns + `
+            <td>${endDate}</td>
+            <td><span class="status-badge ${employee.display_status || 'active'}">${employee.display_status || 'Active'}</span></td>
+        `;
+    } else {
+        row.innerHTML = baseColumns + `
+            <td><span class="status-badge ${employee.display_status || 'active'}">${employee.display_status || 'Active'}</span></td>
+        `;
+    }
+    
     return row;
+}
+
+function addRowEventListeners(row, employee) {
+    row.addEventListener('dblclick', () => {
+        console.log('Double-clicked employee row:', employee.employee_id);
+        openEmployeeModal(employee.employee_id);
+    });
 }
 
 // Add Employee Modal Functionality
@@ -954,10 +1259,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData(addEmployeeForm);
             const employeeData = {
                 employee_number: formData.get('employeeNumber'),
-                clock_number: formData.get('clockNumber'),
                 first_name: formData.get('firstName'),
                 last_name: formData.get('lastName'),
-                csrf_token: formData.get('csrf_token')
+                is_sales: formData.get('isSales') === 'on' ? true : false
             };
 
             try {
@@ -991,8 +1295,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (loadingModal) {
                     loadingModal.classList.add('hidden');
                 }
-                
-                console.error('Error adding employee:', error);
+                // Show error message
                 showNotification(error.message, 'error');
             }
         });
@@ -1051,85 +1354,94 @@ function showNotification(message, type = 'info') {
     }
 }
 
-function updateEmployeeStats(employees) {
-    // Count employees by status
-    const stats = employees.reduce((acc, emp) => {
-        if (emp.status === 'active') {
-            if (emp.employment_type === 'Temporary') {
-                acc.temporary++;
-            } else {
-                acc.permanent++;
-            }
-        } else if (emp.status === 'terminated') {
-            acc.terminated++;
-        } else if (emp.status === 'incomplete') {
-            acc.incomplete++;
+// Async function to fetch and update employee statistics from the backend
+async function updateEmployeeStats() {
+    try {
+        const response = await fetch('../api/employee-api.php?action=stats');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return acc;
-    }, { permanent: 0, temporary: 0, terminated: 0, incomplete: 0 });
+        const result = await response.json();
 
-    // Update total employees count
-    const totalEmployees = employees.length;
-    const totalEmployeesElement = document.getElementById('total-employees');
-    if (totalEmployeesElement) {
-        totalEmployeesElement.textContent = totalEmployees;
-    }
+        if (!result.success) {
+            throw new Error(result.message || 'Failed to fetch employee stats');
+        }
 
-    // Calculate and update license usage
-    const licenseLimitElement = document.getElementById('license-limit');
-    const licenseLimit = licenseLimitElement ? parseInt(licenseLimitElement.textContent) || 300 : 300;
-    const usagePercentage = Math.round((totalEmployees / licenseLimit) * 100);
-    
-    const licenseUsageElement = document.getElementById('license-usage');
-    if (licenseUsageElement) {
-        licenseUsageElement.textContent = `${usagePercentage}%`;
-    }
+        const stats = result.data;
+        const totalActiveEmployees = stats.total;
+        const statusStats = stats.by_status;
 
-    // Update progress bar
-    const progressBar = document.querySelector('.progress');
+        // Update total employees count
+        const totalEmployeesElement = document.getElementById('total-employees');
+        if (totalEmployeesElement) {
+            totalEmployeesElement.textContent = totalActiveEmployees;
+        }
+
+        // Calculate and update license usage
+        const licenseLimitElement = document.getElementById('license-limit');
+        // Default to 300 if not found or invalid
+        const licenseLimit = licenseLimitElement ? parseInt(licenseLimitElement.textContent) || 300 : 300;
+        const usagePercentage = Math.round((totalActiveEmployees / licenseLimit) * 100);
+        
+        const licenseUsageElement = document.getElementById('license-usage');
+        if (licenseUsageElement) {
+            licenseUsageElement.textContent = `${usagePercentage}%`;
+        }
+
+        // Update progress bar
+        const progressBar = document.querySelector('.progress');
         if (progressBar) {
-        progressBar.style.width = `${usagePercentage}%`;
-        // Add color classes based on usage
-        progressBar.className = 'progress ' + 
-            (usagePercentage > 90 ? 'critical' : 
-             usagePercentage > 75 ? 'warning' : 
-             'normal');
-    }
-
-    // Update status distribution in overview modal if it exists
-    const modalStats = document.querySelector('.status-distribution');
-    if (modalStats) {
-        const statusCounts = modalStats.querySelectorAll('.status-count');
-        if (statusCounts.length >= 3) {
-            statusCounts[0].textContent = stats.permanent + stats.temporary; // Active (Permanent + Temporary)
-            statusCounts[1].textContent = stats.temporary; // Temporary
-            statusCounts[2].textContent = stats.incomplete; // Incomplete
+            progressBar.style.width = `${usagePercentage}%`;
+            // Add color classes based on usage
+            progressBar.className = 'progress ' +
+                (usagePercentage > 90 ? 'critical' :
+                    usagePercentage > 75 ? 'warning' :
+                        'normal');
         }
-    }
 
-    // Update modal statistics
-    const modalTotalEmployees = document.getElementById('modal-total-employees');
-    if (modalTotalEmployees) {
-        modalTotalEmployees.textContent = totalEmployees;
-    }
+        // Update status distribution in overview modal if it exists
+        const modalStats = document.querySelector('.status-distribution');
+        if (modalStats) {
+            const statusCountsElements = modalStats.querySelectorAll('.status-count');
+            if (statusCountsElements.length >= 3) {
+                // Ensure these elements exist and update based on fetched data
+                // Assuming order: Active (Total), Temporary, Incomplete
+                statusCountsElements[0].textContent = statusStats.active || 0; // Total active employees
+                statusCountsElements[1].textContent = statusStats.temporary || 0; // Temporary active employees
+                statusCountsElements[2].textContent = statusStats.incomplete || 0; // Incomplete employees
+            }
+        }
 
-    const modalLicenseLimit = document.getElementById('modal-license-limit');
-    if (modalLicenseLimit) {
-        modalLicenseLimit.textContent = licenseLimit;
-    }
+        // Update modal statistics (if the modal is open)
+        const modalTotalEmployees = document.getElementById('modal-total-employees');
+        if (modalTotalEmployees) {
+            modalTotalEmployees.textContent = totalActiveEmployees;
+        }
 
-    const modalLicenseUsage = document.getElementById('modal-license-usage');
-    if (modalLicenseUsage) {
-        modalLicenseUsage.textContent = `${usagePercentage}%`;
-    }
+        const modalLicenseLimit = document.getElementById('modal-license-limit');
+        if (modalLicenseLimit) {
+            modalLicenseLimit.textContent = licenseLimit;
+        }
 
-    const modalProgressBar = document.querySelector('#employee-overview-modal .progress');
-    if (modalProgressBar) {
-        modalProgressBar.style.width = `${usagePercentage}%`;
+        const modalLicenseUsage = document.getElementById('modal-license-usage');
+        if (modalLicenseUsage) {
+            modalLicenseUsage.textContent = `${usagePercentage}%`;
+        }
+
+        const modalProgressBar = document.querySelector('#employee-overview-modal .progress');
+        if (modalProgressBar) {
+            modalProgressBar.style.width = `${usagePercentage}%`;
+        }
+
+    } catch (error) {
+        console.error('Error fetching employee stats:', error);
+        showNotification('Failed to load employee statistics.', 'error');
     }
 }
 
 function openEmployeeModal(employeeId) {
+    console.log('Opening modal for employee ID:', employeeId);
+    
     const modal = document.getElementById('employee-details-modal');
     if (!modal) {
         console.error('Employee details modal not found');
@@ -1142,50 +1454,74 @@ function openEmployeeModal(employeeId) {
         loadingModal.classList.remove('hidden');
     }
 
-    // Fetch and display employee details using the new API endpoint
-    fetch(`../api/employee-api.php?action=details&id=${employeeId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch employee details');
-            }
-            return response.json();
-        })
-        .then(result => {
-            if (!result.success) {
-                throw new Error(result.message || 'Failed to fetch employee details');
-            }
+    // Use the same path structure as the working list endpoint
+    const url = `../api/employee-api.php?action=details&id=${employeeId}`;
+    console.log('Fetching employee details from:', url);
 
-            // Hide loading modal
-            if (loadingModal) {
-                loadingModal.classList.add('hidden');
-            }
+    // Fetch and display employee details using the details action
+    fetch(url, {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch employee details: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(result => {
+        console.log('Response data:', result);
+        
+        if (!result.success) {
+            throw new Error(result.message || 'Failed to fetch employee details');
+        }
 
-            // Show employee modal
-            modal.style.display = 'flex';
+        // Hide loading modal
+        if (loadingModal) {
+            loadingModal.classList.add('hidden');
+        }
 
-            // Initialize employee modal manager if not already initialized
-            if (!window.employeeModalManager) {
-                window.employeeModalManager = new EmployeeModalManager();
-            }
+        // Show employee modal
+        modal.style.display = 'flex';
 
-            // Let the modal manager handle populating the data
-            window.employeeModalManager.openModal(employeeId);
-        })
-        .catch(error => {
-            console.error('Error fetching employee details:', error);
-            showNotification(error.message, 'error');
-            
-            // Hide loading modal
-            if (loadingModal) {
-                loadingModal.classList.add('hidden');
-            }
-        });
+        // Initialize employee modal manager if not already initialized
+        if (!window.employeeModalManager) {
+            window.employeeModalManager = new EmployeeModalManager();
+        }
+
+        // Let the modal manager handle populating the data
+        window.employeeModalManager.openModal(employeeId);
+    })
+    .catch(error => {
+        console.error('Error fetching employee details:', error);
+        showNotification(error.message, 'error');
+        
+        // Hide loading modal
+        if (loadingModal) {
+            loadingModal.classList.add('hidden');
+        }
+    });
 }
 
 // Function to update pagination controls based on API response
 function updatePagination(paginationData) {
+    console.log('Updating pagination with data:', paginationData);
+    console.log(`Pagination Data - Current Page: ${paginationData.current_page}, Total Pages: ${paginationData.total_pages}`);
     if (!paginationData) return;
     
+    // Set the value of the perPageSelect dropdown
+    const perPageSelect = document.getElementById('perPageSelect');
+    if (perPageSelect && paginationData.per_page) {
+        perPageSelect.value = paginationData.per_page;
+    }
+
     const paginationElements = document.querySelectorAll('.pagination');
     
     paginationElements.forEach(pagination => {
@@ -1194,7 +1530,7 @@ function updatePagination(paginationData) {
         if (paginationInfo) {
             paginationInfo.textContent = `Page ${paginationData.current_page} of ${paginationData.total_pages}`;
         }
-        
+
         // Get the pagination buttons
         const firstPageBtn = pagination.querySelector('.pagination-button:first-child');
         const prevPageBtn = pagination.querySelector('.pagination-button:nth-child(2)');
@@ -1204,57 +1540,95 @@ function updatePagination(paginationData) {
         // Update button states based on current page
         if (firstPageBtn) {
             firstPageBtn.disabled = paginationData.current_page <= 1;
+            // Remove existing listener before adding a new one
+            if (firstPageBtn.listener) {
+                firstPageBtn.removeEventListener('click', firstPageBtn.listener);
+            }
+            firstPageBtn.listener = () => {
+                if (!firstPageBtn.disabled) {
+                    loadEmployees(1, getCurrentFilters());
+                }
+            };
+            firstPageBtn.addEventListener('click', firstPageBtn.listener);
         }
         
         if (prevPageBtn) {
             prevPageBtn.disabled = paginationData.current_page <= 1;
+            if (prevPageBtn.listener) {
+                prevPageBtn.removeEventListener('click', prevPageBtn.listener);
+            }
+            prevPageBtn.listener = () => {
+                if (!prevPageBtn.disabled) {
+                    loadEmployees(paginationData.current_page - 1, getCurrentFilters());
+                }
+            };
+            prevPageBtn.addEventListener('click', prevPageBtn.listener);
         }
         
         if (nextPageBtn) {
             nextPageBtn.disabled = paginationData.current_page >= paginationData.total_pages;
+            if (nextPageBtn.listener) {
+                nextPageBtn.removeEventListener('click', nextPageBtn.listener);
+            }
+            nextPageBtn.listener = () => {
+                if (!nextPageBtn.disabled) {
+                    loadEmployees(paginationData.current_page + 1, getCurrentFilters());
+                }
+            };
+            nextPageBtn.addEventListener('click', nextPageBtn.listener);
         }
         
         if (lastPageBtn) {
             lastPageBtn.disabled = paginationData.current_page >= paginationData.total_pages;
-        }
-        
-        // Add click handlers to pagination buttons
-        if (firstPageBtn && !firstPageBtn.hasAttribute('data-handler-attached')) {
-            firstPageBtn.setAttribute('data-handler-attached', 'true');
-            firstPageBtn.addEventListener('click', () => {
-                if (!firstPageBtn.disabled) {
-                    loadEmployees(1);
-                }
-            });
-        }
-        
-        if (prevPageBtn && !prevPageBtn.hasAttribute('data-handler-attached')) {
-            prevPageBtn.setAttribute('data-handler-attached', 'true');
-            prevPageBtn.addEventListener('click', () => {
-                if (!prevPageBtn.disabled) {
-                    loadEmployees(paginationData.current_page - 1);
-                }
-            });
-        }
-        
-        if (nextPageBtn && !nextPageBtn.hasAttribute('data-handler-attached')) {
-            nextPageBtn.setAttribute('data-handler-attached', 'true');
-            nextPageBtn.addEventListener('click', () => {
-                if (!nextPageBtn.disabled) {
-                    loadEmployees(paginationData.current_page + 1);
-                }
-            });
-        }
-        
-        if (lastPageBtn && !lastPageBtn.hasAttribute('data-handler-attached')) {
-            lastPageBtn.setAttribute('data-handler-attached', 'true');
-            lastPageBtn.addEventListener('click', () => {
+            if (lastPageBtn.listener) {
+                lastPageBtn.removeEventListener('click', lastPageBtn.listener);
+            }
+            lastPageBtn.listener = () => {
                 if (!lastPageBtn.disabled) {
-                    loadEmployees(paginationData.total_pages);
+                    loadEmployees(paginationData.total_pages, getCurrentFilters());
                 }
-            });
+            };
+            lastPageBtn.addEventListener('click', lastPageBtn.listener);
         }
     });
+}
+
+// Helper function to get current filters from the active tab/sub-tab
+function getCurrentFilters() {
+    let filters = {};
+    const activeMainTabButton = document.querySelector('.page-tab-button.active');
+    const activeMainTabId = activeMainTabButton ? activeMainTabButton.dataset.tab : 'active';
+
+    // Get per_page value from the select element
+    const perPageSelect = document.getElementById('perPageSelect');
+    if (perPageSelect) {
+        filters.per_page = parseInt(perPageSelect.value, 10);
+    }
+
+    if (activeMainTabId === 'active') {
+        const activeSubTabButton = document.querySelector('.page-subtab-button.active');
+        const activeSubTabId = activeSubTabButton ? activeSubTabButton.dataset.subtab : 'permanent';
+        filters.status = 'active';
+        if (activeSubTabId === 'permanent') {
+            filters.employment_type = 'Permanent';
+        } else if (activeSubTabId === 'temporary') {
+            filters.employment_type = 'Temporary';
+        }
+    } else if (activeMainTabId === 'terminated') {
+        filters.status = 'terminated';
+    } else if (activeMainTabId === 'incomplete') {
+        filters.status = 'incomplete';
+    } else if (activeMainTabId === 'all') {
+        // No status filter for 'all' tab
+    }
+
+    // Add search term if present
+    const searchInput = document.getElementById('employeeSearchInput');
+    if (searchInput && searchInput.value.trim() !== '') {
+        filters.search = searchInput.value.trim();
+    }
+
+    return filters;
 }
 
 // Update the updateProfilePlaceholder function to work with the new radio buttons
@@ -1271,3 +1645,17 @@ function updateProfilePlaceholder(gender) {
 // Make functions globally accessible
 window.openAddEmployeeModal = openAddEmployeeModal;
 window.openEmployeeModal = openEmployeeModal;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize search and pagination related elements here
+    initSearch();
+
+    // Handle per page select change
+    const perPageSelect = document.getElementById('perPageSelect');
+    if (perPageSelect) {
+        perPageSelect.addEventListener('change', (event) => {
+            // When per page changes, reset to the first page
+            loadEmployees(1, getCurrentFilters());
+        });
+    }
+});

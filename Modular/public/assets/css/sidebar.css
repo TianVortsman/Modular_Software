@@ -1,6 +1,6 @@
 /* Sidebar Styling */
 .modular-sidebar {
-    width: 220px; /* Expanded sidebar width */
+    width: 200px; /* Expanded sidebar width */
     background-color: var(--color-secondary); /* Background color of the sidebar */
     padding-top: 20px;
     position: fixed;
