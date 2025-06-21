@@ -7,7 +7,7 @@
     <form class="universal-product-modal-form" id="universalProductForm" enctype="multipart/form-data">
       <!-- Hidden fields for internal reference -->
       <input type="hidden" name="prod_id" id="universalItemId">
-      <input type="hidden" name="product_type" id="universalItemType" value="products">
+      <!-- <input type="hidden" name="product_type" id="universalItemType" value="products"> -->
       <input type="hidden" name="modal_mode" id="universalModalMode" value="add">
 
       <div class="upm-layout">
@@ -85,7 +85,7 @@
               </div>
               <div class="upm-field">
                 <label for="universalItemCategory">Category:</label>
-                <select name="category_id" id="universalItemCategory" required></select>
+                <select name="category_id" id="universalItemCategory"></select>
               </div>
               <div class="upm-field">
                 <label for="universalItemSubcategory">Subcategory:</label>

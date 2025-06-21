@@ -218,6 +218,27 @@ class ProductController {
     }
 
     private function updateCoreProduct($productId) {
+        // Fetch old type_id and type_name
+        $stmt = $this->db->prepare('SELECT p.type_id, pt.type_name FROM core.product p LEFT JOIN core.product_types pt ON p.type_id = pt.type_id WHERE p.product_id = :product_id');
+        $stmt->execute(['product_id' => $productId]);
+        $old = $stmt->fetch(PDO::FETCH_ASSOC);
+        $oldTypeId = $old['type_id'] ?? null;
+        $oldTypeName = $old['type_name'] ?? null;
+
+        // Get new type_id and type_name
+        $newTypeId = isset($_POST['type_id']) && $_POST['type_id'] !== '' ? $_POST['type_id'] : null;
+        $newTypeName = $oldTypeName;
+        if ($newTypeId && $newTypeId != $oldTypeId) {
+            // Lookup new type_name
+            $stmt2 = $this->db->prepare('SELECT type_name FROM core.product_types WHERE type_id = :type_id');
+            $stmt2->execute(['type_id' => $newTypeId]);
+            $row = $stmt2->fetch(PDO::FETCH_ASSOC);
+            if ($row && $row['type_name']) {
+                $newTypeName = $row['type_name'];
+            }
+        }
+
+        // Update product as before
         $sql = "UPDATE core.product SET
             product_name = :name,
             product_description = :description,
@@ -242,13 +263,34 @@ class ProductController {
             'status' => $_POST['status'] ?? 'active',
             'sku' => isset($_POST['sku']) && $_POST['sku'] !== '' ? $_POST['sku'] : $this->getCurrentSku($productId),
             'barcode' => isset($_POST['barcode']) && $_POST['barcode'] !== '' ? $_POST['barcode'] : $this->getCurrentBarcode($productId),
-            'type_id' => $_POST['type_id'] ?? null,
-            'category_id' => $_POST['category_id'] ?? null,
-            'subcategory_id' => $_POST['subcategory_id'] ?? null,
+            'type_id' => $newTypeId,
+            'category_id' => (isset($_POST['category_id']) && $_POST['category_id'] !== '' ? $_POST['category_id'] : null),
+            'subcategory_id' => (isset($_POST['subcategory_id']) && $_POST['subcategory_id'] !== '' ? $_POST['subcategory_id'] : null),
             'tax_rate' => !empty($_POST['tax_rate']) ? $_POST['tax_rate'] : 0,
             'discount' => !empty($_POST['discount']) ? $_POST['discount'] : 0,
             'notes' => $_POST['notes'] ?? null
         ]);
+
+        // Move image if type changed
+        if ($oldTypeName && $newTypeName && strtolower($oldTypeName) !== strtolower($newTypeName)) {
+            $accountNumber = $_SESSION['account_number'] ?? 'ACC002';
+            $docRoot = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
+            $oldFolder = "$docRoot/Uploads/$accountNumber/products/" . strtolower($oldTypeName);
+            $newFolder = "$docRoot/Uploads/$accountNumber/products/" . strtolower($newTypeName);
+            $extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            $found = false;
+            foreach ($extensions as $ext) {
+                $oldPath = "$oldFolder/$productId.$ext";
+                if (file_exists($oldPath)) {
+                    if (!is_dir($newFolder)) mkdir($newFolder, 0777, true);
+                    $newPath = "$newFolder/$productId.$ext";
+                    rename($oldPath, $newPath);
+                    $found = true;
+                    break;
+                }
+            }
+            // Optionally: remove all other extensions in old folder
+        }
     }
 
     private function handleImageUpload($productId = null) {
