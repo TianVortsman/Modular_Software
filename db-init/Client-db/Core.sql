@@ -88,8 +88,8 @@ CREATE TABLE IF NOT EXISTS core.employee_address (
 -- Employees Table (Base Table)
 CREATE TABLE IF NOT EXISTS core.employees (
     employee_id SERIAL PRIMARY KEY,
-    first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
+    employee_first_name VARCHAR(50) NOT NULL,
+    employee_last_name VARCHAR(50) NOT NULL,
     employee_number VARCHAR(50) NOT NULL UNIQUE,
     clock_number VARCHAR(50) UNIQUE,
     is_sales BOOLEAN DEFAULT FALSE
@@ -254,7 +254,7 @@ CREATE TABLE IF NOT EXISTS core.product_subcategories (
 );
 
 -- Product Table (references above)
-CREATE TABLE IF NOT EXISTS core.product (
+CREATE TABLE IF NOT EXISTS core.products (
     product_id SERIAL PRIMARY KEY,
     product_name VARCHAR(100) NOT NULL,
     product_description TEXT,
