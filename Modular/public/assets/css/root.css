@@ -18,9 +18,9 @@
     --spacing-large: 1.5rem;               /* Large spacing - reduced from 2rem */
 
     /* Border Radius */
-    --radius-small: 3px;                   /* Small rounded corners - reduced from 4px */
-    --radius-medium: 6px;                  /* Medium rounded corners - reduced from 8px */
-    --radius-large: 12px;                  /* Large rounded corners - reduced from 16px */
+    --radius-small: 4px;                   /* Small rounded corners - reduced from 4px */
+    --radius-medium: 8px;                  /* Medium rounded corners - reduced from 8px */
+    --radius-large: 14px;                  /* Large rounded corners - reduced from 16px */
 
     /* Transitions */
     --transition-speed: 0.3s;              /* Transition speed - reduced from 0.5s */

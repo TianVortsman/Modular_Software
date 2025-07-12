@@ -135,281 +135,13 @@ function importVehicles($spreadsheet, $conn) {
     return $messages;
 }
 
-// Function to import products along with supplier and link them via the product_supplier table
-function importProducts($spreadsheet, $conn) {
-    $sheet = $spreadsheet->getSheetByName('Products'); // Ensure sheet name matches
-    if (!$sheet) {
-        return ["Sheet 'Products' not found."];
-    }
-
-    // Get the last non-empty row
-    $highestRow = $sheet->getHighestDataRow();
-    if ($highestRow <= 1) {
-        return ["Skipping 'Products' sheet (no data)."];
-    }
-
-    $sheetData = $sheet->toArray(null, true, true, true);
-    $isFirstRow = true;
-    $messages = [];
-
-    foreach ($sheetData as $row) {
-        if ($isFirstRow) {
-            $isFirstRow = false;
-            continue; // Skip header row
-        }
-
-        // Extract product data (Columns A-N)
-        $prod_name       = trim($row['A'] ?? '');
-        $prod_descr      = trim($row['B'] ?? '');
-        $prod_price      = floatval($row['C'] ?? 0);
-        $sku             = trim($row['D'] ?? '');
-        $barcode         = trim($row['E'] ?? '');
-        $product_type    = trim($row['F'] ?? '');
-        $brand           = trim($row['G'] ?? '');
-        $manufacturer    = trim($row['H'] ?? '');
-        $weight          = floatval($row['I'] ?? 0);
-        $dimensions      = trim($row['J'] ?? '');
-        $warranty_period = trim($row['K'] ?? '');
-        $tax_rate        = floatval($row['L'] ?? 0);
-        $discount        = floatval($row['M'] ?? 0);
-        $status          = trim($row['N'] ?? '');
-
-        // Extract supplier data (Columns O-Q)
-        $suppl_name    = trim($row['O'] ?? '');
-        $suppl_address = trim($row['P'] ?? '');
-        $suppl_contact = trim($row['Q'] ?? '');
-
-        // Skip row if required fields are missing
-        if (empty($prod_name) || empty($suppl_name)) {
-            continue;
-        }
-
-        try {
-            // Insert product and retrieve its ID
-            $productQuery = "INSERT INTO product 
-                (prod_name, prod_descr, prod_price, sku, barcode, product_type, brand, manufacturer, weight, dimensions, warranty_period, tax_rate, discount, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                RETURNING prod_id";
-            $productParams = [$prod_name, $prod_descr, $prod_price, $sku, $barcode, $product_type, $brand, $manufacturer, $weight, $dimensions, $warranty_period, $tax_rate, $discount, $status];
-            $prodStmt = $conn->prepare($productQuery);
-            $prodStmt->execute($productParams);
-            $prod_id = $conn->lastInsertId();
-            $messages[] = "Product '$prod_name' imported successfully.";
-        } catch (PDOException $e) {
-            $messages[] = "Error inserting product '$prod_name': " . $e->getMessage();
-            continue;
-        }
-
-        try {
-            // Insert supplier and retrieve its ID
-            $supplierQuery = "INSERT INTO supplier (suppl_name, suppl_address, suppl_contact)
-                              VALUES (?, ?, ?)
-                              RETURNING suppl_id";
-            $supplierParams = [$suppl_name, $suppl_address, $suppl_contact];
-            $supStmt = $conn->prepare($supplierQuery);
-            $supStmt->execute($supplierParams);
-            $suppl_id = $conn->lastInsertId();
-        } catch (PDOException $e) {
-            $messages[] = "Error inserting supplier '$suppl_name': " . $e->getMessage();
-            continue;
-        }
-
-        try {
-            // Insert link into product_supplier table
-            $linkQuery = "INSERT INTO product_supplier (prod_id, suppl_id) VALUES (?, ?)";
-            $linkParams = [$prod_id, $suppl_id];
-            $linkStmt = $conn->prepare($linkQuery);
-            $linkStmt->execute($linkParams);
-            $messages[] = "Product '$prod_name' linked with supplier '$suppl_name' successfully.";
-        } catch (PDOException $e) {
-            $messages[] = "Error linking product ID $prod_id with supplier ID $suppl_id: " . $e->getMessage();
-        }
-    }
-
-    return $messages;
-}
-
 // Function to import companies
 function importCompanies($spreadsheet, $conn) {
-    $sheet = $spreadsheet->getSheetByName('Companies'); // Ensure sheet name matches
-    if (!$sheet) {
-        return ["Sheet 'Companies' not found."];
-    }
-    $highestRow = $sheet->getHighestDataRow();
-    if ($highestRow <= 1) {
-        return ["Skipping 'Companies' sheet (no data)."];
-    }
-    $sheetData = $sheet->toArray(null, true, true, true);
-    $isFirstRow = true;
-    $messages = [];
-    
-    foreach ($sheetData as $row) {
-        if ($isFirstRow) {
-            $isFirstRow = false;
-            continue; // Skip header row
-        }
-        
-        // Extract and sanitize data
-        $company_name     = ucwords(trim($row['A'] ?? ''));
-        $company_tax_no   = trim($row['B'] ?? '');
-        $company_regis_no = trim($row['C'] ?? '');
-        $company_type     = ucwords(trim($row['D'] ?? ''));
-        $industry         = ucwords(trim($row['E'] ?? ''));
-        $contact_name     = ucwords(trim($row['F'] ?? ''));
-        $contact_email    = strtolower(trim($row['G'] ?? ''));
-        $contact_phone    = trim($row['H'] ?? '');
-        $website          = strtolower(trim($row['I'] ?? ''));
-        $addr_line_1      = ucwords(trim($row['J'] ?? ''));
-        $addr_line_2      = ucwords(trim($row['K'] ?? ''));
-        $suburb           = ucwords(trim($row['L'] ?? ''));
-        $city             = ucwords(trim($row['M'] ?? ''));
-        $province         = ucwords(trim($row['N'] ?? ''));
-        $country          = ucwords(trim($row['O'] ?? ''));
-        $postcode         = trim($row['P'] ?? '');
-        
-        // Skip row if required fields are missing
-        if (empty($company_name) || empty($addr_line_1)) {
-            continue;
-        }
-        
-        try {
-            // Step 1: Insert Address
-            $addressQuery = "INSERT INTO address (addr_line_1, addr_line_2, suburb, city, province, country, postcode, updated_by) 
-                             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                             RETURNING addr_id";
-            $addressStmt = $conn->prepare($addressQuery);
-            $addressStmt->execute([$addr_line_1, $addr_line_2, $suburb, $city, $province, $country, $postcode, 1]);
-            $addr_id = $conn->lastInsertId();
-        } catch (PDOException $e) {
-            $messages[] = "Error inserting address for company $company_name: " . $e->getMessage();
-            continue;
-        }
-        
-        try {
-            // Step 2: Insert Company
-            $companyQuery = "INSERT INTO company (company_name, company_tax_no, company_regis_no, company_type, industry, website, created_at, updated_at) 
-                             VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW()) 
-                             RETURNING company_id";
-            $companyStmt = $conn->prepare($companyQuery);
-            $companyStmt->execute([$company_name, $company_tax_no, $company_regis_no, $company_type, $industry, $website]);
-            $company_id = $conn->lastInsertId();
-            $messages[] = "Company '$company_name' imported successfully.";
-        } catch (PDOException $e) {
-            $messages[] = "Error inserting company $company_name: " . $e->getMessage();
-            continue;
-        }
-        
-        try {
-            // Step 3: Insert Contact into Company_Contacts
-            $contactQuery = "INSERT INTO company_contacts (company_id, contact_name, contact_email, contact_phone, created_at, updated_at)
-                             VALUES (?, ?, ?, ?, NOW(), NOW())";
-            $contactStmt = $conn->prepare($contactQuery);
-            $contactStmt->execute([$company_id, $contact_name, $contact_email, $contact_phone]);
-            $messages[] = "Contact for company '$company_name' imported successfully.";
-        } catch (PDOException $e) {
-            $messages[] = "Error inserting contact for company $company_name: " . $e->getMessage();
-            continue;
-        }
-        
-        try {
-            // Step 4: Link Company and Address
-            $companyAddressQuery = "INSERT INTO company_address (company_id, addr_id) VALUES (?, ?)";
-            $companyAddressStmt = $conn->prepare($companyAddressQuery);
-            $companyAddressStmt->execute([$company_id, $addr_id]);
-            $messages[] = "Address for company '$company_name' linked successfully.";
-        } catch (PDOException $e) {
-            $messages[] = "Error linking address to company $company_name: " . $e->getMessage();
-        }
-    }
-    return $messages;
 }
 
 // Function to import customers
 function importCustomers($spreadsheet, $conn) {
-    $sheet = $spreadsheet->getSheetByName('Customers'); // Ensure sheet name matches
-    if (!$sheet) {
-        return ["Sheet 'Customers' not found."];
-    }
-    $highestRow = $sheet->getHighestDataRow();
-    if ($highestRow <= 1) {
-        return ["Skipping 'Customers' sheet (no data)."];
-    }
-    $sheetData = $sheet->toArray(null, true, true, true);
-    $isFirstRow = true;
-    $messages = [];
-    
-    foreach ($sheetData as $row) {
-        if ($isFirstRow) {
-            $isFirstRow = false;
-            continue; // Skip header row
-        }
-        
-        // Extract and sanitize data
-        $cust_fname   = isset($row['A']) ? ucwords(trim($row['A'])) : '';
-        $cust_lname   = isset($row['B']) ? ucwords(trim($row['B'])) : '';
-        $cust_init    = isset($row['C']) ? strtoupper(trim($row['C'])) : '';
-        $cust_title   = isset($row['D']) ? ucwords(trim($row['D'])) : '';
-        $cust_type_id = isset($row['E']) ? intval($row['E']) : 0;
-        $cust_email   = isset($row['F']) ? strtolower(trim($row['F'])) : '';
-        $cust_tel     = isset($row['G']) ? trim($row['G']) : '';
-        $cust_cell    = isset($row['H']) ? trim($row['H']) : '';
-        $company_id   = isset($row['I']) ? intval($row['I']) : 0;
-        $addr_line1   = isset($row['J']) ? ucwords(trim($row['J'])) : '';
-        $addr_line2   = isset($row['K']) ? ucwords(trim($row['K'])) : '';
-        $suburb       = isset($row['L']) ? ucwords(trim($row['L'])) : '';
-        $city         = isset($row['M']) ? ucwords(trim($row['M'])) : '';
-        $province     = isset($row['N']) ? ucwords(trim($row['N'])) : '';
-        $country      = isset($row['O']) ? ucwords(trim($row['O'])) : '';
-        $postcode     = isset($row['P']) ? trim($row['P']) : '';
-        
-        // Skip row if required fields are missing
-        if (empty($cust_fname) || empty($addr_line1)) {
-            continue;
-        }
-        
-        try {
-            // Step 1: Insert Address
-            $addressQuery = "INSERT INTO address (addr_line_1, addr_line_2, suburb, city, province, country, postcode, updated_by) 
-                             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                             RETURNING addr_id";
-            $addressStmt = $conn->prepare($addressQuery);
-            $addressStmt->execute([$addr_line1, $addr_line2, $suburb, $city, $province, $country, $postcode, 1]);
-            $addr_id = $conn->lastInsertId();
-        } catch (PDOException $e) {
-            $messages[] = "Error inserting address for customer $cust_fname $cust_lname: " . $e->getMessage();
-            continue;
-        }
-        
-        try {
-            // Step 2: Insert Customer
-            $customerQuery = "INSERT INTO customers (cust_fname, cust_lname, cust_init, cust_title, cust_type_id, cust_email, cust_tel, cust_cell, company_id, created_at, updated_at) 
-                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW()) 
-                              RETURNING cust_id";
-            $customerStmt = $conn->prepare($customerQuery);
-            $customerStmt->execute([$cust_fname, $cust_lname, $cust_init, $cust_title, $cust_type_id, $cust_email, $cust_tel, $cust_cell, $company_id]);
-            $cust_id = $conn->lastInsertId();
-            $messages[] = "Customer '$cust_fname $cust_lname' imported successfully.";
-        } catch (PDOException $e) {
-            $messages[] = "Error inserting customer $cust_fname $cust_lname: " . $e->getMessage();
-            continue;
-        }
-        
-        try {
-            // Step 3: Link Customer and Address
-            $customerAddressQuery = "INSERT INTO customer_address (cust_id, addr_id) VALUES (?, ?)";
-            $customerAddressStmt = $conn->prepare($customerAddressQuery);
-            $customerAddressStmt->execute([$cust_id, $addr_id]);
-            $messages[] = "Address for customer '$cust_fname $cust_lname' linked successfully.";
-        } catch (PDOException $e) {
-            $duplicateMessage = handleDuplicateError($conn);
-            if ($duplicateMessage) {
-                $messages[] = "$duplicateMessage Customer '$cust_fname $cust_lname'.";
-            } else {
-                $messages[] = "Error linking address to customer $cust_fname $cust_lname: " . $e->getMessage();
-            }
-        }
-    }
-    return $messages;
+
 }
 
 // Time and Attendance Functions
@@ -617,21 +349,6 @@ function importTasks($conn, $data) {
         }
     } catch (PDOException $e) {
         $errors[] = "Error importing task: " . $e->getMessage();
-    }
-    return $errors;
-}
-
-// HR Functions
-function importEmployees($conn, $data) {
-    $errors = [];
-    try {
-        foreach ($data as $row) {
-            $stmt = $conn->prepare("INSERT INTO employees (first_name, last_name, email, phone, hire_date, position_id, 
-                                  department) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$row[0], $row[1], $row[2], $row[3], $row[4], $row[5], $row[6]]);
-        }
-    } catch (PDOException $e) {
-        $errors[] = "Error importing employee: " . $e->getMessage();
     }
     return $errors;
 }
@@ -971,4 +688,205 @@ function importTimeAndAttEmployees($conn, $data) {
         'successCount' => $successCount,
         'totalRows' => count($data)
     ];
+}
+
+function importProducts($spreadsheet, $conn) {
+    $sheet = $spreadsheet->getSheetByName('Products');
+    if (!$sheet) return [
+        'success' => false,
+        'message' => "Sheet 'Products' not found.",
+        'errors' => [],
+        'successCount' => 0,
+        'totalRows' => 0
+    ];
+
+    $sheetData = $sheet->toArray(null, true, true, true);
+    if (count($sheetData) <= 1) return [
+        'success' => false,
+        'message' => "No data found in 'Products' sheet.",
+        'errors' => [],
+        'successCount' => 0,
+        'totalRows' => 0
+    ];
+
+    $errors = [];
+    $successCount = 0;
+    // Build a map of header name (lowercase, trimmed) => Excel column letter
+    $headerRow = $sheetData[1];
+    $headerMap = [];
+    foreach ($headerRow as $colLetter => $colName) {
+        $colName = strtolower(trim($colName));
+        if ($colName !== '') {
+            $headerMap[$colName] = $colLetter;
+        }
+    }
+
+    $required = ['product_name', 'product_price', 'product_type_name', 'supplier_name'];
+    foreach ($required as $col) {
+        if (!isset($headerMap[$col])) return [
+            'success' => false,
+            'message' => "Missing required column: $col",
+            'errors' => [],
+            'successCount' => 0,
+            'totalRows' => 0
+        ];
+    }
+
+    for ($i = 2; $i <= count($sheetData); $i++) {
+        $row = $sheetData[$i];
+        $get = function($field) use ($headerMap, $row) {
+            $colLetter = $headerMap[$field] ?? null;
+            return $colLetter !== null ? trim($row[$colLetter] ?? '') : '';
+        };
+        $missing = [];
+        foreach (['product_name', 'product_price', 'product_type_name', 'supplier_name'] as $req) {
+            if (empty($get($req))) $missing[] = $req;
+        }
+        if ($missing) {
+            $errors[] = [
+                'row' => $i,
+                'product_name' => $get('product_name'),
+                'product_status' => 'skipped',
+                'reason' => 'Missing required: ' . implode(', ', $missing)
+            ];
+            continue;
+        }
+        // Clean and map fields robustly
+        $product_name = ucwords($get('product_name'));
+        $product_description = $get('product_description');
+        $product_price = floatval($get('product_price'));
+        $product_status = strtolower($get('product_status') ?: 'active');
+        $sku = strtoupper($get('sku'));
+        $barcode = $get('barcode');
+        $product_type_name = strtolower(trim($get('product_type_name')));
+        $category_name = ucwords($get('category_name'));
+        $subcategory_name = ucwords($get('subcategory_name'));
+        $tax_rate = floatval($get('tax_rate') ?: 0);
+        $discount = floatval($get('discount') ?: 0);
+        $notes = $get('notes');
+        $stock_quantity = intval($get('stock_quantity') ?: 0);
+        $reorder_level = intval($get('reorder_level') ?: 0);
+        $lead_time = intval($get('lead_time') ?: 0);
+        $product_weight = floatval($get('product_weight') ?: 0);
+        $dimensions = $get('dimensions');
+        $brand = ucwords($get('brand'));
+        $manufacturer = ucwords($get('manufacturer'));
+        $warranty_period = $get('warranty_period');
+        $oem_part_number = $get('oem_part_number');
+        $compatible_vehicles = $get('compatible_vehicles');
+        $material = $get('material');
+        $labor_cost = floatval($get('labor_cost') ?: 0);
+        $estimated_time = $get('estimated_time');
+        $service_frequency = $get('service_frequency');
+        $installation_required = strtolower($get('installation_required')) === 'yes' ? true : false;
+        $bundle_items = $get('bundle_items');
+        $supplier_name = ucwords($get('supplier_name'));
+        $supplier_address = $get('supplier_address');
+        $supplier_contact = $get('supplier_contact');
+
+        try {
+            // 1. Resolve type/category/subcategory IDs
+            $product_type_id = getOrCreateId($conn, 'core.product_types', 'product_type_name', $product_type_name, 'product_type_id');
+            $category_id = $category_name ? getOrCreateId($conn, 'core.product_categories', 'category_name', $category_name, 'category_id', ['categories_type_id' => $product_type_id]) : null;
+            $subcategory_id = $subcategory_name ? getOrCreateId($conn, 'core.product_subcategories', 'subcategory_name', $subcategory_name, 'subcategory_id', ['category_id' => $category_id]) : null;
+
+            // 2. Supplier: get or create
+            $supplier_id = getOrCreateId($conn, 'inventory.supplier', 'supplier_name', $supplier_name, 'supplier_id', [
+                'supplier_address' => $supplier_address,
+                'suppllier_contact' => $supplier_contact
+            ]);
+
+            // 3. Tax Rate: get or create tax_rate_id
+            $tax_rate_id = null;
+            if ($tax_rate > 0) {
+                // Try to find an existing tax_rate with this rate
+                $stmtTax = $conn->prepare("SELECT tax_rate_id FROM core.tax_rates WHERE rate = ? LIMIT 1");
+                $stmtTax->execute([$tax_rate]);
+                $tax_rate_id = $stmtTax->fetchColumn();
+                if (!$tax_rate_id) {
+                    // Insert new tax rate
+                    $stmtTaxInsert = $conn->prepare("INSERT INTO core.tax_rates (tax_name, rate, is_active, created_at, updated_at) VALUES (?, ?, true, NOW(), NOW()) RETURNING tax_rate_id");
+                    $tax_name = $tax_rate . '%';
+                    $stmtTaxInsert->execute([$tax_name, $tax_rate]);
+                    $tax_rate_id = $stmtTaxInsert->fetchColumn();
+                }
+            }
+
+            // 4. Insert into core.product
+            $stmt = $conn->prepare("
+                INSERT INTO core.product (
+                    product_name, product_description, product_price, product_status, sku, barcode, product_type_id, category_id, subcategory_id, tax_rate_id, discount, notes
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                RETURNING product_id
+            ");
+            $stmt->execute([
+                $product_name, $product_description, $product_price, $product_status, $sku, $barcode, $product_type_id, $category_id, $subcategory_id, $tax_rate_id, $discount, $notes
+            ]);
+            $product_id = $stmt->fetchColumn();
+
+            // 5. Insert into inventory.product_inventory
+            $stmt2 = $conn->prepare("
+                INSERT INTO inventory.product_inventory (
+                    product_id, stock_quantity, reorder_level, lead_time, product_weight, dimensions, brand, manufacturer, warranty_period
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ");
+            $stmt2->execute([
+                $product_id, $stock_quantity, $reorder_level, $lead_time, $product_weight, $dimensions, $brand, $manufacturer, $warranty_period
+            ]);
+
+            // 6. Link product to supplier
+            $stmt3 = $conn->prepare("INSERT INTO inventory.product_supplier (product_id, supplier_id) VALUES (?, ?) ON CONFLICT DO NOTHING");
+            $stmt3->execute([$product_id, $supplier_id]);
+
+            $successCount++;
+        } catch (PDOException $e) {
+            $reason = $e->getMessage();
+            // User-friendly duplicate barcode error
+            if (strpos($reason, 'duplicate key value violates unique constraint') !== false && strpos($reason, 'product_barcode_key') !== false) {
+                $reason = 'Duplicate barcode' . ($barcode ? ': ' . $barcode : '');
+            } else if (strpos($reason, 'duplicate key value violates unique constraint') !== false) {
+                $reason = 'Duplicate value for a unique field.';
+            } else {
+                // Shorten generic SQL errors
+                $reason = preg_replace('/SQLSTATE\\[[^]]*\\]: [^:]*: [0-9]+ ERROR:  /', '', $reason);
+                $reason = strtok($reason, "\n"); // Only first line
+            }
+            $errors[] = [
+                'row' => $i,
+                'product_name' => $product_name,
+                'product_status' => 'failed',
+                'reason' => $reason
+            ];
+        }
+    }
+    return [
+        'success' => $successCount > 0,
+        'message' => $successCount > 0 ? "Imported $successCount products" . ($errors ? " with some errors" : "") : "No products were imported",
+        'errors' => $errors,
+        'successCount' => $successCount,
+        'totalRows' => count($sheetData) - 1
+    ];
+}
+
+// Helper to get or create a lookup value and return its ID
+function getOrCreateId($conn, $table, $field, $value, $idField, $extra = []) {
+    if (!$value) return null;
+    $where = "$field = ?";
+    $params = [$value];
+    foreach ($extra as $k => $v) {
+        $where .= " AND $k = ?";
+        $params[] = $v;
+    }
+    $sql = "SELECT $idField FROM $table WHERE $where LIMIT 1";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute($params);
+    $id = $stmt->fetchColumn();
+    if ($id) return $id;
+    // Insert if not found
+    $fields = array_merge([$field], array_keys($extra));
+    $placeholders = implode(',', array_fill(0, count($fields), '?'));
+    $sql = "INSERT INTO $table (" . implode(',', $fields) . ") VALUES ($placeholders) RETURNING $idField";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute(array_merge([$value], array_values($extra)));
+    return $stmt->fetchColumn();
 } 

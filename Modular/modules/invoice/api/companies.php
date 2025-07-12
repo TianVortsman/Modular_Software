@@ -62,9 +62,9 @@ switch ($action) {
                 c.registration_number,
                 c.vat_number,
                 c.status,
-                (SELECT MAX(inv_date) FROM invoicing.invoice WHERE company_id = c.company_id) as last_invoice_date,
-                (SELECT COALESCE(SUM(total_amount), 0) FROM invoicing.invoice WHERE company_id = c.company_id AND status_id = 1) as outstanding_balance,
-                (SELECT COUNT(*) FROM invoicing.invoice WHERE company_id = c.company_id) as total_invoices,
+                (SELECT MAX(invoice_date) FROM invoicing.invoices WHERE company_id = c.company_id) as last_invoice_date,
+                (SELECT COALESCE(SUM(total_amount), 0) FROM invoicing.invoices WHERE company_id = c.company_id AND status_id = 1) as outstanding_balance,
+                (SELECT COUNT(*) FROM invoicing.invoices WHERE company_id = c.company_id) as total_invoices,
                 a.address_line1,
                 a.city,
                 a.postal_code,
@@ -319,6 +319,29 @@ switch ($action) {
             }
         } catch (PDOException $e) {
             echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        }
+        break;
+
+    case 'search':
+        try {
+            $query = $_GET['query'] ?? '';
+            if (strlen($query) < 2) throw new Exception('Query too short');
+            $sql = "SELECT c.company_id, c.company_name, c.registration_number, c.vat_number, a.address_line1, a.address_line2, cp.email as contact_email, cp.phone as contact_phone
+                    FROM invoicing.company c
+                    LEFT JOIN invoicing.company_address ca ON c.company_id = ca.company_id
+                    LEFT JOIN invoicing.address a ON ca.address_id = a.address_id
+                    LEFT JOIN invoicing.company_contact cc ON c.company_id = cc.company_id
+                    LEFT JOIN invoicing.contact_person cp ON cc.contact_id = cp.contact_id
+                    WHERE (c.company_name ILIKE :q OR c.registration_number ILIKE :q OR c.vat_number ILIKE :q OR cp.email ILIKE :q)
+                      AND c.deleted_at IS NULL
+                    LIMIT 20";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([':q' => "%$query%"]);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($results);
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode([]);
         }
         break;
 

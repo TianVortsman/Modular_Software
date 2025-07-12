@@ -3,25 +3,25 @@
 /* ========================= */
 
 .universal-product-modal {
-    display: none; /* Hidden by default */
+    display: none;
     position: fixed;
-    z-index: var(--z-index-modal, 999);
+    z-index: 3000;
     left: 0;
     top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: var(--shadow-dark, rgba(0, 0, 0, 0.4)); /* Semi-transparent overlay */
-}
-
-.universal-product-modal.active {
-    display: flex;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--shadow-dark, rgba(0, 0, 0, 0.4));
     justify-content: center;
     align-items: center;
 }
 
+.universal-product-modal.active {
+    display: flex !important;
+}
+
 /* Modal Content */
 .universal-product-modal-content {
+    position: relative;
     background-color: var(--modal-bg, var(--color-background));
     margin: 2% auto;
     padding: var(--modal-padding, 1.5rem);
@@ -30,7 +30,6 @@
     max-width: 1000px;
     height: 80vh;
     max-height: 800px;
-    position: relative;
     box-shadow: 0 0 20px var(--shadow-dark, rgba(0, 0, 0, 0.7));
     border: 1px solid var(--modal-border, var(--border-color));
     color: var(--color-text-light);
@@ -42,21 +41,28 @@
 
 /* Close (X) */
 .universal-product-modal-close {
+    position: absolute;
+    top: 18px;
+    right: 24px;
     color: var(--color-text-light);
-    float: right;
-    font-size: 1.5rem;
+    background: var(--shadow-medium);
+    border: none;
+    font-size: 2rem;
     font-weight: bold;
     cursor: pointer;
-    transition: color var(--transition-speed, 0.3s) ease;
-    position: absolute;
-    right: 1.5rem;
-    top: 1rem;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: background 0.2s, color 0.2s;
 }
 
-.universal-product-modal-close:hover,
-.universal-product-modal-close:focus {
-    color: var(--color-hover);
-    text-decoration: none;
+.universal-product-modal-close:hover {
+    background: var(--shadow-dark);
+    color: var(--color-primary);
 }
 
 /* Title */
@@ -130,8 +136,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
+    background-color: var(--shadow-dark);
+    color: var(--color-text-light);
     opacity: 0;
     transition: opacity 0.3s ease;
     z-index: 2;
@@ -366,5 +372,160 @@
     .universal-product-modal-content {
         width: 95%;
         height: 90vh;
+    }
+}
+
+/* Modern Product Card Styles */
+.product-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-large);
+    box-shadow: var(--card-shadow);
+    border: 1.5px solid var(--border-color);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+    margin: 0.5rem;
+    min-width: 220px;
+    max-width: 260px;
+    min-height: 340px;
+    position: relative;
+    cursor: pointer;
+    transition: box-shadow 0.25s, transform 0.18s, border 0.18s;
+    color: var(--color-text-dark);
+}
+.product-card:hover {
+    box-shadow: var(--card-glow);
+    border: 2px solid var(--color-primary);
+    transform: translateY(-4px) scale(1.03);
+}
+.product-card .product-image {
+    width: 100%;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-background);
+    border-radius: var(--radius-large) var(--radius-large) 0 0;
+    overflow: hidden;
+    position: relative;
+}
+.product-card .product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: var(--radius-large) var(--radius-large) 0 0;
+    background: var(--color-background);
+    transition: filter 0.2s;
+}
+.product-card .image-overlay {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 38px;
+    background: linear-gradient(0deg, var(--shadow-dark) 80%, transparent 100%);
+    display: flex;
+    align-items: flex-end;
+    padding: 0 0.7rem 0.4rem 0.7rem;
+    z-index: 2;
+    pointer-events: none;
+}
+.product-card .type-badge {
+    background: var(--color-primary);
+    color: var(--color-background);
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: var(--radius-small);
+    padding: 0.18rem 0.7rem;
+    margin-right: 0.5rem;
+    box-shadow: 0 1px 4px var(--shadow-light);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    pointer-events: auto;
+}
+.product-card .status-badge {
+    background: var(--color-danger);
+    color: var(--color-text-light);
+    font-size: 0.8rem;
+    border-radius: var(--radius-small);
+    padding: 0.15rem 0.6rem;
+    margin-left: auto;
+    box-shadow: 0 1px 4px var(--shadow-light);
+    pointer-events: auto;
+}
+.product-card .product-info {
+    width: 100%;
+    text-align: left;
+    padding: 1rem 1.1rem 0.7rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    color: var(--color-text-light);
+}
+.product-card h3 {
+    font-size: 1.13rem;
+    font-weight: 700;
+    margin: 0 0 0.18rem 0;
+    color: var(--color-h2);
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.product-card .price {
+    color: var(--color-primary);
+    font-size: 1.08rem;
+    font-weight: 600;
+    margin-bottom: 0.18rem;
+}
+.product-card .sku, .product-card .stock, .product-card .supplier {
+    font-size: 0.93rem;
+    color: var(--color-text-light);
+    margin-bottom: 0.1rem;
+    letter-spacing: 0.01em;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.product-card .badges {
+    display: flex;
+    gap: 0.3rem;
+    margin-bottom: 0.2rem;
+}
+.product-card .category-badge, .product-card .subcategory-badge {
+    background: var(--color-secondary);
+    color: var(--color-primary);
+    font-size: 0.8rem;
+    border-radius: var(--radius-small);
+    padding: 0.12rem 0.5rem;
+    font-weight: 500;
+    box-shadow: 0 1px 2px var(--shadow-light);
+}
+.product-card .quick-actions { display: none !important; }
+.product-card .quick-action-btn { display: none !important; }
+
+/* Responsive grid for products */
+.products-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 900px) {
+    .products-grid {
+        gap: 0.7rem;
+    }
+    .product-card {
+        min-width: 160px;
+        max-width: 200px;
+        min-height: 260px;
+    }
+    .product-card .product-image {
+        height: 100px;
     }
 }

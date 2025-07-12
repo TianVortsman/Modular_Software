@@ -307,14 +307,8 @@ try {
 
             case 'inventory':
                 if (strpos($type, 'Products') !== false) {
-                    $errors = importProducts($conn, $data);
-                    echo json_encode([
-                        'success' => empty($errors),
-                        'message' => empty($errors) ? 'Products imported successfully' : 'Import completed with errors',
-                        'errors' => $errors,
-                        'totalRows' => count($data) - 1,
-                        'successCount' => empty($errors) ? count($data) - 1 : 0
-                    ]);
+                    $result = importProducts($spreadsheet, $conn);
+                    echo json_encode($result);
                     exit;
                 }
                 elseif (strpos($type, 'Suppliers') !== false) {
@@ -393,14 +387,8 @@ try {
                     exit;
                 }
                 elseif (strpos($type, 'Products') !== false) {
-                    $errors = importProducts($conn, $data);
-                    echo json_encode([
-                        'success' => empty($errors),
-                        'message' => empty($errors) ? 'Products imported successfully' : 'Import completed with errors',
-                        'errors' => $errors,
-                        'totalRows' => count($data) - 1,
-                        'successCount' => empty($errors) ? count($data) - 1 : 0
-                    ]);
+                    $result = importProducts($spreadsheet, $conn);
+                    echo json_encode($result);
                     exit;
                 }
                 break;

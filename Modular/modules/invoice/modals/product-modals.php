@@ -1,12 +1,13 @@
 <!-- Universal Product Modal -->
 <div class="universal-product-modal" id="universalProductModal">
   <div class="universal-product-modal-content">
+    <button type="button" class="btn-universal-product-delete" id="universalProductDeleteBtn" style="position:absolute;top:18px;left:24px;z-index:11;">Delete</button>
     <span class="universal-product-modal-close">&times;</span>
     <h2 class="universal-product-modal-title" id="universalProductModalTitle">Product Details</h2>
 
     <form class="universal-product-modal-form" id="universalProductForm" enctype="multipart/form-data">
       <!-- Hidden fields for internal reference -->
-      <input type="hidden" name="prod_id" id="universalItemId">
+      <input type="hidden" name="product_id" id="universalItemId">
       <!-- <input type="hidden" name="product_type" id="universalItemType" value="products"> -->
       <input type="hidden" name="modal_mode" id="universalModalMode" value="add">
 
@@ -32,15 +33,15 @@
           <div class="upm-essential-info">
             <div class="upm-field">
               <label for="universalItemName">Product Name:</label>
-              <input type="text" name="prod_name" id="universalItemName" placeholder="Enter name" required>
+              <input type="text" name="product_name" id="universalItemName" placeholder="Enter name" required>
             </div>
             <div class="upm-field">
               <label for="universalItemPrice">Price:</label>
-              <input type="number" step="0.01" name="prod_price" id="universalItemPrice" placeholder="0.00" required>
+              <input type="number" step="0.01" name="product_price" id="universalItemPrice" placeholder="0.00" required>
             </div>
             <div class="upm-field">
               <label for="universalItemStatus">Status:</label>
-              <select name="status" id="universalItemStatus">
+              <select name="product_status" id="universalItemStatus">
                 <option value="active" selected>Active</option>
                 <option value="inactive">Inactive</option>
                 <option value="discontinued">Discontinued</option>
@@ -69,7 +70,7 @@
             <div class="upm-tab-pane upm-active" id="upm-tab-basic">
               <div class="upm-field">
                 <label for="universalItemDescr">Description:</label>
-                <textarea name="prod_descr" id="universalItemDescr" placeholder="Short description here..."></textarea>
+                <textarea name="product_descr" id="universalItemDescr" placeholder="Short description here..."></textarea>
               </div>
               <div class="upm-field">
                 <label for="universalItemSKU">SKU:</label>
@@ -81,7 +82,11 @@
               </div>
               <div class="upm-field">
                 <label for="universalItemType">Type:</label>
-                <select name="type_id" id="universalItemType" required></select>
+                <select name="product_type_id" id="universalItemType" required></select>
+              </div>
+              <div class="upm-field">
+                <label for="universalItemSupplier">Supplier:</label>
+                <select name="supplier_id" id="universalItemSupplier"></select>
               </div>
               <div class="upm-field">
                 <label for="universalItemCategory">Category:</label>
@@ -96,8 +101,10 @@
             <!-- Pricing and Tax Tab -->
             <div class="upm-tab-pane" id="upm-tab-pricing">
               <div class="upm-field">
-                <label for="universalItemTaxRate">Tax Rate (%):</label>
-                <input type="number" step="0.01" name="tax_rate" id="universalItemTaxRate" placeholder="Tax %">
+                <label for="universalItemTaxRate">Tax Rate:</label>
+                <select name="tax_rate_id" id="universalItemTaxRate">
+                  <option value="">Select Tax Rate</option>
+                </select>
               </div>
               <div class="upm-field">
                 <label for="universalItemDiscount">Discount (%):</label>
@@ -137,7 +144,7 @@
               </div>
               <div class="upm-field">
                 <label for="universalItemWeight">Weight:</label>
-                <input type="number" step="0.01" name="weight" id="universalItemWeight" placeholder="Weight in kg">
+                <input type="number" step="0.01" name="product_weight" id="universalItemWeight" placeholder="Weight in kg">
               </div>
               <div class="upm-field">
                 <label for="universalItemDimensions">Dimensions:</label>
@@ -211,9 +218,8 @@
 
       <!-- Submit Buttons -->
       <div class="universal-product-buttons">
+        <button type="button" class="btn-universal-product-cancel" id="universalProductCancelBtn">Cancel</button>
         <button type="submit" class="btn-universal-product-save" id="universalProductSaveBtn">Save</button>
-        <button type="button" class="btn-universal-product-cancel universal-product-modal-close" id="universalProductCancelBtn">Cancel</button>
-        <button type="button" class="btn-universal-product-delete" id="universalProductDeleteBtn" style="display: none;">Delete</button>
       </div>
     </form>
   </div>

@@ -1,0 +1,21 @@
+<?php
+
+require_once __DIR__ . '/../../../src/Core/Database/ClientDatabase.php';
+require_once __DIR__ . '/../controllers/DocumentController.php';
+
+use App\modules\invoice\controllers\getDocuments;
+
+// Build options from URL query string ($_GET)
+$options = [
+    'action'    => $_GET['action']    ?? null,
+    'type'      => $_GET['type']      ?? null,
+    'status'    => $_GET['status']    ?? null,
+    'search'    => $_GET['search']    ?? null,
+    'page'      => isset($_GET['page']) ? (int)$_GET['page'] : 1,
+    'limit'     => isset($_GET['limit']) ? (int)$_GET['limit'] : 20,
+    'sort_by'   => $_GET['sort_by']   ?? 'document_id',
+    'sort_dir'  => strtolower($_GET['sort_dir'] ?? 'desc'),
+];
+
+$data = getDocuments($options);
+echo json_encode($data);

@@ -1,0 +1,18 @@
+import { buildQueryParams } from './helpers.js';
+
+async function fetchDocuments() {
+    const base = { action: 'get_documents' };
+    const filters = { type: 'invoice' }; // you can add status etc.
+    const search = 'lucien'; // or empty string ''
+    const pagination = { page: 1, limit: 20 };
+    const sorting = { sortBy: 'document_id', sortDir: 'desc' };
+
+    const queryParams = buildQueryParams(base, filters, search, pagination, sorting);
+    
+    const url = '/api/invoices.php?' + queryParams.toString();
+
+
+    const response = await fetch(url);
+    const data = await response.json();
+    console.log(data);
+}

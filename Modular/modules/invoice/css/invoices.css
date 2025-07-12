@@ -15,6 +15,21 @@ body {
     padding: var(--spacing-large);
     background-color: var(--color-background);
     min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.invoices-screen {
+    background-color: var(--color-secondary);
+    padding: var(--spacing-medium);
+    border-radius: var(--radius-medium);
+    box-shadow: 
+        4px 8px 12px var(--shadow-light),
+        6px 12px 24px var(--shadow-medium),
+        8px 16px 32px var(--shadow-dark);
+    display: block;
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
 }
 
 .invoices-screen h2 {
@@ -23,106 +38,101 @@ body {
     margin-bottom: var(--spacing-medium);
 }
 
-/* Quick Actions */
-.actions-container {
-    background-color: var(--color-secondary);
+.document-tabs-container {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    gap: var(--spacing-small);
     margin-bottom: var(--spacing-large);
-    gap: var(--spacing-medium);
     flex-wrap: wrap;
 }
 
-.invoices-actions {
-    display: flex;
-    gap: var(--spacing-small);
+.document-section {
+    display: block;
+    width: 100%;
+    margin-bottom: var(--spacing-large);
 }
 
-.invoice-filter{
+/* Remove actions-container and invoices-actions styles since buttons are gone */
+.invoices-actions {
+    display: none !important;
+}
+
+.invoice-filter {
     background-color: var(--color-background);
     padding: var(--spacing-medium);
     border-radius: var(--radius-medium);
-}
-
-.invoices-screen{
-    background-color: var(--color-secondary);
-    padding: var(--spacing-medium);
-    border-radius: var(--radius-medium);
-    box-shadow: 
-        4px 8px 12px var(--shadow-light),   /* Lighter, smaller shadow */
-        6px 12px 24px var(--shadow-medium), /* Medium shadow for more depth */
-        8px 16px 32px var(--shadow-dark);   /* Darker shadow for added realism */
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-large);
     align-items: center;
-    justify-content: space-between;
-}
-
-.table-container{
-    width: 100%;
-}
-
-.invoice-table-container{
-    width: 100%;
-}
-
-.invoices-actions .open-invoice-modal,
-.invoices-actions .action-button {
-    padding: var(--spacing-small) var(--spacing-medium);
-    background-color: var(--color-primary);
-    border: none;
-    color: var(--color-text-dark);
-    border-radius: var(--radius-medium);
-    cursor: pointer;
-    transition: background-color var(--transition-speed);
-}
-
-.invoices-actions .open-invoice-modal:hover,
-.invoices-actions .action-button:hover {
-    background-color: var(--color-hover);
-}
-
-/* Filter Options */
-.filter-container {
-    background-color: var(--color-secondary);
-    padding: var(--spacing-medium);
-    border-radius: var(--radius-medium);
-    box-shadow: var(--shadow-light);
-    display: flex;
-    flex-wrap: wrap;
     gap: var(--spacing-large);
-    align-items: center;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 8px var(--shadow-light);
+    border: 1px solid var(--border-color);
+    margin-bottom: var(--spacing-medium);
 }
 
 .invoice-filter label {
     color: var(--color-text-light);
     font-size: var(--font-size-small);
     margin-right: var(--spacing-small);
+    font-weight: 500;
+    letter-spacing: 0.5px;
 }
 
-.invoice-filter input {
-    padding: var(--spacing-small);
+.invoice-filter input[type="date"],
+.invoice-filter input[type="text"] {
+    padding: var(--spacing-small) var(--spacing-medium);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-small);
     background-color: var(--input-bg);
     color: var(--color-text-light);
     outline: none;
     font-size: var(--font-size-small);
+    min-width: 160px;
+    margin-right: var(--spacing-large);
+    margin-bottom: 0;
+    transition: border-color 0.2s;
 }
 
-.invoice-filter input:focus {
+.invoice-filter input[type="date"]:focus,
+.invoice-filter input[type="text"]:focus {
     border-color: var(--color-primary);
+    background-color: var(--color-background);
 }
 
-/* Tabs for Invoice Status */
+@media (max-width: 900px) {
+    .invoice-filter {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-small);
+    }
+    .invoice-filter input[type="date"],
+    .invoice-filter input[type="text"] {
+        min-width: 100%;
+        margin-right: 0;
+        margin-bottom: var(--spacing-small);
+    }
+}
+
+.filter-container {
+    background-color: var(--color-secondary);
+    padding: var(--spacing-medium);
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-light);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-large);
+    align-items: stretch;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .tabs-container {
     width: 100%;
     background-color: var(--color-background);
     padding: var(--spacing-medium);
     border-radius: var(--radius-medium);
+    margin-top: var(--spacing-medium);
+    margin-bottom: var(--spacing-medium);
+    box-sizing: border-box;
 }
 
 .invoice-tabs {
@@ -130,6 +140,7 @@ body {
     gap: var(--spacing-small);
     align-items: center;
     flex-wrap: wrap;
+    width: 100%;
 }
 
 .tab-button {
@@ -168,10 +179,16 @@ body {
     color: var(--color-primary);
 }
 
-/* Table for Invoice Data */
 .table-container {
     margin-top: var(--spacing-medium);
     overflow-x: auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.invoice-table-container {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .invoice-table {
@@ -201,7 +218,6 @@ body {
 .invoice-table tbody tr:hover {
     background-color: var(--color-secondary);
 }
-
 
 .invoice-table .action-icons {
     display: flex;

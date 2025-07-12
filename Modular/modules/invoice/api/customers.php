@@ -113,9 +113,9 @@ switch ($action) {
                 c.email,
                 c.phone,
                 c.status,
-                (SELECT MAX(inv_date) FROM invoicing.invoice WHERE customer_id = c.customer_id) as last_invoice_date,
-                (SELECT COALESCE(SUM(total_amount), 0) FROM invoicing.invoice WHERE customer_id = c.customer_id AND status_id = 1) as outstanding_balance,
-                (SELECT COUNT(*) FROM invoicing.invoice WHERE customer_id = c.customer_id) as total_invoices,
+                (SELECT MAX(invoice_date) FROM invoicing.invoices WHERE customer_id = c.customer_id) as last_invoice_date,
+                (SELECT COALESCE(SUM(total_amount), 0) FROM invoicing.invoices WHERE customer_id = c.customer_id AND status_id = 1) as outstanding_balance,
+                (SELECT COUNT(*) FROM invoicing.invoices WHERE customer_id = c.customer_id) as total_invoices,
                 a.address_line1,
                 a.city,
                 a.postal_code,
@@ -360,6 +360,64 @@ switch ($action) {
             echo json_encode(['success' => true, 'message' => 'Customer deleted successfully']);
         } catch (PDOException $e) {
             echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        }
+        break;
+
+    case 'search':
+        try {
+            $query = $_GET['query'] ?? '';
+            if (strlen($query) < 2) throw new Exception('Query too short');
+            $sql = "SELECT c.customer_id, c.first_name, c.last_name, c.email, c.phone, a.address_line1, a.address_line2
+                    FROM invoicing.customers c
+                    LEFT JOIN invoicing.customer_address ca ON c.customer_id = ca.customer_id
+                    LEFT JOIN invoicing.address a ON ca.address_id = a.address_id
+                    WHERE (c.first_name ILIKE :q OR c.last_name ILIKE :q OR c.email ILIKE :q OR c.phone ILIKE :q)
+                      AND c.deleted_at IS NULL
+                    LIMIT 20";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([':q' => "%$query%"]);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($results);
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode([]);
+        }
+        break;
+
+    case 'search_all':
+        try {
+            $query = $_GET['query'] ?? '';
+            if (strlen($query) < 2) throw new Exception('Query too short');
+            // Search customers
+            $sql_cust = "SELECT c.customer_id as customer_id, CONCAT(c.first_name, ' ', c.last_name) as customer_name, c.email, c.phone, a.address_line1, a.address_line2, 'customer' as type
+                FROM invoicing.customers c
+                LEFT JOIN invoicing.customer_address ca ON c.customer_id = ca.customer_id
+                LEFT JOIN invoicing.address a ON ca.address_id = a.address_id
+                WHERE (c.first_name ILIKE :q OR c.last_name ILIKE :q OR c.email ILIKE :q OR c.phone ILIKE :q)
+                  AND c.deleted_at IS NULL
+                LIMIT 10";
+            $stmt_cust = $conn->prepare($sql_cust);
+            $stmt_cust->execute([':q' => "%$query%"]);
+            $customers = $stmt_cust->fetchAll(PDO::FETCH_ASSOC);
+            // Search companies
+            $sql_comp = "SELECT c.company_id as company_id, c.company_name as company_name, c.vat_number, c.registration_number, cp.email as email, cp.phone as phone, a.address_line1, a.address_line2, 'company' as type
+                FROM invoicing.company c
+                LEFT JOIN invoicing.company_address ca ON c.company_id = ca.company_id
+                LEFT JOIN invoicing.address a ON ca.address_id = a.address_id
+                LEFT JOIN invoicing.company_contact cc ON c.company_id = cc.company_id
+                LEFT JOIN invoicing.contact_person cp ON cc.contact_id = cp.contact_id
+                WHERE (c.company_name ILIKE :q OR c.registration_number ILIKE :q OR c.vat_number ILIKE :q OR cp.email ILIKE :q)
+                  AND c.deleted_at IS NULL
+                LIMIT 10";
+            $stmt_comp = $conn->prepare($sql_comp);
+            $stmt_comp->execute([':q' => "%$query%"]);
+            $companies = $stmt_comp->fetchAll(PDO::FETCH_ASSOC);
+            // Combine and return
+            $results = array_merge($customers, $companies);
+            echo json_encode($results);
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode([]);
         }
         break;
 

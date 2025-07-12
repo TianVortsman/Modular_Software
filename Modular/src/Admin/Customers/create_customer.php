@@ -8,34 +8,29 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 try {
-    pg_query($conn, "BEGIN");
+    $conn->beginTransaction();
 
     // Get form data
-    $companyName = pg_escape_string($_POST['company_name']);
-    $email = pg_escape_string($_POST['email']);
-    $accountNumber = pg_escape_string($_POST['account_number']);
+    $companyName = $_POST['company_name'];
+    $email = $_POST['email'];
+    $accountNumber = $_POST['account_number'];
     
     // Insert the new customer
     $clientDb = 'client_' . strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $accountNumber));
     
-    $result = pg_query_params($conn, 
+    $stmt = $conn->prepare(
         "INSERT INTO customers (company_name, email, account_number, status, client_db) 
-         VALUES ($1, $2, $3, 'active', $4) 
-         RETURNING customer_id",
-        [$companyName, $email, $accountNumber, $clientDb]
+         VALUES (?, ?, ?, 'active', ?) 
+         RETURNING customer_id"
     );
-
-    if (!$result) {
-        throw new Exception(pg_last_error($conn));
-    }
-
-    $row = pg_fetch_assoc($result);
+    $stmt->execute([$companyName, $email, $accountNumber, $clientDb]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
     $customerId = (int)$row['customer_id'];
 
     // Assign a port to the new customer
     $port = assignPortToCustomer($conn, $customerId);
 
-    pg_query($conn, "COMMIT");
+    $conn->commit();
 
     // Return success response
     echo json_encode([
@@ -46,7 +41,7 @@ try {
     ]);
 
 } catch (Exception $e) {
-    pg_query($conn, "ROLLBACK");
+    $conn->rollBack();
     error_log("Error adding customer: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([

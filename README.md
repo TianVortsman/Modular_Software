@@ -3,6 +3,9 @@
 ## Overview
 A modern PHP-based modular software system implementing PSR-4 standards, Docker support, and component-based architecture for managing customer data, user accounts, and business operations.
 
+
+docker exec modular_software-postgres-1 psql -U Tian -d modular_system -cdocker exec modular_software-postgres-1 psql -U Tian -d modular_system -c
+
 ## Table of Contents
 - [Core Features](#core-features)
 - [System Architecture](#system-architecture)

@@ -34,30 +34,30 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
     <link rel="stylesheet" href="../../../public/assets/css/reset.css">
     <link rel="stylesheet" href="../../../public/assets/css/root.css">
     <link rel="stylesheet" href="../../../public/assets/css/sidebar.css">
-    <link rel="stylesheet" href="../css/invoices.css">
     <link rel="stylesheet" href="../css/invoice-modal.css">
+    <link rel="stylesheet" href="../css/invoices.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../../../public/assets/js/toggle-theme.js" type="module"></script>
     <script src="../../../public/assets/js/sidebar.js"></script>
-    <script src="../js/invoice-modal.js"></script>
-    <script src="../js/invoice-data.js"></script>
 </head>
 <body id="invoices">
   <?php include('../../../src/UI/sidebar.php'); ?>
 <div class="screen-container">
     <div class="invoices-screen">
-        <h2>Invoices</h2>
-        
-        <!-- Quick Actions -->
+        <h2>Documents</h2>
+        <div class="document-tabs-container">
+            <button class="tab-button active" data-section="invoices-section">Invoices</button>
+            <button class="tab-button" data-section="recurring-invoices-section">Recurring Invoices</button>
+            <button class="tab-button" data-section="quotations-section">Quotations</button>
+            <button class="tab-button" data-section="vehicle-quotations-section">Vehicle Quotations</button>
+            <button class="tab-button" data-section="vehicle-invoices-section">Vehicle Invoices</button>
+        </div>
+        <!-- Invoices Section -->
+        <div class="document-section" id="invoices-section">
+            <h3>Invoices</h3>
             <div class="actions-container">
-                <div class="invoices-actions">
-                    <button class="open-invoice-modal">+ New Invoice</button>
-                    <button class="action-button">Send Reminder</button>
-                    <button class="action-button">Export Data</button>
-                </div>
-
-            <!-- Filter Options -->
+                <!-- Removed action buttons -->
                 <div class="filter-container">
                     <div class="invoice-filter">
                         <label for="date-from">From:</label>
@@ -67,99 +67,197 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
                         <label for="client">Client:</label>
                         <input type="text" id="client-filter" placeholder="Filter by client...">
                     </div>
-
-                <!-- Tabs for Invoice Status -->
-                <div class="tabs-container">
-                    <div class="invoice-tabs">
-                        <button class="tab-button active" data-tab="all">All</button>
-                        <button class="tab-button" data-tab="paid">Paid</button>
-                        <button class="tab-button" data-tab="unpaid">Unpaid</button>
-                        <button class="tab-button" data-tab="overdue">Overdue</button>
-                        <button class="tab-button" data-tab="recurring">Recurring</button>
-                        <div class="search-container">
-                            <span class="material-icons search-icon">search</span>
-                            <input type="text" id="invoice-search" placeholder="Search by Invoice Number or Client...">
+                    <div class="tabs-container">
+                        <div class="invoice-tabs">
+                            <button class="tab-button active" data-tab="all">All</button>
+                            <button class="tab-button" data-tab="paid">Paid</button>
+                            <button class="tab-button" data-tab="unpaid">Unpaid</button>
+                            <button class="tab-button" data-tab="overdue">Overdue</button>
+                            <button class="tab-button" data-tab="recurring">Recurring</button>
+                            <div class="search-container">
+                                <span class="material-icons search-icon">search</span>
+                                <input type="text" id="invoice-search" placeholder="Search by Invoice Number or Client...">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <div class="invoice-table-container">
+                            <table class="invoice-table">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice #</th>
+                                        <th>Client</th>
+                                        <th>Date Created</th>
+                                        <th>Last Modified</th>
+                                        <th>Status</th>
+                                        <th>Total</th>
+                                        <th>Due Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="invoice-body">
+                                    <!-- Table rows dynamically filled based on tab -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Table for Invoice Data -->
-                <div class="table-container">
-                    <div class="invoice-table-container">
-                        <table class="invoice-table">
-                            <thead>
-                                <tr>
-                                    <th>Invoice #</th>
-                                    <th>Client</th>
-                                    <th>Date Created</th>
-                                    <th>Last Modified</th>
-                                    <th>Status</th>
-                                    <th>Total</th>
-                                    <th>Due Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="invoice-body">
-                                <!-- Table rows dynamically filled based on tab -->
-                            </tbody>
-                        </table>
+        <!-- Recurring Invoices Section -->
+        <div class="document-section" id="recurring-invoices-section" style="display:none;">
+            <h3>Recurring Invoices</h3>
+            <div class="actions-container">
+                <!-- Removed action buttons -->
+                <div class="filter-container">
+                    <div class="invoice-filter">
+                        <label for="recurring-date-from">From:</label>
+                        <input type="date" id="recurring-date-from">
+                        <label for="recurring-date-to">To:</label>
+                        <input type="date" id="recurring-date-to">
+                        <label for="recurring-client">Client:</label>
+                        <input type="text" id="recurring-client-filter" placeholder="Filter by client...">
+                    </div>
+                    <div class="table-container">
+                        <div class="invoice-table-container">
+                            <table class="invoice-table">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice #</th>
+                                        <th>Client</th>
+                                        <th>Start Date</th>
+                                        <th>Next Generation</th>
+                                        <th>Frequency</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recurring-invoice-body">
+                                    <!-- Recurring invoice rows dynamically filled -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quotations Section -->
+        <div class="document-section" id="quotations-section" style="display:none;">
+            <h3>Quotations</h3>
+            <div class="actions-container">
+                <!-- Removed action buttons -->
+                <div class="filter-container">
+                    <div class="invoice-filter">
+                        <label for="quotation-date-from">From:</label>
+                        <input type="date" id="quotation-date-from">
+                        <label for="quotation-date-to">To:</label>
+                        <input type="date" id="quotation-date-to">
+                        <label for="quotation-client">Client:</label>
+                        <input type="text" id="quotation-client-filter" placeholder="Filter by client...">
+                    </div>
+                    <div class="table-container">
+                        <div class="invoice-table-container">
+                            <table class="invoice-table">
+                                <thead>
+                                    <tr>
+                                        <th>Quotation #</th>
+                                        <th>Client</th>
+                                        <th>Date Created</th>
+                                        <th>Status</th>
+                                        <th>Total</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="quotation-body">
+                                    <!-- Quotation rows dynamically filled -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vehicle Quotations Section -->
+        <div class="document-section" id="vehicle-quotations-section" style="display:none;">
+            <h3>Vehicle Quotations</h3>
+            <div class="actions-container">
+                <!-- Removed action buttons -->
+                <div class="filter-container">
+                    <div class="invoice-filter">
+                        <label for="vehicle-quotation-date-from">From:</label>
+                        <input type="date" id="vehicle-quotation-date-from">
+                        <label for="vehicle-quotation-date-to">To:</label>
+                        <input type="date" id="vehicle-quotation-date-to">
+                        <label for="vehicle-quotation-client">Client:</label>
+                        <input type="text" id="vehicle-quotation-client-filter" placeholder="Filter by client...">
+                    </div>
+                    <div class="table-container">
+                        <div class="invoice-table-container">
+                            <table class="invoice-table">
+                                <thead>
+                                    <tr>
+                                        <th>Vehicle Quotation #</th>
+                                        <th>Client</th>
+                                        <th>Vehicle</th>
+                                        <th>Date Created</th>
+                                        <th>Status</th>
+                                        <th>Total</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="vehicle-quotation-body">
+                                    <!-- Vehicle quotation rows dynamically filled -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vehicle Invoices Section -->
+        <div class="document-section" id="vehicle-invoices-section" style="display:none;">
+            <h3>Vehicle Invoices</h3>
+            <div class="actions-container">
+                <!-- Removed action buttons -->
+                <div class="filter-container">
+                    <div class="invoice-filter">
+                        <label for="vehicle-invoice-date-from">From:</label>
+                        <input type="date" id="vehicle-invoice-date-from">
+                        <label for="vehicle-invoice-date-to">To:</label>
+                        <input type="date" id="vehicle-invoice-date-to">
+                        <label for="vehicle-invoice-client">Client:</label>
+                        <input type="text" id="vehicle-invoice-client-filter" placeholder="Filter by client...">
+                    </div>
+                    <div class="table-container">
+                        <div class="invoice-table-container">
+                            <table class="invoice-table">
+                                <thead>
+                                    <tr>
+                                        <th>Vehicle Invoice #</th>
+                                        <th>Client</th>
+                                        <th>Vehicle</th>
+                                        <th>Date Created</th>
+                                        <th>Status</th>
+                                        <th>Total</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="vehicle-invoice-body">
+                                    <!-- Vehicle invoice rows dynamically filled -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-    const tabs = document.querySelectorAll(".tab-button");
-    const invoiceBody = document.getElementById("invoice-body");
-
-    // Sample Data for Invoices
-    const invoices = [
-        { number: "INV001", client: "ABC Corp", created: "2023-10-01", modified: "2023-10-10", status: "Paid", total: "R1000", due: "2023-10-15" },
-        { number: "INV002", client: "XYZ Ltd", created: "2023-09-15", modified: "2023-09-20", status: "Unpaid", total: "R2000", due: "2023-09-30" },
-        { number: "INV003", client: "LMN Inc", created: "2023-10-05", modified: "2023-10-10", status: "Overdue", total: "R500", due: "2023-10-07" },
-        { number: "INV004", client: "OPQ Group", created: "2023-10-02", modified: "2023-10-03", status: "Recurring", total: "R1500", due: "2023-11-02" }
-    ];
-
-    // Function to load invoice rows into the table
-    function loadInvoices(filter) {
-        invoiceBody.innerHTML = "";
-        const filteredInvoices = invoices.filter(invoice => filter === "all" || invoice.status.toLowerCase() === filter);
-
-        filteredInvoices.forEach(invoice => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td>${invoice.number}</td>
-                <td>${invoice.client}</td>
-                <td>${invoice.created}</td>
-                <td>${invoice.modified}</td>
-                <td>${invoice.status}</td>
-                <td>${invoice.total}</td>
-                <td>${invoice.due}</td>
-                <td class="action-icons">
-                    <span class="icon">🖊️</span>
-                    <span class="icon">🗑️</span>
-                </td>
-            `;
-            invoiceBody.appendChild(row);
-        });
-    }
-
-    // Default load of all invoices
-    loadInvoices("all");
-
-    // Tab switching logic
-    tabs.forEach(tab => {
-        tab.addEventListener("click", function() {
-            tabs.forEach(t => t.classList.remove("active"));
-            tab.classList.add("active");
-            const filter = tab.getAttribute("data-tab");
-            loadInvoices(filter);
-        });
-    });
-});
-</script>
-
+<script src="../js/invoice-screen.js"></script>
+<script src="../js/invoice-modal.js"></script>
+<?php include('../modals/invoice-modal.php')?>
 </body>
 </html>

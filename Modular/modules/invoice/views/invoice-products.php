@@ -59,12 +59,24 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
             <div class="header-right">
                 <span class="material-icons search-icon">search</span>
                 <input type="text" placeholder="Search for products..." class="search-input" id="search-input">
+                
+                <!-- Filter Container -->
+                <div class="filter-container">
+                    <select id="category-filter" class="filter-dropdown">
+                        <option value="">All Categories</option>
+                    </select>
+                    <select id="subcategory-filter" class="filter-dropdown">
+                        <option value="">All Subcategories</option>
+                    </select>
+                    <button id="clear-filters" class="clear-filters-btn">Clear Filters</button>
+                </div>
+                
                 <button id="openProductsInvoicesModalButton" class="modal-products-invoices-open-button">Products Invoices</button>
             </div>
 
             <!-- Products Section -->
             <div class="tab-content active" id="products">
-            <button onclick="openAddProductModal('product')" class="add-products-open-btn">Add Products</button>
+            <button class="add-products-open-btn">Add Products</button>
                 <h2>Products</h2>
                 <div class="products-grid" id="products-grid">
 
@@ -73,7 +85,7 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
 
             <!-- Vehicles Section -->
             <div class="tab-content" id="vehicles">
-            <button onclick="openAddVehicleModal()" class="add-vehicle-open-btn">Add Vehicle</button>
+            <button class="add-vehicle-open-btn">Add Vehicle</button>
                 <h2>Vehicles</h2>
                 <div class="products-grid" id="vehicles-grid">
 
@@ -82,7 +94,7 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
 
             <!-- Parts Section -->
             <div class="tab-content" id="parts">
-            <button onclick="openAddProductModal('part')" class="add-parts-open-btn">Add Parts</button>
+            <button class="add-parts-open-btn">Add Parts</button>
                 <h2>Parts</h2>
                 <div class="products-grid" id="parts-grid">
 
@@ -91,7 +103,7 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
 
             <!-- Extras Section -->
             <div class="tab-content" id="extras">
-            <button onclick="openAddProductModal('extra')" class="add-extras-open-btn">Add Extras</button>
+            <button class="add-extras-open-btn">Add Extras</button>
                 <h2>Extras</h2>
                 <div class="products-grid" id="extras-grid">
 
@@ -100,11 +112,25 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
 
             <!-- Services Section -->
             <div class="tab-content" id="services">
-            <button onclick="openAddProductModal('service')" class="add-services-open-btn">Add Services</button>
+            <button class="add-services-open-btn">Add Services</button>
                 <h2>Services</h2>
                 <div class="products-grid" id="services-grid">
                     
                 </div>
+            </div>
+
+            <!-- Discontinued Section -->
+            <div class="tab-content" id="discontinued">
+            <button class="add-discontinued-open-btn">Add Discontinued Product</button>
+                <h2>Discontinued</h2>
+                <div class="products-grid" id="discontinued-grid"></div>
+            </div>
+
+            <!-- Disabled Section -->
+            <div class="tab-content" id="disabled">
+            <button class="add-disabled-open-btn">Add Disabled Product</button>
+                <h2>Disabled</h2>
+                <div class="products-grid" id="disabled-grid"></div>
             </div>
         </div>
     </div>
@@ -150,6 +176,9 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
 <?php include('../../../src/UI/loading-modal.php') ?>
 <?php include('../../../src/UI/response-modal.php') ?>
 <?php include('../modals/product-modals.php') ?>
-<script src="../js/product-modals.js"></script>
+<script type="module" src="../js/product-api.js"></script>
+<script type="module" src="../js/product-form.js"></script>
+<script type="module" src="../js/product-screen.js"></script>
+<script type="module" src="../js/product-modals.js"></script>
 </body>
 </html>

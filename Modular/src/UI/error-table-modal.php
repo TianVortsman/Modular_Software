@@ -18,8 +18,9 @@
                     <thead>
                         <tr>
                             <th>Row #</th>
-                            <th>Data</th>
-                            <th>Error Message</th>
+                            <th>Product Name</th>
+                            <th>Status</th>
+                            <th>Reason</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -217,11 +218,17 @@ function showErrorTable(data) {
     // Add error rows
     if (data.errors && data.errors.length > 0) {
         data.errors.forEach(error => {
+            let reason = error.reason || error.message || '';
+            if (!reason) {
+                // Fallback: show the error object as JSON
+                reason = JSON.stringify(error);
+            }
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${error.row || 'N/A'}</td>
-                <td>${error.data || 'N/A'}</td>
-                <td>${error.message || 'Unknown error'}</td>
+                <td>${error.product_name || error.name || 'N/A'}</td>
+                <td>${error.status || 'N/A'}</td>
+                <td>${reason}</td>
             `;
             tbody.appendChild(row);
         });
@@ -235,7 +242,7 @@ function downloadErrorReport() {
     const table = document.querySelector('.error-table');
     const rows = Array.from(table.querySelectorAll('tr'));
     
-    let csv = 'Row #,Data,Error Message\n';
+    let csv = 'Row #,Product Name,Status,Reason\n';
     
     rows.slice(1).forEach(row => {
         const cells = Array.from(row.cells);

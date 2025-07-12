@@ -55,8 +55,9 @@ try {
                 $raw_headers = explode("\r\n", $raw_headers);
                 $headers = array();
                 foreach ($raw_headers as $header) {
-                    list($name, $value) = explode(':', $header, 2);
-                    $headers[strtolower(trim($name))] = trim($value);
+                    $name = strtolower(trim(substr($header, 0, strpos($header, ':'))));
+                    $value = trim(substr($header, strpos($header, ':') + 1));
+                    $headers[$name] = $value;
                 }
                 
                 if (isset($headers['content-disposition'])) {
@@ -132,11 +133,27 @@ try {
             $result = $controller->getProductTypes();
             break;
 
+        case 'list_tax_rates':
+            if ($method !== 'GET') {
+                throw new Exception('GET method required for list_tax_rates action');
+            }
+            $result = $controller->getTaxRates();
+            break;
+
         case 'add':
             if ($method !== 'POST') {
                 throw new Exception('POST method required for add action');
             }
             $result = $controller->addProduct();
+            // In add action, after product is created, handle supplier_id
+            // On add: insert into inventory.product_supplier (product_id, supplier_id)
+            if (isset($_POST['supplier_id']) && $_POST['supplier_id']) {
+                $supplier_id = $_POST['supplier_id'];
+                $product_id = $result['data']['product_id'];
+                $sql = "INSERT INTO inventory.product_supplier (product_id, supplier_id) VALUES (:product_id, :supplier_id) ON CONFLICT DO NOTHING";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([':product_id' => $product_id, ':supplier_id' => $supplier_id]);
+            }
             break;
 
         case 'edit':
@@ -144,6 +161,23 @@ try {
                 throw new Exception('PUT method required for edit action');
             }
             $result = $controller->updateProduct();
+            // In edit action, after product is updated, handle supplier_id
+            // On edit: update or insert as needed
+            if (isset($_POST['supplier_id']) && $_POST['supplier_id']) {
+                $supplier_id = $_POST['supplier_id'];
+                $product_id = $result['data']['product_id'];
+                $sql = "SELECT * FROM inventory.product_supplier WHERE product_id = :product_id";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([':product_id' => $product_id]);
+                $existing_supplier = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($existing_supplier) {
+                    $sql = "UPDATE inventory.product_supplier SET supplier_id = :supplier_id WHERE product_id = :product_id";
+                } else {
+                    $sql = "INSERT INTO inventory.product_supplier (product_id, supplier_id) VALUES (:product_id, :supplier_id)";
+                }
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([':product_id' => $product_id, ':supplier_id' => $supplier_id]);
+            }
             break;
 
         case 'upload_image':
@@ -156,6 +190,10 @@ try {
         case 'delete':
             if ($method !== 'DELETE') {
                 throw new Exception('DELETE method required for delete action');
+            }
+            // Fix: Accept product_id from query string for DELETE
+            if (isset($_GET['id'])) {
+                $_POST['product_id'] = $_GET['id'];
             }
             $result = $controller->deleteProduct();
             break;
@@ -171,7 +209,46 @@ try {
             if ($method !== 'GET') {
                 throw new Exception('GET method required for get action');
             }
+            // Accept both 'id' and 'product_id' as valid query params
+            if (isset($_GET['id']) && !isset($_GET['product_id'])) {
+                $_GET['product_id'] = $_GET['id'];
+            }
             $result = $controller->getProduct();
+            break;
+
+        case 'search':
+            if ($method !== 'GET') {
+                throw new Exception('GET method required for search action');
+            }
+            $query = $_GET['query'] ?? '';
+            $field = $_GET['field'] ?? '';
+            if (strlen($query) < 2) throw new Exception('Query too short');
+            $sql = "SELECT 
+                        p.product_id, 
+                        p.product_name, 
+                        p.sku, 
+                        p.barcode, 
+                        p.product_description, 
+                        p.product_price, 
+                        p.tax_rate_id, 
+                        tr.rate AS tax_rate, 
+                        pi.stock_quantity
+                    FROM core.product p
+                    LEFT JOIN inventory.product_inventory pi ON p.product_id = pi.product_id
+                    LEFT JOIN core.tax_rates tr ON p.tax_rate_id = tr.tax_rate_id
+                    WHERE (p.product_name ILIKE :q OR p.sku ILIKE :q OR p.barcode ILIKE :q OR p.product_description ILIKE :q)
+                    LIMIT 20";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([':q' => "%$query%"]);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($results);
+            break;
+
+        case 'update_status':
+            if ($method !== 'POST') {
+                throw new Exception('POST method required for update_status action');
+            }
+            $result = $controller->updateProductStatus();
             break;
 
         default:
@@ -180,8 +257,9 @@ try {
 
     // Log successful response
     error_log("Request processed successfully for action: $action");
-    echo json_encode($result);
-
+    if (isset($result)) {
+        echo json_encode($result);
+    }
 } catch (PDOException $e) {
     error_log("Database error details: " . $e->getMessage());
     error_log("SQL State: " . $e->getCode());
@@ -197,7 +275,7 @@ try {
     http_response_code(400);
     echo json_encode([
         'success' => false,
-        'message' => $e->getMessage(),
+        'message' => 'Error: ' . $e->getMessage(),
         'data' => null
     ]);
 }

@@ -1,3 +1,12 @@
+window.callIfExists = function(functionName, ...args) {
+    if (typeof window[functionName] === 'function') {
+        window[functionName](...args);
+    } else {
+        // Optionally: do nothing or show a generic warning
+        // alert(functionName + ' is not available on this page.');
+    }
+};
+
 document.addEventListener('DOMContentLoaded', function () {
     const bodyId = document.body.id;
 
@@ -46,16 +55,19 @@ document.addEventListener('DOMContentLoaded', function () {
         ],
         "invoice-clients": [
             { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
-            { href: "#", icon: "person_add", text: "Add Client", onclick: "openAddClientModal()" },
+            { href: "#", icon: "person_add", text: "Add Customer", onclick: "callIfExists('showAddCustomerModal')" },
+            { href: "#", icon: "person_add", text: "Add Company", onclick: "callIfExists('showAddCompanyModal')" },
             { href: "/modules/invoice/views/invoice-payments.php", icon: "payment", text: "Payment Reminder" }
         ],
         "invoice-products": [
             { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard"},
-            { href: "#", icon: "category", text: "Products", tab: "products", class: "sidebar-button", onclick: "fetchProducts('products')" },
-            { href: "#", icon: "build", text: "Parts", tab: "parts", class: "sidebar-button", onclick: "fetchProducts('parts')" },
-            { href: "#", icon: "directions_car", text: "Vehicles", tab: "vehicles", class: "sidebar-button", onclick: "fetchProducts('vehicles')" },
-            { href: "#", icon: "add_circle_outline", text: "Extras", tab: "extras", class: "sidebar-button", onclick: "fetchProducts('extras')" },
-            { href: "#", icon: "remove_circle_outline", text: "Services", tab: "services", class: "sidebar-button", onclick: "fetchProducts('services')" }
+            { href: "#", icon: "category", text: "Products", tab: "products", class: "sidebar-button" },
+            { href: "#", icon: "build", text: "Parts", tab: "parts", class: "sidebar-button" },
+            { href: "#", icon: "directions_car", text: "Vehicles", tab: "vehicles", class: "sidebar-button" },
+            { href: "#", icon: "add_circle_outline", text: "Extras", tab: "extras", class: "sidebar-button" },
+            { href: "#", icon: "remove_circle_outline", text: "Services", tab: "services", class: "sidebar-button" },
+            { href: "#", icon: "block", text: "Discontinued", tab: "discontinued", class: "sidebar-button" },
+            { href: "#", icon: "do_not_disturb_on", text: "Disabled", tab: "disabled", class: "sidebar-button" }
         ],
         "payments":[
             { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
@@ -87,7 +99,14 @@ document.addEventListener('DOMContentLoaded', function () {
             { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard", },
         ],
         "invoice-setup": [
-            { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard", },
+            { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
+            { href: "#products", icon: "inventory", text: "Product Setup", tab: "products", class: "tab", onclick: "invoiceSetup.switchTab('products')" },
+            { href: "#banking", icon: "account_balance", text: "Bank & Company", tab: "banking", class: "tab", onclick: "invoiceSetup.switchTab('banking')" },
+            { href: "#sales", icon: "trending_up", text: "Sales Configuration", tab: "sales", class: "tab", onclick: "invoiceSetup.switchTab('sales')" },
+            { href: "#suppliers", icon: "business", text: "Suppliers", tab: "suppliers", class: "tab", onclick: "invoiceSetup.switchTab('suppliers')" },
+            { href: "#credit", icon: "receipt_long", text: "Credit Notes", tab: "credit", class: "tab", onclick: "invoiceSetup.switchTab('credit')" },
+            { href: "#numbering", icon: "format_list_numbered", text: "Invoice Numbering", tab: "numbering", class: "tab", onclick: "invoiceSetup.switchTab('numbering')" },
+            { href: "#terms", icon: "description", text: "Terms & Footer", tab: "terms", class: "tab", onclick: "invoiceSetup.switchTab('terms')" }
         ],
         "TandA": [
             { href: "/public/views/dashboard.php", icon: "home", text: "Home" },
@@ -725,6 +744,5 @@ async function updateNotificationCount() {
         console.warn('Error updating notifications:', error);
     }
 }
-
 
 

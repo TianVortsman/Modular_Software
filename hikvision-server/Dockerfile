@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["node", "control-api.js"]
+CMD ["node", "index.js"]

@@ -4,16 +4,13 @@ namespace App\Core\Database;
 require_once __DIR__ . '/Database.php';
 
 use App\Config\Database as DatabaseConfig;
+use \PDO;
+use \PDOException;
 
 /**
- * Main Database
+ * Main Database (PDO version)
  * 
- * Handles connections to the main system database
- * 
- * Note: This class has been updated to handle connection failures gracefully.
- * It now suppresses connection errors with @ operator, attempts fallback connections,
- * and ensures methods like executeQuery() handle null connections properly.
- * This prevents fatal errors when the database server is temporarily unavailable.
+ * Handles connections to the main system database using PDO
  */
 class MainDatabase extends Database
 {
@@ -42,9 +39,9 @@ class MainDatabase extends Database
     }
     
     /**
-     * Connect to the database
+     * Connect to the database using PDO
      * 
-     * @return resource|null PostgreSQL connection or null on failure
+     * @return PDO|null PDO connection or null on failure
      */
     public function connect()
     {
@@ -53,47 +50,32 @@ class MainDatabase extends Database
         }
         
         try {
-            // Create a connection string with main host
-            $conn_string = "host={$this->config['host']} " .
-                          "port={$this->config['port']} " .
-                          "dbname={$this->config['dbname']} " .
-                          "user={$this->config['username']} " .
-                          "password={$this->config['password']} " .
-                          "connect_timeout={$this->config['connect_timeout']} " .
-                          "sslmode={$this->config['sslmode']} " .
-                          "{$this->config['options']}";
-            
-            // Establish a connection to PostgreSQL
-            $this->connection = @pg_connect($conn_string);
-            
-            // If connection failed and we have a fallback host, try that
-            if (!$this->connection && !empty($this->config['fallback_host'])) {
-                error_log("Primary connection failed, trying fallback host: {$this->config['fallback_host']}");
-                
-                // Create a connection string with fallback host
-                $fallback_conn_string = "host={$this->config['fallback_host']} " .
-                                       "port={$this->config['port']} " .
-                                       "dbname={$this->config['dbname']} " .
-                                       "user={$this->config['username']} " .
-                                       "password={$this->config['password']} " .
-                                       "connect_timeout={$this->config['connect_timeout']} " .
-                                       "sslmode={$this->config['sslmode']} " .
-                                       "{$this->config['options']}";
-                
-                $this->connection = @pg_connect($fallback_conn_string);
+            // Create a DSN string with primary host
+            $dsn = "pgsql:host={$this->config['host']};port={$this->config['port']};dbname={$this->config['dbname']};";
+            $options = [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_TIMEOUT => $this->config['connect_timeout'] ?? 5
+            ];
+            try {
+                $this->connection = new PDO($dsn, $this->config['username'], $this->config['password'], $options);
+            } catch (PDOException $e) {
+                if (!empty($this->config['fallback_host']) && strpos($e->getMessage(), 'connect') !== false) {
+                    error_log("Primary connection failed, trying fallback host: {$this->config['fallback_host']}");
+                    $fallback_dsn = "pgsql:host={$this->config['fallback_host']};port={$this->config['port']};dbname={$this->config['dbname']};";
+                    $this->connection = new PDO($fallback_dsn, $this->config['username'], $this->config['password'], $options);
+                } else {
+                    throw $e;
+                }
             }
-            
-            // Check if the connection succeeded
-            if (!$this->connection) {
-                throw new \Exception('Database connection failed: Unable to connect to PostgreSQL server.');
+            // Test the connection
+            $test = $this->connection->query('SELECT 1');
+            if (!$test) {
+                throw new PDOException('Connection test failed');
             }
-            
             return $this->connection;
-        } catch (\Exception $e) {
-            // Log the error
-            error_log('Database connection error: ' . $e->getMessage());
-            
-            // Return null instead of throwing exception to allow graceful handling
+        } catch (PDOException $e) {
+            error_log("Main DB connection failed: " . $e->getMessage());
             $this->connection = null;
             return null;
         }
@@ -106,83 +88,89 @@ class MainDatabase extends Database
      */
     public function disconnect()
     {
-        if ($this->connection !== null) {
-            pg_close($this->connection);
-            $this->connection = null;
-        }
+        $this->connection = null;
     }
     
     /**
-     * Execute a prepared statement query
-     * 
-     * @param string $name Name of the prepared statement
-     * @param string $query SQL query
-     * @param array $params Query parameters
-     * @return resource|false Query result
+     * Execute a prepared statement query using PDO
+     *
+     * @param string $name Name of the prepared statement (ignored for PDO, kept for compatibility)
+     * @param string $query SQL query (can use $1, $2, ... or ? for positional params)
+     * @param array $params Query parameters (positional)
+     * @return \PDOStatement|false Query result
      */
     public function executeQuery(string $name, string $query, array $params = [])
     {
         $conn = $this->getConnection();
-        
-        // Check if connection is valid before attempting to use it
         if (!$conn) {
             error_log("Cannot execute query: No valid database connection");
             return false;
         }
-        
-        // Prepare the query
-        $result = pg_prepare($conn, $name, $query);
-        if (!$result) {
-            throw new \Exception('Failed to prepare query: ' . pg_last_error($conn));
+        // Convert $1, $2, ... to ? for PDO if needed
+        $pdoQuery = preg_replace('/\$[0-9]+/', '?', $query);
+        try {
+            $stmt = $conn->prepare($pdoQuery);
+            $stmt->execute($params);
+            return $stmt;
+        } catch (PDOException $e) {
+            error_log('Failed to execute query: ' . $e->getMessage());
+            return false;
         }
-        
-        // Execute the query
-        return pg_execute($conn, $name, $params);
     }
     
     /**
-     * Fetch all rows from a result
-     * 
-     * @param \PgSql\Result|resource $result Query result
+     * Fetch all rows from a PDOStatement
+     *
+     * @param \PDOStatement $result Query result
      * @return array|false Rows or false on failure
      */
     public function fetchAll($result)
     {
-        return pg_fetch_all($result);
+        if ($result instanceof \PDOStatement) {
+            return $result->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return false;
     }
     
     /**
-     * Fetch a single row from a result
-     * 
-     * @param \PgSql\Result|resource $result Query result
+     * Fetch a single row from a PDOStatement
+     *
+     * @param \PDOStatement $result Query result
      * @return array|false Row or false on failure
      */
     public function fetchRow($result)
     {
-        return pg_fetch_assoc($result);
+        if ($result instanceof \PDOStatement) {
+            return $result->fetch(PDO::FETCH_ASSOC);
+        }
+        return false;
     }
     
     /**
-     * Get the number of rows in a result
-     * 
-     * @param \PgSql\Result|resource $result Query result
+     * Get the number of rows in a PDOStatement
+     *
+     * @param \PDOStatement $result Query result
      * @return int Number of rows
      */
     public function numRows($result): int
     {
-        return pg_num_rows($result);
+        if ($result instanceof \PDOStatement) {
+            return $result->rowCount();
+        }
+        return 0;
     }
     
     /**
      * Get the last error message
-     * 
+     *
      * @return string Error message
      */
     public function getLastError(): string
     {
-        if ($this->connection) {
-            return pg_last_error($this->connection);
+        if ($this->connection instanceof \PDO) {
+            $errorInfo = $this->connection->errorInfo();
+            return $errorInfo[2] ?? 'Unknown PDO error';
         }
-        return "No valid PostgreSQL connection";
+        return "No valid PDO connection";
     }
 } 

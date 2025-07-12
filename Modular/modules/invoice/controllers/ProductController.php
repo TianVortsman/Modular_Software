@@ -49,6 +49,9 @@ class ProductController {
                 case 'delete':
                     if ($method === 'DELETE') return $this->deleteProduct();
                     break;
+                case 'list_by_status':
+                    if ($method === 'GET') return $this->getProductsByStatus();
+                    break;
             }
             throw new Exception('Invalid request method or action');
         } catch (Exception $e) {
@@ -63,6 +66,7 @@ class ProductController {
             }
             $productId = $this->insertCoreProduct();
             $this->insertProductInventory($productId);
+            $this->insertProductSupplier($productId);
             $this->db->commit();
             return [
                 'success' => true,
@@ -88,6 +92,7 @@ class ProductController {
             }
             $this->updateCoreProduct($productId);
             $this->updateProductInventory($productId);
+            $this->updateProductSupplier($productId);
             $this->db->commit();
             return [
                 'success' => true,
@@ -104,15 +109,32 @@ class ProductController {
 
     public function getAllProducts() {
         try {
-            $sql = "SELECT p.*, pt.type_name, pc.category_name, psc.subcategory_name, pi.stock_quantity, pi.reorder_level, pi.lead_time, pi.weight, pi.dimensions, pi.brand, pi.manufacturer, pi.warranty_period
+            $sql = "SELECT p.*, pt.product_type_name AS product_type_name, pc.category_name, psc.subcategory_name, pi.stock_quantity, pi.reorder_level, pi.lead_time, pi.product_weight, pi.dimensions, pi.brand, pi.manufacturer, pi.warranty_period, tr.rate AS tax_rate
                     FROM core.product p
-                    LEFT JOIN core.product_types pt ON p.type_id = pt.type_id
+                    LEFT JOIN core.product_types pt ON p.product_type_id = pt.product_type_id
                     LEFT JOIN core.product_categories pc ON p.category_id = pc.category_id
                     LEFT JOIN core.product_subcategories psc ON p.subcategory_id = psc.subcategory_id
                     LEFT JOIN inventory.product_inventory pi ON p.product_id = pi.product_id
+                    LEFT JOIN core.tax_rates tr ON p.tax_rate_id = tr.tax_rate_id
                     ORDER BY p.product_name";
             $stmt = $this->db->query($sql);
             $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Add image_url for each product
+            $accountNumber = $_SESSION['account_number'] ?? 'ACC002';
+            $docRoot = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
+            $supportedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            foreach ($products as &$product) {
+                $type = strtolower($product['product_type_name'] ?? 'product');
+                $imgPath = null;
+                foreach ($supportedExts as $ext) {
+                    $tryDocPath = "$docRoot/Uploads/$accountNumber/products/$type/{$product['product_id']}.$ext";
+                    if (file_exists($tryDocPath)) {
+                        $imgPath = "/Uploads/$accountNumber/products/$type/{$product['product_id']}.$ext";
+                        break;
+                    }
+                }
+                $product['image_url'] = $imgPath;
+            }
             return [
                 'success' => true,
                 'message' => 'Products retrieved successfully',
@@ -129,12 +151,14 @@ class ProductController {
             if (!$productId) {
                 throw new Exception('Product ID is required');
             }
-            $sql = "SELECT p.*, pt.type_name, pc.category_name, psc.subcategory_name, pi.stock_quantity, pi.reorder_level, pi.lead_time, pi.weight, pi.dimensions, pi.brand, pi.manufacturer, pi.warranty_period
+            $sql = "SELECT p.*, pt.product_type_name AS product_type_name, pc.category_name, psc.subcategory_name, pi.stock_quantity, pi.reorder_level, pi.lead_time, pi.product_weight, pi.dimensions, pi.brand, pi.manufacturer, pi.warranty_period, tr.rate AS tax_rate, ps.supplier_id
                     FROM core.product p
-                    LEFT JOIN core.product_types pt ON p.type_id = pt.type_id
+                    LEFT JOIN core.product_types pt ON p.product_type_id = pt.product_type_id
                     LEFT JOIN core.product_categories pc ON p.category_id = pc.category_id
                     LEFT JOIN core.product_subcategories psc ON p.subcategory_id = psc.subcategory_id
                     LEFT JOIN inventory.product_inventory pi ON p.product_id = pi.product_id
+                    LEFT JOIN core.tax_rates tr ON p.tax_rate_id = tr.tax_rate_id
+                    LEFT JOIN inventory.product_supplier ps ON p.product_id = ps.product_id
                     WHERE p.product_id = :product_id";
             $stmt = $this->db->prepare($sql);
             $stmt->execute(['product_id' => $productId]);
@@ -142,6 +166,20 @@ class ProductController {
             if (!$product) {
                 throw new Exception('Product not found');
             }
+            // Add image_url logic
+            $accountNumber = $_SESSION['account_number'] ?? 'ACC002';
+            $docRoot = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
+            $type = strtolower($product['product_type_name'] ?? 'product');
+            $supportedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            $imgPath = null;
+            foreach ($supportedExts as $ext) {
+                $tryDocPath = "$docRoot/Uploads/$accountNumber/products/$type/{$product['product_id']}.$ext";
+                if (file_exists($tryDocPath)) {
+                    $imgPath = "/Uploads/$accountNumber/products/$type/{$product['product_id']}.$ext";
+                    break;
+                }
+            }
+            $product['image_url'] = $imgPath;
             return [
                 'success' => true,
                 'message' => 'Product retrieved successfully',
@@ -153,17 +191,17 @@ class ProductController {
     }
 
     public function getProductTypes() {
-        $stmt = $this->db->query('SELECT * FROM core.product_types ORDER BY type_name');
+        $stmt = $this->db->query('SELECT * FROM core.product_types ORDER BY product_type_name');
         $types = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return [ 'success' => true, 'data' => $types ];
     }
     public function getProductCategories() {
-        $typeId = $_GET['type_id'] ?? null;
+        $typeId = $_GET['product_type_id'] ?? null;
         $sql = 'SELECT * FROM core.product_categories';
         $params = [];
         if ($typeId) {
-            $sql .= ' WHERE type_id = :type_id';
-            $params['type_id'] = $typeId;
+            $sql .= ' WHERE product_type_id = :product_type_id';
+            $params['product_type_id'] = $typeId;
         }
         $sql .= ' ORDER BY category_name';
         $stmt = $this->db->prepare($sql);
@@ -188,24 +226,24 @@ class ProductController {
 
     private function insertCoreProduct() {
         $sql = "INSERT INTO core.product (
-            product_name, product_description, product_price, status,
-            sku, barcode, type_id, category_id, subcategory_id, tax_rate, discount, notes
+            product_name, product_description, product_price, product_status,
+            sku, barcode, product_type_id, category_id, subcategory_id, tax_rate_id, discount, notes
         ) VALUES (
-            :name, :description, :price, :status,
-            :sku, :barcode, :type_id, :category_id, :subcategory_id, :tax_rate, :discount, :notes
+            :product_name, :product_description, :product_price, :product_status,
+            :sku, :barcode, :product_type_id, :category_id, :subcategory_id, :tax_rate_id, :discount, :notes
         ) RETURNING product_id";
         $stmt = $this->db->prepare($sql);
         $params = [
-            'name' => $_POST['prod_name'] ?? '',
-            'description' => $_POST['prod_descr'] ?? null,
-            'price' => !empty($_POST['prod_price']) ? $_POST['prod_price'] : 0,
-            'status' => $_POST['status'] ?? 'active',
+            'product_name' => $_POST['product_name'] ?? '',
+            'product_description' => $_POST['product_description'] ?? null,
+            'product_price' => !empty($_POST['product_price']) ? $_POST['product_price'] : 0,
+            'product_status' => $_POST['product_status'] ?? 'active',
             'sku' => !empty($_POST['sku']) ? $_POST['sku'] : null,
             'barcode' => !empty($_POST['barcode']) ? $_POST['barcode'] : null,
-            'type_id' => $_POST['type_id'] ?? null,
-            'category_id' => $_POST['category_id'] ?? null,
-            'subcategory_id' => $_POST['subcategory_id'] ?? null,
-            'tax_rate' => !empty($_POST['tax_rate']) ? $_POST['tax_rate'] : 0,
+            'product_type_id' => (isset($_POST['product_type_id']) && is_numeric($_POST['product_type_id']) ? $_POST['product_type_id'] : null),
+            'category_id' => (isset($_POST['category_id']) && is_numeric($_POST['category_id']) ? $_POST['category_id'] : null),
+            'subcategory_id' => (isset($_POST['subcategory_id']) && is_numeric($_POST['subcategory_id']) ? $_POST['subcategory_id'] : null),
+            'tax_rate_id' => !empty($_POST['tax_rate_id']) ? $_POST['tax_rate_id'] : null,
             'discount' => !empty($_POST['discount']) ? $_POST['discount'] : 0,
             'notes' => $_POST['notes'] ?? null
         ];
@@ -218,38 +256,38 @@ class ProductController {
     }
 
     private function updateCoreProduct($productId) {
-        // Fetch old type_id and type_name
-        $stmt = $this->db->prepare('SELECT p.type_id, pt.type_name FROM core.product p LEFT JOIN core.product_types pt ON p.type_id = pt.type_id WHERE p.product_id = :product_id');
+        // Fetch old product_type_id and product_type_name
+        $stmt = $this->db->prepare('SELECT p.product_type_id, pt.product_type_name FROM core.product p LEFT JOIN core.product_types pt ON p.product_type_id = pt.product_type_id WHERE p.product_id = :product_id');
         $stmt->execute(['product_id' => $productId]);
         $old = $stmt->fetch(PDO::FETCH_ASSOC);
-        $oldTypeId = $old['type_id'] ?? null;
-        $oldTypeName = $old['type_name'] ?? null;
+        $oldTypeId = $old['product_type_id'] ?? null;
+        $oldTypeName = $old['product_type_name'] ?? null;
 
-        // Get new type_id and type_name
-        $newTypeId = isset($_POST['type_id']) && $_POST['type_id'] !== '' ? $_POST['type_id'] : null;
+        // Get new product_type_id and product_type_name
+        $newTypeId = isset($_POST['product_type_id']) && $_POST['product_type_id'] !== '' ? $_POST['product_type_id'] : null;
         $newTypeName = $oldTypeName;
         if ($newTypeId && $newTypeId != $oldTypeId) {
-            // Lookup new type_name
-            $stmt2 = $this->db->prepare('SELECT type_name FROM core.product_types WHERE type_id = :type_id');
-            $stmt2->execute(['type_id' => $newTypeId]);
+            // Lookup new product_type_name
+            $stmt2 = $this->db->prepare('SELECT product_type_name FROM core.product_types WHERE product_type_id = :product_type_id');
+            $stmt2->execute(['product_type_id' => $newTypeId]);
             $row = $stmt2->fetch(PDO::FETCH_ASSOC);
-            if ($row && $row['type_name']) {
-                $newTypeName = $row['type_name'];
+            if ($row && $row['product_type_name']) {
+                $newTypeName = $row['product_type_name'];
             }
         }
 
         // Update product as before
         $sql = "UPDATE core.product SET
-            product_name = :name,
-            product_description = :description,
-            product_price = :price,
-            status = :status,
+            product_name = :product_name,
+            product_description = :product_description,
+            product_price = :product_price,
+            product_status = :product_status,
             sku = :sku,
             barcode = :barcode,
-            type_id = :type_id,
+            product_type_id = :product_type_id,
             category_id = :category_id,
             subcategory_id = :subcategory_id,
-            tax_rate = :tax_rate,
+            tax_rate_id = :tax_rate_id,
             discount = :discount,
             notes = :notes,
             updated_at = CURRENT_TIMESTAMP
@@ -257,16 +295,16 @@ class ProductController {
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             'product_id' => $productId,
-            'name' => $_POST['prod_name'],
-            'description' => $_POST['prod_descr'] ?? null,
-            'price' => !empty($_POST['prod_price']) ? $_POST['prod_price'] : 0,
-            'status' => $_POST['status'] ?? 'active',
+            'product_name' => $_POST['product_name'],
+            'product_description' => $_POST['product_description'] ?? null,
+            'product_price' => !empty($_POST['product_price']) ? $_POST['product_price'] : 0,
+            'product_status' => $_POST['product_status'] ?? 'active',
             'sku' => isset($_POST['sku']) && $_POST['sku'] !== '' ? $_POST['sku'] : $this->getCurrentSku($productId),
             'barcode' => isset($_POST['barcode']) && $_POST['barcode'] !== '' ? $_POST['barcode'] : $this->getCurrentBarcode($productId),
-            'type_id' => $newTypeId,
-            'category_id' => (isset($_POST['category_id']) && $_POST['category_id'] !== '' ? $_POST['category_id'] : null),
-            'subcategory_id' => (isset($_POST['subcategory_id']) && $_POST['subcategory_id'] !== '' ? $_POST['subcategory_id'] : null),
-            'tax_rate' => !empty($_POST['tax_rate']) ? $_POST['tax_rate'] : 0,
+            'product_type_id' => (isset($_POST['product_type_id']) && is_numeric($_POST['product_type_id']) ? $_POST['product_type_id'] : null),
+            'category_id' => (isset($_POST['category_id']) && is_numeric($_POST['category_id']) ? $_POST['category_id'] : null),
+            'subcategory_id' => (isset($_POST['subcategory_id']) && is_numeric($_POST['subcategory_id']) ? $_POST['subcategory_id'] : null),
+            'tax_rate_id' => !empty($_POST['tax_rate_id']) ? $_POST['tax_rate_id'] : null,
             'discount' => !empty($_POST['discount']) ? $_POST['discount'] : 0,
             'notes' => $_POST['notes'] ?? null
         ]);
@@ -293,9 +331,57 @@ class ProductController {
         }
     }
 
+    public function handleImageUploadAPI() {
+        try {
+            $productId = $_POST['product_id'] ?? null;
+            error_log('[ImageUpload] Incoming POST: ' . print_r($_POST, true));
+            // Support upload by barcode
+            if (!$productId && !empty($_POST['barcode'])) {
+                error_log('[ImageUpload] No product_id, looking up by barcode: ' . $_POST['barcode']);
+                $stmt = $this->db->prepare('SELECT product_id FROM core.product WHERE barcode = :barcode');
+                $stmt->execute(['barcode' => $_POST['barcode']]);
+                $productId = $stmt->fetchColumn();
+                if (!$productId) {
+                    error_log('[ImageUpload] No product found for barcode: ' . $_POST['barcode']);
+                    return [
+                        'success' => false,
+                        'message' => 'No product found for barcode',
+                        'data' => null
+                    ];
+                }
+                error_log('[ImageUpload] Found product_id: ' . $productId);
+            }
+            if (!$productId) {
+                error_log('[ImageUpload] No product_id or barcode provided');
+                return [
+                    'success' => false,
+                    'message' => 'No product_id or barcode provided',
+                    'data' => null
+                ];
+            }
+            $imageUrl = $this->handleImageUpload($productId);
+            error_log('[ImageUpload] handleImageUpload returned: ' . print_r($imageUrl, true));
+            return [
+                'success' => true,
+                'message' => 'Image uploaded successfully',
+                'url' => $imageUrl,
+                'path' => $imageUrl
+            ];
+        } catch (Exception $e) {
+            error_log('[ImageUpload] Exception: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+                'data' => null
+            ];
+        }
+    }
+
     private function handleImageUpload($productId = null) {
         try {
+            error_log('[ImageUpload] handleImageUpload called for product_id: ' . print_r($productId, true));
             if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+                error_log('[ImageUpload] No image file or upload error. FILES: ' . print_r($_FILES, true));
                 return null;
             }
             $file = $_FILES['image'];
@@ -306,18 +392,30 @@ class ProductController {
                 $category = 'product';
             }
             $uploadPath = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\') . "/Uploads/{$accountNumber}/products/{$category}/";
+            error_log('[ImageUpload] Upload path: ' . $uploadPath);
             if (!is_dir($uploadPath)) {
-                mkdir($uploadPath, 0777, true);
+                if (!mkdir($uploadPath, 0777, true) && !is_dir($uploadPath)) {
+                    error_log('[ImageUpload] Failed to create directory: ' . $uploadPath);
+                    return null;
+                }
+                error_log('[ImageUpload] Created directory: ' . $uploadPath);
             }
-            $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-            $filename = $productId ? $productId . '.' . $extension : uniqid() . '.' . $extension;
+            $srcExt = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            $supportedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            if (!in_array($srcExt, $supportedExts)) {
+                error_log('[ImageUpload] Unsupported image type: ' . $srcExt);
+                return null;
+            }
+            $filename = $productId ? $productId . '.' . $srcExt : uniqid() . '.' . $srcExt;
             $targetPath = $uploadPath . $filename;
-            if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-                return "Uploads/{$accountNumber}/products/{$category}/" . $filename;
+            if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+                error_log('[ImageUpload] Failed to move uploaded file.');
+                return null;
             }
-            return null;
+            error_log('[ImageUpload] File saved successfully as original: ' . $targetPath);
+            return "Uploads/{$accountNumber}/products/{$category}/" . $filename;
         } catch (Exception $e) {
-            error_log("Error in handleImageUpload: " . $e->getMessage());
+            error_log('[ImageUpload] Exception in handleImageUpload: ' . $e->getMessage());
             return null;
         }
     }
@@ -328,10 +426,10 @@ class ProductController {
             
             $sql = "INSERT INTO inventory.product_inventory (
                 product_id, stock_quantity, reorder_level, lead_time,
-                weight, dimensions, brand, manufacturer, warranty_period
+                product_weight, dimensions, brand, manufacturer, warranty_period
             ) VALUES (
                 :product_id, :stock_quantity, :reorder_level, :lead_time,
-                :weight, :dimensions, :brand, :manufacturer, :warranty_period
+                :product_weight, :dimensions, :brand, :manufacturer, :warranty_period
             )";
 
             $stmt = $this->db->prepare($sql);
@@ -341,7 +439,7 @@ class ProductController {
                 'stock_quantity' => !empty($_POST['stock_quantity']) ? $_POST['stock_quantity'] : '0',
                 'reorder_level' => !empty($_POST['reorder_level']) ? $_POST['reorder_level'] : 0,
                 'lead_time' => !empty($_POST['lead_time']) ? $_POST['lead_time'] : 0,
-                'weight' => !empty($_POST['weight']) ? $_POST['weight'] : 0,
+                'product_weight' => !empty($_POST['product_weight']) ? $_POST['product_weight'] : 0,
                 'dimensions' => $_POST['dimensions'] ?? null,
                 'brand' => $_POST['brand'] ?? null,
                 'manufacturer' => $_POST['manufacturer'] ?? null,
@@ -377,7 +475,7 @@ class ProductController {
             stock_quantity = :stock_quantity,
             reorder_level = :reorder_level,
             lead_time = :lead_time,
-            weight = :weight,
+            product_weight = :product_weight,
             dimensions = :dimensions,
             brand = :brand,
             manufacturer = :manufacturer,
@@ -391,31 +489,12 @@ class ProductController {
             'stock_quantity' => !empty($_POST['stock_quantity']) ? $_POST['stock_quantity'] : '0',
             'reorder_level' => !empty($_POST['reorder_level']) ? $_POST['reorder_level'] : 0,
             'lead_time' => !empty($_POST['lead_time']) ? $_POST['lead_time'] : 0,
-            'weight' => !empty($_POST['weight']) ? $_POST['weight'] : 0,
+            'product_weight' => !empty($_POST['product_weight']) ? $_POST['product_weight'] : 0,
             'dimensions' => $_POST['dimensions'] ?? null,
             'brand' => $_POST['brand'] ?? null,
             'manufacturer' => $_POST['manufacturer'] ?? null,
             'warranty_period' => $_POST['warranty_period'] ?? null
         ]);
-    }
-
-    public function handleImageUploadAPI() {
-        try {
-            $productId = $_POST['product_id'] ?? null;
-            $imageUrl = $this->handleImageUpload($productId);
-            return [
-                'success' => true,
-                'message' => 'Image uploaded successfully',
-                'url' => $imageUrl,
-                'path' => $imageUrl
-            ];
-        } catch (Exception $e) {
-            return [
-                'success' => false,
-                'message' => $e->getMessage(),
-                'data' => null
-            ];
-        }
     }
 
     public function deleteProduct() {
@@ -429,6 +508,18 @@ class ProductController {
             $this->db->exec("DELETE FROM inventory.product_inventory WHERE product_id = $productId");
             // Delete from core.product
             $this->db->exec("DELETE FROM core.product WHERE product_id = $productId");
+            // Delete product image file(s)
+            $accountNumber = $_SESSION['account_number'] ?? 'ACC002';
+            $types = ['product', 'part', 'service', 'extra', 'bundle'];
+            $extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            foreach ($types as $type) {
+                foreach ($extensions as $ext) {
+                    $imgPath = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\') . "/Uploads/{$accountNumber}/products/{$type}/{$productId}.{$ext}";
+                    if (file_exists($imgPath)) {
+                        @unlink($imgPath);
+                    }
+                }
+            }
             $this->db->commit();
             return [
                 'success' => true,
@@ -439,6 +530,85 @@ class ProductController {
             $this->db->rollBack();
             throw $e;
         }
+    }
+
+    public function getProductsByStatus() {
+        $status = $_GET['status'] ?? 'active';
+        $sql = "SELECT p.*, pt.product_type_name AS product_type_name, pc.category_name, psc.subcategory_name, pi.stock_quantity, pi.reorder_level, pi.lead_time, pi.product_weight, pi.dimensions, pi.brand, pi.manufacturer, pi.warranty_period, tr.rate
+                FROM core.product p
+                LEFT JOIN core.product_types pt ON p.product_type_id = pt.product_type_id
+                LEFT JOIN core.product_categories pc ON p.category_id = pc.category_id
+                LEFT JOIN core.product_subcategories psc ON p.subcategory_id = psc.subcategory_id
+                LEFT JOIN inventory.product_inventory pi ON p.product_id = pi.product_id
+                LEFT JOIN core.tax_rates tr ON p.tax_rate_id = tr.tax_rate_id
+                WHERE p.status = :product_status
+                ORDER BY p.product_name";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['status' => $status]);
+        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return [
+            'success' => true,
+            'message' => 'Products retrieved successfully',
+            'data' => $products
+        ];
+    }
+
+    private function insertProductSupplier($productId) {
+        $supplier_id = $_POST['supplier_id'] ?? $_POST['supplier_id'] ?? null;
+        if (!$supplier_id) return; // Skip if no supplier
+        try {
+            $sql = "INSERT INTO inventory.product_supplier (product_id, supplier_id) VALUES (:product_id, :supplier_id)";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['product_id' => $productId, 'supplier_id' => $supplier_id]);
+        } catch (PDOException $e) {
+            throw $e;
+        }
+    }
+
+    private function updateProductSupplier($productId) {
+        $supplier_id = $_POST['supplier_id'] ?? $_POST['supplier_id'] ?? null;
+        if (!$supplier_id) return; // Skip if no supplier
+        try {
+            $sql = "UPDATE inventory.product_supplier SET supplier_id = :supplier_id WHERE product_id = :product_id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['product_id' => $productId, 'supplier_id' => $supplier_id]);
+        } catch (PDOException $e) {
+            throw $e;
+        }
+    }
+
+    public function updateProductStatus() {
+        try {
+            $productId = $_POST['product_id'] ?? null;
+            $status = $_POST['product_status'] ?? null;
+            if (!$productId || !$status) {
+                throw new Exception('Product ID and status are required');
+            }
+            $allowed = ['active', 'inactive', 'discontinued'];
+            if (!in_array($status, $allowed)) {
+                throw new Exception('Invalid status');
+            }
+            $stmt = $this->db->prepare('UPDATE core.product SET product_status = :status, updated_at = CURRENT_TIMESTAMP WHERE product_id = :product_id');
+            $stmt->execute(['status' => $status, 'product_id' => $productId]);
+            return [
+                'success' => true,
+                'message' => 'Product status updated',
+                'data' => ['product_id' => $productId, 'product_status' => $status]
+            ];
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+                'data' => null
+            ];
+        }
+    }
+
+    // Add: Get all active tax rates for dropdown
+    public function getTaxRates() {
+        $stmt = $this->db->query('SELECT tax_rate_id, tax_name, rate FROM core.tax_rates WHERE is_active = true ORDER BY rate');
+        $rates = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return [ 'success' => true, 'data' => $rates ];
     }
 
     private function sendResponse($success, $message, $data = null) {

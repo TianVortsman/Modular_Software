@@ -231,3 +231,48 @@ footer {
     color: var(--color-primary);
     font-weight: bold;
 }
+
+.dashboard-chart-canvas {
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.invoice-dashboard-table tbody tr:hover {
+  background-color: var(--color-table-row-hover, var(--color-primary-fade, #f0f4fa));
+  cursor: pointer;
+}
+
+.custom-context-menu {
+  position: absolute;
+  z-index: 10000;
+  background: var(--color-background, #fff);
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: var(--radius-small, 4px);
+  box-shadow: 0 2px 8px var(--shadow-light, rgba(0,0,0,0.15));
+  min-width: 180px;
+  padding: 4px 0;
+  display: none;
+}
+.custom-context-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.custom-context-menu li {
+  padding: 10px 18px;
+  font-size: 15px;
+  color: var(--color-text-light, #222);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.custom-context-menu li:hover {
+  background: var(--color-table-row-hover, var(--color-primary-fade, #f0f4fa));
+}
+.custom-context-menu li.danger {
+  color: var(--color-danger, #c00);
+}

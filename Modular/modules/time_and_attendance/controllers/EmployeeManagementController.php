@@ -98,10 +98,11 @@ class EmployeeListController extends BaseEmployeeController
                     dv.division_name as division,
                     g.group_name as group,
                     cc.cost_center_name as cost_center,
-                    et.type_name as employment_type,
-                    ee.status,
-                    a.addr_line_1,
-                    a.addr_line_2,
+                    et.employment_type_name as employment_type,
+                    ee.employment_status,
+                    a.employee_address_id,
+                    a.address_line_1,
+                    a.address_line_2,
                     a.suburb,
                     a.city,
                     a.province,
@@ -110,8 +111,8 @@ class EmployeeListController extends BaseEmployeeController
                     CASE 
                         WHEN ee.employment_id IS NULL THEN 'incomplete'
                         WHEN ee.termination_date < CURRENT_DATE THEN 'terminated'
-                        WHEN ee.status = 'active' THEN 'active'
-                        ELSE LOWER(ee.status)
+                        WHEN ee.employment_status = 'active' THEN 'active'
+                        ELSE LOWER(ee.employment_status)
                     END as display_status
                 FROM core.employees e
                 LEFT JOIN core.employee_contact ec ON e.employee_id = ec.employee_id
@@ -121,8 +122,8 @@ class EmployeeListController extends BaseEmployeeController
                 LEFT JOIN core.divisions dv ON ee.division_id = dv.division_id
                 LEFT JOIN core.groups g ON ee.group_id = g.group_id
                 LEFT JOIN core.cost_centers cc ON ee.cost_center_id = cc.cost_center_id
-                LEFT JOIN core.employment_types et ON ee.employment_type_id = et.type_id
-                LEFT JOIN core.address a ON ec.address_id = a.addr_id
+                LEFT JOIN core.employment_types et ON ee.employment_type_id = et.employment_type_id
+                LEFT JOIN core.employee_address a ON ec.address_id = a.employee_address_id
                 WHERE 1=1
             ";
             
@@ -135,7 +136,7 @@ class EmployeeListController extends BaseEmployeeController
                 } else if ($filters['status'] === 'terminated') {
                     $query .= " AND ee.termination_date < CURRENT_DATE";
                 } else {
-                    $query .= " AND LOWER(ee.status) = LOWER(:status)";
+                    $query .= " AND LOWER(ee.employment_status) = LOWER(:status)";
                 $params[':status'] = $filters['status'];
             }
             }
@@ -146,7 +147,7 @@ class EmployeeListController extends BaseEmployeeController
             }
             
             if (!empty($filters['employment_type'])) {
-                $query .= " AND LOWER(et.type_name) = LOWER(:employment_type)";
+                $query .= " AND LOWER(et.employment_type_name) = LOWER(:employment_type)";
                 $params[':employment_type'] = $filters['employment_type'];
             }
             
@@ -231,10 +232,10 @@ class EmployeeListController extends BaseEmployeeController
 
             // Get employees by status
             $query = "
-                SELECT ee.status, COUNT(*) as count 
+                SELECT ee.employment_status, COUNT(*) as count 
                 FROM core.employees e
                 LEFT JOIN core.employee_employment ee ON e.employee_id = ee.employee_id
-                GROUP BY ee.status
+                GROUP BY ee.employment_status
             ";
             $stmt = $this->db->executeQuery($query);
             $stats['by_status'] = $this->db->fetchAll($stmt);
@@ -252,11 +253,11 @@ class EmployeeListController extends BaseEmployeeController
             
             // Get employees by employment type
             $query = "
-                SELECT et.type_name, COUNT(*) as count 
+                SELECT et.employment_type_name, COUNT(*) as count 
                 FROM core.employees e
                 LEFT JOIN core.employee_employment ee ON e.employee_id = ee.employee_id
-                LEFT JOIN core.employment_types et ON ee.employment_type_id = et.type_id
-                GROUP BY et.type_name
+                LEFT JOIN core.employment_types et ON ee.employment_type_id = et.employment_type_id
+                GROUP BY et.employment_type_id
             ";
             $stmt = $this->db->executeQuery($query);
             $stats['by_employment_type'] = $this->db->fetchAll($stmt);
@@ -317,7 +318,7 @@ class EmployeeDetailsController extends BaseEmployeeController
                     -- Employment information
                     ee.hire_date,
                     ee.termination_date,
-                    ee.status,
+                    ee.employment_status,
                     ee.manager_id,
                     
                     -- Organizational structure
@@ -330,16 +331,17 @@ class EmployeeDetailsController extends BaseEmployeeController
                     t.team_name as team,
                     
                     -- Employment details
-                    et.type_name as employment_type,
-                    ct.type_name as contract_type,
+                    et.employment_type_name as employment_type,
+                    ct.contract_type_name as contract_type,
                     pp.period_name as pay_period,
                     al.level_name as access_level,
                     tc.category_name as time_category,
-                    st.type_name as shift_type,
+                    st.shift_type_name as shift_type,
                     
                     -- Address information
-                    a.addr_line_1,
-                    a.addr_line_2,
+                    a.employee_address_id,
+                    a.address_line_1,
+                    a.address_line_2,
                     a.suburb,
                     a.city,
                     a.province,
@@ -363,13 +365,13 @@ class EmployeeDetailsController extends BaseEmployeeController
                 LEFT JOIN core.cost_centers cc ON ee.cost_center_id = cc.cost_center_id
                 LEFT JOIN core.sites s ON ee.site_id = s.site_id
                 LEFT JOIN core.teams t ON ee.team_id = t.team_id
-                LEFT JOIN core.employment_types et ON ee.employment_type_id = et.type_id
-                LEFT JOIN core.contract_types ct ON ee.contract_type_id = ct.type_id
+                LEFT JOIN core.employment_types et ON ee.employment_type_id = et.employment_type_id
+                LEFT JOIN core.contract_types ct ON ee.contract_type_id = ct.contract_type_id
                 LEFT JOIN core.pay_periods pp ON ee.pay_period_id = pp.period_id
                 LEFT JOIN core.access_levels al ON ee.access_level_id = al.level_id
                 LEFT JOIN core.time_categories tc ON ee.time_category_id = tc.category_id
-                LEFT JOIN core.shift_types st ON ee.shift_type_id = st.type_id
-                LEFT JOIN core.address a ON ec.address_id = a.addr_id
+                LEFT JOIN core.shift_types st ON ee.shift_type_id = st.shift_type_id
+                LEFT JOIN core.employee_address a ON ec.address_id = a.employee_address_id
                 LEFT JOIN core.employee_roles er ON e.employee_id = er.employee_id
                 WHERE e.employee_id = :employee_id
             ";
@@ -397,10 +399,10 @@ class EmployeeDetailsController extends BaseEmployeeController
     {
         // Format address data
         $address = null;
-        if ($employee['addr_line_1']) {
+        if ($employee['address_line_1']) {
             $address = [
-                'line1' => $employee['addr_line_1'],
-                'line2' => $employee['addr_line_2'],
+                'line1' => $employee['address_line_1'],
+                'line2' => $employee['address_line_2'],
                 'suburb' => $employee['suburb'],
                 'city' => $employee['city'],
                 'province' => $employee['province'],
@@ -421,7 +423,7 @@ class EmployeeDetailsController extends BaseEmployeeController
         }
 
         // Remove address and emergency contact fields from main data
-        $addressFields = ['addr_line_1', 'addr_line_2', 'suburb', 'city', 'province', 'country', 'postcode'];
+        $addressFields = ['address_line_1', 'address_line_2', 'suburb', 'city', 'province', 'country', 'postcode'];
         $emergencyFields = ['emergency_contact_name', 'emergency_contact_phone', 'emergency_contact_relation', 'emergency_contact_email'];
         $fieldsToRemove = array_merge($addressFields, $emergencyFields);
 
@@ -450,41 +452,34 @@ class EmployeeActionController extends BaseEmployeeController
      */
     public function addEmployee($employeeData)
     {
+        error_log('addEmployee called');
         try {
-            // Check for duplicate employee number
+            // Check for duplicate employee number or clock number
             $checkQuery = "
-                SELECT COUNT(*) as count 
+                SELECT employee_number, clock_number 
                 FROM core.employees 
                 WHERE employee_number = :employee_number 
-                OR (clock_number IS NOT NULL AND clock_number = :clock_number)
+                   OR (clock_number IS NOT NULL AND clock_number = :clock_number)
             ";
             $checkStmt = $this->db->executeQuery($checkQuery, [
                 ':employee_number' => $employeeData['employee_number'],
                 ':clock_number' => $employeeData['clock_number'] ?? null
             ]);
-            $result = $this->db->fetchRow($checkStmt);
-            
-            if ($result['count'] > 0) {
-                // Check which field caused the duplicate
-                $specificCheckQuery = "
-                    SELECT 
-                        CASE 
-                            WHEN employee_number = :employee_number THEN 'employee_number'
-                            WHEN clock_number = :clock_number THEN 'clock_number'
-                        END as duplicate_field
-                    FROM core.employees 
-                    WHERE employee_number = :employee_number 
-                    OR (clock_number IS NOT NULL AND clock_number = :clock_number)
-                ";
-                $specificCheckStmt = $this->db->executeQuery($specificCheckQuery, [
-                    ':employee_number' => $employeeData['employee_number'],
-                    ':clock_number' => $employeeData['clock_number'] ?? null
-                ]);
-                $duplicateField = $this->db->fetchRow($specificCheckStmt)['duplicate_field'];
-                
+            $duplicates = $this->db->fetchAll($checkStmt);
+            $duplicateFields = [];
+            foreach ($duplicates as $dup) {
+                if ($dup['employee_number'] === $employeeData['employee_number']) {
+                    $duplicateFields[] = 'employee_number';
+                }
+                if (!empty($employeeData['clock_number']) && $dup['clock_number'] === $employeeData['clock_number']) {
+                    $duplicateFields[] = 'clock_number';
+                }
+            }
+            if (!empty($duplicateFields)) {
+                $fields = implode(' and ', array_unique($duplicateFields));
                 return [
                     'success' => false,
-                    'message' => "Duplicate {$duplicateField} found. Please use a different value."
+                    'message' => "Duplicate $fields found. Please use a different value."
                 ];
             }
 
@@ -536,6 +531,29 @@ class EmployeeActionController extends BaseEmployeeController
             $stmt = $this->db->executeQuery($query, $params);
             $employeeId = $this->db->fetchRow($stmt)['employee_id'];
             
+            // Insert into core.employee_employment with contract_type_id
+            $employmentTypeName = $employeeData['employment_type'] ?? $employeeData['employmentType'] ?? 'Permanent';
+            $getEmploymentTypeId = "SELECT employment_type_id FROM core.employment_types WHERE employment_type_name = :employment_type_name";
+            $employmentTypeStmt = $this->db->executeQuery($getEmploymentTypeId, [':employment_type_name' => $employmentTypeName]);
+            $employmentTypeId = $this->db->fetchRow($employmentTypeStmt)['employment_type_id'] ?? null;
+
+            $employment_status = $employeeData['employment_status'] ?? 'active';
+            $hire_date = date('Y-m-d');
+
+            $insertEmployment = "
+                INSERT INTO core.employee_employment (
+                    employee_id, employment_status, employment_type_id, hire_date, created_at, updated_at
+                ) VALUES (
+                    :employee_id, :employment_status, :employment_type_id, :hire_date, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+                )
+            ";
+            $this->db->executeQuery($insertEmployment, [
+                ':employee_id' => $employeeId,
+                ':employment_status' => $employment_status,
+                ':employment_type_id' => $employmentTypeId,
+                ':hire_date' => $hire_date
+            ]);
+
             return [
                 'success' => true,
                 'employee_id' => $employeeId,
@@ -612,9 +630,9 @@ class EmployeeActionController extends BaseEmployeeController
                 // core.employee_employment fields
                 'hire_date' => $data['hire_date'] ?? null,
                 'termination_date' => $data['termination_date'] ?? null,
-                'status' => $data['status'] ?? 'active',
+                'employment_status' => $data['status'] ?? 'active',
                 
-                // core.address fields
+                // core.employee_address fields
                 'address' => $address ? [
                     'line1' => $address['line1'] ?? null,
                     'line2' => $address['line2'] ?? null,
@@ -756,6 +774,20 @@ class EmployeeActionController extends BaseEmployeeController
             ];
             
             $this->db->executeQuery($query, $params);
+
+            // Update employment_type_id in core.employee_employment
+            if (!empty($employeeData['employment_type'])) {
+                $getEmploymentTypeId = "SELECT employment_type_id FROM core.employment_types WHERE employment_type_name = :employment_type_name";
+                $employmentTypeStmt = $this->db->executeQuery($getEmploymentTypeId, [':employment_type_name' => $employeeData['employment_type']]);
+                $employmentTypeId = $this->db->fetchRow($employmentTypeStmt)['employment_type_id'] ?? null;
+                if ($employmentTypeId) {
+                    $updateEmploymentType = "UPDATE core.employee_employment SET employment_type_id = :employment_type_id WHERE employee_id = :employee_id";
+                    $this->db->executeQuery($updateEmploymentType, [
+                        ':employment_type_id' => $employmentTypeId,
+                        ':employee_id' => $employeeId
+                    ]);
+                }
+            }
 
             // Update or insert emergency contact
             $checkEmergencyQuery = "
@@ -901,43 +933,6 @@ class EmployeeActionController extends BaseEmployeeController
             ]);
             $managerId = $this->db->fetchRow($managerStmt)['employee_id'] ?? null;
 
-            // Get IDs for employment types
-            $getEmploymentTypeId = "
-                SELECT type_id FROM core.employment_types WHERE type_name = :type_name
-            ";
-            $employmentTypeStmt = $this->db->executeQuery($getEmploymentTypeId, [':type_name' => $employeeData['employment_type'] ?? '']);
-            $employmentTypeId = $this->db->fetchRow($employmentTypeStmt)['type_id'] ?? null;
-
-            $getContractTypeId = "
-                SELECT type_id FROM core.contract_types WHERE type_name = :type_name
-            ";
-            $contractTypeStmt = $this->db->executeQuery($getContractTypeId, [':type_name' => $employeeData['contract_type'] ?? '']);
-            $contractTypeId = $this->db->fetchRow($contractTypeStmt)['type_id'] ?? null;
-
-            $getPayPeriodId = "
-                SELECT period_id FROM core.pay_periods WHERE period_name = :period_name
-            ";
-            $payPeriodStmt = $this->db->executeQuery($getPayPeriodId, [':period_name' => $employeeData['pay_period'] ?? '']);
-            $payPeriodId = $this->db->fetchRow($payPeriodStmt)['period_id'] ?? null;
-
-            $getAccessLevelId = "
-                SELECT level_id FROM core.access_levels WHERE level_name = :level_name
-            ";
-            $accessLevelStmt = $this->db->executeQuery($getAccessLevelId, [':level_name' => $employeeData['access_level'] ?? '']);
-            $accessLevelId = $this->db->fetchRow($accessLevelStmt)['level_id'] ?? null;
-
-            $getTimeCategoryId = "
-                SELECT category_id FROM core.time_categories WHERE category_name = :category_name
-            ";
-            $timeCategoryStmt = $this->db->executeQuery($getTimeCategoryId, [':category_name' => $employeeData['time_category'] ?? '']);
-            $timeCategoryId = $this->db->fetchRow($timeCategoryStmt)['category_id'] ?? null;
-
-            $getShiftTypeId = "
-                SELECT type_id FROM core.shift_types WHERE type_name = :type_name
-            ";
-            $shiftTypeStmt = $this->db->executeQuery($getShiftTypeId, [':type_name' => $employeeData['shift_type'] ?? '']);
-            $shiftTypeId = $this->db->fetchRow($shiftTypeStmt)['type_id'] ?? null;
-
             if ($existingEmployment) {
                 $query = "
                     UPDATE core.employee_employment 
@@ -952,13 +947,7 @@ class EmployeeActionController extends BaseEmployeeController
                         site_id = :site_id,
                         team_id = :team_id,
                         manager_id = :manager_id,
-                        status = :status,
-                        employment_type_id = :employment_type_id,
-                        contract_type_id = :contract_type_id,
-                        pay_period_id = :pay_period_id,
-                        access_level_id = :access_level_id,
-                        time_category_id = :time_category_id,
-                        shift_type_id = :shift_type_id,
+                        employment_status = :employment_status,
                         updated_at = CURRENT_TIMESTAMP
                     WHERE employee_id = :employee_id
                 ";
@@ -966,14 +955,10 @@ class EmployeeActionController extends BaseEmployeeController
                 $query = "
                     INSERT INTO core.employee_employment 
                     (employee_id, hire_date, termination_date, position_id, division_id, department_id, 
-                    group_id, cost_center_id, site_id, team_id, manager_id, status, employment_type_id, 
-                    contract_type_id, pay_period_id, access_level_id, time_category_id, shift_type_id, 
-                    created_at, updated_at)
+                    group_id, cost_center_id, site_id, team_id, manager_id, employment_status, created_at, updated_at)
                     VALUES 
                     (:employee_id, :hire_date, :termination_date, :position_id, :division_id, :department_id,
-                    :group_id, :cost_center_id, :site_id, :team_id, :manager_id, :status, :employment_type_id,
-                    :contract_type_id, :pay_period_id, :access_level_id, :time_category_id, :shift_type_id,
-                    CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                    :group_id, :cost_center_id, :site_id, :team_id, :manager_id, :employment_status, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
                 ";
             }
             
@@ -989,13 +974,7 @@ class EmployeeActionController extends BaseEmployeeController
                 ':site_id' => $siteId,
                 ':team_id' => $teamId,
                 ':manager_id' => $managerId,
-                ':status' => $employeeData['status'] ?? 'active',
-                ':employment_type_id' => $employmentTypeId,
-                ':contract_type_id' => $contractTypeId,
-                ':pay_period_id' => $payPeriodId,
-                ':access_level_id' => $accessLevelId,
-                ':time_category_id' => $timeCategoryId,
-                ':shift_type_id' => $shiftTypeId
+                ':employment_status' => $employeeData['employment_status'] ?? 'active'
             ];
             
             $this->db->executeQuery($query, $params);
@@ -1081,14 +1060,14 @@ class EmployeeActionController extends BaseEmployeeController
     private function flattenEmployeeData($employeeData) {
         $result = [];
         $addressData = [];
-        $addrId = $employeeData['address']['id'] ?? null; // Capture addr_id if exists
+        $addrId = $employeeData['address']['employee_address_id'] ?? null; // Capture addr_id if exists
         
         // Direct mapping of employee fields from frontend data
         $employeeFieldsMap = [
             'employee_number', 'clock_number', 'first_name', 'last_name',
             'date_of_birth', 'gender', 'email', 'phone_number', 'badge_number',
             'department', 'position', 'division', 'group', 'cost_center',
-            'employment_type', 'work_week', 'status',
+            'employment_type', 'work_week', 'employment_status',
             'hire_date', 'title', 'id_number', 'rate_type', 'rate',
             'overtime', 'pay_period'
         ];
@@ -1111,8 +1090,8 @@ class EmployeeActionController extends BaseEmployeeController
         // Address fields
         if (isset($employeeData['address'])) {
             $address = $employeeData['address'];
-            $addressData['addr_line_1'] = $address['line1'] ?? null;
-            $addressData['addr_line_2'] = $address['line2'] ?? null;
+            $addressData['address_line_1'] = $address['line1'] ?? null;
+            $addressData['address_line_2'] = $address['line2'] ?? null;
             $addressData['suburb'] = $address['suburb'] ?? null;
             $addressData['city'] = $address['city'] ?? null;
             $addressData['province'] = $address['province'] ?? null;
@@ -1126,7 +1105,7 @@ class EmployeeActionController extends BaseEmployeeController
         return [
             'employee' => $result,
             'address' => $addressData,
-            'addr_id' => $addrId
+            'employee_address_id' => $addrId
         ];
     }
 
@@ -1168,7 +1147,7 @@ class EmployeeActionController extends BaseEmployeeController
             $query = "
                 INSERT INTO core.employee_employment (
                     employee_id,
-                    status,
+                    employment_status,
                     hire_date
                 ) VALUES (
                     :employee_id,

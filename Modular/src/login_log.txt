@@ -223,3 +223,96 @@
 [2025-06-21 16:07:53] Login attempt for email: tianryno01@gmail.com
 [2025-06-21 16:07:53] Technician check query executed successfully.
 [2025-06-21 16:07:53] Technician login successful: tianryno01@gmail.com
+[2025-06-22 06:48:48] Login attempt for email: tianryno01@gmail.com
+[2025-06-22 06:48:48] Technician check query executed successfully.
+[2025-06-22 06:48:48] Technician login successful: tianryno01@gmail.com
+[2025-06-22 13:27:20] Login attempt for email: tianryno01@gmail.com
+[2025-06-22 13:27:20] Technician check query executed successfully.
+[2025-06-22 13:27:20] Technician login successful: tianryno01@gmail.com
+[2025-06-22 13:38:43] Login attempt for email: tianryno01@gmail.com
+[2025-06-22 13:38:43] Technician check query executed successfully.
+[2025-06-22 13:38:43] Technician login successful: tianryno01@gmail.com
+[2025-06-22 13:45:56] Login attempt for email: tianryno01@gmail.com
+[2025-06-22 13:45:56] Technician check query executed successfully.
+[2025-06-22 13:45:56] Technician login successful: tianryno01@gmail.com
+[2025-06-23 04:39:36] Login attempt for email: tianryno01@gmail.com
+[2025-06-23 04:39:36] Technician check query executed successfully.
+[2025-06-23 04:39:36] Technician login successful: tianryno01@gmail.com
+[2025-06-23 16:09:59] Login attempt for email: tianryno01@gmail.com
+[2025-06-23 16:09:59] Technician check query executed successfully.
+[2025-06-23 16:09:59] Technician login successful: tianryno01@gmail.com
+[2025-06-24 06:10:02] Login attempt for email: tianryno01@gmail.com
+[2025-06-24 06:10:02] Technician check query executed successfully.
+[2025-06-24 06:10:02] Technician login successful: tianryno01@gmail.com
+[2025-06-26 11:04:39] Login attempt for email: tianryno01@gmail.com
+[2025-06-26 11:04:39] Technician check query executed successfully.
+[2025-06-26 11:04:40] Invalid password for technician: tianryno01@gmail.com
+[2025-06-26 11:04:40] Customer check query executed successfully.
+[2025-06-26 11:04:40] Login failed for email: tianryno01@gmail.com
+[2025-06-26 11:04:55] Login attempt for email: tianryno01@gmail.com
+[2025-06-26 11:04:55] Technician check query executed successfully.
+[2025-06-26 11:04:55] Technician login successful: tianryno01@gmail.com
+[2025-06-26 11:07:50] Login attempt for email: tianryno01@gmail.com
+[2025-06-26 11:07:50] Technician check query executed successfully.
+[2025-06-26 11:07:50] Technician login successful: tianryno01@gmail.com
+[2025-06-26 12:36:29] Login attempt for email: tianryno01@gmail.com
+[2025-06-26 12:36:29] Technician check query executed successfully.
+[2025-06-26 12:36:29] Technician login successful: tianryno01@gmail.com
+[2025-06-26 13:34:59] Login attempt for email: tianryno01@gmail.com
+[2025-06-26 13:34:59] Technician check query executed successfully.
+[2025-06-26 13:34:59] Technician login successful: tianryno01@gmail.com
+[2025-06-26 13:36:16] Login attempt for email: tianryno01@gmail.com
+[2025-06-26 13:36:16] Technician check query executed successfully.
+[2025-06-26 13:36:16] Technician login successful: tianryno01@gmail.com
+[2025-06-27 04:48:38] Login attempt for email: tianryno01@gmail.com
+[2025-06-27 04:48:38] Technician check query executed successfully.
+[2025-06-27 04:48:38] Technician login successful: tianryno01@gmail.com
+[2025-06-27 04:58:58] Login attempt for email: tianryno01@gmail.com
+[2025-06-27 04:58:58] Technician check query executed successfully.
+[2025-06-27 04:58:58] Technician login successful: tianryno01@gmail.com
+[2025-06-27 12:56:23] Login attempt for email: tianryno01@gmail.com
+[2025-06-27 12:56:23] Technician check query executed successfully.
+[2025-06-27 12:56:23] Technician login successful: tianryno01@gmail.com
+[2025-06-27 16:49:24] Login attempt for email: tianryno01@gmail.com
+[2025-06-27 16:49:24] Technician check query executed successfully.
+[2025-06-27 16:49:24] Technician login successful: tianryno01@gmail.com
+[2025-07-03 06:13:18] Login attempt for email: tianryno01@gmail.com
+[2025-07-03 06:13:18] Technician check query executed successfully.
+[2025-07-03 06:13:18] Technician login successful: tianryno01@gmail.com
+[2025-07-04 17:30:40] Login attempt for email: tianryno01@gmail.com
+[2025-07-04 17:30:40] Technician check query executed successfully.
+[2025-07-04 17:30:40] Technician login successful: tianryno01@gmail.com
+[2025-07-04 17:37:53] Login attempt for email: tianryno01@gmail.com
+[2025-07-04 17:37:53] Technician check query executed successfully.
+[2025-07-04 17:37:53] Technician login successful: tianryno01@gmail.com
+[2025-07-04 18:00:34] Login attempt for email: tianryno01@gmail.com
+[2025-07-04 18:00:34] Technician check query executed successfully.
+[2025-07-04 18:00:34] Technician login successful: tianryno01@gmail.com
+[2025-07-04 18:20:28] Login attempt for email: tianryno01@gmail.com
+[2025-07-04 18:22:26] Login attempt for email: tianryno01@gmail.com
+[2025-07-04 18:23:31] Login attempt for email: tianryno01@gmail.com
+[2025-07-04 18:23:31] Technician check query executed successfully.
+[2025-07-04 18:23:31] Technician login successful: tianryno01@gmail.com
+[2025-07-04 19:05:36] Login attempt for email: tianryno01@gmail.com
+[2025-07-04 19:05:36] Technician check query executed successfully.
+[2025-07-04 19:05:36] Technician login successful: tianryno01@gmail.com
+[2025-07-04 19:35:53] Login attempt for email: tianryno01@gmail.com
+[2025-07-04 19:35:53] Technician check query executed successfully.
+[2025-07-04 19:35:53] Technician login successful: tianryno01@gmail.com
+[2025-07-04 20:08:11] Login attempt for email: tianryno01@gmail.com
+[2025-07-04 20:08:11] Technician check query executed successfully.
+[2025-07-04 20:08:12] Technician login successful: tianryno01@gmail.com
+[2025-07-06 15:45:22] Login attempt for email: tianryno01@gmail.com
+[2025-07-06 15:45:22] Technician check query executed successfully.
+[2025-07-06 15:45:22] Technician login successful: tianryno01@gmail.com
+[2025-07-09 06:19:10] Login attempt for email: tianryno01@gmail.com
+[2025-07-09 06:19:10] Technician check query executed successfully.
+[2025-07-09 06:19:10] Technician login successful: tianryno01@gmail.com
+[2025-07-10 16:56:26] Database connection failed
+[2025-07-10 16:56:26] Login attempt for email: tianryno01@gmail.com
+[2025-07-10 16:56:30] Technician check query failed: No valid PDO connection
+[2025-07-10 16:56:34] Customer check query failed: No valid PDO connection
+[2025-07-10 16:56:34] Login failed for email: tianryno01@gmail.com
+[2025-07-10 16:57:59] Login attempt for email: tianryno01@gmail.com
+[2025-07-10 16:57:59] Technician check query executed successfully.
+[2025-07-10 16:57:59] Technician login successful: tianryno01@gmail.com

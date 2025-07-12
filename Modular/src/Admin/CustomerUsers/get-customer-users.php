@@ -26,26 +26,15 @@ try {
             last_login,
             created_at
         FROM users 
-        WHERE customer_id = $1 
+        WHERE customer_id = ? 
         ORDER BY name ASC
     ";
 
-    $result = pg_query_params($conn, $query, array($customerId));
-    if (!$result) {
-        throw new Exception("Failed to fetch users: " . pg_last_error($conn));
-    }
-
-    $users = array();
-    while ($row = pg_fetch_assoc($result)) {
-        $users[] = array(
-            'id' => (int)$row['id'],
-            'name' => $row['name'],
-            'email' => $row['email'],
-            'role' => $row['role'],
-            'status' => $row['status'],
-            'last_login' => $row['last_login'],
-            'created_at' => $row['created_at']
-        );
+    $stmt = $conn->prepare($query);
+    $stmt->execute([$customerId]);
+    $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($users as &$row) {
+        $row['id'] = (int)$row['id'];
     }
 
     echo json_encode([

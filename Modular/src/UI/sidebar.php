@@ -210,7 +210,7 @@ $isAccountClickable = $sidebarManager->isAccountClickable();
         }
         
         .tab-button.active {
-            color: var(--color-primary);
+            color: var(--color-text-dark);
             border-bottom: 2px solid var(--color-primary);
         }
         

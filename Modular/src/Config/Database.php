@@ -33,10 +33,10 @@ class Database
         
         try {
             $dsn = "pgsql:host={$this->host};port={$this->port};dbname={$this->db_name}";
-            $this->conn = new PDO($dsn, $this->username, $this->password);
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-        } catch(PDOException $e) {
+            $this->conn = new \PDO($dsn, $this->username, $this->password);
+            $this->conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            $this->conn->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+        } catch(\PDOException $e) {
             error_log("Connection error: " . $e->getMessage());
             throw $e;
         }
@@ -79,7 +79,7 @@ class Database
     public static function getMainConfig(): array
     {
         // Read from environment variables if available (Docker)
-        $host = getenv('DB_HOST') ?: 'host.docker.internal';
+        $host = getenv('DB_HOST') ?: 'postgres';
         $username = getenv('DB_USER') ?: 'Tian';
         $password = getenv('DB_PASSWORD') ?: 'Modul@rdev@2024';
         
@@ -93,7 +93,7 @@ class Database
             'connect_timeout' => 5,      // 5 seconds timeout
             'sslmode' => 'prefer',       // Prefer SSL if available
             'options' => '',             // Additional connection options
-            'fallback_host' => '127.0.0.1'  // Try this IP if primary host fails
+            'fallback_host' => 'postgres'  // Try this Docker service if primary host fails
         ];
     }
     
@@ -105,12 +105,15 @@ class Database
      */
     public static function getClientConfig(string $account_number): array
     {
+        // Debug logging
+        error_log("[DatabaseConfig] getClientConfig called with account_number: " . $account_number);
+        
         // Read from environment variables if available (Docker)
-        $host = getenv('DB_HOST') ?: 'host.docker.internal';
+        $host = getenv('DB_HOST') ?: 'postgres';
         $username = getenv('DB_USER') ?: 'Tian';
         $password = getenv('DB_PASSWORD') ?: 'Modul@rdev@2024';
         
-        return [
+        $config = [
             'host' => $host,
             'port' => '5432',
             'dbname' => $account_number,
@@ -120,7 +123,12 @@ class Database
             'connect_timeout' => 5,      // 5 seconds timeout
             'sslmode' => 'prefer',       // Prefer SSL if available
             'options' => '',             // Additional connection options
-            'fallback_host' => '127.0.0.1'  // Try this IP if primary host fails
+            'fallback_host' => 'postgres'  // Try this Docker service if primary host fails
         ];
+        
+        // Debug logging
+        error_log("[DatabaseConfig] Client config created with dbname: " . $config['dbname']);
+        
+        return $config;
     }
 } 

@@ -538,13 +538,22 @@
                     <input type="date" id="employee-hire-date">
                   </div>
                   <div class="form-group">
-                    <label>Contract Type:</label>
-                    <select id="employee-contract-type">
-                      <option value="permanent">Permanent</option>
-                      <option value="temporary">Temporary</option>
-                      <option value="contract">Contract-based</option>
-                      <option value="probation">Probation</option>
+                    <label>Employment Type:</label>
+                    <select id="employee-employment-type">
+                      <option value="Permanent">Permanent</option>
+                      <option value="Temporary">Temporary</option>
+                      <option value="Contract-based">Contract-based</option>
+                      <option value="Probation">Probation</option>
+                      <option value="Internship">Internship</option>
+                      <option value="Other">Other</option>
                     </select>
+                  </div>
+                  <div class="form-group toggle-group">
+                    <label>Is Sales:</label>
+                    <label class="switch">
+                      <input type="checkbox" id="employee-is-sales">
+                      <span class="slider round"></span>
+                    </label>
                   </div>
                 </div>
                 <div class="form-column">

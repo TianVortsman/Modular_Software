@@ -269,6 +269,10 @@ const subTabManager = new SubTabManager({
             filters.employment_type = 'Permanent';
         } else if (subTabId === 'temporary') {
             filters.employment_type = 'Temporary';
+        } else if (subTabId === 'contract-based') {
+            filters.employment_type = 'Contract-based';
+        } else if (subTabId === 'probation') {
+            filters.employment_type = 'Probation';
         }
         console.log(`Sub-tab changed to: ${subTabId}. Loading employees with filters:`, filters);
         loadEmployees(1, filters);
@@ -414,9 +418,8 @@ class EmployeeModalManager {
             if (result.success) {
                 showNotification('Employee details saved successfully!', 'success');
                 this.closeModal();
-                
                 // Refresh the employee list to show updated data
-                loadEmployees();
+                loadEmployees(1, getCurrentFilters());
             } else {
                 throw new Error(result.message || 'Failed to save employee details');
             }
@@ -457,7 +460,7 @@ class EmployeeModalManager {
             last_name: getVal('employee-full-name', 'textContent').split(' ').slice(1).join(' '),
             employee_number: getVal('employee-payroll-number', 'textContent'),
             clock_number: getVal('employee-clock-number', 'textContent'),
-            is_sales: getVal('is-sales', 'checked', false),
+            is_sales: getVal('employee-is-sales', 'checked', false),
 
             // core.employee_contact fields
             email: getVal('employee-email'),
@@ -490,8 +493,12 @@ class EmployeeModalManager {
                 relation: getVal('emergency-relation'),
                 phone: getVal('emergency-phone'),
                 email: getVal('emergency-email')
-            }
+            },
+            employment_type: getVal('employee-employment-type'),
         };
+        
+        // Remove contract_type from the payload if present
+        delete formData.contract_type;
         
         return formData;
     }
@@ -613,7 +620,6 @@ class EmployeeModalManager {
             // --- Employment Tab ---
             this.setFieldValue('employee-job-title', employee.position);
             this.setFieldValue('employee-hire-date', employee.hire_date);
-            this.setFieldValue('employee-contract-type', employee.employment_type);
             this.setFieldValue('employee-title', employee.title);
             this.setFieldValue('employee-id-number', employee.id_number);
             this.setFieldValue('employee-rate-type', employee.rate_type);
@@ -717,6 +723,18 @@ class EmployeeModalManager {
                     dataAttribute: 'data-modal-tab'
                 });
                 modalTabManager.switchTab(firstTab);
+            }
+            
+            // When populating the modal:
+            const isSalesCheckbox = document.getElementById('employee-is-sales');
+            if (isSalesCheckbox) {
+                isSalesCheckbox.checked = !!employee.is_sales;
+            }
+            
+            // In fetchEmployeeData, after fetching employee data and before finishing, set the employment type select value
+            const employmentTypeSelect = document.getElementById('employee-employment-type');
+            if (employmentTypeSelect && employee.employment_type) {
+                employmentTypeSelect.value = employee.employment_type;
             }
             
         } catch (error) {
@@ -1112,6 +1130,8 @@ function displayEmployees(employees) {
     const tableBodies = {
         permanent: document.querySelector('#permanent-tab .main-employee-table tbody'),
         temporary: document.querySelector('#temporary-tab .main-employee-table tbody'),
+        contractbased: document.querySelector('#contract-based-tab .main-employee-table tbody'),
+        probation: document.querySelector('#probation-tab .main-employee-table tbody'),
         terminated: document.querySelector('#terminated-tab .main-employee-table tbody'),
         incomplete: document.querySelector('#incomplete-tab .main-employee-table tbody'),
         all: document.querySelector('#all-tab .main-employee-table tbody')
@@ -1150,6 +1170,14 @@ function displayEmployees(employees) {
                 const clonedRow = row.cloneNode(true);
                 addRowEventListeners(clonedRow, employee);
                 tableBodies.temporary.appendChild(clonedRow);
+            } else if (employee.employment_type?.toLowerCase() === 'contract-based' && tableBodies.contractbased) {
+                const clonedRow = row.cloneNode(true);
+                addRowEventListeners(clonedRow, employee);
+                tableBodies.contractbased.appendChild(clonedRow);
+            } else if (employee.employment_type?.toLowerCase() === 'probation' && tableBodies.probation) {
+                const clonedRow = row.cloneNode(true);
+                addRowEventListeners(clonedRow, employee);
+                tableBodies.probation.appendChild(clonedRow);
             } else if (tableBodies.permanent) {
                 const clonedRow = row.cloneNode(true);
                 addRowEventListeners(clonedRow, employee);
@@ -1167,9 +1195,21 @@ function displayEmployees(employees) {
         
         // Always add to the "all" table
         if (tableBodies.all) {
-            const clonedRow = row.cloneNode(true);
-            addRowEventListeners(clonedRow, employee);
-            tableBodies.all.appendChild(clonedRow);
+            // Create a 6-column row for the all-tab
+            const allRow = document.createElement('tr');
+            allRow.className = 'employee-row';
+            allRow.dataset.employeeId = employee.employee_id;
+            const hireDate = employee.hire_date ? new Date(employee.hire_date).toLocaleDateString() : '';
+            allRow.innerHTML = `
+                <td>${employee.employee_number || ''}</td>
+                <td>${employee.first_name} ${employee.last_name}</td>
+                <td>${employee.department || ''}</td>
+                <td>${employee.position || ''}</td>
+                <td>${hireDate}</td>
+                <td><span class="status-badge ${employee.display_status || 'active'}">${employee.display_status || 'Active'}</span></td>
+            `;
+            addRowEventListeners(allRow, employee);
+            tableBodies.all.appendChild(allRow);
         }
     });
 
@@ -1185,32 +1225,51 @@ function createEmployeeRow(employee) {
     const hireDate = employee.hire_date ? new Date(employee.hire_date).toLocaleDateString() : '';
     const endDate = employee.end_date ? new Date(employee.end_date).toLocaleDateString() : '';
     
-    // Base columns that are common to all tables
-    const baseColumns = `
-        <td>${employee.employee_number || ''}</td>
-        <td>${employee.first_name} ${employee.last_name}</td>
-        <td>${employee.department || ''}</td>
-        <td>${employee.position || ''}</td>
-        <td>${hireDate}</td>
-    `;
-    
-    // Additional columns based on status
+    // Terminated: 7 columns (Employee ID, Name, Department, Position, Start Date, End Date, Reason)
     if (employee.display_status?.toLowerCase() === 'terminated') {
-        row.innerHTML = baseColumns + `
+        row.innerHTML = `
+            <td>${employee.employee_number || ''}</td>
+            <td>${employee.first_name} ${employee.last_name}</td>
+            <td>${employee.department || ''}</td>
+            <td>${employee.position || ''}</td>
+            <td>${hireDate}</td>
             <td>${endDate}</td>
             <td>${employee.termination_reason || ''}</td>
         `;
-    } else if (employee.employment_type?.toLowerCase() === 'temporary') {
-        row.innerHTML = baseColumns + `
+    }
+    // Temporary: 7 columns (Employee ID, Name, Department, Position, Start Date, End Date, Status)
+    else if (employee.employment_type?.toLowerCase() === 'temporary') {
+        row.innerHTML = `
+            <td>${employee.employee_number || ''}</td>
+            <td>${employee.first_name} ${employee.last_name}</td>
+            <td>${employee.department || ''}</td>
+            <td>${employee.position || ''}</td>
+            <td>${hireDate}</td>
             <td>${endDate}</td>
             <td><span class="status-badge ${employee.display_status || 'active'}">${employee.display_status || 'Active'}</span></td>
         `;
-    } else {
-        row.innerHTML = baseColumns + `
+    }
+    // Incomplete: 5 columns (Employee ID, Name, Missing Info, Created Date, Status)
+    else if (employee.display_status?.toLowerCase() === 'incomplete') {
+        row.innerHTML = `
+            <td>${employee.employee_number || ''}</td>
+            <td>${employee.first_name} ${employee.last_name}</td>
+            <td>${employee.missing_info || ''}</td>
+            <td>${employee.created_at ? new Date(employee.created_at).toLocaleDateString() : ''}</td>
+            <td><span class="status-badge ${employee.display_status || 'incomplete'}">${employee.display_status || 'Incomplete'}</span></td>
+        `;
+    }
+    // All others: 6 columns (Employee ID, Name, Department, Position, Start Date, Status)
+    else {
+        row.innerHTML = `
+            <td>${employee.employee_number || ''}</td>
+            <td>${employee.first_name} ${employee.last_name}</td>
+            <td>${employee.department || ''}</td>
+            <td>${employee.position || ''}</td>
+            <td>${hireDate}</td>
             <td><span class="status-badge ${employee.display_status || 'active'}">${employee.display_status || 'Active'}</span></td>
         `;
     }
-    
     return row;
 }
 
@@ -1247,23 +1306,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Handle form submission
     if (addEmployeeForm) {
-        addEmployeeForm.addEventListener('submit', async (e) => {
+        // Remove any existing submit event listeners
+        const newForm = addEmployeeForm.cloneNode(true);
+        addEmployeeForm.parentNode.replaceChild(newForm, addEmployeeForm);
+        const submitBtn = newForm.querySelector('button[type="submit"], input[type="submit"]');
+        let isSubmitting = false;
+        console.log('Attaching add employee submit handler');
+        newForm.addEventListener('submit', async (e) => {
+            console.log('Add employee submit handler triggered');
             e.preventDefault();
-            
+            if (isSubmitting) return; // Prevent double submit
+            isSubmitting = true;
+            if (submitBtn) submitBtn.disabled = true;
             // Show loading modal
             const loadingModal = document.getElementById('loadingModal');
             if (loadingModal) {
                 loadingModal.classList.remove('hidden');
             }
-            
-            const formData = new FormData(addEmployeeForm);
+            const formData = new FormData(newForm);
             const employeeData = {
                 employee_number: formData.get('employeeNumber'),
+                clock_number: formData.get('clockNumber'),
                 first_name: formData.get('firstName'),
                 last_name: formData.get('lastName'),
-                is_sales: formData.get('isSales') === 'on' ? true : false
+                is_sales: formData.get('isSales') === 'on' ? true : false,
+                employment_status: 'active',
             };
-
             try {
                 const response = await fetch('../api/employee-api.php?action=add', {
                     method: 'POST',
@@ -1272,14 +1340,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     body: JSON.stringify(employeeData)
                 });
-
                 const result = await response.json();
-                
                 // Hide loading modal
                 if (loadingModal) {
                     loadingModal.classList.add('hidden');
                 }
-                
+                isSubmitting = false;
+                if (submitBtn) submitBtn.disabled = false;
                 if (result.success) {
                     // Refresh employee list
                     loadEmployees();
@@ -1295,6 +1362,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (loadingModal) {
                     loadingModal.classList.add('hidden');
                 }
+                isSubmitting = false;
+                if (submitBtn) submitBtn.disabled = false;
                 // Show error message
                 showNotification(error.message, 'error');
             }
@@ -1593,41 +1662,30 @@ function updatePagination(paginationData) {
     });
 }
 
-// Helper function to get current filters from the active tab/sub-tab
+// Add or update getCurrentFilters to return the current main tab and subtab filters
 function getCurrentFilters() {
+    // Determine which main tab is active
+    const mainTab = document.querySelector('.page-tab-button.active')?.getAttribute('data-tab');
     let filters = {};
-    const activeMainTabButton = document.querySelector('.page-tab-button.active');
-    const activeMainTabId = activeMainTabButton ? activeMainTabButton.dataset.tab : 'active';
-
-    // Get per_page value from the select element
-    const perPageSelect = document.getElementById('perPageSelect');
-    if (perPageSelect) {
-        filters.per_page = parseInt(perPageSelect.value, 10);
-    }
-
-    if (activeMainTabId === 'active') {
-        const activeSubTabButton = document.querySelector('.page-subtab-button.active');
-        const activeSubTabId = activeSubTabButton ? activeSubTabButton.dataset.subtab : 'permanent';
+    if (mainTab === 'active') {
         filters.status = 'active';
-        if (activeSubTabId === 'permanent') {
+        // Determine which subtab is active
+        const subTab = document.querySelector('.page-subtab-button.active')?.getAttribute('data-subtab');
+        if (subTab === 'permanent') {
             filters.employment_type = 'Permanent';
-        } else if (activeSubTabId === 'temporary') {
+        } else if (subTab === 'temporary') {
             filters.employment_type = 'Temporary';
+        } else if (subTab === 'contract-based') {
+            filters.employment_type = 'Contract-based';
+        } else if (subTab === 'probation') {
+            filters.employment_type = 'Probation';
         }
-    } else if (activeMainTabId === 'terminated') {
+    } else if (mainTab === 'terminated') {
         filters.status = 'terminated';
-    } else if (activeMainTabId === 'incomplete') {
+    } else if (mainTab === 'incomplete') {
         filters.status = 'incomplete';
-    } else if (activeMainTabId === 'all') {
-        // No status filter for 'all' tab
     }
-
-    // Add search term if present
-    const searchInput = document.getElementById('employeeSearchInput');
-    if (searchInput && searchInput.value.trim() !== '') {
-        filters.search = searchInput.value.trim();
-    }
-
+    // For 'all' tab, no filters
     return filters;
 }
 
@@ -1656,6 +1714,26 @@ document.addEventListener('DOMContentLoaded', function() {
         perPageSelect.addEventListener('change', (event) => {
             // When per page changes, reset to the first page
             loadEmployees(1, getCurrentFilters());
+        });
+    }
+
+    // Ensure subtab click logic is initialized for all .page-subtab-button elements
+    const subtabContainer = document.getElementById('active-subtabs');
+    if (subtabContainer) {
+        subtabContainer.addEventListener('click', (e) => {
+            const button = e.target.closest('.page-subtab-button');
+            if (!button) return;
+            const subTabId = button.getAttribute('data-subtab');
+            // Remove active from all
+            subtabContainer.querySelectorAll('.page-subtab-button').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            // Load employees for the selected subtab
+            let filters = { status: 'active' };
+            if (subTabId === 'permanent') filters.employment_type = 'Permanent';
+            else if (subTabId === 'temporary') filters.employment_type = 'Temporary';
+            else if (subTabId === 'contract-based') filters.employment_type = 'Contract-based';
+            else if (subTabId === 'probation') filters.employment_type = 'Probation';
+            loadEmployees(1, filters);
         });
     }
 });

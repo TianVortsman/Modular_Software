@@ -5,6 +5,9 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && docker-php-ext-install pdo_pgsql pgsql
 
+# Install Node.js and npm
+RUN apt-get update && apt-get install -y nodejs npm
+
 # Install zip extension
 RUN apt-get update && apt-get install -y libzip-dev zip && docker-php-ext-install zip
 

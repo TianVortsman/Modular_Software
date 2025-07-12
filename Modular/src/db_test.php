@@ -2,7 +2,12 @@
 // Database connection test script
 require_once __DIR__ . '/Services/DatabaseService.php';
 
-use Services\DatabaseService;
+use App\Services\DatabaseService;
+
+if (php_sapi_name() === 'cli') {
+    // Set a test account number for CLI runs
+    $_GET['account'] = 'ACC001'; // or whatever your test DB is
+}
 
 header('Content-Type: text/plain');
 
@@ -54,7 +59,7 @@ if (DatabaseService::testMainDatabaseConnection()) {
     echo "ERROR: Main database connection failed.\n";
     
     // Get the database configuration for diagnostics
-    $config = new ReflectionClass('Config\Database');
+    $config = new ReflectionClass('App\Config\Database');
     $method = $config->getMethod('getMainConfig');
     $dbConfig = $method->invoke(null);
     

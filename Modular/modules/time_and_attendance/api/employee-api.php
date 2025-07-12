@@ -1,8 +1,13 @@
 <?php
+ob_start();
 // Ensure we start a session first (if not already started)
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Generate a unique request ID for logging
+$request_id = uniqid('emp_add_', true);
+error_log("[{$request_id}] Request started: " . $_SERVER['REQUEST_METHOD'] . ' ' . $_SERVER['REQUEST_URI']);
 
 // Set content type to JSON first to ensure we always return JSON
 header('Content-Type: application/json');
@@ -118,6 +123,7 @@ try {
             // Handle add employee
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 http_response_code(405);
+                error_log("[{$request_id}] Method not allowed");
                 echo json_encode([
                     'success' => false,
                     'message' => 'Method not allowed. Use POST for adding employees'
@@ -127,6 +133,7 @@ try {
             
             // Get JSON input
             $jsonInput = file_get_contents('php://input');
+            error_log("[{$request_id}] Raw input: $jsonInput");
             $employeeData = json_decode($jsonInput, true);
             
             // Validate CSRF token (if implemented)
@@ -139,16 +146,21 @@ try {
             foreach ($requiredFields as $field) {
                 if (!isset($employeeData[$field]) || empty(trim($employeeData[$field]))) {
                     http_response_code(400);
-                    echo json_encode([
+                    $response = [
                         'success' => false,
                         'message' => "Missing required field: $field"
-                    ]);
+                    ];
+                    error_log("[{$request_id}] Response: " . json_encode($response));
+                    echo json_encode($response);
                     exit;
                 }
             }
             
             $controller = new EmployeeActionController();
             $result = $controller->addEmployee($employeeData);
+            error_log("[{$request_id}] Controller response: " . json_encode($result));
+            // Clean output buffer before sending JSON
+            ob_clean();
             echo json_encode($result);
             break;
             
@@ -301,4 +313,5 @@ try {
         'success' => false,
         'message' => 'An unexpected error occurred: ' . $e->getMessage()
     ]);
-} 
+}
+?> 

@@ -37,7 +37,6 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
     <link rel="stylesheet" href="../assets/css/imports.css">
     <link rel="stylesheet" href="../assets/css/sidebar.css">
     <script src="../assets/js/sidebar.js"></script>
-    <script src="../assets/js/imports.js"></script>
     <script src="../assets/js/toggle-theme.js"></script>
 </head>
 <body id="importing">
@@ -312,7 +311,7 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
             <div class="import-grid">
                 <div class="import-card">
                     <h3><span class="material-icons">inventory_2</span>Products</h3>
-                    <div class="upload-zone">
+                    <div class="upload-zone" data-type="Products">
                         <span class="material-icons">cloud_upload</span>
                         <p>Drag & drop your Excel file here</p>
                         <button class="btn btn-primary">Choose File</button>
@@ -414,7 +413,7 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
                 </div>
                 <div class="import-card">
                     <h3><span class="material-icons">inventory_2</span>Products</h3>
-                    <div class="upload-zone">
+                    <div class="upload-zone" data-type="Products">
                         <span class="material-icons">cloud_upload</span>
                         <p>Drag & drop your Excel file here</p>
                         <button class="btn btn-primary">Choose File</button>
@@ -507,7 +506,8 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
             try {
                 const fileInput = zone.querySelector('input[type="file"]');
                 if (!fileInput || !fileInput.files[0]) {
-                    throw new Error('Please select a file first');
+                    showResponseModal('warning', 'Please select a file first');
+                    return;
                 }
 
                 const file = fileInput.files[0];
@@ -527,48 +527,27 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
                 const result = await response.json();
                 hideLoadingModal();
 
-                if (!response.ok) {
-                    throw new Error(result.message || 'Import failed');
+                // Always show a response modal for the main result
+                if (result.success && (!result.errors || result.errors.length === 0)) {
+                    showResponseModal('success', result.message || 'Import successful');
+                } else if (result.success && result.errors && result.errors.length > 0) {
+                    showResponseModal('warning', `${result.message || 'Some rows failed to import'} (${result.errors.length} errors, see details below)`);
+                } else if (!result.success && result.errors && result.errors.length > 0) {
+                    showResponseModal('error', `${result.message || 'Import failed'} (${result.errors.length} errors, see details below)`);
+                } else {
+                    showResponseModal('error', result.message || 'Import failed');
                 }
 
-                // Show success message
-                showResponseModal(result.success ? 'success' : 'warning', result.message);
-
-                // If there are any errors, show them in the error table
+                // Show error table if there are row errors
                 if (result.errors && result.errors.length > 0) {
                     showErrorTable({
                         totalRows: result.totalRows,
                         successCount: result.successCount,
-                        errors: result.errors.map(error => {
-                            // Handle both string errors and error objects
-                            if (typeof error === 'string') {
-                                // Parse error message if it's in the format "Row X: Message"
-                                const rowMatch = error.match(/Row (\d+):(.*)/);
-                                if (rowMatch) {
-                                    return {
-                                        row: rowMatch[1],
-                                        message: rowMatch[2].trim(),
-                                        data: 'N/A'
-                                    };
-                                }
-                                return {
-                                    row: 'N/A',
-                                    message: error,
-                                    data: 'N/A'
-                                };
-                            } else {
-                                // Handle error object format
-                                return {
-                                    row: error.row || 'N/A',
-                                    message: error.message || 'Unknown error',
-                                    data: error.data || 'N/A'
-                                };
-                            }
-                        })
+                        errors: result.errors
                     });
                 }
-                
-                // Clear the file selection after import attempt
+
+                // Clear the file selection after import attempt if successful
                 if (result.success) {
                     zone.querySelector('p').textContent = 'Drag & drop your Excel file here';
                     if (fileInput) {
@@ -617,5 +596,75 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
             showResponseModal('success', 'File selected successfully');
         }
     </script>
+
+    <style>
+    /* Extra polish for error table modal */
+    #errorTableModal .error-modal-content {
+        border-radius: 14px;
+        box-shadow: 0 8px 32px var(--shadow-medium);
+        background: var(--color-secondary);
+        color: var(--color-text-light);
+        font-family: var(--font-primary);
+    }
+    #errorTableModal .error-modal-header {
+        border-radius: 14px 14px 0 0;
+        background: var(--color-primary);
+        color: var(--color-background);
+        padding: 1rem 1.5rem;
+    }
+    #errorTableModal .error-modal-header h2 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 0;
+    }
+    #errorTableModal .error-modal-body {
+        background: var(--color-secondary);
+        border-radius: 0 0 14px 14px;
+        padding: 1.5rem;
+    }
+    #errorTableModal .error-table th {
+        background: var(--color-primary);
+        color: var(--color-background);
+        font-weight: 600;
+        font-size: 1rem;
+    }
+    #errorTableModal .error-table td {
+        background: var(--color-background-light);
+        color: var(--color-text-light);
+        font-size: 0.97rem;
+    }
+    #errorTableModal .error-table tr:nth-child(even) td {
+        background: var(--color-secondary);
+    }
+    #errorTableModal .error-table tr:hover td {
+        background: var(--color-warning);
+        color: var(--color-text-dark);
+    }
+    #errorTableModal .error-modal-footer {
+        border-top: 1px solid var(--border-color);
+        background: var(--color-secondary);
+        border-radius: 0 0 14px 14px;
+    }
+    #errorTableModal .error-modal-btn {
+        border-radius: var(--radius-small);
+        font-size: 1rem;
+        font-family: var(--font-primary);
+        font-weight: 600;
+        box-shadow: 0 2px 8px var(--shadow-light);
+    }
+    #errorTableModal .error-modal-btn-primary {
+        background: var(--color-primary);
+        color: var(--color-background);
+    }
+    #errorTableModal .error-modal-btn-secondary {
+        background: var(--color-secondary);
+        color: var(--color-primary);
+        border: 1px solid var(--color-primary);
+    }
+    #errorTableModal .error-modal-btn-primary:hover, #errorTableModal .error-modal-btn-secondary:hover {
+        background: var(--color-hover);
+        color: var(--color-background);
+    }
+    </style>
 </body>
 </html>

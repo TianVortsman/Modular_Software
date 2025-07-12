@@ -51,35 +51,58 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
             </div>
 
             <div class="dashboard-widgets">
+                <!-- Date Range and Chart Type Selectors -->
+                <div class="dashboard-controls" style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px;">
+                    <label for="dashboard-range-selector">Date Range:</label>
+                    <select id="dashboard-range-selector">
+                        <option value="this_month" selected>This Month</option>
+                        <option value="3months">Last 3 Months</option>
+                        <option value="quarter">Quarterly</option>
+                        <option value="year">Yearly</option>
+                    </select>
+                    <label for="dashboard-chart-months">Chart Months:</label>
+                    <select id="dashboard-chart-months">
+                        <option value="3">Last 3 Months</option>
+                        <option value="6" selected>Last 6 Months</option>
+                        <option value="9">Last 9 Months</option>
+                    </select>
+                    <label for="dashboard-chart-type">Chart Type:</label>
+                    <select id="dashboard-chart-type">
+                        <option value="bar" selected>Bar</option>
+                        <option value="line">Line</option>
+                        <option value="pie">Pie</option>
+                    </select>
+                </div>
+
                 <!-- Top Widgets -->
                 <div class="widgets">
                     <div class="widget" id="total-invoices-widget">
                         <h3>Total Invoices</h3>
-                        <p>128</p>
+                        <p></p>
                     </div>
                     <div class="widget" id="total-revenue-widget">
                         <h3>Total Revenue</h3>
-                        <p>R23,456</p>
+                        <p></p>
                     </div>
                     <div class="widget" id="total-unpaid-invoices-widget">
                         <h3>Unpaid Invoices</h3>
-                        <p>12</p>
+                        <p></p>
                     </div>
                     <div class="widget" id="pending-payments-widget">
                         <h3>Pending Payments</h3>
-                        <p>R4,500</p>
+                        <p></p>
                     </div>
                     <div class="widget" id="month-expenses-widget">
-                        <h3>Expenses This Month</h3> <!-- New -->
-                        <p>R1,250</p>
+                        <h3>Expenses This Month</h3>
+                        <p></p>
                     </div>
                     <div class="widget" id="taxes-due-widget">
-                        <h3>Taxes Due</h3> <!-- New -->
-                        <p>R3,200</p>
+                        <h3>Taxes Due</h3>
+                        <p></p>
                     </div>
                     <div class="widget" id="total-recurring-invoices-widget">
-                        <h3>Recurring Invoices</h3> <!-- New -->
-                        <p>5 Active</p>
+                        <h3>Recurring Invoices</h3>
+                        <p></p>
                     </div>
                 </div>
 
@@ -94,47 +117,11 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
                                 <th>Date</th>
                                 <th>Status</th>
                                 <th>Total</th>
-                                <th>Due Date</th> <!-- New -->
+                                <th>Due Date</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr class="invoice-dashboard-table-row">
-                                <td>INV-001</td>
-                                <td>Acme Corp</td>
-                                <td>2024-10-10</td>
-                                <td><span class="status paid">Paid</span></td>
-                                <td>R1,500</td>
-                                <td>2024-10-25</td> <!-- New -->
-                                <td><button class="action-button">View</button></td>
-                            </tr>
-                            <tr>
-                                <td>INV-002</td>
-                                <td>Tech Solutions</td>
-                                <td>2024-10-08</td>
-                                <td><span class="status unpaid">Unpaid</span></td>
-                                <td>R800</td>
-                                <td>2024-10-20</td> <!-- New -->
-                                <td><button class="action-button">View</button></td>
-                            </tr>
-                            <tr class="invoice-dashboard-table-row">
-                                <td>INV-001</td>
-                                <td>Acme Corp</td>
-                                <td>2024-10-10</td>
-                                <td><span class="status paid">Paid</span></td>
-                                <td>R1,500</td>
-                                <td>2024-10-25</td> <!-- New -->
-                                <td><button class="action-button">View</button></td>
-                            </tr>
-                            <tr>
-                                <td>INV-002</td>
-                                <td>Tech Solutions</td>
-                                <td>2024-10-08</td>
-                                <td><span class="status unpaid">Unpaid</span></td>
-                                <td>R800</td>
-                                <td>2024-10-20</td> <!-- New -->
-                                <td><button class="action-button">View</button></td>
-                            </tr>
+                        <tbody id="recent-invoices-tbody">
                         </tbody>
                     </table>
                 </div>
@@ -142,16 +129,16 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
                 <!-- Quick Actions -->
                 <div class="quick-actions">
                     <h2>Quick Actions</h2>
-                    <button class="open-invoice-modal" onclick="openInvoiceModal()">Create New Invoice</button>
+                    <button class="open-invoice-modal" id="open-invoice-modal-btn">Create New Invoice</button>
                     <button class="action-button">Send Payment Reminder</button>
-                    <button class="action-button">Add Expense</button> <!-- New -->
+                    <button class="action-button">Add Expense</button>
                 </div>
 
                 <!-- Invoice Analytics (New Section) -->
                 <div class="invoice-analytics">
                     <h2>Invoice Analytics</h2>
                     <div class="analytics-graph">
-                        <canvas id="invoiceChart" class="analytics-image"></canvas>
+                        <canvas id="invoiceChart" class="analytics-image dashboard-chart-canvas" width="900" height="350"></canvas>
                     </div>
                     <div class="analytics-summary">
                         <p><strong>Average Payment Time:</strong> <span class="analytics-value">15 days</span></p>
@@ -173,39 +160,7 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>REC-001</td>
-                                <td>Global Tech</td>
-                                <td>2024-09-01</td>
-                                <td>2024-11-01</td>
-                                <td>Monthly</td>
-                                <td><button class="action-button">Edit</button></td>
-                            </tr>
-                            <tr>
-                                <td>REC-002</td>
-                                <td>Future Innovations</td>
-                                <td>2024-05-15</td>
-                                <td>2024-11-15</td>
-                                <td>Quarterly</td>
-                                <td><button class="action-button">Edit</button></td>
-                            </tr>
-                            <tr>
-                                <td>REC-001</td>
-                                <td>Global Tech</td>
-                                <td>2024-09-01</td>
-                                <td>2024-11-01</td>
-                                <td>Monthly</td>
-                                <td><button class="action-button">Edit</button></td>
-                            </tr>
-                            <tr>
-                                <td>REC-002</td>
-                                <td>Future Innovations</td>
-                                <td>2024-05-15</td>
-                                <td>2024-11-15</td>
-                                <td>Quarterly</td>
-                                <td><button class="action-button">Edit</button></td>
-                            </tr>
+                        <tbody id="recurring-invoices-tbody">
                         </tbody>
                     </table>
                 </div>
@@ -216,10 +171,10 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
         <p>&copy; 2024 Modular Software. All rights reserved.</p>
     </footer>
     <?php include('../modals/invoice-modal.php'); ?>
-    <script src="../js/invoice-modal.js"></script>
+    <?php include '../../../src/UI/response-modal.php'; ?>
+    <?php include '../../../src/UI/loading-modal.php'; ?>
+    <script type="module" src="../js/dashboard.js"></script>
     <script src="../../../public/assets/js/sidebar.js"></script>
-    <script src="../js/invoice-charts.js" type="module"></script>
-    <script src="../js/invoice-data.js"></script>
     <script>var multipleAccounts = <?= json_encode($multiple_accounts); ?>; </script>
 </body>
 </html>

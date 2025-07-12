@@ -34,6 +34,13 @@
   padding: 8px;
 }
 
+.company-info-section{
+  background-color: var(--background-color);
+  border-radius: 6px;
+  padding: 10px;
+  margin-top: 16px;
+}
+
 /* Modal Header */
 .modal-invoice-header {
   background-color: var(--primary-accent);

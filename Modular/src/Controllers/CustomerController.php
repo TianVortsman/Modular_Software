@@ -42,25 +42,20 @@ class CustomerController
                     last_login
                 FROM 
                     customers
-                WHERE customer_id = $1
+                WHERE customer_id = ?
             ";
-            
             $params = [$id];
-            $result = $this->db->query($query, $params);
-            
+            $result = $this->db->executeQuery('get_customer_details', $query, $params);
             if (!$result) {
                 throw new \Exception("Failed to retrieve customer: " . $this->db->getLastError());
             }
-            
             $customer = $this->db->fetchRow($result);
-            
             if (!$customer) {
                 return [
                     'success' => false,
                     'error' => "Customer not found with ID: $id"
                 ];
             }
-            
             return [
                 'success' => true,
                 'customer' => $customer
@@ -289,13 +284,11 @@ class CustomerController
                 FROM customers c
                 WHERE 1=1 $searchCondition
             ";
-            
-            $countResult = pg_query_params($conn, $countQuery, $params);
+            $countResult = $this->db->executeQuery('count_customers', $countQuery, $params);
             if (!$countResult) {
-                throw new \Exception("Failed to count customers: " . pg_last_error($conn));
+                throw new \Exception("Failed to count customers: " . $this->db->getLastError());
             }
-            
-            $totalRow = pg_fetch_assoc($countResult);
+            $totalRow = $this->db->fetchRow($countResult);
             $totalCount = (int)$totalRow['total'];
             $totalPages = ceil($totalCount / $perPage);
             
@@ -303,7 +296,6 @@ class CustomerController
             $customerParams = $params;
             $customerParams[] = $perPage;
             $customerParams[] = $offset;
-            
             $query = "
                 SELECT 
                     c.customer_id,
@@ -317,15 +309,13 @@ class CustomerController
                 FROM customers c
                 WHERE 1=1 $searchCondition
                 ORDER BY $sortColumn $sortDirection
-                LIMIT $" . ($paramIndex++) . " OFFSET $" . ($paramIndex++) . "
+                LIMIT ? OFFSET ?
             ";
-            
-            $result = pg_query_params($conn, $query, $customerParams);
+            $result = $this->db->executeQuery('fetch_customers', $query, $customerParams);
             if (!$result) {
-                throw new \Exception("Failed to fetch customers: " . pg_last_error($conn));
+                throw new \Exception("Failed to fetch customers: " . $this->db->getLastError());
             }
-            
-            $customers = pg_fetch_all($result);
+            $customers = $this->db->fetchAll($result);
             if (!$customers) {
                 $customers = []; // Ensure we always return an array
             }

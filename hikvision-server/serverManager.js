@@ -1,5 +1,5 @@
 const createCustomerServer = require('./handlers/customerServer');
-const { getCustomerByAccount } = require('./db/mainDb');
+const { getCustomerByAccount, getCustomerPorts } = require('./db/mainDb');
 const fs = require('fs').promises;
 const path = require('path');
 
@@ -124,4 +124,56 @@ async function getStatus(accountNumber) {
   };
 }
 
-module.exports = { startServer, stopServer, getStatus };
+// Periodic sync to start/stop servers based on DB state
+async function syncServersWithDb() {
+  console.log('🔁 syncServersWithDb called');
+  try {
+    const customers = await getCustomerPorts();
+    const dbAccounts = new Set(customers.map(c => c.account_number));
+    const runningAccounts = new Set(Object.keys(activeServers));
+
+    // Start servers for new accounts
+    for (const customer of customers) {
+      if (!activeServers[customer.account_number]) {
+        try {
+          await startServer(customer.account_number);
+          console.log(`🟢 Started server for new account: ${customer.account_number}`);
+        } catch (e) {
+          console.error(`❌ Failed to start server for ${customer.account_number}:`, e.message);
+        }
+      }
+    }
+
+    // Stop servers for accounts no longer in DB
+    for (const account of runningAccounts) {
+      if (!dbAccounts.has(account)) {
+        try {
+          await stopServer(account);
+          console.log(`🔴 Stopped server for removed account: ${account}`);
+        } catch (e) {
+          console.error(`❌ Failed to stop server for ${account}:`, e.message);
+        }
+      }
+    }
+  } catch (err) {
+    console.error('❌ Error during periodic server sync:', err.message);
+  }
+}
+
+let syncInterval = null;
+function startPeriodicSync(intervalMs = 60000) {
+  console.log('🔄 startPeriodicSync called');
+  if (syncInterval) return; // Prevent multiple intervals
+  syncInterval = setInterval(() => {
+    try {
+      syncServersWithDb();
+    } catch (err) {
+      console.error('❌ Unhandled error in periodic sync interval:', err);
+    }
+  }, intervalMs);
+  console.log(`🔄 Periodic server sync started (every ${intervalMs / 1000}s)`);
+  // Run once immediately
+  syncServersWithDb();
+}
+
+module.exports = { startServer, stopServer, getStatus, startPeriodicSync };

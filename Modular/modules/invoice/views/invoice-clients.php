@@ -138,6 +138,6 @@ error_log("Multiple accounts: " . ($multiple_accounts ? 'true' : 'false'));
 <?php include('../modals/clientModals.php') ?>
 <?php include('../../../src/UI/loading-modal.php') ?>
 <?php include('../../../src/UI/response-modal.php') ?>
-<script src="../js/invoice-clients.js"></script>
+<script type="module" src="../js/client-screen.js"></script>
 </body>
 </html>

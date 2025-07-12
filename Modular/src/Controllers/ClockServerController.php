@@ -11,7 +11,7 @@ class ClockServerController {
     private static $lastCheck = 0;
 
     public static function getStatus($accountNumber) {
-        $url = "http://modular_clockserver:3000/clock/status/$accountNumber";
+        $url = "http://hikvision-server:3000/clock/status/$accountNumber";
         
         // Check if server is available (using cache when possible)
         if (!self::isServerAvailable()) {
@@ -22,7 +22,7 @@ class ClockServerController {
     }
 
     public static function startServer($accountNumber) {
-        $url = "http://modular_clockserver:3000/clock/start/$accountNumber";
+        $url = "http://hikvision-server:3000/clock/start/$accountNumber";
         
         // Check if server is available (using cache when possible)
         if (!self::isServerAvailable()) {
@@ -33,7 +33,7 @@ class ClockServerController {
     }
 
     public static function stopServer($accountNumber) {
-        $url = "http://modular_clockserver:3000/clock/stop/$accountNumber";
+        $url = "http://hikvision-server:3000/clock/stop/$accountNumber";
         
         // Check if server is available (using cache when possible)
         if (!self::isServerAvailable()) {
@@ -49,17 +49,12 @@ class ClockServerController {
      * @return bool True if server is reachable, false otherwise
      */
     private static function isServerAvailable() {
-        // If we have a cached result and it's still valid, use it
-        $now = time();
-        if (self::$serverAvailable !== null && ($now - self::$lastCheck) < self::$cacheTimeout) {
-            return self::$serverAvailable;
-        }
-        
-        // Otherwise check the server and update cache
-        self::$lastCheck = $now;
-        self::$serverAvailable = self::waitForServer("http://modular_clockserver:3000", 10);
-        
-        return self::$serverAvailable;
+        // Always check the server (disable cache for debugging)
+        $url = "http://hikvision-server:3000/clock/status/ACC001";
+        error_log("[ClockServerController] Checking server availability at: $url");
+        $result = self::waitForServer($url, 5);
+        error_log("[ClockServerController] Server available: " . ($result ? 'YES' : 'NO'));
+        return $result;
     }
 
     /**
@@ -75,8 +70,8 @@ class ClockServerController {
         // Try different hostnames in case Docker DNS is flaky
         $urlVariations = [
             $url,
-            str_replace('modular_clockserver', 'localhost', $url),
-            str_replace('modular_clockserver', '127.0.0.1', $url)
+            str_replace('hikvision-server', 'localhost', $url),
+            str_replace('hikvision-server', '127.0.0.1', $url)
         ];
         
         do {

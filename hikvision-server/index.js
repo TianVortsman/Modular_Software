@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { startServer, getStatus } = require('./serverManager');
+const { startServer, getStatus, startPeriodicSync } = require('./serverManager');
 const { getCustomerPorts, pool } = require('./db/mainDb');
 const clockRoutes = require('./api/clockControl');
 const createCustomerServer = require('./handlers/customerServer');
@@ -82,11 +82,20 @@ pool.query('SELECT NOW()')
 
 // Start the server
 app.listen(PORT, async () => {
-  console.log(`🧠 Clock control API running at http://localhost:${PORT}`);
-  
-  // Auto-start clock servers with retry
-  await autoStartClockServers();
+  try {
+    console.log(`🧠 Clock control API running at http://localhost:${PORT}`);
+    
+    // Auto-start clock servers with retry
+    await autoStartClockServers();
 
-  // Replace with your clock's IP
-  openDoor('192.168.1.55', 'admin', 'Modul@rdev@2024');
+    // Log before starting periodic sync
+    console.log('⏳ About to start periodic server sync...');
+    // Start periodic sync
+    startPeriodicSync();
+
+    // Replace with your clock's IP
+    openDoor('192.168.1.55', 'admin', 'Modul@rdev@2024');
+  } catch (err) {
+    console.error('❌ Error in app.listen startup callback:', err);
+  }
 });

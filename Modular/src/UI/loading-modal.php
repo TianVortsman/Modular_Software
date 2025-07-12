@@ -1,14 +1,14 @@
 <!-- Loading Modal -->
-<div id="unique-loading-modal" class="hidden">
-    <div class="unique-modal-content">
-        <div class="unique-spinner"></div>
-        <p class="modal-message">Loading...</p>
+<div id="loadingModal" class="loading-modal" style="display:none;">
+    <div class="loading-modal-content">
+        <span class="loader"></span>
+        <span id="loadingMessage">Loading...</span>
     </div>
 </div>
 
 <style>
     /* Unique modal styles */
-    #unique-loading-modal {
+    #loadingModal {
         position: fixed;
         top: 0;
         left: 0;
@@ -25,14 +25,14 @@
     }
 
     /* Hide modal by default */
-    #unique-loading-modal.hidden {
+    #loadingModal.hidden {
         display: none !important;
         visibility: hidden !important;
         pointer-events: none !important;
     }
 
     /* Modal content box */
-    .unique-modal-content {
+    .loading-modal-content {
         background-color: var(--modal-bg, #fff);  /* Default to white if var not defined */
         padding: 2rem;
         border-radius: 8px;
@@ -45,7 +45,7 @@
     }
 
     /* Spinner animation */
-    .unique-spinner {
+    .loader {
         border: 4px solid rgba(0, 0, 0, 0.1);
         border-top: 4px solid #3498db;  /* Use hardcoded blue if var not defined */
         border-radius: 50%;
@@ -73,13 +73,13 @@
 <script>
     // This function shows the loading modal
     function showLoadingModal(message = "Loading...") {
-        const modal = document.getElementById('unique-loading-modal');
+        const modal = document.getElementById('loadingModal');
         if (!modal) {
             console.error('Loading modal element not found');
             return;
         }
         
-        const messageElement = modal.querySelector('.modal-message');
+        const messageElement = modal.querySelector('#loadingMessage');
         if (messageElement) {
             messageElement.textContent = message;
         }
@@ -106,7 +106,7 @@
 
     // This function hides the loading modal
     function hideLoadingModal() {
-        const modal = document.getElementById('unique-loading-modal');
+        const modal = document.getElementById('loadingModal');
         if (!modal) {
             console.error('Loading modal element not found when hiding');
             return;

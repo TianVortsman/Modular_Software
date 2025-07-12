@@ -12,7 +12,7 @@ try {
 
     // Verify database connection
     if (!$conn) {
-        throw new Exception("Database connection failed: " . pg_last_error());
+        throw new Exception("Database connection failed");
     }
 
     // Get query parameters with defaults
@@ -38,13 +38,9 @@ try {
     ";
 
     $params = array();
-    $paramCount = 1;
-
     if (!empty($searchTerm)) {
-        $query .= " WHERE (c.company_name ILIKE $" . $paramCount . 
-                 " OR c.email ILIKE $" . $paramCount . 
-                 " OR c.account_number ILIKE $" . $paramCount . ")";
-        $params[] = "%" . $searchTerm . "%";
+        $query .= " WHERE (c.company_name ILIKE ? OR c.email ILIKE ? OR c.account_number ILIKE ?)";
+        $params = array_fill(0, 3, "%$searchTerm%");
     }
 
     $query .= " GROUP BY c.customer_id, c.company_name, c.email, c.account_number, c.status, c.last_login, c.created_at
@@ -52,17 +48,12 @@ try {
                 LIMIT $limit OFFSET $offset";
 
     // Execute the query
-    $result = !empty($params) ? 
-        pg_query_params($conn, $query, $params) :
-        pg_query($conn, $query);
-
-    if (!$result) {
-        throw new Exception("Failed to fetch customers: " . pg_last_error($conn));
-    }
+    $stmt = $conn->prepare($query);
+    $stmt->execute($params);
 
     // Fetch all customers
     $customers = array();
-    while ($row = pg_fetch_assoc($result)) {
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $customers[] = array(
             'id' => (int)$row['customer_id'],
             'company_name' => $row['company_name'],
@@ -90,13 +81,12 @@ try {
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'error' => $e->getMessage(),
-        'sql_error' => isset($conn) ? pg_last_error($conn) : null
+        'error' => $e->getMessage()
     ]);
 }
 
 // Close the database connection if it exists
 if (isset($conn)) {
-    pg_close($conn);
+    $conn = null;
 }
 ?> 

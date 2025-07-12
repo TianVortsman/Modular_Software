@@ -19,16 +19,18 @@
         position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
+        width: 100vw;
+        height: 100vh;
         background: rgba(0, 0, 0, 0.6);
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 100011;
+        z-index: 2147483647;
+        pointer-events: auto;
     }
-
-    /* Modal Content */
+    .custom-modal.hidden {
+        display: none !important;
+    }
     .custom-modal-content {
         background: var(--color-secondary);
         color: var(--color-text-light);
@@ -39,9 +41,9 @@
         width: 90%;
         max-width: 400px;
         animation: slide-down 0.3s ease-in-out;
+        position: relative;
+        z-index: 2147483648;
     }
-
-    /* Header */
     .custom-modal-header {
         display: flex;
         align-items: center;
@@ -49,24 +51,21 @@
         flex-direction: column;
         margin-bottom: var(--spacing-medium);
     }
-
     .custom-modal-icon {
         font-size: 3rem;
         font-weight: bold;
     }
-
-    /* Body */
     .custom-modal-body p {
         font-size: var(--font-size-large);
         line-height: var(--line-height);
         margin: var(--spacing-small) 0;
     }
-
-    /* Footer */
     .custom-modal-footer {
         margin-top: var(--spacing-medium);
+        display: flex;
+        justify-content: center;
+        gap: 16px;
     }
-
     .custom-modal-close-btn {
         background: var(--color-primary);
         color: var(--color-text-dark);
@@ -78,17 +77,9 @@
         cursor: pointer;
         transition: background var(--transition-speed);
     }
-
     .custom-modal-close-btn:hover {
         background: var(--color-hover);
     }
-
-    /* Hidden Class */
-    .hidden {
-        display: none;
-    }
-
-    /* Slide Down Animation */
     @keyframes slide-down {
         from {
             transform: translateY(-50px);
@@ -102,35 +93,52 @@
 </style>
 
 <script>
-function showResponseModal(status, message) {
+function showResponseModal(message, type = 'info', persistent = false, confirm = false) {
     const modal = document.getElementById('modalResponse');
     const title = document.getElementById('modalResponseTitle');
-    const icon = document.getElementById('modalResponseIcon');
     const msg = document.getElementById('modalResponseMessage');
-
-    msg.innerText = message;
-
-    const statusConfig = {
-        success: { title: "Success!", icon: "✔", color: "var(--color-primary)" },
-        error: { title: "Error!", icon: "✖", color: "#F44336" },
-        warning: { title: "Warning!", icon: "⚠", color: "#FFC107" }
+    const icon = document.getElementById('modalResponseIcon');
+    const footer = modal.querySelector('.custom-modal-footer');
+    if (modal && title && msg && icon && footer) {
+        // Remove all buttons
+        while (footer.firstChild) footer.removeChild(footer.firstChild);
+        // Set content
+        title.textContent = type === 'success' ? 'Success' : type === 'error' ? 'Error' : type === 'warning' ? 'Warning' : 'Info';
+        msg.textContent = message;
+        icon.textContent = type === 'success' ? '✔' : type === 'error' ? '✖' : type === 'warning' ? '⚠' : 'ℹ';
+        modal.classList.remove('hidden');
+        // Confirmation dialog (Yes/No)
+        if (confirm) {
+            const yesBtn = document.createElement('button');
+            yesBtn.textContent = 'Yes';
+            yesBtn.className = 'custom-modal-close-btn';
+            yesBtn.style.marginRight = '16px';
+            const noBtn = document.createElement('button');
+            noBtn.textContent = 'No';
+            noBtn.className = 'custom-modal-close-btn';
+            footer.appendChild(yesBtn);
+            footer.appendChild(noBtn);
+            yesBtn.onclick = () => {
+                modal.classList.add('hidden');
+                if (typeof window._modalConfirmResolve === 'function') window._modalConfirmResolve(true);
+            };
+            noBtn.onclick = () => {
+                modal.classList.add('hidden');
+                if (typeof window._modalConfirmResolve === 'function') window._modalConfirmResolve(false);
+            };
+        } else {
+            // Auto-close after 1.5s, or close on click outside
+            setTimeout(() => { modal.classList.add('hidden'); }, persistent ? 2000 : 1500);
+        }
+    }
+    // Click outside to close
+    modal.onclick = function(e) {
+        if (e.target === modal && !confirm) {
+            modal.classList.add('hidden');
+        }
     };
-
-    if (statusConfig[status]) {
-        title.innerText = statusConfig[status].title;
-        icon.innerHTML = statusConfig[status].icon;
-        icon.style.color = statusConfig[status].color;
-    } else {
-        title.innerText = "Notification";
-        icon.innerHTML = "ℹ";
-        icon.style.color = "#4A90E2";
-    }
-
-    modal.classList.remove('hidden');
 }
-
-
-    function closeResponseModal() {
-        document.getElementById('modalResponse').classList.add('hidden');
-    }
+function closeResponseModal() {
+    document.getElementById('modalResponse').classList.add('hidden');
+}
 </script>

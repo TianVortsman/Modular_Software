@@ -189,3 +189,37 @@
         transform: scale(1);
     }
 }
+
+/* Recurring Invoice Section Styling */
+.recurring-section {
+    display: none;
+    margin-top: 16px;
+    border: 1px solid #e0e0e0;
+    padding: 14px 16px;
+    border-radius: 6px;
+    background: #f7f8fa;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+.recurring-section h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    color: #333;
+}
+.recurring-section label {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 4px;
+    font-weight: 500;
+    color: #444;
+}
+.recurring-section input[type="date"],
+.recurring-section select {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    font-size: 1em;
+    background: #fff;
+}

@@ -57,6 +57,18 @@
                         <input type="checkbox" id="isSales" name="isSales">
                     </div>
 
+                    <div class="form-group">
+                        <label for="employmentType">Employment Type <span class="add-emp-required">*</span></label>
+                        <select id="employmentType" name="employmentType" required>
+                            <option value="Permanent">Permanent</option>
+                            <option value="Temporary">Temporary</option>
+                            <option value="Contract-based">Contract-based</option>
+                            <option value="Probation">Probation</option>
+                            <option value="Internship">Internship</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
                     <div class="form-notice">
                         <i class="material-icons notice-icon">info</i>
                         <p>Enter the essential employee information. You can add more details later in the employee profile.</p>

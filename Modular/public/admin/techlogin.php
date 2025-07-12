@@ -54,7 +54,7 @@ if (!$controllerLoaded) {
         public static function getStatus($accountNumber) {
             // Try multiple possible URLs for the clock server with retry logic
             $urls = [
-                "http://modular_clockserver:3000/clock/status/$accountNumber", // Docker internal name
+                "http://hikvision-server:3000/clock/status/$accountNumber", // Docker internal name
                 "http://localhost:3000/clock/status/$accountNumber",           // Local fallback
                 "http://127.0.0.1:3000/clock/status/$accountNumber"            // Explicit IP fallback
             ];
@@ -63,7 +63,7 @@ if (!$controllerLoaded) {
     
         public static function startServer($accountNumber) {
             $urls = [
-                "http://modular_clockserver:3000/clock/start/$accountNumber",
+                "http://hikvision-server:3000/clock/start/$accountNumber",
                 "http://localhost:3000/clock/start/$accountNumber",
                 "http://127.0.0.1:3000/clock/start/$accountNumber"
             ];
@@ -72,7 +72,7 @@ if (!$controllerLoaded) {
     
         public static function stopServer($accountNumber) {
             $urls = [
-                "http://modular_clockserver:3000/clock/stop/$accountNumber",
+                "http://hikvision-server:3000/clock/stop/$accountNumber",
                 "http://localhost:3000/clock/stop/$accountNumber",
                 "http://127.0.0.1:3000/clock/stop/$accountNumber"
             ];

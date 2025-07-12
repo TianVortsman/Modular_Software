@@ -120,14 +120,22 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
         <div class="page-tab-content">
           <!-- Active Tab -->
           <div class="page-tab-pane active" id="active-tab" role="tabpanel">
-            <!-- Sub-tabs for Active Employees -->
-            <div class="page-subtabs-header">
-              <button class="page-subtab-button active" data-subtab="permanent" role="tab" aria-selected="true" aria-controls="permanent-tab">
-                <i class="material-icons">business</i> Permanent
-              </button>
-              <button class="page-subtab-button" data-subtab="temporary" role="tab" aria-selected="false" aria-controls="temporary-tab">
-                <i class="material-icons">timer</i> Temporary
-              </button>
+            <!-- Under the Active tab, add two new subtabs -->
+            <div class="page-subtabs-container" id="active-subtabs">
+                <div class="page-subtabs-header">
+                    <button class="page-subtab-button" data-subtab="permanent" role="tab" aria-selected="false" aria-controls="permanent-tab">
+                        <i class="material-icons">business</i> Permanent
+                    </button>
+                    <button class="page-subtab-button" data-subtab="temporary" role="tab" aria-selected="false" aria-controls="temporary-tab">
+                        <i class="material-icons">timer</i> Temporary
+                    </button>
+                    <button class="page-subtab-button" data-subtab="contract-based" role="tab" aria-selected="false" aria-controls="contract-based-tab">
+                        <i class="material-icons">assignment</i> Contract-based
+                    </button>
+                    <button class="page-subtab-button" data-subtab="probation" role="tab" aria-selected="false" aria-controls="probation-tab">
+                        <i class="material-icons">hourglass_empty</i> Probation
+                    </button>
+                </div>
             </div>
             
             <!-- Permanent Employees Sub-tab -->
@@ -169,6 +177,60 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
                       <th>Position</th>
                       <th>Start Date</th>
                       <th>End Date</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+              <div class="pagination">
+                <button class="pagination-button"><span class="material-icons">first_page</span></button>
+                <button class="pagination-button"><span class="material-icons">chevron_left</span></button>
+                <span class="pagination-info">Page 1 of 1</span>
+                <button class="pagination-button"><span class="material-icons">chevron_right</span></button>
+                <button class="pagination-button"><span class="material-icons">last_page</span></button>
+              </div>
+            </div>
+
+            <!-- Contract-based Employees Sub-tab -->
+            <div class="page-subtab-pane" id="contract-based-tab" role="tabpanel">
+              <div class="table-container">
+                <table class="main-employee-table">
+                  <thead>
+                    <tr>
+                      <th>Employee ID</th>
+                      <th>Name</th>
+                      <th>Department</th>
+                      <th>Position</th>
+                      <th>Start Date</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+              <div class="pagination">
+                <button class="pagination-button"><span class="material-icons">first_page</span></button>
+                <button class="pagination-button"><span class="material-icons">chevron_left</span></button>
+                <span class="pagination-info">Page 1 of 1</span>
+                <button class="pagination-button"><span class="material-icons">chevron_right</span></button>
+                <button class="pagination-button"><span class="material-icons">last_page</span></button>
+              </div>
+            </div>
+
+            <!-- Probation Employees Sub-tab -->
+            <div class="page-subtab-pane" id="probation-tab" role="tabpanel">
+              <div class="table-container">
+                <table class="main-employee-table">
+                  <thead>
+                    <tr>
+                      <th>Employee ID</th>
+                      <th>Name</th>
+                      <th>Department</th>
+                      <th>Position</th>
+                      <th>Start Date</th>
                       <th>Status</th>
                     </tr>
                   </thead>

@@ -12,7 +12,7 @@ try {
 
     // Verify database connection
     if (!$conn) {
-        throw new Exception("Database connection failed: " . pg_last_error());
+        throw new Exception("Database connection failed");
     }
 
     // Get query parameters with defaults
@@ -48,22 +48,14 @@ try {
     // Build the WHERE clause
     $whereConditions = [];
     $params = [];
-    $paramCount = 1;
-
     if (!empty($searchTerm)) {
-        $whereConditions[] = "(c.company_name ILIKE $" . $paramCount . 
-                           " OR c.email ILIKE $" . $paramCount . 
-                           " OR c.account_number ILIKE $" . $paramCount . ")";
-        $params[] = "%$searchTerm%";
-        $paramCount++;
+        $whereConditions[] = "(c.company_name ILIKE ? OR c.email ILIKE ? OR c.account_number ILIKE ?)";
+        $params = array_merge($params, array_fill(0, 3, "%$searchTerm%"));
     }
-
     if ($status !== 'all') {
-        $whereConditions[] = "c.status = $" . $paramCount;
+        $whereConditions[] = "c.status = ?";
         $params[] = $status;
-        $paramCount++;
     }
-
     $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
 
     // First, check if the customers table exists
@@ -72,12 +64,9 @@ try {
         WHERE table_schema = 'public' 
         AND table_name = 'customers'
     )";
-    $tableCheckResult = pg_query($conn, $tableCheckSql);
-    if (!$tableCheckResult) {
-        throw new Exception("Failed to check table existence: " . pg_last_error($conn));
-    }
-    $tableExists = pg_fetch_result($tableCheckResult, 0, 0);
-    if ($tableExists !== 't') {
+    $tableCheckStmt = $conn->query($tableCheckSql);
+    $tableExists = $tableCheckStmt->fetchColumn();
+    if (!$tableExists) {
         throw new Exception("Customers table does not exist");
     }
 
@@ -87,24 +76,17 @@ try {
         FROM customers c 
         $whereClause
     ";
-    
-    $countResult = !empty($params) ? 
-        pg_query_params($conn, $countSql, $params) :
-        pg_query($conn, $countSql);
-
-    if (!$countResult) {
-        throw new Exception("Count query failed: " . pg_last_error($conn));
-    }
-
-    $totalCustomers = pg_fetch_result($countResult, 0, 0);
+    $countStmt = $conn->prepare($countSql);
+    $countStmt->execute($params);
+    $totalCustomers = $countStmt->fetchColumn();
 
     // Check if devices table exists before joining
-    $devicesExist = pg_query($conn, "SELECT EXISTS (
+    $devicesExistStmt = $conn->query("SELECT EXISTS (
         SELECT FROM information_schema.tables 
         WHERE table_schema = 'public' 
         AND table_name = 'devices'
     )");
-    $hasDevicesTable = pg_fetch_result($devicesExist, 0, 0) === 't';
+    $hasDevicesTable = $devicesExistStmt->fetchColumn();
 
     // Main query with all necessary fields
     $sql = "
@@ -134,18 +116,10 @@ try {
         ORDER BY $sortColumn $sortDirection
         LIMIT $limit OFFSET $offset
     ";
-
-    $result = !empty($params) ? 
-        pg_query_params($conn, $sql, $params) :
-        pg_query($conn, $sql);
-
-    if (!$result) {
-        throw new Exception("Main query failed: " . pg_last_error($conn));
-    }
-
-    // Fetch all customer data
+    $stmt = $conn->prepare($sql);
+    $stmt->execute($params);
     $customers = [];
-    while ($row = pg_fetch_assoc($result)) {
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         // Format the data
         $customers[] = [
             'id' => (int)$row['customer_id'],
@@ -178,8 +152,7 @@ try {
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'error' => $e->getMessage(),
-        'sql_error' => isset($conn) ? pg_last_error($conn) : null
+        'error' => $e->getMessage()
     ]);
 }
 
