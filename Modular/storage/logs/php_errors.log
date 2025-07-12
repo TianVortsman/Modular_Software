@@ -59252,3 +59252,39 @@ Stack trace:
     [country] => South Africa
 )
 
+[12-Jul-2025 11:53:08 UTC] Login attempt from 172.18.0.1 with email: tianryno01@gmail.com
+[12-Jul-2025 11:53:08 UTC] Starting login process for email: tianryno01@gmail.com
+[12-Jul-2025 11:53:08 UTC] Attempting technician authentication for: tianryno01@gmail.com
+[12-Jul-2025 11:53:08 UTC] Executing technician query with statement: check_tech_17523211889455
+[12-Jul-2025 11:53:08 UTC] Technician query execution successful
+[12-Jul-2025 11:53:08 UTC] Technician found. Checking password...
+[12-Jul-2025 11:53:08 UTC] Password verification result: Success (Hash starts with: $2y$10$k.Q...)
+[12-Jul-2025 11:53:08 UTC] Technician login successful - Session setup complete
+[12-Jul-2025 11:53:08 UTC] Technician authentication result: SUCCESS - Technician login successful
+[12-Jul-2025 11:53:08 UTC] Login successful for tianryno01@gmail.com. Redirecting to: ../../../public/admin/techlogin.php
+[12-Jul-2025 11:53:08 UTC] Current file: /var/www/html/public/admin/techlogin.php
+[12-Jul-2025 11:53:08 UTC] Current directory: /var/www/html/public/admin
+[12-Jul-2025 11:53:08 UTC] Document root: /var/www/html
+[12-Jul-2025 11:53:08 UTC] Trying controller path: /var/www/html/public/admin/../../../src/Controllers/ClockServerController.php - NOT FOUND
+[12-Jul-2025 11:53:08 UTC] Trying alt path: /var/www/html/public/admin/../../src/Controllers/ClockServerController.php - EXISTS
+[12-Jul-2025 11:53:08 UTC] Trying relative path: src/Controllers/ClockServerController.php - NOT FOUND
+[12-Jul-2025 11:53:08 UTC] Controller successfully loaded from file
+[12-Jul-2025 11:53:09 UTC] Customer list API called with: search=, page=1, perPage=10, sortBy=company_name, sortDirection=asc
+[12-Jul-2025 11:53:12 UTC] Current file: /var/www/html/public/admin/techlogin.php
+[12-Jul-2025 11:53:12 UTC] Failed to execute query: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "customer_modules" does not exist
+LINE 7:                 FROM customer_modules 
+                             ^
+[12-Jul-2025 11:53:12 UTC] Current directory: /var/www/html/public/admin
+[12-Jul-2025 11:53:12 UTC] Document root: /var/www/html
+[12-Jul-2025 11:53:12 UTC] PHP Warning:  foreach() argument must be of type array|object, bool given in /var/www/html/src/Controllers/CustomerController.php on line 151
+[12-Jul-2025 11:53:12 UTC] Trying controller path: /var/www/html/public/admin/../../../src/Controllers/ClockServerController.php - NOT FOUND
+[12-Jul-2025 11:53:12 UTC] Trying alt path: /var/www/html/public/admin/../../src/Controllers/ClockServerController.php - EXISTS
+[12-Jul-2025 11:53:12 UTC] Trying relative path: src/Controllers/ClockServerController.php - NOT FOUND
+[12-Jul-2025 11:53:12 UTC] Controller successfully loaded from file
+[12-Jul-2025 11:53:12 UTC] [ClockServerController] Checking server availability at: http://hikvision-server:3000/clock/status/ACC001
+[12-Jul-2025 11:53:12 UTC] Successfully connected to clock server at: http://hikvision-server:3000/clock/status/ACC001
+[12-Jul-2025 11:53:12 UTC] [ClockServerController] Server available: YES
+[12-Jul-2025 11:53:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC001
+[12-Jul-2025 11:53:14 UTC] [DatabaseConfig] Client config created with dbname: ACC001
+[12-Jul-2025 11:53:14 UTC] Primary connection failed, trying fallback host: postgres
+[12-Jul-2025 11:53:15 UTC] Database connection failed: SQLSTATE[08006] [7] connection to server at "postgres" (172.18.0.2), port 5432 failed: FATAL:  database "ACC001" does not exist

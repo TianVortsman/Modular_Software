@@ -70,3 +70,18 @@ function handleImageUpload(): array {
         return $this->error('Exception occurred: ' . $e->getMessage());
     }
 }
+
+// Optional helper to avoid repetition
+function error(string $message, $context = null): array {
+    if ($context) {
+        error_log("[ImageUpload] $message | Context: " . print_r($context, true));
+    } else {
+        error_log("[ImageUpload] $message");
+    }
+
+    return [
+        'success' => false,
+        'message' => $message,
+        'data' => null
+    ];
+}

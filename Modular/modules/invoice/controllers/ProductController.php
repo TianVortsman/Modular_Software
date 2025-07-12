@@ -158,7 +158,7 @@ function listProducts(array $options = []): array {
 }
 
 
-function updateProduct(): array {
+function update_product(): array {
     try {
         $productId = $_POST['product_id'] ?? null;
         if (!$productId) {
@@ -200,7 +200,7 @@ function updateProduct(): array {
 }
 
 
-function addProduct(): array {
+function add_product(): array {
     try {
         if (!$this->db->inTransaction()) {
             $this->db->beginTransaction();
@@ -323,7 +323,7 @@ function ge_product_details(int $productId): array {
 }
 
 
-function getProductTypes(): array {
+function get_product_types(): array {
     try {
         $stmt = $this->db->query('SELECT * FROM core.product_types ORDER BY product_type_name');
         $types = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -342,7 +342,7 @@ function getProductTypes(): array {
     }
 }
 
-function getProductCategories(?int $productTypeId = null): array {
+function get_product_categories(?int $productTypeId = null): array {
     try {
         $sql = 'SELECT * FROM core.product_categories';
         $params = [];
@@ -372,7 +372,7 @@ function getProductCategories(?int $productTypeId = null): array {
     }
 }
 
-function getProductSubcategories(?int $categoryId = null): array {
+function get_product_subcategories(?int $categoryId = null): array {
     try {
         $sql = 'SELECT * FROM core.product_subcategories';
         $params = [];
@@ -537,7 +537,7 @@ function insert_product(array $data): ?int {
 }
 
 
-function updateProductStatus(): array {
+function update_product_status(): array {
     global $conn;
 
     try {
@@ -577,24 +577,6 @@ function updateProductStatus(): array {
             'data'    => null
         ];
     }
-}
-
-
-
-
-// Optional helper to avoid repetition
- function error(string $message, $context = null): array {
-    if ($context) {
-        error_log("[ImageUpload] $message | Context: " . print_r($context, true));
-    } else {
-        error_log("[ImageUpload] $message");
-    }
-
-    return [
-        'success' => false,
-        'message' => $message,
-        'data' => null
-    ];
 }
 
 

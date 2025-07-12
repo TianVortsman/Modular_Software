@@ -1,7 +1,40 @@
--- Active: 1751521549530@@127.0.0.1@5432@ACC001
 
 -- Core Schema
 CREATE SCHEMA IF NOT EXISTS core;
+
+CREATE TABLE core.users (
+    user_id SERIAL PRIMARY KEY,
+    user_name VARCHAR(100) NOT NULL,
+    role VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE core.user_modules (
+    user_id INT REFERENCES core.users(user_id) ON DELETE CASCADE,
+    module_name VARCHAR(50) NOT NULL, -- e.g. 'invoicing', 'time', 'payroll'
+    enabled BOOLEAN DEFAULT TRUE,
+    PRIMARY KEY (user_id, module_name)
+);
+
+CREATE TABLE core.notifications (
+    notification_id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES core.users(user_id) ON DELETE CASCADE,
+
+    module VARCHAR(50), -- optional: e.g. 'leave', 'invoicing'
+    type VARCHAR(100),  -- e.g. 'new_invoice', 'leave_approval', 'clocking_alert'
+
+    title TEXT NOT NULL,      -- Short display heading
+    message TEXT,             -- Full notification content
+    url TEXT,                 -- Optional: link to frontend route (e.g. '/invoice/123')
+
+    related_id INT,           -- Optional: ID of related entity (invoice, leave_id etc)
+    related_type VARCHAR(50), -- Optional: 'invoice', 'leave', 'employee'...
+
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
 
 -- Enum Tables (No Dependencies)
 CREATE TABLE IF NOT EXISTS core.employment_types (
