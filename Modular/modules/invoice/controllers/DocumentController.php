@@ -3,13 +3,15 @@ namespace App\modules\invoice\controllers;
 
 use PDO;
 use Exception;
+use PDOException;
+
+require_once __DIR__ . '/../../../src/Helpers/helpers.php';
 
 function list_documents(array $options = []): array {
     global $conn;
-
     // Extract and sanitize parameters
     $search   = $options['search']    ?? null;
-    $type   = $options['type']    ?? null;
+    $type     = $options['type']      ?? null;
     $status   = $options['status']    ?? null;
     $dateFrom = $options['date_from'] ?? null;
     $dateTo   = $options['date_to']   ?? null;
@@ -17,31 +19,18 @@ function list_documents(array $options = []): array {
     $limit    = (int)($options['limit'] ?? 20);
     $sortBy   = $options['sort_by']   ?? 'document_id';
     $sortDir  = strtolower($options['sort_dir'] ?? 'desc');
-
-    // Whitelist sorting fields (must be filled per use-case)
-    $allowedSortFields = ['document_date', 'document_id']; // e.g. ['name', 'created_at']
+    // Whitelist sorting fields
+    $allowedSortFields = ['document_date', 'document_id'];
     if (!in_array($sortBy, $allowedSortFields)) {
-        $sortBy = 'document_id'; // fallback field
+        $sortBy = 'document_id';
     }
-
     $allowedSortDir = ['asc', 'desc'];
     if (!in_array($sortDir, $allowedSortDir)) {
         $sortDir = 'desc';
     }
-
-    // Calculate offset
     $offset = ($page - 1) * $limit;
-
-    // Base SQL query
-    $sql = "SELECT d.document_id, d.client_id, d.document_number, d.document_status, d.document_type, d.issue_date, d.due_date, d.total_amount, d.salesperson_id, c.client_id, c.client_name, 
-            e.employee_id
-            FROM invoicing.documents d 
-            JOIN invoicing.clients c ON d.client_id = c.client_id
-            JOIN core.employees e ON d.salesperson_id = e.employee_id
-            WHERE 1=1";
+    $sql = "SELECT d.document_id, d.client_id, d.document_number, d.document_status, d.document_type, d.issue_date, d.due_date, d.total_amount, d.salesperson_id, c.client_id, c.client_name, e.employee_id FROM invoicing.documents d JOIN invoicing.clients c ON d.client_id = c.client_id JOIN core.employees e ON d.salesperson_id = e.employee_id WHERE 1=1";
     $params = [];
-
-    // Example filter by $Variable
     if (!empty($type)) {
         $sql .= " AND d.document_type = :type";
         $params[':type'] = $type;
@@ -58,29 +47,18 @@ function list_documents(array $options = []): array {
         $sql .= " AND d.issue_date <= :date_to";
         $params[':date_to'] = $dateTo;
     }
-
-    // Example search
     if (!empty($search)) {
-        $sql .= " AND (
-        c.client_name ILIKE :search
-        OR d.document_number ILIKE :search
-        )";
+        $sql .= " AND (c.client_name ILIKE :search OR d.document_number ILIKE :search)";
         $params[':search'] = '%' . $search . '%';
     }
-
-    // Add sorting and pagination
     $sql .= " ORDER BY $sortBy $sortDir LIMIT :limit OFFSET :offset";
-
     try {
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-
-        // Bind all other values
         foreach ($params as $key => $value) {
             $stmt->bindValue($key, $value);
         }
-
         $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         // Get total count for pagination
@@ -97,42 +75,46 @@ function list_documents(array $options = []): array {
         $countStmt->execute();
         $total = $countStmt->fetchColumn();
         return [
+            'success' => true,
+            'message' => 'Documents retrieved successfully',
             'data' => $data,
             'total' => (int)$total,
             'page' => $page,
             'limit' => $limit
         ];
-
     } catch (PDOException $e) {
-        error_log("Query failed: " . $e->getMessage());
-        return ["error" => "Database error: " . $e->getMessage()];
+        $msg = "Query failed: " . $e->getMessage();
+        error_log($msg);
+        log_user_action(null, 'list_documents', null, $msg);
+        return [
+            'success' => false,
+            'message' => 'Database error occurred',
+            'data' => null,
+            'error_code' => 'DOCUMENT_LIST_ERROR'
+        ];
     }
 }
 
-function get_document_details(int $document_id): ?array {
+function get_document_details(int $document_id): array {
     global $conn;
-
-    $sql = "SELECT 
-            d.document_number, d.document_status, d.document_type, d.issue_date, d.due_date, d.salesperson_id, d.subtotal, d.discount_amount, d.tax_amount, d.total_amount, 
-            d.client_purchase_order_number, d.notes, d.terms_conditions, d.is_recurring, d.recurring_template_id, d.requires_approval, d.approved_by, d.approved_at, d.salesperson_id, 
-            c.client_id, c.client_type, c.client_name, c.client_email, c.client_cell, c.client_tell, c.first_name, c.last_name, c.registration_number, c.vat_number, 
-            e.employee_id, e.employee_first_name, e.employee_last_name
-        FROM invoicing.documents d
-        JOIN invoicing.clients c ON d.client_id = c.client_id
-        JOIN core.employees e ON d.salesperson_id = e.employee_id
-        WHERE d.document_id = :document_id
-        LIMIT 1";
-
+    $sql = "SELECT d.document_number, d.document_status, d.document_type, d.issue_date, d.due_date, d.salesperson_id, d.subtotal, d.discount_amount, d.tax_amount, d.total_amount, d.client_purchase_order_number, d.notes, d.terms_conditions, d.is_recurring, d.recurring_template_id, d.requires_approval, d.approved_by, d.approved_at, d.salesperson_id, c.client_id, c.client_type, c.client_name, c.client_email, c.client_cell, c.client_tell, c.first_name, c.last_name, c.registration_number, c.vat_number, e.employee_id, e.employee_first_name, e.employee_last_name FROM invoicing.documents d JOIN invoicing.clients c ON d.client_id = c.client_id JOIN core.employees e ON d.salesperson_id = e.employee_id WHERE d.document_id = :document_id LIMIT 1";
     try {
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$result) return null;
-
-        // Fetch document items
-        $result['items'] = get_document_items($document_id);
-        // Fetch recurring info if is_recurring
+        if (!$result) {
+            $msg = 'Document not found';
+            error_log($msg);
+            log_user_action(null, 'get_document_details', $document_id, $msg);
+            return [
+                'success' => false,
+                'message' => $msg,
+                'data' => null,
+                'error_code' => 'DOCUMENT_NOT_FOUND'
+            ];
+        }
+        $result['items'] = get_document_items($document_id)['data'] ?? [];
         if (!empty($result['is_recurring'])) {
             $recurringSql = "SELECT * FROM invoicing.recurring_invoices WHERE client_id = :client_id AND status = 'active' ORDER BY created_at DESC LIMIT 1";
             $recurringStmt = $conn->prepare($recurringSql);
@@ -140,138 +122,51 @@ function get_document_details(int $document_id): ?array {
             $recurringStmt->execute();
             $result['recurring'] = $recurringStmt->fetch(PDO::FETCH_ASSOC);
         }
-        return $result;
+        return [
+            'success' => true,
+            'message' => 'Document details retrieved successfully',
+            'data' => $result
+        ];
     } catch (PDOException $e) {
-        error_log("Error in get_document_details: " . $e->getMessage());
-        return ["error" => "Database error: " . $e->getMessage()];
+        $msg = "Error in get_document_details: " . $e->getMessage();
+        error_log($msg);
+        log_user_action(null, 'get_document_details', $document_id, $msg);
+        return [
+            'success' => false,
+            'message' => 'Database error occurred',
+            'data' => null,
+            'error_code' => 'DOCUMENT_DETAILS_ERROR'
+        ];
     }
 }
 
 function get_document_items(int $document_id): array {
     global $conn;
-
-    $sql = "SELECT 
-            i.item_id, i.document_id, i.product_id, i.product_description, i.product_quantity, i.unit_price, i.discount_percentage, i.tax_rate_id, i.line_total, 
-            tr.rate
-        FROM invoicing.document_items i
-        JOIN core.tax_rates tr ON i.tax_rate_id = tr.tax_rate_id
-        WHERE i.document_id = :document_id
-        LIMIT 100";
-
+    $sql = "SELECT i.item_id, i.document_id, i.product_id, i.product_description, i.product_quantity, i.unit_price, i.discount_percentage, i.tax_rate_id, i.line_total, tr.rate FROM invoicing.document_items i JOIN core.tax_rates tr ON i.tax_rate_id = tr.tax_rate_id WHERE i.document_id = :document_id LIMIT 100";
     try {
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $results ?: [];
-
+        return [
+            'success' => true,
+            'message' => 'Document items retrieved successfully',
+            'data' => $results ?: []
+        ];
     } catch (PDOException $e) {
-        error_log("Error in get_entity_details: " . $e->getMessage());
-        return ["error" => "Database error: " . $e->getMessage()];
+        $msg = "Error in get_document_items: " . $e->getMessage();
+        error_log($msg);
+        log_user_action(null, 'get_document_items', $document_id, $msg);
+        return [
+            'success' => false,
+            'message' => 'Database error occurred',
+            'data' => null,
+            'error_code' => 'DOCUMENT_ITEMS_ERROR'
+        ];
     }
 }
 
-/**
- * Checks if a user has permission for a given action in the invoicing module.
- * @param int $user_id
- * @param string $action (e.g. 'view', 'create', 'edit', 'delete', 'finalize', 'approve')
- * @param int|null $resource_id (optional, for future resource-level checks)
- * @return bool
- */
-function check_user_permission($user_id, $action, $resource_id = null) {
-    global $conn;
-    $colMap = [
-        'view' => 'can_view',
-        'create' => 'can_create',
-        'edit' => 'can_edit',
-        'delete' => 'can_delete',
-        'finalize' => 'can_finalize',
-        'approve' => 'can_approve',
-        'create_document' => 'can_create',
-        'update_document' => 'can_edit',
-        'delete_document' => 'can_delete',
-        'change_document_status' => 'can_edit',
-    ];
-    $col = $colMap[$action] ?? null;
-    if (!$col) return false;
-    try {
-        $sql = "SELECT $col FROM Permissions.invoicing WHERE user_id = :user_id";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return !empty($result) && !empty($result[$col]);
-    } catch (Exception $e) {
-        error_log("check_user_permission error: " . $e->getMessage());
-        return false;
-    }
-}
-
-/**
- * Sends a notification to a user (core.notifications table)
- * @param int $user_id
- * @param string $message
- * @param string $title (optional)
- * @param string $module (optional)
- * @param string $type (optional)
- * @param int|null $related_id (optional)
- * @param string|null $related_type (optional)
- * @param string|null $url (optional)
- */
-function send_notification($user_id, $message, $title = 'Notification', $module = 'invoicing', $type = 'info', $related_id = null, $related_type = null, $url = null) {
-    global $conn;
-    try {
-        $sql = "INSERT INTO core.notifications (user_id, module, type, title, message, url, related_id, related_type) VALUES (:user_id, :module, :type, :title, :message, :url, :related_id, :related_type)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
-        $stmt->bindValue(':module', $module);
-        $stmt->bindValue(':type', $type);
-        $stmt->bindValue(':title', $title);
-        $stmt->bindValue(':message', $message);
-        $stmt->bindValue(':url', $url);
-        $stmt->bindValue(':related_id', $related_id, PDO::PARAM_INT);
-        $stmt->bindValue(':related_type', $related_type);
-        $stmt->execute();
-    } catch (Exception $e) {
-        error_log("send_notification error: " . $e->getMessage());
-    }
-}
-
-/**
- * Logs a user action to the audit.user_actions table
- * @param int $user_id
- * @param string $action
- * @param int|null $related_id
- * @param mixed $details (optional, can be string or array)
- * @param string $module (default 'invoicing')
- * @param string $related_type (optional)
- * @param array $old_data (optional)
- * @param array $new_data (optional)
- */
-function log_user_action($user_id, $action, $related_id = null, $details = null, $module = 'invoicing', $related_type = 'invoice', $old_data = null, $new_data = null) {
-    global $conn;
-    try {
-        $sql = "INSERT INTO audit.user_actions (user_id, module, action, related_type, related_id, old_data, new_data, details, ip_address, user_agent, session_id) VALUES (:user_id, :module, :action, :related_type, :related_id, :old_data, :new_data, :details, :ip_address, :user_agent, :session_id)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
-        $stmt->bindValue(':module', $module);
-        $stmt->bindValue(':action', $action);
-        $stmt->bindValue(':related_type', $related_type);
-        $stmt->bindValue(':related_id', $related_id, PDO::PARAM_INT);
-        $stmt->bindValue(':old_data', $old_data ? json_encode($old_data) : null);
-        $stmt->bindValue(':new_data', $new_data ? json_encode($new_data) : null);
-        $stmt->bindValue(':details', is_array($details) ? json_encode($details) : $details);
-        // Optionally get IP, user agent, session from $_SERVER
-        $stmt->bindValue(':ip_address', $_SERVER['REMOTE_ADDR'] ?? null);
-        $stmt->bindValue(':user_agent', $_SERVER['HTTP_USER_AGENT'] ?? null);
-        $stmt->bindValue(':session_id', session_id() ?: null);
-        $stmt->execute();
-    } catch (Exception $e) {
-        error_log("log_user_action error: " . $e->getMessage());
-    }
-}
-
-function create_document(array $options): ?int {
+function create_document(array $options): array {
     global $conn;
     $documentData = $options['documentData'] ?? [];
     $items = $options['items'] ?? [];
@@ -279,15 +174,29 @@ function create_document(array $options): ?int {
     $user_id = $documentData['created_by'] ?? null;
     // Permission check
     if (!check_user_permission($user_id, 'create_document')) {
-        error_log("Permission denied for user $user_id to create document");
-        return null;
+        $msg = "Permission denied for user $user_id to create document";
+        error_log($msg);
+        log_user_action($user_id, 'create_document', null, $msg);
+        return [
+            'success' => false,
+            'message' => $msg,
+            'data' => null,
+            'error_code' => 'PERMISSION_DENIED'
+        ];
     }
     // Validate required fields
     $requiredFields = ['client_id', 'document_type', 'issue_date', 'salesperson_id', 'subtotal', 'discount_amount', 'tax_amount', 'total_amount', 'balance_due', 'created_by'];
     foreach ($requiredFields as $field) {
         if (!isset($documentData[$field])) {
-            error_log("Missing required field: $field");
-            return null;
+            $msg = "Missing required field: $field";
+            error_log($msg);
+            log_user_action($user_id, 'create_document', null, $msg);
+            return [
+                'success' => false,
+                'message' => $msg,
+                'data' => null,
+                'error_code' => 'VALIDATION_ERROR'
+            ];
         }
     }
 
@@ -395,26 +304,43 @@ function create_document(array $options): ?int {
         // Logging and notification
         log_user_action($user_id, 'create_document', $document_id, json_encode($documentData));
         send_notification($user_id, "Document #$document_id created successfully.");
-        return (int)$document_id;
+        return [
+            'success' => true,
+            'message' => 'Document created successfully',
+            'data' => ['document_id' => (int)$document_id]
+        ];
     } catch (Exception $e) {
         if ($conn->inTransaction()) {
             $conn->rollBack();
         }
-        error_log("create_document error: " . $e->getMessage());
-        return null;
+        $msg = "create_document error: " . $e->getMessage();
+        error_log($msg);
+        log_user_action($user_id, 'create_document', null, $msg);
+        return [
+            'success' => false,
+            'message' => 'Failed to create document',
+            'data' => null,
+            'error_code' => 'DOCUMENT_CREATE_ERROR'
+        ];
     }
 }
 
-function update_document(int $document_id, array $options): bool {
+function update_document(int $document_id, array $options): array {
     global $conn;
     $documentData = $options['documentData'] ?? [];
     $items = $options['items'] ?? [];
     $mode = $options['mode'] ?? 'draft';
     $updated_by = $documentData['updated_by'] ?? null;
-    // Permission check
     if (!check_user_permission($updated_by, 'update_document', $document_id)) {
-        error_log("Permission denied for user $updated_by to update document $document_id");
-        return false;
+        $msg = "Permission denied for user $updated_by to update document $document_id";
+        error_log($msg);
+        log_user_action($updated_by, 'update_document', $document_id, $msg);
+        return [
+            'success' => false,
+            'message' => $msg,
+            'data' => null,
+            'error_code' => 'PERMISSION_DENIED'
+        ];
     }
     try {
         $conn->beginTransaction();
@@ -563,21 +489,38 @@ function update_document(int $document_id, array $options): bool {
         // Logging and notification
         log_user_action($updated_by, 'update_document', $document_id, json_encode($documentData));
         send_notification($updated_by, "Document #$document_id updated successfully.");
-        return true;
+        return [
+            'success' => true,
+            'message' => 'Document updated successfully',
+            'data' => ['document_id' => $document_id]
+        ];
     } catch (Exception $e) {
         if ($conn->inTransaction()) {
             $conn->rollBack();
         }
-        error_log("update_document error: " . $e->getMessage());
-        return false;
+        $msg = "update_document error: " . $e->getMessage();
+        error_log($msg);
+        log_user_action($updated_by, 'update_document', $document_id, $msg);
+        return [
+            'success' => false,
+            'message' => 'Failed to update document',
+            'data' => null,
+            'error_code' => 'DOCUMENT_UPDATE_ERROR'
+        ];
     }
 }
 
-function delete_document(int $document_id, int $deleted_by): bool {
-    // Permission check
+function delete_document(int $document_id, int $deleted_by): array {
     if (!check_user_permission($deleted_by, 'delete_document', $document_id)) {
-        error_log("Permission denied for user $deleted_by to delete document $document_id");
-        return false;
+        $msg = "Permission denied for user $deleted_by to delete document $document_id";
+        error_log($msg);
+        log_user_action($deleted_by, 'delete_document', $document_id, $msg);
+        return [
+            'success' => false,
+            'message' => $msg,
+            'data' => null,
+            'error_code' => 'PERMISSION_DENIED'
+        ];
     }
     global $conn;
     try {
@@ -588,18 +531,35 @@ function delete_document(int $document_id, int $deleted_by): bool {
         $stmt->execute();
         log_user_action($deleted_by, 'delete_document', $document_id);
         send_notification($deleted_by, "Document #$document_id deleted.");
-        return true;
+        return [
+            'success' => true,
+            'message' => 'Document deleted successfully',
+            'data' => ['document_id' => $document_id]
+        ];
     } catch (Exception $e) {
-        error_log("delete_document error: " . $e->getMessage());
-        return false;
+        $msg = "delete_document error: " . $e->getMessage();
+        error_log($msg);
+        log_user_action($deleted_by, 'delete_document', $document_id, $msg);
+        return [
+            'success' => false,
+            'message' => 'Failed to delete document',
+            'data' => null,
+            'error_code' => 'DOCUMENT_DELETE_ERROR'
+        ];
     }
 }
 
-function change_document_status(int $document_id, string $status, int $updated_by): bool {
-    // Permission check
+function change_document_status(int $document_id, string $status, int $updated_by): array {
     if (!check_user_permission($updated_by, 'change_document_status', $document_id)) {
-        error_log("Permission denied for user $updated_by to change status of document $document_id");
-        return false;
+        $msg = "Permission denied for user $updated_by to change status of document $document_id";
+        error_log($msg);
+        log_user_action($updated_by, 'change_document_status', $document_id, $msg);
+        return [
+            'success' => false,
+            'message' => $msg,
+            'data' => null,
+            'error_code' => 'PERMISSION_DENIED'
+        ];
     }
     global $conn;
     try {
@@ -611,26 +571,58 @@ function change_document_status(int $document_id, string $status, int $updated_b
         $stmt->execute();
         log_user_action($updated_by, 'change_document_status', $document_id, $status);
         send_notification($updated_by, "Document #$document_id status changed to $status.");
-        return true;
+        return [
+            'success' => true,
+            'message' => 'Document status updated',
+            'data' => [
+                'document_id' => $document_id,
+                'status' => $status
+            ]
+        ];
     } catch (Exception $e) {
-        error_log("change_document_status error: " . $e->getMessage());
-        return false;
+        $msg = "change_document_status error: " . $e->getMessage();
+        error_log($msg);
+        log_user_action($updated_by, 'change_document_status', $document_id, $msg);
+        return [
+            'success' => false,
+            'message' => 'Failed to change document status',
+            'data' => null,
+            'error_code' => 'DOCUMENT_STATUS_ERROR'
+        ];
     }
 }
 
-function get_recurring_invoice_for_document(int $document_id): ?array {
+function get_recurring_invoice_for_document(int $document_id): array {
     global $conn;
-    $sql = "SELECT r.* FROM invoicing.recurring_invoices r
-        JOIN invoicing.documents d ON r.client_id = d.client_id
-        WHERE d.document_id = :document_id AND r.status = 'active' ORDER BY r.created_at DESC LIMIT 1";
+    $sql = "SELECT r.* FROM invoicing.recurring_invoices r JOIN invoicing.documents d ON r.client_id = d.client_id WHERE d.document_id = :document_id AND r.status = 'active' ORDER BY r.created_at DESC LIMIT 1";
     try {
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result ?: null;
+        if ($result) {
+            return [
+                'success' => true,
+                'message' => 'Recurring invoice found',
+                'data' => $result
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'No recurring invoice found',
+                'data' => null,
+                'error_code' => 'NO_RECURRING_INVOICE'
+            ];
+        }
     } catch (PDOException $e) {
-        error_log("get_recurring_invoice_for_document error: " . $e->getMessage());
-        return null;
+        $msg = "get_recurring_invoice_for_document error: " . $e->getMessage();
+        error_log($msg);
+        log_user_action(null, 'get_recurring_invoice_for_document', $document_id, $msg);
+        return [
+            'success' => false,
+            'message' => 'Failed to fetch recurring invoice',
+            'data' => null,
+            'error_code' => 'RECURRING_INVOICE_ERROR'
+        ];
     }
 }

@@ -135,14 +135,8 @@ function importVehicles($spreadsheet, $conn) {
     return $messages;
 }
 
-// Function to import companies
-function importCompanies($spreadsheet, $conn) {
-}
+//Invoicing Clients import 
 
-// Function to import customers
-function importCustomers($spreadsheet, $conn) {
-
-}
 
 // Time and Attendance Functions
 function importTimeEntries($conn, $data) {
@@ -764,36 +758,28 @@ function importProducts($spreadsheet, $conn) {
         $tax_rate = floatval($get('tax_rate') ?: 0);
         $discount = floatval($get('discount') ?: 0);
         $notes = $get('notes');
-        $stock_quantity = intval($get('stock_quantity') ?: 0);
-        $reorder_level = intval($get('reorder_level') ?: 0);
-        $lead_time = intval($get('lead_time') ?: 0);
+        $product_stock_quantity = intval($get('stock_quantity') ?: 0);
+        $product_reorder_level = intval($get('reorder_level') ?: 0);
+        $product_lead_time = intval($get('lead_time') ?: 0);
         $product_weight = floatval($get('product_weight') ?: 0);
-        $dimensions = $get('dimensions');
-        $brand = ucwords($get('brand'));
-        $manufacturer = ucwords($get('manufacturer'));
+        $product_dimensions = $get('dimensions');
+        $product_brand = ucwords($get('brand'));
+        $product_manufacturer = ucwords($get('manufacturer'));
         $warranty_period = $get('warranty_period');
-        $oem_part_number = $get('oem_part_number');
-        $compatible_vehicles = $get('compatible_vehicles');
-        $material = $get('material');
-        $labor_cost = floatval($get('labor_cost') ?: 0);
-        $estimated_time = $get('estimated_time');
-        $service_frequency = $get('service_frequency');
-        $installation_required = strtolower($get('installation_required')) === 'yes' ? true : false;
-        $bundle_items = $get('bundle_items');
         $supplier_name = ucwords($get('supplier_name'));
         $supplier_address = $get('supplier_address');
         $supplier_contact = $get('supplier_contact');
 
         try {
-            // 1. Resolve type/category/subcategory IDs
+            // 1. Resolve type/category/subcategory IDs (create if not exist)
             $product_type_id = getOrCreateId($conn, 'core.product_types', 'product_type_name', $product_type_name, 'product_type_id');
-            $category_id = $category_name ? getOrCreateId($conn, 'core.product_categories', 'category_name', $category_name, 'category_id', ['categories_type_id' => $product_type_id]) : null;
+            $category_id = $category_name ? getOrCreateId($conn, 'core.product_categories', 'category_name', $category_name, 'category_id', ['product_type_id' => $product_type_id]) : null;
             $subcategory_id = $subcategory_name ? getOrCreateId($conn, 'core.product_subcategories', 'subcategory_name', $subcategory_name, 'subcategory_id', ['category_id' => $category_id]) : null;
 
             // 2. Supplier: get or create
             $supplier_id = getOrCreateId($conn, 'inventory.supplier', 'supplier_name', $supplier_name, 'supplier_id', [
                 'supplier_address' => $supplier_address,
-                'suppllier_contact' => $supplier_contact
+                'supplier_contact' => $supplier_contact
             ]);
 
             // 3. Tax Rate: get or create tax_rate_id
@@ -812,9 +798,9 @@ function importProducts($spreadsheet, $conn) {
                 }
             }
 
-            // 4. Insert into core.product
+            // 4. Insert into core.products (not core.product)
             $stmt = $conn->prepare("
-                INSERT INTO core.product (
+                INSERT INTO core.products (
                     product_name, product_description, product_price, product_status, sku, barcode, product_type_id, category_id, subcategory_id, tax_rate_id, discount, notes
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 RETURNING product_id
@@ -824,14 +810,14 @@ function importProducts($spreadsheet, $conn) {
             ]);
             $product_id = $stmt->fetchColumn();
 
-            // 5. Insert into inventory.product_inventory
+            // 5. Insert into inventory.product_inventory (use correct field names)
             $stmt2 = $conn->prepare("
                 INSERT INTO inventory.product_inventory (
-                    product_id, stock_quantity, reorder_level, lead_time, product_weight, dimensions, brand, manufacturer, warranty_period
+                    product_id, product_stock_quantity, product_reorder_level, product_lead_time, product_weight, product_dimensions, product_brand, product_manufacturer, warranty_period
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
             $stmt2->execute([
-                $product_id, $stock_quantity, $reorder_level, $lead_time, $product_weight, $dimensions, $brand, $manufacturer, $warranty_period
+                $product_id, $product_stock_quantity, $product_reorder_level, $product_lead_time, $product_weight, $product_dimensions, $product_brand, $product_manufacturer, $warranty_period
             ]);
 
             // 6. Link product to supplier
@@ -848,7 +834,7 @@ function importProducts($spreadsheet, $conn) {
                 $reason = 'Duplicate value for a unique field.';
             } else {
                 // Shorten generic SQL errors
-                $reason = preg_replace('/SQLSTATE\\[[^]]*\\]: [^:]*: [0-9]+ ERROR:  /', '', $reason);
+                $reason = preg_replace('/SQLSTATE\[[^]]*\]: [^:]*: [0-9]+ ERROR:  /', '', $reason);
                 $reason = strtok($reason, "\n"); // Only first line
             }
             $errors[] = [
@@ -862,6 +848,265 @@ function importProducts($spreadsheet, $conn) {
     return [
         'success' => $successCount > 0,
         'message' => $successCount > 0 ? "Imported $successCount products" . ($errors ? " with some errors" : "") : "No products were imported",
+        'errors' => $errors,
+        'successCount' => $successCount,
+        'totalRows' => count($sheetData) - 1
+    ];
+}
+
+function nullIfEmptyDate($val) {
+    $v = trim($val);
+    return ($v === '' || strtolower($v) === 'n/a') ? null : $v;
+}
+
+function nullIfEmptyBool($val) {
+    $v = trim(strtolower($val));
+    if ($v === '' || $v === 'n/a') return true;
+    if ($v === 'true' || $v === 'yes' || $v === '1') return true;
+    if ($v === 'false' || $v === 'no' || $v === '0') return false;
+    return true; // fallback to true
+}
+
+/**
+ * Import clients (business and private) from Excel
+ * Sheet name: 'Clients'
+ * Required columns: client_type, client_name/first_name/last_name, client_email, client_cell, client_tell, client_status, plus address/contact fields
+ * Handles both company and customer types, creates addresses and contacts, and links them.
+ */
+function importClients($spreadsheet, $conn) {
+    $sheet = $spreadsheet->getSheetByName('Clients');
+    if (!$sheet) return [
+        'success' => false,
+        'message' => "Sheet 'Clients' not found.",
+        'errors' => [],
+        'successCount' => 0,
+        'totalRows' => 0
+    ];
+
+    $sheetData = $sheet->toArray(null, true, true, true);
+    if (count($sheetData) <= 1) return [
+        'success' => false,
+        'message' => "No data found in 'Clients' sheet.",
+        'errors' => [],
+        'successCount' => 0,
+        'totalRows' => 0
+    ];
+
+    $errors = [];
+    $successCount = 0;
+    $headerRow = $sheetData[1];
+    $headerMap = [];
+    foreach ($headerRow as $colLetter => $colName) {
+        $colName = strtolower(trim($colName));
+        if ($colName !== '') {
+            $headerMap[$colName] = $colLetter;
+        }
+    }
+
+    // Required fields for both types
+    $required = ['client_type', 'client_email', 'client_status'];
+    foreach ($required as $col) {
+        if (!isset($headerMap[$col])) return [
+            'success' => false,
+            'message' => "Missing required column: $col",
+            'errors' => [],
+            'successCount' => 0,
+            'totalRows' => 0
+        ];
+    }
+
+    for ($i = 2; $i <= count($sheetData); $i++) {
+        $row = $sheetData[$i];
+        $get = function($field) use ($headerMap, $row) {
+            $colLetter = $headerMap[$field] ?? null;
+            return $colLetter !== null ? trim($row[$colLetter] ?? '') : '';
+        };
+        $client_type = strtolower($get('client_type'));
+        $client_email = $get('client_email');
+        $client_status = $get('client_status');
+        // Company fields
+        $client_name = $get('client_name');
+        $industry = $get('industry');
+        $registration_number = $get('registration_number');
+        $vat_number = $get('vat_number');
+        $website = $get('website');
+        // Customer fields
+        $first_name = $get('first_name');
+        $last_name = $get('last_name');
+        $dob = nullIfEmptyDate($get('dob'));
+        $gender = $get('gender');
+        $loyalty_level = $get('loyalty_level');
+        $title = $get('title');
+        $initials = $get('initials');
+        // Common
+        $client_cell = $get('client_cell');
+        $client_tell = $get('client_tell');
+        // Address fields
+        $address_type_id = $get('address_type_id') ?: 1;
+        $address_line1 = $get('address_line1');
+        $address_line2 = $get('address_line2');
+        $city = $get('city');
+        $suburb = $get('suburb');
+        $province = $get('province');
+        $postal_code = $get('postal_code');
+        $country = $get('country');
+        $is_primary = nullIfEmptyBool($get('is_primary'));
+        // Contact fields
+        $contact_type_id = $get('contact_type_id') ?: 1;
+        $contact_first_name = $get('contact_first_name') ?: $first_name;
+        $contact_last_name = $get('contact_last_name') ?: $last_name;
+        $contact_position = $get('contact_position');
+        $contact_email = $get('contact_email') ?: $client_email;
+        $contact_phone = $get('contact_phone') ?: $client_tell;
+        $contact_cell = $get('contact_cell') ?: $client_cell;
+        $contact_is_primary = nullIfEmptyBool($get('contact_is_primary'));
+
+        // Validation
+        if (!$client_type || !$client_email || !$client_status) {
+            $errors[] = [
+                'row' => $i,
+                'client_type' => $client_type,
+                'client_email' => $client_email,
+                'client_status' => $client_status,
+                'reason' => 'Missing required client fields'
+            ];
+            continue;
+        }
+        if (($client_type === 'company' || $client_type === 'business') && !$client_name) {
+            $errors[] = [
+                'row' => $i,
+                'client_type' => $client_type,
+                'reason' => 'Missing company name'
+            ];
+            continue;
+        }
+        if ($client_type === 'private' && (!$first_name || !$last_name)) {
+            $errors[] = [
+                'row' => $i,
+                'client_type' => $client_type,
+                'reason' => 'Missing customer first or last name'
+            ];
+            continue;
+        }
+        try {
+            $conn->beginTransaction();
+            // 1. Insert client
+            $clientFields = [
+                'client_type' => $client_type,
+                'client_email' => $client_email,
+                'client_cell' => $client_cell,
+                'client_tell' => $client_tell,
+                'client_status' => $client_status
+            ];
+            if ($client_type === 'company' || $client_type === 'business') {
+                $clientFields['client_name'] = $client_name;
+                $clientFields['vat_number'] = $vat_number;
+                $clientFields['registration_number'] = $registration_number;
+                $clientFields['website'] = $website;
+                $clientFields['industry'] = $industry;
+            } else {
+                $clientFields['client_name'] = $first_name . ' ' . $last_name;
+                $clientFields['first_name'] = $first_name;
+                $clientFields['last_name'] = $last_name;
+                $clientFields['dob'] = $dob;
+                $clientFields['gender'] = $gender;
+                $clientFields['loyalty_level'] = $loyalty_level;
+                $clientFields['title'] = $title;
+                $clientFields['initials'] = $initials;
+            }
+            $fields = array_keys($clientFields);
+            $placeholders = array_map(function($f) { return ':' . $f; }, $fields);
+            $sql = "INSERT INTO invoicing.clients (" . implode(',', $fields) . ") VALUES (" . implode(',', $placeholders) . ")";
+            $stmt = $conn->prepare($sql);
+            foreach ($clientFields as $k => $v) {
+                $stmt->bindValue(':' . $k, $v);
+            }
+            $stmt->execute();
+            $client_id = $conn->lastInsertId();
+
+            // 2. Insert address
+            $address_id = null;
+            if ($address_line1 && $city && $country) {
+                $addressFields = [
+                    'address_type_id' => $address_type_id,
+                    'address_line1' => $address_line1,
+                    'address_line2' => $address_line2,
+                    'city' => $city,
+                    'suburb' => $suburb,
+                    'province' => $province,
+                    'postal_code' => $postal_code,
+                    'country' => $country,
+                    'is_primary' => $is_primary
+                ];
+                $afields = array_keys($addressFields);
+                $aplaceholders = array_map(function($f) { return ':' . $f; }, $afields);
+                $asql = "INSERT INTO invoicing.address (" . implode(',', $afields) . ") VALUES (" . implode(',', $aplaceholders) . ")";
+                $astmt = $conn->prepare($asql);
+                foreach ($addressFields as $k => $v) {
+                    $astmt->bindValue(':' . $k, $v);
+                }
+                $astmt->execute();
+                $address_id = $conn->lastInsertId();
+            }
+
+            // 3. Insert contact
+            $contact_id = null;
+            if ($contact_first_name && $contact_last_name && $contact_email) {
+                $contactFields = [
+                    'contact_type_id' => $contact_type_id,
+                    'first_name' => $contact_first_name,
+                    'last_name' => $contact_last_name,
+                    'position' => $contact_position,
+                    'email' => $contact_email,
+                    'phone' => $contact_phone,
+                    'cell' => $contact_cell,
+                    'is_primary' => $contact_is_primary
+                ];
+                $cfields = array_keys($contactFields);
+                $cplaceholders = array_map(function($f) { return ':' . $f; }, $cfields);
+                $csql = "INSERT INTO invoicing.contact_person (" . implode(',', $cfields) . ") VALUES (" . implode(',', $cplaceholders) . ")";
+                $cstmt = $conn->prepare($csql);
+                foreach ($contactFields as $k => $v) {
+                    $cstmt->bindValue(':' . $k, $v);
+                }
+                $cstmt->execute();
+                $contact_id = $conn->lastInsertId();
+            }
+
+            // 4. Link client to address
+            if ($client_id && $address_id) {
+                $linkAddr = $conn->prepare("INSERT INTO invoicing.client_addresses (client_id, address_id) VALUES (?, ?)");
+                $linkAddr->execute([$client_id, $address_id]);
+            }
+
+            // 5. Link client to contact
+            if ($client_id && $contact_id) {
+                $linkCont = $conn->prepare("INSERT INTO invoicing.client_contacts (client_id, contact_id) VALUES (?, ?)");
+                $linkCont->execute([$client_id, $contact_id]);
+            }
+
+            $conn->commit();
+            $successCount++;
+        } catch (PDOException $e) {
+            $conn->rollBack();
+            $reason = $e->getMessage();
+            if (strpos($reason, 'duplicate key value violates unique constraint') !== false) {
+                $reason = 'Duplicate value for a unique field.';
+            } else {
+                $reason = preg_replace('/SQLSTATE\[[^]]*\]: [^:]*: [0-9]+ ERROR:  /', '', $reason);
+                $reason = strtok($reason, "\n");
+            }
+            $errors[] = [
+                'row' => $i,
+                'client_type' => $client_type,
+                'client_email' => $client_email,
+                'reason' => $reason
+            ];
+        }
+    }
+    return [
+        'success' => $successCount > 0,
+        'message' => $successCount > 0 ? "Imported $successCount clients" . ($errors ? " with some errors" : "") : "No clients were imported",
         'errors' => $errors,
         'successCount' => $successCount,
         'totalRows' => count($sheetData) - 1

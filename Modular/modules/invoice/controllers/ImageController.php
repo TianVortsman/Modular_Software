@@ -29,12 +29,17 @@ function handleImageUpload(): array {
     try {
         $productId = $_POST['product_id'] ?? null;
         if (!$productId || !is_numeric($productId)) {
-            return $this->error('No valid product_id provided');
+            return error('No valid product_id provided');
         }
 
         $file = $_FILES['image'] ?? null;
         if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
-            return $this->error('No image file uploaded or upload error', $_FILES);
+            return error('No image file uploaded or upload error', $_FILES);
+        }
+
+        // Max file size: 5MB
+        if ($file['size'] > 5 * 1024 * 1024) {
+            return error('File size exceeds 5MB limit');
         }
 
         $accountNumber = $_SESSION['account_number'] ?? 'ACC002';
@@ -43,19 +48,30 @@ function handleImageUpload(): array {
         $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         $allowedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
         if (!in_array($ext, $allowedExts, true)) {
-            return $this->error("Unsupported image type: $ext");
+            return error("Unsupported image type: $ext");
+        }
+
+        // MIME type check
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
+        $allowedMimes = [
+            'image/jpeg', 'image/png', 'image/gif', 'image/webp'
+        ];
+        if (!in_array($mimeType, $allowedMimes, true)) {
+            return error("Unsupported MIME type: $mimeType");
         }
 
         $uploadDir = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\') . "/Uploads/{$accountNumber}/products/{$category}/";
         if (!is_dir($uploadDir) && !mkdir($uploadDir, 0777, true) && !is_dir($uploadDir)) {
-            return $this->error("Failed to create directory: $uploadDir");
+            return error("Failed to create directory: $uploadDir");
         }
 
         $filename = $productId . '.' . $ext;
         $targetPath = $uploadDir . $filename;
 
         if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
-            return $this->error('Failed to save uploaded file');
+            return error('Failed to save uploaded file');
         }
 
         $relativeUrl = "Uploads/{$accountNumber}/products/{$category}/$filename";
@@ -67,7 +83,7 @@ function handleImageUpload(): array {
             'path' => $relativeUrl
         ];
     } catch (\Throwable $e) {
-        return $this->error('Exception occurred: ' . $e->getMessage());
+        return error('Exception occurred: ' . $e->getMessage());
     }
 }
 

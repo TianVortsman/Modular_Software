@@ -1,13 +1,20 @@
 <?php
 /**
- * Checks if a user has permission for a given action in the invoicing module.
+ * Checks if a user has permission for a given action in the invoicing or product module.
+ * If the user is a technician (tech_logged_in), always returns true (master permission).
+ * Product actions are mapped to invoicing permission columns for now.
  * @param int $user_id
- * @param string $action (e.g. 'view', 'create', 'edit', 'delete', 'finalize', 'approve')
+ * @param string $action (e.g. 'view', 'create', 'edit', 'delete', 'finalize', 'approve', 'view_product', 'create_product', ...)
  * @param int|null $resource_id (optional, for future resource-level checks)
  * @return bool
  */
 function check_user_permission($user_id, $action, $resource_id = null) {
     global $conn;
+    // Master permission for technicians
+    if (!empty($_SESSION['tech_logged_in'])) {
+        return true;
+    }
+    // Map product actions to invoicing permission columns
     $colMap = [
         'view' => 'can_view',
         'create' => 'can_create',
@@ -15,6 +22,14 @@ function check_user_permission($user_id, $action, $resource_id = null) {
         'delete' => 'can_delete',
         'finalize' => 'can_finalize',
         'approve' => 'can_approve',
+        // Product-specific actions mapped to invoicing permissions
+        'view_product' => 'can_view',
+        'create_product' => 'can_create',
+        'update_product' => 'can_edit',
+        'delete_product' => 'can_delete',
+        'finalize_product' => 'can_finalize',
+        'approve_product' => 'can_approve',
+        // Legacy mappings for document actions
         'create_document' => 'can_create',
         'update_document' => 'can_edit',
         'delete_document' => 'can_delete',

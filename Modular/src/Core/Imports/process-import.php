@@ -281,26 +281,9 @@ try {
                 break;
 
             case 'crm':
-                if (strpos($type, 'Customers') !== false) {
-                    $errors = importCustomers($conn, $data);
-                    echo json_encode([
-                        'success' => empty($errors),
-                        'message' => empty($errors) ? 'Customers imported successfully' : 'Import completed with errors',
-                        'errors' => $errors,
-                        'totalRows' => count($data) - 1,
-                        'successCount' => empty($errors) ? count($data) - 1 : 0
-                    ]);
-                    exit;
-                }
-                elseif (strpos($type, 'Companies') !== false) {
-                    $errors = importCompanies($conn, $data);
-                    echo json_encode([
-                        'success' => empty($errors),
-                        'message' => empty($errors) ? 'Companies imported successfully' : 'Import completed with errors',
-                        'errors' => $errors,
-                        'totalRows' => count($data) - 1,
-                        'successCount' => empty($errors) ? count($data) - 1 : 0
-                    ]);
+                if (strpos($type, 'Client') !== false || strpos($type, 'Client') !== false) {
+                    $result = importClients($spreadsheet, $conn);
+                    echo json_encode($result);
                     exit;
                 }
                 break;
@@ -351,15 +334,15 @@ try {
 
             case 'hr':
                 if (strpos($type, 'Employees') !== false) {
-                    $errors = importEmployees($conn, $data);
-                    echo json_encode([
-                        'success' => empty($errors),
-                        'message' => empty($errors) ? 'Employees imported successfully' : 'Import completed with errors',
-                        'errors' => $errors,
-                        'totalRows' => count($data) - 1,
-                        'successCount' => empty($errors) ? count($data) - 1 : 0
-                    ]);
-                    exit;
+                    // $errors = importEmployees($conn, $data); // No such function defined
+                    // echo json_encode([
+                    //     'success' => empty($errors),
+                    //     'message' => empty($errors) ? 'Employees imported successfully' : 'Import completed with errors',
+                    //     'errors' => $errors,
+                    //     'totalRows' => count($data) - 1,
+                    //     'successCount' => empty($errors) ? count($data) - 1 : 0
+                    // ]);
+                    // exit;
                 }
                 elseif (strpos($type, 'Training Records') !== false) {
                     $errors = importTrainingRecords($conn, $data);
@@ -375,6 +358,11 @@ try {
                 break;
 
             case 'invoice':
+                if (strpos($type, 'Clients') !== false) {
+                    $result = importClients($spreadsheet, $conn);
+                    echo json_encode($result);
+                    exit;
+                }
                 if (strpos($type, 'Invoices') !== false) {
                     $errors = importInvoices($conn, $data);
                     echo json_encode([
@@ -400,6 +388,6 @@ try {
         error_log("Excel processing error: " . $e->getMessage());
         handleError('Error processing Excel file: ' . $e->getMessage());
     }
-} catch (Exception $e) {
+} catch (Throwable $e) {
     handleError('Critical error during import: ' . $e->getMessage());
 } 

@@ -59288,3 +59288,2243 @@ LINE 7:                 FROM customer_modules
 [12-Jul-2025 11:53:14 UTC] [DatabaseConfig] Client config created with dbname: ACC001
 [12-Jul-2025 11:53:14 UTC] Primary connection failed, trying fallback host: postgres
 [12-Jul-2025 11:53:15 UTC] Database connection failed: SQLSTATE[08006] [7] connection to server at "postgres" (172.18.0.2), port 5432 failed: FATAL:  database "ACC001" does not exist
+[12-Jul-2025 19:12:45 UTC] [emp_add_6872b3ad906ca0.69231036] Request started: GET /modules/time_and_attendance/api/employee-api.php?action=list&page=1&per_page=20&status=active&employment_type=Permanent
+[12-Jul-2025 19:12:45 UTC] Current directory: /var/www/html/modules/time_and_attendance/api
+[12-Jul-2025 19:12:45 UTC] Controller path: /var/www/html/modules/time_and_attendance/api/../controllers/EmployeeManagementController.php
+[12-Jul-2025 19:12:45 UTC] Loaded classes: Array
+(
+    [0] => stdClass
+    [1] => InternalIterator
+    [2] => Exception
+    [3] => ErrorException
+    [4] => Error
+    [5] => CompileError
+    [6] => ParseError
+    [7] => TypeError
+    [8] => ArgumentCountError
+    [9] => ValueError
+    [10] => ArithmeticError
+    [11] => DivisionByZeroError
+    [12] => UnhandledMatchError
+    [13] => Closure
+    [14] => Generator
+    [15] => ClosedGeneratorException
+    [16] => WeakReference
+    [17] => WeakMap
+    [18] => Attribute
+    [19] => ReturnTypeWillChange
+    [20] => Fiber
+    [21] => FiberError
+    [22] => DateTime
+    [23] => DateTimeImmutable
+    [24] => DateTimeZone
+    [25] => DateInterval
+    [26] => DatePeriod
+    [27] => LibXMLError
+    [28] => OpenSSLCertificate
+    [29] => OpenSSLCertificateSigningRequest
+    [30] => OpenSSLAsymmetricKey
+    [31] => SQLite3
+    [32] => SQLite3Stmt
+    [33] => SQLite3Result
+    [34] => InflateContext
+    [35] => DeflateContext
+    [36] => CurlHandle
+    [37] => CurlMultiHandle
+    [38] => CurlShareHandle
+    [39] => CURLFile
+    [40] => CURLStringFile
+    [41] => DOMException
+    [42] => DOMImplementation
+    [43] => DOMNode
+    [44] => DOMNameSpaceNode
+    [45] => DOMDocumentFragment
+    [46] => DOMDocument
+    [47] => DOMNodeList
+    [48] => DOMNamedNodeMap
+    [49] => DOMCharacterData
+    [50] => DOMAttr
+    [51] => DOMElement
+    [52] => DOMText
+    [53] => DOMComment
+    [54] => DOMCdataSection
+    [55] => DOMDocumentType
+    [56] => DOMNotation
+    [57] => DOMEntity
+    [58] => DOMEntityReference
+    [59] => DOMProcessingInstruction
+    [60] => DOMXPath
+    [61] => finfo
+    [62] => FTP\Connection
+    [63] => HashContext
+    [64] => JsonException
+    [65] => LogicException
+    [66] => BadFunctionCallException
+    [67] => BadMethodCallException
+    [68] => DomainException
+    [69] => InvalidArgumentException
+    [70] => LengthException
+    [71] => OutOfRangeException
+    [72] => RuntimeException
+    [73] => OutOfBoundsException
+    [74] => OverflowException
+    [75] => RangeException
+    [76] => UnderflowException
+    [77] => UnexpectedValueException
+    [78] => RecursiveIteratorIterator
+    [79] => IteratorIterator
+    [80] => FilterIterator
+    [81] => RecursiveFilterIterator
+    [82] => CallbackFilterIterator
+    [83] => RecursiveCallbackFilterIterator
+    [84] => ParentIterator
+    [85] => LimitIterator
+    [86] => CachingIterator
+    [87] => RecursiveCachingIterator
+    [88] => NoRewindIterator
+    [89] => AppendIterator
+    [90] => InfiniteIterator
+    [91] => RegexIterator
+    [92] => RecursiveRegexIterator
+    [93] => EmptyIterator
+    [94] => RecursiveTreeIterator
+    [95] => ArrayObject
+    [96] => ArrayIterator
+    [97] => RecursiveArrayIterator
+    [98] => SplFileInfo
+    [99] => DirectoryIterator
+    [100] => FilesystemIterator
+    [101] => RecursiveDirectoryIterator
+    [102] => GlobIterator
+    [103] => SplFileObject
+    [104] => SplTempFileObject
+    [105] => SplDoublyLinkedList
+    [106] => SplQueue
+    [107] => SplStack
+    [108] => SplHeap
+    [109] => SplMinHeap
+    [110] => SplMaxHeap
+    [111] => SplPriorityQueue
+    [112] => SplFixedArray
+    [113] => SplObjectStorage
+    [114] => MultipleIterator
+    [115] => SessionHandler
+    [116] => PDOException
+    [117] => PDO
+    [118] => PDOStatement
+    [119] => PDORow
+    [120] => __PHP_Incomplete_Class
+    [121] => AssertionError
+    [122] => php_user_filter
+    [123] => Directory
+    [124] => ReflectionException
+    [125] => Reflection
+    [126] => ReflectionFunctionAbstract
+    [127] => ReflectionFunction
+    [128] => ReflectionGenerator
+    [129] => ReflectionParameter
+    [130] => ReflectionType
+    [131] => ReflectionNamedType
+    [132] => ReflectionUnionType
+    [133] => ReflectionIntersectionType
+    [134] => ReflectionMethod
+    [135] => ReflectionClass
+    [136] => ReflectionObject
+    [137] => ReflectionProperty
+    [138] => ReflectionClassConstant
+    [139] => ReflectionExtension
+    [140] => ReflectionZendExtension
+    [141] => ReflectionReference
+    [142] => ReflectionAttribute
+    [143] => ReflectionEnum
+    [144] => ReflectionEnumUnitCase
+    [145] => ReflectionEnumBackedCase
+    [146] => ReflectionFiber
+    [147] => PharException
+    [148] => Phar
+    [149] => PharData
+    [150] => PharFileInfo
+    [151] => SimpleXMLElement
+    [152] => SimpleXMLIterator
+    [153] => PhpToken
+    [154] => XMLParser
+    [155] => XMLReader
+    [156] => XMLWriter
+    [157] => PgSql\Connection
+    [158] => PgSql\Result
+    [159] => PgSql\Lob
+    [160] => SodiumException
+    [161] => ZipArchive
+    [162] => ComposerAutoloaderInit35ba24d371677e4ff9c9451b51e2f15d
+    [163] => Composer\Autoload\ClassLoader
+    [164] => Composer\Autoload\ComposerStaticInit35ba24d371677e4ff9c9451b51e2f15d
+    [165] => Modules\TimeAndAttendance\Controllers\BaseEmployeeController
+    [166] => Modules\TimeAndAttendance\Controllers\EmployeeListController
+    [167] => Modules\TimeAndAttendance\Controllers\EmployeeDetailsController
+    [168] => Modules\TimeAndAttendance\Controllers\EmployeeActionController
+)
+
+[12-Jul-2025 19:12:45 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC001
+[12-Jul-2025 19:12:45 UTC] [DatabaseConfig] Client config created with dbname: ACC001
+[12-Jul-2025 19:12:45 UTC] [emp_add_6872b3adb3a914.77516971] Request started: GET /modules/time_and_attendance/api/employee-api.php?action=list&page=1&per_page=20&status=active&employment_type=Permanent
+[12-Jul-2025 19:12:45 UTC] Current directory: /var/www/html/modules/time_and_attendance/api
+[12-Jul-2025 19:12:45 UTC] Controller path: /var/www/html/modules/time_and_attendance/api/../controllers/EmployeeManagementController.php
+[12-Jul-2025 19:12:45 UTC] Loaded classes: Array
+(
+    [0] => stdClass
+    [1] => InternalIterator
+    [2] => Exception
+    [3] => ErrorException
+    [4] => Error
+    [5] => CompileError
+    [6] => ParseError
+    [7] => TypeError
+    [8] => ArgumentCountError
+    [9] => ValueError
+    [10] => ArithmeticError
+    [11] => DivisionByZeroError
+    [12] => UnhandledMatchError
+    [13] => Closure
+    [14] => Generator
+    [15] => ClosedGeneratorException
+    [16] => WeakReference
+    [17] => WeakMap
+    [18] => Attribute
+    [19] => ReturnTypeWillChange
+    [20] => Fiber
+    [21] => FiberError
+    [22] => DateTime
+    [23] => DateTimeImmutable
+    [24] => DateTimeZone
+    [25] => DateInterval
+    [26] => DatePeriod
+    [27] => LibXMLError
+    [28] => OpenSSLCertificate
+    [29] => OpenSSLCertificateSigningRequest
+    [30] => OpenSSLAsymmetricKey
+    [31] => SQLite3
+    [32] => SQLite3Stmt
+    [33] => SQLite3Result
+    [34] => InflateContext
+    [35] => DeflateContext
+    [36] => CurlHandle
+    [37] => CurlMultiHandle
+    [38] => CurlShareHandle
+    [39] => CURLFile
+    [40] => CURLStringFile
+    [41] => DOMException
+    [42] => DOMImplementation
+    [43] => DOMNode
+    [44] => DOMNameSpaceNode
+    [45] => DOMDocumentFragment
+    [46] => DOMDocument
+    [47] => DOMNodeList
+    [48] => DOMNamedNodeMap
+    [49] => DOMCharacterData
+    [50] => DOMAttr
+    [51] => DOMElement
+    [52] => DOMText
+    [53] => DOMComment
+    [54] => DOMCdataSection
+    [55] => DOMDocumentType
+    [56] => DOMNotation
+    [57] => DOMEntity
+    [58] => DOMEntityReference
+    [59] => DOMProcessingInstruction
+    [60] => DOMXPath
+    [61] => finfo
+    [62] => FTP\Connection
+    [63] => HashContext
+    [64] => JsonException
+    [65] => LogicException
+    [66] => BadFunctionCallException
+    [67] => BadMethodCallException
+    [68] => DomainException
+    [69] => InvalidArgumentException
+    [70] => LengthException
+    [71] => OutOfRangeException
+    [72] => RuntimeException
+    [73] => OutOfBoundsException
+    [74] => OverflowException
+    [75] => RangeException
+    [76] => UnderflowException
+    [77] => UnexpectedValueException
+    [78] => RecursiveIteratorIterator
+    [79] => IteratorIterator
+    [80] => FilterIterator
+    [81] => RecursiveFilterIterator
+    [82] => CallbackFilterIterator
+    [83] => RecursiveCallbackFilterIterator
+    [84] => ParentIterator
+    [85] => LimitIterator
+    [86] => CachingIterator
+    [87] => RecursiveCachingIterator
+    [88] => NoRewindIterator
+    [89] => AppendIterator
+    [90] => InfiniteIterator
+    [91] => RegexIterator
+    [92] => RecursiveRegexIterator
+    [93] => EmptyIterator
+    [94] => RecursiveTreeIterator
+    [95] => ArrayObject
+    [96] => ArrayIterator
+    [97] => RecursiveArrayIterator
+    [98] => SplFileInfo
+    [99] => DirectoryIterator
+    [100] => FilesystemIterator
+    [101] => RecursiveDirectoryIterator
+    [102] => GlobIterator
+    [103] => SplFileObject
+    [104] => SplTempFileObject
+    [105] => SplDoublyLinkedList
+    [106] => SplQueue
+    [107] => SplStack
+    [108] => SplHeap
+    [109] => SplMinHeap
+    [110] => SplMaxHeap
+    [111] => SplPriorityQueue
+    [112] => SplFixedArray
+    [113] => SplObjectStorage
+    [114] => MultipleIterator
+    [115] => SessionHandler
+    [116] => PDOException
+    [117] => PDO
+    [118] => PDOStatement
+    [119] => PDORow
+    [120] => __PHP_Incomplete_Class
+    [121] => AssertionError
+    [122] => php_user_filter
+    [123] => Directory
+    [124] => ReflectionException
+    [125] => Reflection
+    [126] => ReflectionFunctionAbstract
+    [127] => ReflectionFunction
+    [128] => ReflectionGenerator
+    [129] => ReflectionParameter
+    [130] => ReflectionType
+    [131] => ReflectionNamedType
+    [132] => ReflectionUnionType
+    [133] => ReflectionIntersectionType
+    [134] => ReflectionMethod
+    [135] => ReflectionClass
+    [136] => ReflectionObject
+    [137] => ReflectionProperty
+    [138] => ReflectionClassConstant
+    [139] => ReflectionExtension
+    [140] => ReflectionZendExtension
+    [141] => ReflectionReference
+    [142] => ReflectionAttribute
+    [143] => ReflectionEnum
+    [144] => ReflectionEnumUnitCase
+    [145] => ReflectionEnumBackedCase
+    [146] => ReflectionFiber
+    [147] => PharException
+    [148] => Phar
+    [149] => PharData
+    [150] => PharFileInfo
+    [151] => SimpleXMLElement
+    [152] => SimpleXMLIterator
+    [153] => PhpToken
+    [154] => XMLParser
+    [155] => XMLReader
+    [156] => XMLWriter
+    [157] => PgSql\Connection
+    [158] => PgSql\Result
+    [159] => PgSql\Lob
+    [160] => SodiumException
+    [161] => ZipArchive
+    [162] => ComposerAutoloaderInit35ba24d371677e4ff9c9451b51e2f15d
+    [163] => Composer\Autoload\ClassLoader
+    [164] => Composer\Autoload\ComposerStaticInit35ba24d371677e4ff9c9451b51e2f15d
+    [165] => Modules\TimeAndAttendance\Controllers\BaseEmployeeController
+    [166] => Modules\TimeAndAttendance\Controllers\EmployeeListController
+    [167] => Modules\TimeAndAttendance\Controllers\EmployeeDetailsController
+    [168] => Modules\TimeAndAttendance\Controllers\EmployeeActionController
+)
+
+[12-Jul-2025 19:12:45 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC001
+[12-Jul-2025 19:12:45 UTC] [DatabaseConfig] Client config created with dbname: ACC001
+[12-Jul-2025 19:12:45 UTC] [emp_add_6872b3adbc3b02.28725495] Request started: GET /modules/time_and_attendance/api/employee-api.php?action=stats
+[12-Jul-2025 19:12:45 UTC] Current directory: /var/www/html/modules/time_and_attendance/api
+[12-Jul-2025 19:12:45 UTC] Controller path: /var/www/html/modules/time_and_attendance/api/../controllers/EmployeeManagementController.php
+[12-Jul-2025 19:12:45 UTC] Loaded classes: Array
+(
+    [0] => stdClass
+    [1] => InternalIterator
+    [2] => Exception
+    [3] => ErrorException
+    [4] => Error
+    [5] => CompileError
+    [6] => ParseError
+    [7] => TypeError
+    [8] => ArgumentCountError
+    [9] => ValueError
+    [10] => ArithmeticError
+    [11] => DivisionByZeroError
+    [12] => UnhandledMatchError
+    [13] => Closure
+    [14] => Generator
+    [15] => ClosedGeneratorException
+    [16] => WeakReference
+    [17] => WeakMap
+    [18] => Attribute
+    [19] => ReturnTypeWillChange
+    [20] => Fiber
+    [21] => FiberError
+    [22] => DateTime
+    [23] => DateTimeImmutable
+    [24] => DateTimeZone
+    [25] => DateInterval
+    [26] => DatePeriod
+    [27] => LibXMLError
+    [28] => OpenSSLCertificate
+    [29] => OpenSSLCertificateSigningRequest
+    [30] => OpenSSLAsymmetricKey
+    [31] => SQLite3
+    [32] => SQLite3Stmt
+    [33] => SQLite3Result
+    [34] => InflateContext
+    [35] => DeflateContext
+    [36] => CurlHandle
+    [37] => CurlMultiHandle
+    [38] => CurlShareHandle
+    [39] => CURLFile
+    [40] => CURLStringFile
+    [41] => DOMException
+    [42] => DOMImplementation
+    [43] => DOMNode
+    [44] => DOMNameSpaceNode
+    [45] => DOMDocumentFragment
+    [46] => DOMDocument
+    [47] => DOMNodeList
+    [48] => DOMNamedNodeMap
+    [49] => DOMCharacterData
+    [50] => DOMAttr
+    [51] => DOMElement
+    [52] => DOMText
+    [53] => DOMComment
+    [54] => DOMCdataSection
+    [55] => DOMDocumentType
+    [56] => DOMNotation
+    [57] => DOMEntity
+    [58] => DOMEntityReference
+    [59] => DOMProcessingInstruction
+    [60] => DOMXPath
+    [61] => finfo
+    [62] => FTP\Connection
+    [63] => HashContext
+    [64] => JsonException
+    [65] => LogicException
+    [66] => BadFunctionCallException
+    [67] => BadMethodCallException
+    [68] => DomainException
+    [69] => InvalidArgumentException
+    [70] => LengthException
+    [71] => OutOfRangeException
+    [72] => RuntimeException
+    [73] => OutOfBoundsException
+    [74] => OverflowException
+    [75] => RangeException
+    [76] => UnderflowException
+    [77] => UnexpectedValueException
+    [78] => RecursiveIteratorIterator
+    [79] => IteratorIterator
+    [80] => FilterIterator
+    [81] => RecursiveFilterIterator
+    [82] => CallbackFilterIterator
+    [83] => RecursiveCallbackFilterIterator
+    [84] => ParentIterator
+    [85] => LimitIterator
+    [86] => CachingIterator
+    [87] => RecursiveCachingIterator
+    [88] => NoRewindIterator
+    [89] => AppendIterator
+    [90] => InfiniteIterator
+    [91] => RegexIterator
+    [92] => RecursiveRegexIterator
+    [93] => EmptyIterator
+    [94] => RecursiveTreeIterator
+    [95] => ArrayObject
+    [96] => ArrayIterator
+    [97] => RecursiveArrayIterator
+    [98] => SplFileInfo
+    [99] => DirectoryIterator
+    [100] => FilesystemIterator
+    [101] => RecursiveDirectoryIterator
+    [102] => GlobIterator
+    [103] => SplFileObject
+    [104] => SplTempFileObject
+    [105] => SplDoublyLinkedList
+    [106] => SplQueue
+    [107] => SplStack
+    [108] => SplHeap
+    [109] => SplMinHeap
+    [110] => SplMaxHeap
+    [111] => SplPriorityQueue
+    [112] => SplFixedArray
+    [113] => SplObjectStorage
+    [114] => MultipleIterator
+    [115] => SessionHandler
+    [116] => PDOException
+    [117] => PDO
+    [118] => PDOStatement
+    [119] => PDORow
+    [120] => __PHP_Incomplete_Class
+    [121] => AssertionError
+    [122] => php_user_filter
+    [123] => Directory
+    [124] => ReflectionException
+    [125] => Reflection
+    [126] => ReflectionFunctionAbstract
+    [127] => ReflectionFunction
+    [128] => ReflectionGenerator
+    [129] => ReflectionParameter
+    [130] => ReflectionType
+    [131] => ReflectionNamedType
+    [132] => ReflectionUnionType
+    [133] => ReflectionIntersectionType
+    [134] => ReflectionMethod
+    [135] => ReflectionClass
+    [136] => ReflectionObject
+    [137] => ReflectionProperty
+    [138] => ReflectionClassConstant
+    [139] => ReflectionExtension
+    [140] => ReflectionZendExtension
+    [141] => ReflectionReference
+    [142] => ReflectionAttribute
+    [143] => ReflectionEnum
+    [144] => ReflectionEnumUnitCase
+    [145] => ReflectionEnumBackedCase
+    [146] => ReflectionFiber
+    [147] => PharException
+    [148] => Phar
+    [149] => PharData
+    [150] => PharFileInfo
+    [151] => SimpleXMLElement
+    [152] => SimpleXMLIterator
+    [153] => PhpToken
+    [154] => XMLParser
+    [155] => XMLReader
+    [156] => XMLWriter
+    [157] => PgSql\Connection
+    [158] => PgSql\Result
+    [159] => PgSql\Lob
+    [160] => SodiumException
+    [161] => ZipArchive
+    [162] => ComposerAutoloaderInit35ba24d371677e4ff9c9451b51e2f15d
+    [163] => Composer\Autoload\ClassLoader
+    [164] => Composer\Autoload\ComposerStaticInit35ba24d371677e4ff9c9451b51e2f15d
+    [165] => Modules\TimeAndAttendance\Controllers\BaseEmployeeController
+    [166] => Modules\TimeAndAttendance\Controllers\EmployeeListController
+    [167] => Modules\TimeAndAttendance\Controllers\EmployeeDetailsController
+    [168] => Modules\TimeAndAttendance\Controllers\EmployeeActionController
+)
+
+[12-Jul-2025 19:12:45 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC001
+[12-Jul-2025 19:12:45 UTC] [DatabaseConfig] Client config created with dbname: ACC001
+[12-Jul-2025 19:12:45 UTC] [emp_add_6872b3adc53319.22084986] Request started: GET /modules/time_and_attendance/api/employee-api.php?action=stats
+[12-Jul-2025 19:12:45 UTC] Current directory: /var/www/html/modules/time_and_attendance/api
+[12-Jul-2025 19:12:45 UTC] Controller path: /var/www/html/modules/time_and_attendance/api/../controllers/EmployeeManagementController.php
+[12-Jul-2025 19:12:45 UTC] Loaded classes: Array
+(
+    [0] => stdClass
+    [1] => InternalIterator
+    [2] => Exception
+    [3] => ErrorException
+    [4] => Error
+    [5] => CompileError
+    [6] => ParseError
+    [7] => TypeError
+    [8] => ArgumentCountError
+    [9] => ValueError
+    [10] => ArithmeticError
+    [11] => DivisionByZeroError
+    [12] => UnhandledMatchError
+    [13] => Closure
+    [14] => Generator
+    [15] => ClosedGeneratorException
+    [16] => WeakReference
+    [17] => WeakMap
+    [18] => Attribute
+    [19] => ReturnTypeWillChange
+    [20] => Fiber
+    [21] => FiberError
+    [22] => DateTime
+    [23] => DateTimeImmutable
+    [24] => DateTimeZone
+    [25] => DateInterval
+    [26] => DatePeriod
+    [27] => LibXMLError
+    [28] => OpenSSLCertificate
+    [29] => OpenSSLCertificateSigningRequest
+    [30] => OpenSSLAsymmetricKey
+    [31] => SQLite3
+    [32] => SQLite3Stmt
+    [33] => SQLite3Result
+    [34] => InflateContext
+    [35] => DeflateContext
+    [36] => CurlHandle
+    [37] => CurlMultiHandle
+    [38] => CurlShareHandle
+    [39] => CURLFile
+    [40] => CURLStringFile
+    [41] => DOMException
+    [42] => DOMImplementation
+    [43] => DOMNode
+    [44] => DOMNameSpaceNode
+    [45] => DOMDocumentFragment
+    [46] => DOMDocument
+    [47] => DOMNodeList
+    [48] => DOMNamedNodeMap
+    [49] => DOMCharacterData
+    [50] => DOMAttr
+    [51] => DOMElement
+    [52] => DOMText
+    [53] => DOMComment
+    [54] => DOMCdataSection
+    [55] => DOMDocumentType
+    [56] => DOMNotation
+    [57] => DOMEntity
+    [58] => DOMEntityReference
+    [59] => DOMProcessingInstruction
+    [60] => DOMXPath
+    [61] => finfo
+    [62] => FTP\Connection
+    [63] => HashContext
+    [64] => JsonException
+    [65] => LogicException
+    [66] => BadFunctionCallException
+    [67] => BadMethodCallException
+    [68] => DomainException
+    [69] => InvalidArgumentException
+    [70] => LengthException
+    [71] => OutOfRangeException
+    [72] => RuntimeException
+    [73] => OutOfBoundsException
+    [74] => OverflowException
+    [75] => RangeException
+    [76] => UnderflowException
+    [77] => UnexpectedValueException
+    [78] => RecursiveIteratorIterator
+    [79] => IteratorIterator
+    [80] => FilterIterator
+    [81] => RecursiveFilterIterator
+    [82] => CallbackFilterIterator
+    [83] => RecursiveCallbackFilterIterator
+    [84] => ParentIterator
+    [85] => LimitIterator
+    [86] => CachingIterator
+    [87] => RecursiveCachingIterator
+    [88] => NoRewindIterator
+    [89] => AppendIterator
+    [90] => InfiniteIterator
+    [91] => RegexIterator
+    [92] => RecursiveRegexIterator
+    [93] => EmptyIterator
+    [94] => RecursiveTreeIterator
+    [95] => ArrayObject
+    [96] => ArrayIterator
+    [97] => RecursiveArrayIterator
+    [98] => SplFileInfo
+    [99] => DirectoryIterator
+    [100] => FilesystemIterator
+    [101] => RecursiveDirectoryIterator
+    [102] => GlobIterator
+    [103] => SplFileObject
+    [104] => SplTempFileObject
+    [105] => SplDoublyLinkedList
+    [106] => SplQueue
+    [107] => SplStack
+    [108] => SplHeap
+    [109] => SplMinHeap
+    [110] => SplMaxHeap
+    [111] => SplPriorityQueue
+    [112] => SplFixedArray
+    [113] => SplObjectStorage
+    [114] => MultipleIterator
+    [115] => SessionHandler
+    [116] => PDOException
+    [117] => PDO
+    [118] => PDOStatement
+    [119] => PDORow
+    [120] => __PHP_Incomplete_Class
+    [121] => AssertionError
+    [122] => php_user_filter
+    [123] => Directory
+    [124] => ReflectionException
+    [125] => Reflection
+    [126] => ReflectionFunctionAbstract
+    [127] => ReflectionFunction
+    [128] => ReflectionGenerator
+    [129] => ReflectionParameter
+    [130] => ReflectionType
+    [131] => ReflectionNamedType
+    [132] => ReflectionUnionType
+    [133] => ReflectionIntersectionType
+    [134] => ReflectionMethod
+    [135] => ReflectionClass
+    [136] => ReflectionObject
+    [137] => ReflectionProperty
+    [138] => ReflectionClassConstant
+    [139] => ReflectionExtension
+    [140] => ReflectionZendExtension
+    [141] => ReflectionReference
+    [142] => ReflectionAttribute
+    [143] => ReflectionEnum
+    [144] => ReflectionEnumUnitCase
+    [145] => ReflectionEnumBackedCase
+    [146] => ReflectionFiber
+    [147] => PharException
+    [148] => Phar
+    [149] => PharData
+    [150] => PharFileInfo
+    [151] => SimpleXMLElement
+    [152] => SimpleXMLIterator
+    [153] => PhpToken
+    [154] => XMLParser
+    [155] => XMLReader
+    [156] => XMLWriter
+    [157] => PgSql\Connection
+    [158] => PgSql\Result
+    [159] => PgSql\Lob
+    [160] => SodiumException
+    [161] => ZipArchive
+    [162] => ComposerAutoloaderInit35ba24d371677e4ff9c9451b51e2f15d
+    [163] => Composer\Autoload\ClassLoader
+    [164] => Composer\Autoload\ComposerStaticInit35ba24d371677e4ff9c9451b51e2f15d
+    [165] => Modules\TimeAndAttendance\Controllers\BaseEmployeeController
+    [166] => Modules\TimeAndAttendance\Controllers\EmployeeListController
+    [167] => Modules\TimeAndAttendance\Controllers\EmployeeDetailsController
+    [168] => Modules\TimeAndAttendance\Controllers\EmployeeActionController
+)
+
+[12-Jul-2025 19:12:45 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC001
+[12-Jul-2025 19:12:45 UTC] [DatabaseConfig] Client config created with dbname: ACC001
+[12-Jul-2025 19:12:54 UTC] [emp_add_6872b3b61f6282.77313682] Request started: GET /modules/time_and_attendance/api/employee-api.php?action=details&id=2
+[12-Jul-2025 19:12:54 UTC] Current directory: /var/www/html/modules/time_and_attendance/api
+[12-Jul-2025 19:12:54 UTC] Controller path: /var/www/html/modules/time_and_attendance/api/../controllers/EmployeeManagementController.php
+[12-Jul-2025 19:12:54 UTC] Loaded classes: Array
+(
+    [0] => stdClass
+    [1] => InternalIterator
+    [2] => Exception
+    [3] => ErrorException
+    [4] => Error
+    [5] => CompileError
+    [6] => ParseError
+    [7] => TypeError
+    [8] => ArgumentCountError
+    [9] => ValueError
+    [10] => ArithmeticError
+    [11] => DivisionByZeroError
+    [12] => UnhandledMatchError
+    [13] => Closure
+    [14] => Generator
+    [15] => ClosedGeneratorException
+    [16] => WeakReference
+    [17] => WeakMap
+    [18] => Attribute
+    [19] => ReturnTypeWillChange
+    [20] => Fiber
+    [21] => FiberError
+    [22] => DateTime
+    [23] => DateTimeImmutable
+    [24] => DateTimeZone
+    [25] => DateInterval
+    [26] => DatePeriod
+    [27] => LibXMLError
+    [28] => OpenSSLCertificate
+    [29] => OpenSSLCertificateSigningRequest
+    [30] => OpenSSLAsymmetricKey
+    [31] => SQLite3
+    [32] => SQLite3Stmt
+    [33] => SQLite3Result
+    [34] => InflateContext
+    [35] => DeflateContext
+    [36] => CurlHandle
+    [37] => CurlMultiHandle
+    [38] => CurlShareHandle
+    [39] => CURLFile
+    [40] => CURLStringFile
+    [41] => DOMException
+    [42] => DOMImplementation
+    [43] => DOMNode
+    [44] => DOMNameSpaceNode
+    [45] => DOMDocumentFragment
+    [46] => DOMDocument
+    [47] => DOMNodeList
+    [48] => DOMNamedNodeMap
+    [49] => DOMCharacterData
+    [50] => DOMAttr
+    [51] => DOMElement
+    [52] => DOMText
+    [53] => DOMComment
+    [54] => DOMCdataSection
+    [55] => DOMDocumentType
+    [56] => DOMNotation
+    [57] => DOMEntity
+    [58] => DOMEntityReference
+    [59] => DOMProcessingInstruction
+    [60] => DOMXPath
+    [61] => finfo
+    [62] => FTP\Connection
+    [63] => HashContext
+    [64] => JsonException
+    [65] => LogicException
+    [66] => BadFunctionCallException
+    [67] => BadMethodCallException
+    [68] => DomainException
+    [69] => InvalidArgumentException
+    [70] => LengthException
+    [71] => OutOfRangeException
+    [72] => RuntimeException
+    [73] => OutOfBoundsException
+    [74] => OverflowException
+    [75] => RangeException
+    [76] => UnderflowException
+    [77] => UnexpectedValueException
+    [78] => RecursiveIteratorIterator
+    [79] => IteratorIterator
+    [80] => FilterIterator
+    [81] => RecursiveFilterIterator
+    [82] => CallbackFilterIterator
+    [83] => RecursiveCallbackFilterIterator
+    [84] => ParentIterator
+    [85] => LimitIterator
+    [86] => CachingIterator
+    [87] => RecursiveCachingIterator
+    [88] => NoRewindIterator
+    [89] => AppendIterator
+    [90] => InfiniteIterator
+    [91] => RegexIterator
+    [92] => RecursiveRegexIterator
+    [93] => EmptyIterator
+    [94] => RecursiveTreeIterator
+    [95] => ArrayObject
+    [96] => ArrayIterator
+    [97] => RecursiveArrayIterator
+    [98] => SplFileInfo
+    [99] => DirectoryIterator
+    [100] => FilesystemIterator
+    [101] => RecursiveDirectoryIterator
+    [102] => GlobIterator
+    [103] => SplFileObject
+    [104] => SplTempFileObject
+    [105] => SplDoublyLinkedList
+    [106] => SplQueue
+    [107] => SplStack
+    [108] => SplHeap
+    [109] => SplMinHeap
+    [110] => SplMaxHeap
+    [111] => SplPriorityQueue
+    [112] => SplFixedArray
+    [113] => SplObjectStorage
+    [114] => MultipleIterator
+    [115] => SessionHandler
+    [116] => PDOException
+    [117] => PDO
+    [118] => PDOStatement
+    [119] => PDORow
+    [120] => __PHP_Incomplete_Class
+    [121] => AssertionError
+    [122] => php_user_filter
+    [123] => Directory
+    [124] => ReflectionException
+    [125] => Reflection
+    [126] => ReflectionFunctionAbstract
+    [127] => ReflectionFunction
+    [128] => ReflectionGenerator
+    [129] => ReflectionParameter
+    [130] => ReflectionType
+    [131] => ReflectionNamedType
+    [132] => ReflectionUnionType
+    [133] => ReflectionIntersectionType
+    [134] => ReflectionMethod
+    [135] => ReflectionClass
+    [136] => ReflectionObject
+    [137] => ReflectionProperty
+    [138] => ReflectionClassConstant
+    [139] => ReflectionExtension
+    [140] => ReflectionZendExtension
+    [141] => ReflectionReference
+    [142] => ReflectionAttribute
+    [143] => ReflectionEnum
+    [144] => ReflectionEnumUnitCase
+    [145] => ReflectionEnumBackedCase
+    [146] => ReflectionFiber
+    [147] => PharException
+    [148] => Phar
+    [149] => PharData
+    [150] => PharFileInfo
+    [151] => SimpleXMLElement
+    [152] => SimpleXMLIterator
+    [153] => PhpToken
+    [154] => XMLParser
+    [155] => XMLReader
+    [156] => XMLWriter
+    [157] => PgSql\Connection
+    [158] => PgSql\Result
+    [159] => PgSql\Lob
+    [160] => SodiumException
+    [161] => ZipArchive
+    [162] => ComposerAutoloaderInit35ba24d371677e4ff9c9451b51e2f15d
+    [163] => Composer\Autoload\ClassLoader
+    [164] => Composer\Autoload\ComposerStaticInit35ba24d371677e4ff9c9451b51e2f15d
+    [165] => Modules\TimeAndAttendance\Controllers\BaseEmployeeController
+    [166] => Modules\TimeAndAttendance\Controllers\EmployeeListController
+    [167] => Modules\TimeAndAttendance\Controllers\EmployeeDetailsController
+    [168] => Modules\TimeAndAttendance\Controllers\EmployeeActionController
+)
+
+[12-Jul-2025 19:12:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC001
+[12-Jul-2025 19:12:54 UTC] [DatabaseConfig] Client config created with dbname: ACC001
+[12-Jul-2025 19:12:54 UTC] [emp_add_6872b3b6379951.31256073] Request started: GET /modules/time_and_attendance/api/employee-api.php?action=details&id=2
+[12-Jul-2025 19:12:54 UTC] Current directory: /var/www/html/modules/time_and_attendance/api
+[12-Jul-2025 19:12:54 UTC] Controller path: /var/www/html/modules/time_and_attendance/api/../controllers/EmployeeManagementController.php
+[12-Jul-2025 19:12:54 UTC] Loaded classes: Array
+(
+    [0] => stdClass
+    [1] => InternalIterator
+    [2] => Exception
+    [3] => ErrorException
+    [4] => Error
+    [5] => CompileError
+    [6] => ParseError
+    [7] => TypeError
+    [8] => ArgumentCountError
+    [9] => ValueError
+    [10] => ArithmeticError
+    [11] => DivisionByZeroError
+    [12] => UnhandledMatchError
+    [13] => Closure
+    [14] => Generator
+    [15] => ClosedGeneratorException
+    [16] => WeakReference
+    [17] => WeakMap
+    [18] => Attribute
+    [19] => ReturnTypeWillChange
+    [20] => Fiber
+    [21] => FiberError
+    [22] => DateTime
+    [23] => DateTimeImmutable
+    [24] => DateTimeZone
+    [25] => DateInterval
+    [26] => DatePeriod
+    [27] => LibXMLError
+    [28] => OpenSSLCertificate
+    [29] => OpenSSLCertificateSigningRequest
+    [30] => OpenSSLAsymmetricKey
+    [31] => SQLite3
+    [32] => SQLite3Stmt
+    [33] => SQLite3Result
+    [34] => InflateContext
+    [35] => DeflateContext
+    [36] => CurlHandle
+    [37] => CurlMultiHandle
+    [38] => CurlShareHandle
+    [39] => CURLFile
+    [40] => CURLStringFile
+    [41] => DOMException
+    [42] => DOMImplementation
+    [43] => DOMNode
+    [44] => DOMNameSpaceNode
+    [45] => DOMDocumentFragment
+    [46] => DOMDocument
+    [47] => DOMNodeList
+    [48] => DOMNamedNodeMap
+    [49] => DOMCharacterData
+    [50] => DOMAttr
+    [51] => DOMElement
+    [52] => DOMText
+    [53] => DOMComment
+    [54] => DOMCdataSection
+    [55] => DOMDocumentType
+    [56] => DOMNotation
+    [57] => DOMEntity
+    [58] => DOMEntityReference
+    [59] => DOMProcessingInstruction
+    [60] => DOMXPath
+    [61] => finfo
+    [62] => FTP\Connection
+    [63] => HashContext
+    [64] => JsonException
+    [65] => LogicException
+    [66] => BadFunctionCallException
+    [67] => BadMethodCallException
+    [68] => DomainException
+    [69] => InvalidArgumentException
+    [70] => LengthException
+    [71] => OutOfRangeException
+    [72] => RuntimeException
+    [73] => OutOfBoundsException
+    [74] => OverflowException
+    [75] => RangeException
+    [76] => UnderflowException
+    [77] => UnexpectedValueException
+    [78] => RecursiveIteratorIterator
+    [79] => IteratorIterator
+    [80] => FilterIterator
+    [81] => RecursiveFilterIterator
+    [82] => CallbackFilterIterator
+    [83] => RecursiveCallbackFilterIterator
+    [84] => ParentIterator
+    [85] => LimitIterator
+    [86] => CachingIterator
+    [87] => RecursiveCachingIterator
+    [88] => NoRewindIterator
+    [89] => AppendIterator
+    [90] => InfiniteIterator
+    [91] => RegexIterator
+    [92] => RecursiveRegexIterator
+    [93] => EmptyIterator
+    [94] => RecursiveTreeIterator
+    [95] => ArrayObject
+    [96] => ArrayIterator
+    [97] => RecursiveArrayIterator
+    [98] => SplFileInfo
+    [99] => DirectoryIterator
+    [100] => FilesystemIterator
+    [101] => RecursiveDirectoryIterator
+    [102] => GlobIterator
+    [103] => SplFileObject
+    [104] => SplTempFileObject
+    [105] => SplDoublyLinkedList
+    [106] => SplQueue
+    [107] => SplStack
+    [108] => SplHeap
+    [109] => SplMinHeap
+    [110] => SplMaxHeap
+    [111] => SplPriorityQueue
+    [112] => SplFixedArray
+    [113] => SplObjectStorage
+    [114] => MultipleIterator
+    [115] => SessionHandler
+    [116] => PDOException
+    [117] => PDO
+    [118] => PDOStatement
+    [119] => PDORow
+    [120] => __PHP_Incomplete_Class
+    [121] => AssertionError
+    [122] => php_user_filter
+    [123] => Directory
+    [124] => ReflectionException
+    [125] => Reflection
+    [126] => ReflectionFunctionAbstract
+    [127] => ReflectionFunction
+    [128] => ReflectionGenerator
+    [129] => ReflectionParameter
+    [130] => ReflectionType
+    [131] => ReflectionNamedType
+    [132] => ReflectionUnionType
+    [133] => ReflectionIntersectionType
+    [134] => ReflectionMethod
+    [135] => ReflectionClass
+    [136] => ReflectionObject
+    [137] => ReflectionProperty
+    [138] => ReflectionClassConstant
+    [139] => ReflectionExtension
+    [140] => ReflectionZendExtension
+    [141] => ReflectionReference
+    [142] => ReflectionAttribute
+    [143] => ReflectionEnum
+    [144] => ReflectionEnumUnitCase
+    [145] => ReflectionEnumBackedCase
+    [146] => ReflectionFiber
+    [147] => PharException
+    [148] => Phar
+    [149] => PharData
+    [150] => PharFileInfo
+    [151] => SimpleXMLElement
+    [152] => SimpleXMLIterator
+    [153] => PhpToken
+    [154] => XMLParser
+    [155] => XMLReader
+    [156] => XMLWriter
+    [157] => PgSql\Connection
+    [158] => PgSql\Result
+    [159] => PgSql\Lob
+    [160] => SodiumException
+    [161] => ZipArchive
+    [162] => ComposerAutoloaderInit35ba24d371677e4ff9c9451b51e2f15d
+    [163] => Composer\Autoload\ClassLoader
+    [164] => Composer\Autoload\ComposerStaticInit35ba24d371677e4ff9c9451b51e2f15d
+    [165] => Modules\TimeAndAttendance\Controllers\BaseEmployeeController
+    [166] => Modules\TimeAndAttendance\Controllers\EmployeeListController
+    [167] => Modules\TimeAndAttendance\Controllers\EmployeeDetailsController
+    [168] => Modules\TimeAndAttendance\Controllers\EmployeeActionController
+)
+
+[12-Jul-2025 19:12:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC001
+[12-Jul-2025 19:12:54 UTC] [DatabaseConfig] Client config created with dbname: ACC001
+[13-Jul-2025 07:35:11 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => c7cf5035820de904343681207fe9863d592d03ac58576a0f5295efb8ac79d041
+    [tech_access_token] => b189f741a3093ca3f332a060e4ad610b32f9cc47b46657468184447f06f4c614
+    [tech_account_number] => ACC001
+    [tech_access_expiration] => 1752170283
+    [account_number] => ACC001
+)
+
+[13-Jul-2025 07:35:11 UTC] Received request - Method: GET, Action: list
+[13-Jul-2025 07:35:11 UTC] POST data: Array
+(
+)
+
+[13-Jul-2025 07:35:11 UTC] FILES data: Array
+(
+)
+
+[13-Jul-2025 07:35:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC001
+[13-Jul-2025 07:35:11 UTC] [DatabaseConfig] Client config created with dbname: ACC001
+[13-Jul-2025 07:35:11 UTC] PHP Fatal error:  Uncaught Error: Class "App\modules\invoice\controllers\ProductController" not found in /var/www/html/modules/invoice/api/products.php:105
+Stack trace:
+#0 {main}
+  thrown in /var/www/html/modules/invoice/api/products.php on line 105
+[13-Jul-2025 07:35:11 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => c7cf5035820de904343681207fe9863d592d03ac58576a0f5295efb8ac79d041
+    [tech_access_token] => b189f741a3093ca3f332a060e4ad610b32f9cc47b46657468184447f06f4c614
+    [tech_account_number] => ACC001
+    [tech_access_expiration] => 1752170283
+    [account_number] => ACC001
+)
+
+[13-Jul-2025 07:35:11 UTC] Received request - Method: GET, Action: list_types
+[13-Jul-2025 07:35:11 UTC] POST data: Array
+(
+)
+
+[13-Jul-2025 07:35:11 UTC] FILES data: Array
+(
+)
+
+[13-Jul-2025 07:35:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC001
+[13-Jul-2025 07:35:11 UTC] [DatabaseConfig] Client config created with dbname: ACC001
+[13-Jul-2025 07:35:11 UTC] PHP Fatal error:  Uncaught Error: Class "App\modules\invoice\controllers\ProductController" not found in /var/www/html/modules/invoice/api/products.php:105
+Stack trace:
+#0 {main}
+  thrown in /var/www/html/modules/invoice/api/products.php on line 105
+[13-Jul-2025 07:35:11 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => c7cf5035820de904343681207fe9863d592d03ac58576a0f5295efb8ac79d041
+    [tech_access_token] => b189f741a3093ca3f332a060e4ad610b32f9cc47b46657468184447f06f4c614
+    [tech_account_number] => ACC001
+    [tech_access_expiration] => 1752170283
+    [account_number] => ACC001
+)
+
+[13-Jul-2025 07:35:11 UTC] Received request - Method: GET, Action: list_types
+[13-Jul-2025 07:35:11 UTC] POST data: Array
+(
+)
+
+[13-Jul-2025 07:35:11 UTC] FILES data: Array
+(
+)
+
+[13-Jul-2025 07:35:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC001
+[13-Jul-2025 07:35:11 UTC] [DatabaseConfig] Client config created with dbname: ACC001
+[13-Jul-2025 07:35:11 UTC] PHP Fatal error:  Uncaught Error: Class "App\modules\invoice\controllers\ProductController" not found in /var/www/html/modules/invoice/api/products.php:105
+Stack trace:
+#0 {main}
+  thrown in /var/www/html/modules/invoice/api/products.php on line 105
+[13-Jul-2025 08:50:49 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => c7cf5035820de904343681207fe9863d592d03ac58576a0f5295efb8ac79d041
+    [tech_access_token] => b189f741a3093ca3f332a060e4ad610b32f9cc47b46657468184447f06f4c614
+    [tech_account_number] => ACC001
+    [tech_access_expiration] => 1752170283
+    [account_number] => ACC001
+)
+
+[13-Jul-2025 08:50:49 UTC] Received request - Method: GET, Action: list
+[13-Jul-2025 08:50:49 UTC] POST data: Array
+(
+)
+
+[13-Jul-2025 08:50:49 UTC] FILES data: Array
+(
+)
+
+[13-Jul-2025 08:50:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC001
+[13-Jul-2025 08:50:49 UTC] [DatabaseConfig] Client config created with dbname: ACC001
+[13-Jul-2025 08:50:49 UTC] PHP Fatal error:  Uncaught Error: Class "App\modules\invoice\controllers\ProductController" not found in /var/www/html/modules/invoice/api/products.php:105
+Stack trace:
+#0 {main}
+  thrown in /var/www/html/modules/invoice/api/products.php on line 105
+[13-Jul-2025 08:50:49 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => c7cf5035820de904343681207fe9863d592d03ac58576a0f5295efb8ac79d041
+    [tech_access_token] => b189f741a3093ca3f332a060e4ad610b32f9cc47b46657468184447f06f4c614
+    [tech_account_number] => ACC001
+    [tech_access_expiration] => 1752170283
+    [account_number] => ACC001
+)
+
+[13-Jul-2025 08:50:49 UTC] Received request - Method: GET, Action: list_types
+[13-Jul-2025 08:50:49 UTC] POST data: Array
+(
+)
+
+[13-Jul-2025 08:50:49 UTC] FILES data: Array
+(
+)
+
+[13-Jul-2025 08:50:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC001
+[13-Jul-2025 08:50:49 UTC] [DatabaseConfig] Client config created with dbname: ACC001
+[13-Jul-2025 08:50:49 UTC] PHP Fatal error:  Uncaught Error: Class "App\modules\invoice\controllers\ProductController" not found in /var/www/html/modules/invoice/api/products.php:105
+Stack trace:
+#0 {main}
+  thrown in /var/www/html/modules/invoice/api/products.php on line 105
+[13-Jul-2025 08:50:49 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => c7cf5035820de904343681207fe9863d592d03ac58576a0f5295efb8ac79d041
+    [tech_access_token] => b189f741a3093ca3f332a060e4ad610b32f9cc47b46657468184447f06f4c614
+    [tech_account_number] => ACC001
+    [tech_access_expiration] => 1752170283
+    [account_number] => ACC001
+)
+
+[13-Jul-2025 08:50:49 UTC] Received request - Method: GET, Action: list_types
+[13-Jul-2025 08:50:49 UTC] POST data: Array
+(
+)
+
+[13-Jul-2025 08:50:49 UTC] FILES data: Array
+(
+)
+
+[13-Jul-2025 08:50:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC001
+[13-Jul-2025 08:50:49 UTC] [DatabaseConfig] Client config created with dbname: ACC001
+[13-Jul-2025 08:50:49 UTC] PHP Fatal error:  Uncaught Error: Class "App\modules\invoice\controllers\ProductController" not found in /var/www/html/modules/invoice/api/products.php:105
+Stack trace:
+#0 {main}
+  thrown in /var/www/html/modules/invoice/api/products.php on line 105
+[13-Jul-2025 10:45:48 UTC] Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => c7cf5035820de904343681207fe9863d592d03ac58576a0f5295efb8ac79d041
+    [tech_access_token] => b189f741a3093ca3f332a060e4ad610b32f9cc47b46657468184447f06f4c614
+    [tech_account_number] => ACC001
+    [tech_access_expiration] => 1752170283
+    [account_number] => ACC001
+)
+
+[13-Jul-2025 10:45:48 UTC] Account number from session: ACC001
+[13-Jul-2025 10:45:48 UTC] User name: Tian
+[13-Jul-2025 10:45:48 UTC] Multiple accounts: false
+[13-Jul-2025 12:26:20 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC001
+[13-Jul-2025 12:26:20 UTC] [DatabaseConfig] Client config created with dbname: ACC001
+[13-Jul-2025 12:26:21 UTC] First row (headers): Array
+(
+    [0] => client_type (required)
+    [1] => client_name (required for business)
+    [2] => first_name (required for private)
+    [3] => last_name (required for private)
+    [4] => client_email (required)
+    [5] => client_cell (required)
+    [6] => client_tell
+    [7] => client_status (required)
+    [8] => address_line1
+    [9] => address_line2
+    [10] => city
+    [11] => province
+    [12] => postal_code
+    [13] => country
+    [14] => contact_name
+    [15] => contact_email
+    [16] => contact_cell
+    [17] => contact_tell
+    [18] => notes
+    [19] => vat_number
+    [20] => company_registration
+)
+
+[13-Jul-2025 12:26:21 UTC] Second row (first data row): Array
+(
+    [0] => Private
+    [1] => 
+    [2] => Manuel
+    [3] => Howard
+    [4] => chrisjohnson@miller.com
+    [5] => 0606970379
+    [6] => 0606970402
+    [7] => active
+    [8] => 71312 Jones Landing
+    [9] => Suite 216
+    [10] => Bloemfontein
+    [11] => Gauteng
+    [12] => 40217
+    [13] => South Africa
+    [14] => Destiny Collins
+    [15] => utaylor@contreras.net
+    [16] => +1-523-640-7275x405
+    [17] => 812.368.6553
+    [18] => Subject wear executive network resource own cut.
+    [19] => VAT79802317
+    [20] => 
+)
+
+[13-Jul-2025 12:26:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC001
+[13-Jul-2025 12:26:53 UTC] [DatabaseConfig] Client config created with dbname: ACC001
+[13-Jul-2025 12:26:54 UTC] First row (headers): Array
+(
+    [0] => client_type (required)
+    [1] => client_name (required for business)
+    [2] => first_name (required for private)
+    [3] => last_name (required for private)
+    [4] => client_email (required)
+    [5] => client_cell (required)
+    [6] => client_tell
+    [7] => client_status (required)
+    [8] => address_line1
+    [9] => address_line2
+    [10] => city
+    [11] => province
+    [12] => postal_code
+    [13] => country
+    [14] => contact_name
+    [15] => contact_email
+    [16] => contact_cell
+    [17] => contact_tell
+    [18] => notes
+    [19] => vat_number
+    [20] => company_registration
+)
+
+[13-Jul-2025 12:26:54 UTC] Second row (first data row): Array
+(
+    [0] => Private
+    [1] => 
+    [2] => Manuel
+    [3] => Howard
+    [4] => chrisjohnson@miller.com
+    [5] => 0606970379
+    [6] => 0606970402
+    [7] => active
+    [8] => 71312 Jones Landing
+    [9] => Suite 216
+    [10] => Bloemfontein
+    [11] => Gauteng
+    [12] => 40217
+    [13] => South Africa
+    [14] => Destiny Collins
+    [15] => utaylor@contreras.net
+    [16] => +1-523-640-7275x405
+    [17] => 812.368.6553
+    [18] => Subject wear executive network resource own cut.
+    [19] => VAT79802317
+    [20] => 
+)
+
+[13-Jul-2025 12:28:07 UTC] Current file: /var/www/html/public/admin/techlogin.php
+[13-Jul-2025 12:28:07 UTC] Current directory: /var/www/html/public/admin
+[13-Jul-2025 12:28:07 UTC] Document root: /var/www/html
+[13-Jul-2025 12:28:07 UTC] Trying controller path: /var/www/html/public/admin/../../../src/Controllers/ClockServerController.php - NOT FOUND
+[13-Jul-2025 12:28:07 UTC] Trying alt path: /var/www/html/public/admin/../../src/Controllers/ClockServerController.php - EXISTS
+[13-Jul-2025 12:28:07 UTC] Trying relative path: src/Controllers/ClockServerController.php - NOT FOUND
+[13-Jul-2025 12:28:07 UTC] Controller successfully loaded from file
+[13-Jul-2025 12:28:07 UTC] Customer list API called with: search=, page=1, perPage=10, sortBy=company_name, sortDirection=asc
+[13-Jul-2025 12:28:08 UTC] Current file: /var/www/html/public/admin/techlogin.php
+[13-Jul-2025 12:28:08 UTC] Current directory: /var/www/html/public/admin
+[13-Jul-2025 12:28:08 UTC] Document root: /var/www/html
+[13-Jul-2025 12:28:08 UTC] Trying controller path: /var/www/html/public/admin/../../../src/Controllers/ClockServerController.php - NOT FOUND
+[13-Jul-2025 12:28:08 UTC] Trying alt path: /var/www/html/public/admin/../../src/Controllers/ClockServerController.php - EXISTS
+[13-Jul-2025 12:28:08 UTC] Failed to execute query: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "customer_modules" does not exist
+LINE 7:                 FROM customer_modules 
+                             ^
+[13-Jul-2025 12:28:08 UTC] Trying relative path: src/Controllers/ClockServerController.php - NOT FOUND
+[13-Jul-2025 12:28:08 UTC] PHP Warning:  foreach() argument must be of type array|object, bool given in /var/www/html/src/Controllers/CustomerController.php on line 151
+[13-Jul-2025 12:28:08 UTC] Controller successfully loaded from file
+[13-Jul-2025 12:28:08 UTC] [ClockServerController] Checking server availability at: http://hikvision-server:3000/clock/status/ACC001
+[13-Jul-2025 12:28:08 UTC] Successfully connected to clock server at: http://hikvision-server:3000/clock/status/ACC001
+[13-Jul-2025 12:28:08 UTC] [ClockServerController] Server available: YES
+[13-Jul-2025 12:28:08 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 12:28:08 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 12:28:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 12:28:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 12:28:23 UTC] First row (headers): Array
+(
+    [0] => client_type (required)
+    [1] => client_name (required for business)
+    [2] => first_name (required for private)
+    [3] => last_name (required for private)
+    [4] => client_email (required)
+    [5] => client_cell (required)
+    [6] => client_tell
+    [7] => client_status (required)
+    [8] => address_line1
+    [9] => address_line2
+    [10] => city
+    [11] => province
+    [12] => postal_code
+    [13] => country
+    [14] => contact_name
+    [15] => contact_email
+    [16] => contact_cell
+    [17] => contact_tell
+    [18] => notes
+    [19] => vat_number
+    [20] => company_registration
+)
+
+[13-Jul-2025 12:28:23 UTC] Second row (first data row): Array
+(
+    [0] => Private
+    [1] => 
+    [2] => Manuel
+    [3] => Howard
+    [4] => chrisjohnson@miller.com
+    [5] => 0606970379
+    [6] => 0606970402
+    [7] => active
+    [8] => 71312 Jones Landing
+    [9] => Suite 216
+    [10] => Bloemfontein
+    [11] => Gauteng
+    [12] => 40217
+    [13] => South Africa
+    [14] => Destiny Collins
+    [15] => utaylor@contreras.net
+    [16] => +1-523-640-7275x405
+    [17] => 812.368.6553
+    [18] => Subject wear executive network resource own cut.
+    [19] => VAT79802317
+    [20] => 
+)
+
+[13-Jul-2025 12:32:34 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 12:32:34 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 12:32:35 UTC] First row (headers): Array
+(
+    [0] => client_type
+    [1] => client_name
+    [2] => first_name
+    [3] => last_name
+    [4] => client_email
+    [5] => client_cell
+    [6] => client_tell
+    [7] => client_status
+    [8] => address_line1
+    [9] => address_line2
+    [10] => city
+    [11] => province
+    [12] => postal_code
+    [13] => country
+    [14] => contact_name
+    [15] => contact_email
+    [16] => contact_cell
+    [17] => contact_tell
+    [18] => notes
+    [19] => vat_number
+    [20] => company_registration
+)
+
+[13-Jul-2025 12:32:35 UTC] Second row (first data row): Array
+(
+    [0] => Private
+    [1] => 
+    [2] => Manuel
+    [3] => Howard
+    [4] => chrisjohnson@miller.com
+    [5] => 0606970379
+    [6] => 0606970402
+    [7] => active
+    [8] => 71312 Jones Landing
+    [9] => Suite 216
+    [10] => Bloemfontein
+    [11] => Gauteng
+    [12] => 40217
+    [13] => South Africa
+    [14] => Destiny Collins
+    [15] => utaylor@contreras.net
+    [16] => +1-523-640-7275x405
+    [17] => 812.368.6553
+    [18] => Subject wear executive network resource own cut.
+    [19] => VAT79802317
+    [20] => 
+)
+
+[13-Jul-2025 12:37:59 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 12:37:59 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 12:38:00 UTC] First row (headers): Array
+(
+    [0] => client_type
+    [1] => client_name
+    [2] => first_name
+    [3] => last_name
+    [4] => client_email
+    [5] => client_cell
+    [6] => client_tell
+    [7] => client_status
+    [8] => address_line1
+    [9] => address_line2
+    [10] => city
+    [11] => province
+    [12] => postal_code
+    [13] => country
+    [14] => contact_name
+    [15] => contact_email
+    [16] => contact_cell
+    [17] => contact_tell
+    [18] => notes
+    [19] => vat_number
+    [20] => company_registration
+)
+
+[13-Jul-2025 12:38:00 UTC] Second row (first data row): Array
+(
+    [0] => Private
+    [1] => 
+    [2] => Manuel
+    [3] => Howard
+    [4] => chrisjohnson@miller.com
+    [5] => 0606970379
+    [6] => 0606970402
+    [7] => active
+    [8] => 71312 Jones Landing
+    [9] => Suite 216
+    [10] => Bloemfontein
+    [11] => Gauteng
+    [12] => 40217
+    [13] => South Africa
+    [14] => Destiny Collins
+    [15] => utaylor@contreras.net
+    [16] => +1-523-640-7275x405
+    [17] => 812.368.6553
+    [18] => Subject wear executive network resource own cut.
+    [19] => VAT79802317
+    [20] => 
+)
+
+[13-Jul-2025 12:42:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 12:42:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 12:42:01 UTC] First row (headers): Array
+(
+    [0] => client_type
+    [1] => client_name
+    [2] => first_name
+    [3] => last_name
+    [4] => client_email
+    [5] => client_cell
+    [6] => client_tell
+    [7] => client_status
+    [8] => address_line1
+    [9] => address_line2
+    [10] => city
+    [11] => province
+    [12] => postal_code
+    [13] => country
+    [14] => contact_name
+    [15] => contact_email
+    [16] => contact_cell
+    [17] => contact_tell
+    [18] => notes
+    [19] => vat_number
+    [20] => company_registration
+)
+
+[13-Jul-2025 12:42:01 UTC] Second row (first data row): Array
+(
+    [0] => Private
+    [1] => 
+    [2] => Manuel
+    [3] => Howard
+    [4] => chrisjohnson@miller.com
+    [5] => 0606970379
+    [6] => 0606970402
+    [7] => active
+    [8] => 71312 Jones Landing
+    [9] => Suite 216
+    [10] => Bloemfontein
+    [11] => Gauteng
+    [12] => 40217
+    [13] => South Africa
+    [14] => Destiny Collins
+    [15] => utaylor@contreras.net
+    [16] => +1-523-640-7275x405
+    [17] => 812.368.6553
+    [18] => Subject wear executive network resource own cut.
+    [19] => VAT79802317
+    [20] => 
+)
+
+[13-Jul-2025 12:50:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 12:50:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 12:50:24 UTC] First row (headers): Array
+(
+    [0] => client_type
+    [1] => client_name
+    [2] => first_name
+    [3] => last_name
+    [4] => client_email
+    [5] => client_cell
+    [6] => client_tell
+    [7] => client_status
+    [8] => address_line1
+    [9] => address_line2
+    [10] => city
+    [11] => province
+    [12] => postal_code
+    [13] => country
+    [14] => contact_name
+    [15] => contact_email
+    [16] => contact_cell
+    [17] => contact_tell
+    [18] => notes
+    [19] => vat_number
+    [20] => company_registration
+)
+
+[13-Jul-2025 12:50:24 UTC] Second row (first data row): Array
+(
+    [0] => Private
+    [1] => 
+    [2] => Manuel
+    [3] => Howard
+    [4] => chrisjohnson@miller.com
+    [5] => 0606970379
+    [6] => 0606970402
+    [7] => active
+    [8] => 71312 Jones Landing
+    [9] => Suite 216
+    [10] => Bloemfontein
+    [11] => Gauteng
+    [12] => 40217
+    [13] => South Africa
+    [14] => Destiny Collins
+    [15] => utaylor@contreras.net
+    [16] => +1-523-640-7275x405
+    [17] => 812.368.6553
+    [18] => Subject wear executive network resource own cut.
+    [19] => VAT79802317
+    [20] => 
+)
+
+[13-Jul-2025 12:51:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 12:51:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 12:51:55 UTC] First row (headers): Array
+(
+    [0] => client_type
+    [1] => client_name
+    [2] => first_name
+    [3] => last_name
+    [4] => client_email
+    [5] => client_cell
+    [6] => client_tell
+    [7] => client_status
+    [8] => address_line1
+    [9] => address_line2
+    [10] => city
+    [11] => province
+    [12] => postal_code
+    [13] => country
+    [14] => contact_name
+    [15] => contact_email
+    [16] => contact_cell
+    [17] => contact_tell
+    [18] => notes
+    [19] => vat_number
+    [20] => company_registration
+)
+
+[13-Jul-2025 12:51:55 UTC] Second row (first data row): Array
+(
+    [0] => Private
+    [1] => 
+    [2] => Manuel
+    [3] => Howard
+    [4] => chrisjohnson@miller.com
+    [5] => 0606970379
+    [6] => 0606970402
+    [7] => active
+    [8] => 71312 Jones Landing
+    [9] => Suite 216
+    [10] => Bloemfontein
+    [11] => Gauteng
+    [12] => 40217
+    [13] => South Africa
+    [14] => Destiny Collins
+    [15] => utaylor@contreras.net
+    [16] => +1-523-640-7275x405
+    [17] => 812.368.6553
+    [18] => Subject wear executive network resource own cut.
+    [19] => VAT79802317
+    [20] => 
+)
+
+[13-Jul-2025 12:58:32 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 12:58:32 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 12:58:33 UTC] First row (headers): Array
+(
+    [0] => client_type
+    [1] => client_name
+    [2] => first_name
+    [3] => last_name
+    [4] => client_email
+    [5] => client_cell
+    [6] => client_tell
+    [7] => client_status
+    [8] => address_line1
+    [9] => address_line2
+    [10] => city
+    [11] => province
+    [12] => postal_code
+    [13] => country
+    [14] => contact_name
+    [15] => contact_email
+    [16] => contact_cell
+    [17] => contact_tell
+    [18] => notes
+    [19] => vat_number
+    [20] => company_registration
+)
+
+[13-Jul-2025 12:58:33 UTC] Second row (first data row): Array
+(
+    [0] => Private
+    [1] => 
+    [2] => Manuel
+    [3] => Howard
+    [4] => chrisjohnson@miller.com
+    [5] => 0606970379
+    [6] => 0606970402
+    [7] => active
+    [8] => 71312 Jones Landing
+    [9] => Suite 216
+    [10] => Bloemfontein
+    [11] => Gauteng
+    [12] => 40217
+    [13] => South Africa
+    [14] => Destiny Collins
+    [15] => utaylor@contreras.net
+    [16] => +1-523-640-7275x405
+    [17] => 812.368.6553
+    [18] => Subject wear executive network resource own cut.
+    [19] => VAT79802317
+    [20] => 
+)
+
+[13-Jul-2025 13:00:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:00:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:00:25 UTC] First row (headers): Array
+(
+    [0] => client_type
+    [1] => client_name
+    [2] => first_name
+    [3] => last_name
+    [4] => client_email
+    [5] => client_cell
+    [6] => client_tell
+    [7] => client_status
+    [8] => address_line1
+    [9] => address_line2
+    [10] => city
+    [11] => province
+    [12] => postal_code
+    [13] => country
+    [14] => contact_name
+    [15] => contact_email
+    [16] => contact_cell
+    [17] => contact_tell
+    [18] => notes
+    [19] => vat_number
+    [20] => company_registration
+)
+
+[13-Jul-2025 13:00:25 UTC] Second row (first data row): Array
+(
+    [0] => Private
+    [1] => 
+    [2] => Manuel
+    [3] => Howard
+    [4] => chrisjohnson@miller.com
+    [5] => 0606970379
+    [6] => 0606970402
+    [7] => active
+    [8] => 71312 Jones Landing
+    [9] => Suite 216
+    [10] => Bloemfontein
+    [11] => Gauteng
+    [12] => 40217
+    [13] => South Africa
+    [14] => Destiny Collins
+    [15] => utaylor@contreras.net
+    [16] => +1-523-640-7275x405
+    [17] => 812.368.6553
+    [18] => Subject wear executive network resource own cut.
+    [19] => VAT79802317
+    [20] => 
+)
+
+[13-Jul-2025 13:01:01 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:01:01 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:01:02 UTC] First row (headers): Array
+(
+    [0] => client_type
+    [1] => client_name
+    [2] => first_name
+    [3] => last_name
+    [4] => client_email
+    [5] => client_cell
+    [6] => client_tell
+    [7] => client_status
+    [8] => address_line1
+    [9] => address_line2
+    [10] => city
+    [11] => province
+    [12] => postal_code
+    [13] => country
+    [14] => contact_name
+    [15] => contact_email
+    [16] => contact_cell
+    [17] => contact_tell
+    [18] => notes
+    [19] => vat_number
+    [20] => company_registration
+)
+
+[13-Jul-2025 13:01:02 UTC] Second row (first data row): Array
+(
+    [0] => Private
+    [1] => 
+    [2] => Manuel
+    [3] => Howard
+    [4] => chrisjohnson@miller.com
+    [5] => 0606970379
+    [6] => 0606970402
+    [7] => active
+    [8] => 71312 Jones Landing
+    [9] => Suite 216
+    [10] => Bloemfontein
+    [11] => Gauteng
+    [12] => 40217
+    [13] => South Africa
+    [14] => Destiny Collins
+    [15] => utaylor@contreras.net
+    [16] => +1-523-640-7275x405
+    [17] => 812.368.6553
+    [18] => Subject wear executive network resource own cut.
+    [19] => VAT79802317
+    [20] => 
+)
+
+[13-Jul-2025 13:01:18 UTC] Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => c7cf5035820de904343681207fe9863d592d03ac58576a0f5295efb8ac79d041
+    [tech_access_token] => e0d41b900b7cc8f45fe41c592b02001bed658688f9524e17c9642e7164573c15
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752413289
+    [account_number] => ACC002
+)
+
+[13-Jul-2025 13:01:18 UTC] Account number from session: ACC002
+[13-Jul-2025 13:01:18 UTC] User name: Tian
+[13-Jul-2025 13:01:18 UTC] Multiple accounts: false
+[13-Jul-2025 13:01:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:01:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:01:18 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function App\modules\invoice\controllers\list_clients() in /var/www/html/modules/invoice/api/client-api.php:49
+Stack trace:
+#0 {main}
+  thrown in /var/www/html/modules/invoice/api/client-api.php on line 49
+[13-Jul-2025 13:04:40 UTC] Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => c7cf5035820de904343681207fe9863d592d03ac58576a0f5295efb8ac79d041
+    [tech_access_token] => e0d41b900b7cc8f45fe41c592b02001bed658688f9524e17c9642e7164573c15
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752413289
+    [account_number] => ACC002
+)
+
+[13-Jul-2025 13:04:40 UTC] Account number from session: ACC002
+[13-Jul-2025 13:04:40 UTC] User name: Tian
+[13-Jul-2025 13:04:40 UTC] Multiple accounts: false
+[13-Jul-2025 13:04:40 UTC] Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => c7cf5035820de904343681207fe9863d592d03ac58576a0f5295efb8ac79d041
+    [tech_access_token] => e0d41b900b7cc8f45fe41c592b02001bed658688f9524e17c9642e7164573c15
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752413289
+    [account_number] => ACC002
+)
+
+[13-Jul-2025 13:04:40 UTC] Account number from session: ACC002
+[13-Jul-2025 13:04:40 UTC] User name: Tian
+[13-Jul-2025 13:04:40 UTC] Multiple accounts: false
+[13-Jul-2025 13:04:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:04:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:04:40 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function App\modules\invoice\controllers\list_clients() in /var/www/html/modules/invoice/api/client-api.php:54
+Stack trace:
+#0 {main}
+  thrown in /var/www/html/modules/invoice/api/client-api.php on line 54
+[13-Jul-2025 13:04:49 UTC] Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => c7cf5035820de904343681207fe9863d592d03ac58576a0f5295efb8ac79d041
+    [tech_access_token] => e0d41b900b7cc8f45fe41c592b02001bed658688f9524e17c9642e7164573c15
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752413289
+    [account_number] => ACC002
+)
+
+[13-Jul-2025 13:04:49 UTC] Account number from session: ACC002
+[13-Jul-2025 13:04:49 UTC] User name: Tian
+[13-Jul-2025 13:04:49 UTC] Multiple accounts: false
+[13-Jul-2025 13:04:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:04:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:04:50 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function App\modules\invoice\controllers\list_clients() in /var/www/html/modules/invoice/api/client-api.php:54
+Stack trace:
+#0 {main}
+  thrown in /var/www/html/modules/invoice/api/client-api.php on line 54
+[13-Jul-2025 13:05:47 UTC] Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => c7cf5035820de904343681207fe9863d592d03ac58576a0f5295efb8ac79d041
+    [tech_access_token] => e0d41b900b7cc8f45fe41c592b02001bed658688f9524e17c9642e7164573c15
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752413289
+    [account_number] => ACC002
+)
+
+[13-Jul-2025 13:05:47 UTC] Account number from session: ACC002
+[13-Jul-2025 13:05:47 UTC] User name: Tian
+[13-Jul-2025 13:05:47 UTC] Multiple accounts: false
+[13-Jul-2025 13:05:48 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:05:48 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:12:24 UTC] Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => c7cf5035820de904343681207fe9863d592d03ac58576a0f5295efb8ac79d041
+    [tech_access_token] => e0d41b900b7cc8f45fe41c592b02001bed658688f9524e17c9642e7164573c15
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752413289
+    [account_number] => ACC002
+)
+
+[13-Jul-2025 13:12:24 UTC] Account number from session: ACC002
+[13-Jul-2025 13:12:24 UTC] User name: Tian
+[13-Jul-2025 13:12:24 UTC] Multiple accounts: false
+[13-Jul-2025 13:12:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:12:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:12:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:12:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:12:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:12:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:12:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:12:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:12:28 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:12:28 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:12:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:12:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:12:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:12:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:12:36 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:12:36 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:12:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:12:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:12:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:12:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:12:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:12:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:12:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:12:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:14:20 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:14:20 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:14:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:14:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:14:36 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:14:36 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:29 UTC] Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => c7cf5035820de904343681207fe9863d592d03ac58576a0f5295efb8ac79d041
+    [tech_access_token] => e0d41b900b7cc8f45fe41c592b02001bed658688f9524e17c9642e7164573c15
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752413289
+    [account_number] => ACC002
+)
+
+[13-Jul-2025 13:15:29 UTC] Account number from session: ACC002
+[13-Jul-2025 13:15:29 UTC] User name: Tian
+[13-Jul-2025 13:15:29 UTC] Multiple accounts: false
+[13-Jul-2025 13:15:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:33 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:33 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:33 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:33 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:34 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:34 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:35 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:35 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:36 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:36 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:38 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:38 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:38 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:38 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:41 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:41 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:41 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:41 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:41 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:41 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:43 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:43 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:45 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:45 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:45 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:45 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:45 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:45 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:15:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:15:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:16:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:16:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:16:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:16:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:16:20 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:16:20 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:16:20 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:16:20 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:16:20 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:16:20 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:20:39 UTC] Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => c7cf5035820de904343681207fe9863d592d03ac58576a0f5295efb8ac79d041
+    [tech_access_token] => e0d41b900b7cc8f45fe41c592b02001bed658688f9524e17c9642e7164573c15
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752413289
+    [account_number] => ACC002
+)
+
+[13-Jul-2025 13:20:39 UTC] Account number from session: ACC002
+[13-Jul-2025 13:20:39 UTC] User name: Tian
+[13-Jul-2025 13:20:39 UTC] Multiple accounts: false
+[13-Jul-2025 13:20:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:20:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:20:41 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:20:41 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:20:43 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:20:43 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:20:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:20:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:20:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:20:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:20:46 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:20:46 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:20:48 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:20:48 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:20:52 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:20:52 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:25:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:25:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:25:16 UTC] First row (headers): Array
+(
+    [0] => client_type
+    [1] => client_name
+    [2] => first_name
+    [3] => last_name
+    [4] => client_email
+    [5] => client_cell
+    [6] => client_tell
+    [7] => client_status
+    [8] => address_line1
+    [9] => address_line2
+    [10] => city
+    [11] => province
+    [12] => postal_code
+    [13] => country
+    [14] => contact_name
+    [15] => contact_email
+    [16] => contact_cell
+    [17] => contact_tell
+    [18] => notes
+    [19] => vat_number
+    [20] => company_registration
+)
+
+[13-Jul-2025 13:25:16 UTC] Second row (first data row): Array
+(
+    [0] => Private
+    [1] => 
+    [2] => Manuel
+    [3] => Howard
+    [4] => chrisjohnson@miller.com
+    [5] => 0606970379
+    [6] => 0606970402
+    [7] => active
+    [8] => 71312 Jones Landing
+    [9] => Suite 216
+    [10] => Bloemfontein
+    [11] => Gauteng
+    [12] => 40217
+    [13] => South Africa
+    [14] => Destiny Collins
+    [15] => utaylor@contreras.net
+    [16] => +1-523-640-7275x405
+    [17] => 812.368.6553
+    [18] => Subject wear executive network resource own cut.
+    [19] => VAT79802317
+    [20] => 
+)
+
+[13-Jul-2025 13:25:26 UTC] Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => c7cf5035820de904343681207fe9863d592d03ac58576a0f5295efb8ac79d041
+    [tech_access_token] => e0d41b900b7cc8f45fe41c592b02001bed658688f9524e17c9642e7164573c15
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752413289
+    [account_number] => ACC002
+)
+
+[13-Jul-2025 13:25:26 UTC] Account number from session: ACC002
+[13-Jul-2025 13:25:26 UTC] User name: Tian
+[13-Jul-2025 13:25:26 UTC] Multiple accounts: false
+[13-Jul-2025 13:25:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:25:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[13-Jul-2025 13:25:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[13-Jul-2025 13:25:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002

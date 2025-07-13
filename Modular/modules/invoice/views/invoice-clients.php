@@ -95,7 +95,7 @@ error_log("Multiple accounts: " . ($multiple_accounts ? 'true' : 'false'));
                                         <th>Total Invoices</th>
                                     </tr>
                                 </thead>
-                                <tbody id="client-body">
+                                <tbody id="client-body-private">
                                 </tbody>
                                 <div id="pagination-container1" class="pagination-container"></div>
                             </table>
@@ -124,7 +124,7 @@ error_log("Multiple accounts: " . ($multiple_accounts ? 'true' : 'false'));
                                         <th>Total Invoices</th>
                                     </tr>
                                 </thead>
-                                <tbody id="client-body">
+                                <tbody id="client-body-business">
                                 </tbody>
                                 <div id="pagination-container2" class="pagination-container"></div>
                             </table>

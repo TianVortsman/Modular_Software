@@ -1,42 +1,67 @@
-// --- Client/Company API Logic ---
+// Client API: Handles all API calls for client CRUD and list operations
+// Usage: import { fetchClients, fetchClientDetails, createClient, updateClient, deleteClient } from './client-api.js';
 
-// Fetch all clients or companies
-export async function fetchClientData(section) {
-    const endpoint = section === 'private' ? '../api/customers.php' : '../api/companies.php';
-    try {
-        const response = await fetch(`${endpoint}?action=get_all`);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        console.error('Fetch error:', error);
-        return { success: false, error: error.message || 'Unknown error' };
-    }
-}
+import { buildQueryParams } from '../../../public/assets/js/helpers.js';
 
-// Add or update company/customer (action: 'add' or 'update')
-export async function submitEntityApi(type, action, formData) {
-    const endpoint = type === 'company' ? '../api/companies.php' : '../api/customers.php';
+/**
+ * Fetch a paginated, filtered list of clients
+ * @param {Object} options - {search, type, page, limit, sort_by, sort_dir}
+ * @returns {Promise<Object>} Modal-compatible response
+ */
+export async function fetchClients({ page = 1, limit = 10, type = 'private' } = {}) {
     try {
-        const response = await fetch(`${endpoint}?action=${action}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
+        const params = new URLSearchParams({
+            action: 'list_clients',
+            page,
+            limit,
+            type
         });
-        return await response.json();
-    } catch (error) {
-        console.error(`Error ${action} ${type}:`, error);
-        return { success: false, error: `An error occurred while ${action === 'add' ? 'adding' : 'updating'} the ${type}` };
+        const res = await fetch(`/modules/invoice/api/client-api.php?${params.toString()}`);
+        const json = await res.json();
+        // Ensure total is present for pagination
+        if (!('total' in json) && Array.isArray(json.data)) {
+            json.total = json.data.length;
+        }
+        return json;
+    } catch (e) {
+        return { success: false, message: 'Failed to fetch clients', data: [], total: 0 };
     }
 }
 
-// Fetch company or customer by ID
-export async function fetchEntityData(type, id) {
-    const endpoint = type === 'company' ? '../api/companies.php' : '../api/customers.php';
-    try {
-        const response = await fetch(`${endpoint}?action=get&id=${id}`);
-        return await response.json();
-    } catch (error) {
-        console.error(`Error fetching ${type} data:`, error);
-        return { success: false, error: `An error occurred while fetching ${type} data` };
-    }
+/**
+ * Fetch details for a single client
+ * @param {number} clientId
+ * @returns {Promise<Object>} Modal-compatible response
+ */
+export async function fetchClientDetails(clientId) {
+    // TODO: Implement API call to backend (get_client_details)
+}
+
+/**
+ * Create a new client
+ * @param {Object} data - Client data
+ * @returns {Promise<Object>} Modal-compatible response
+ */
+export async function createClient(data) {
+    // TODO: Implement API call to backend (create_client)
+}
+
+/**
+ * Update an existing client
+ * @param {number} clientId
+ * @param {Object} data - Updated client data
+ * @returns {Promise<Object>} Modal-compatible response
+ */
+export async function updateClient(clientId, data) {
+    // TODO: Implement API call to backend (update_client)
+}
+
+/**
+ * Delete a client
+ * @param {number} clientId
+ * @param {number} deletedBy - User ID
+ * @returns {Promise<Object>} Modal-compatible response
+ */
+export async function deleteClient(clientId, deletedBy) {
+    // TODO: Implement API call to backend (delete_client)
 }

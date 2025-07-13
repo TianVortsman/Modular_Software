@@ -281,7 +281,7 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
             <div class="import-grid">
                 <div class="import-card">
                     <h3><span class="material-icons">people</span>Customers</h3>
-                    <div class="upload-zone">
+                    <div class="upload-zone" data-type="Clients" data-module="crm">
                         <span class="material-icons">cloud_upload</span>
                         <p>Drag & drop your Excel file here</p>
                         <button class="btn btn-primary">Choose File</button>
@@ -413,7 +413,19 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
                 </div>
                 <div class="import-card">
                     <h3><span class="material-icons">inventory_2</span>Products</h3>
-                    <div class="upload-zone" data-type="Products">
+                    <div class="upload-zone" data-type="Products" data-module="invoice">
+                        <span class="material-icons">cloud_upload</span>
+                        <p>Drag & drop your Excel file here</p>
+                        <button class="btn btn-primary">Choose File</button>
+                    </div>
+                    <div class="import-actions">
+                        <button class="btn btn-primary">Import</button>
+                        <button class="btn btn-secondary">Clear</button>
+                    </div>
+                </div>
+                <div class="import-card">
+                    <h3><span class="material-icons">person</span>Clients</h3>
+                    <div class="upload-zone" data-type="Clients" data-module="invoice">
                         <span class="material-icons">cloud_upload</span>
                         <p>Drag & drop your Excel file here</p>
                         <button class="btn btn-primary">Choose File</button>

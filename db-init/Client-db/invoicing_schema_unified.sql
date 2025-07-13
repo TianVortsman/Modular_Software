@@ -1,3 +1,4 @@
+-- Active: 1751521549530@@127.0.0.1@5432@ACC002
 
 CREATE SCHEMA IF NOT EXISTS invoicing;
 
@@ -43,6 +44,13 @@ CREATE TABLE IF NOT EXISTS invoicing.address_type (
     deleted_at TIMESTAMP
 );
 
+INSERT INTO invoicing.address_type (type_name, description) VALUES
+    ('Physical', 'Physical location address'),
+    ('Postal', 'Postal/mailing address'),
+    ('Billing', 'Billing address'),
+    ('Shipping', 'Shipping/delivery address');
+
+
 CREATE TABLE IF NOT EXISTS invoicing.contact_type (
     contact_type_id SERIAL PRIMARY KEY,
     type_name VARCHAR(50) NOT NULL,
@@ -51,6 +59,13 @@ CREATE TABLE IF NOT EXISTS invoicing.contact_type (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
 );
+
+INSERT INTO invoicing.contact_type (type_name, description) VALUES
+    ('Primary', 'Primary contact person'),
+    ('Billing', 'Billing contact person'),
+    ('Technical', 'Technical contact person'),
+    ('Emergency', 'Emergency contact person');
+
 
 -- Address table (unchanged)
 CREATE TABLE IF NOT EXISTS invoicing.address (
@@ -199,7 +214,7 @@ CREATE TABLE invoicing.documents (
 CREATE TABLE invoicing.document_items (
     item_id SERIAL PRIMARY KEY,
     document_id INTEGER REFERENCES invoicing.documents(document_id) ON DELETE CASCADE,
-    product_id INTEGER REFERENCES core.product(product_id),
+    product_id INTEGER REFERENCES core.products(product_id),
     product_description TEXT,
     quantity NUMERIC(10,2) NOT NULL,
     unit_price NUMERIC(12,2) NOT NULL,

@@ -1,3 +1,4 @@
+-- Active: 1751521549530@@127.0.0.1@5432@ACC002
 
 -- Core Schema
 CREATE SCHEMA IF NOT EXISTS core;
@@ -33,8 +34,6 @@ CREATE TABLE core.notifications (
     is_read BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
-
 
 -- Enum Tables (No Dependencies)
 CREATE TABLE IF NOT EXISTS core.employment_types (
@@ -324,3 +323,27 @@ INSERT INTO core.employment_types (employment_type_name) VALUES ('Contract-based
 INSERT INTO core.employment_types (employment_type_name) VALUES ('Probation');
 INSERT INTO core.employment_types (employment_type_name) VALUES ('Internship');
 INSERT INTO core.employment_types (employment_type_name) VALUES ('Other');
+
+CREATE TABLE IF NOT EXISTS core.sales_targets (
+    target_id SERIAL PRIMARY KEY,
+    employee_id INTEGER REFERENCES core.employees(employee_id) ON DELETE CASCADE,
+    period_start DATE NOT NULL,
+    period_end DATE NOT NULL,
+    target_amount NUMERIC(12,2) NOT NULL,
+    achieved_amount NUMERIC(12,2) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS core.sales_performance_snapshots (
+    snapshot_id SERIAL PRIMARY KEY,
+    employee_id INTEGER REFERENCES core.employees(employee_id) ON DELETE CASCADE,
+    period_start DATE NOT NULL,
+    period_end DATE NOT NULL,
+    quotes_count INTEGER DEFAULT 0,
+    invoices_count INTEGER DEFAULT 0,
+    paid_invoices_count INTEGER DEFAULT 0,
+    total_sales NUMERIC(12,2) DEFAULT 0,
+    total_paid NUMERIC(12,2) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

@@ -7,137 +7,136 @@ use Exception;
 
 function list_clients(array $options = []): array {
     global $conn;
-
-    // Extract and sanitize parameters
     $search   = $options['search']    ?? null;
     $type     = $options['type']      ?? null;
     $page     = (int)($options['page'] ?? 1);
     $limit    = (int)($options['limit'] ?? 20);
     $sortBy   = $options['sort_by']   ?? 'client_id';
     $sortDir  = strtolower($options['sort_dir'] ?? 'desc');
-
-    // Whitelist sorting fields (must be filled per use-case)
     $allowedSortFields = ['client_id', 'client_name', 'first_name', 'last_name', 'client_type'];
     if (!in_array($sortBy, $allowedSortFields)) {
-        $sortBy = 'client_id'; // fallback field
+        $sortBy = 'client_id';
     }
-
     $allowedSortDir = ['asc', 'desc'];
     if (!in_array($sortDir, $allowedSortDir)) {
         $sortDir = 'desc';
     }
-
-    // Calculate offset
     $offset = ($page - 1) * $limit;
-
-    // Base SQL query
-    $sql = "SELECT 
-            c.client_id, c.client_type, c.client_name, c.first_name, c.last_name, c.client_email, c.client_cell, c.client_tell,
-            -- Total invoices for this client
-            (SELECT COUNT(*) FROM invoicing.documents d2 WHERE d2.client_id = c.client_id) AS total_invoices,
-
-            -- Last invoice issue date
-            (SELECT MAX(d3.issue_date) FROM invoicing.documents d3 WHERE d3.client_id = c.client_id) AS last_invoice_date,
-
-            -- Total outstanding amount
-            (SELECT COALESCE(SUM(d4.balance_due), 0) FROM invoicing.documents d4 WHERE d4.client_id = c.client_id AND d4.document_status IN ('unpaid', 'partially_paid')) AS outstanding_amount
-
-            FROM invoicing.clients c
-            WHERE 1=1";
-
+    $sql = "SELECT c.client_id, c.client_type, c.client_name, c.first_name, c.last_name, c.client_email, c.client_cell, c.client_tell, (SELECT COUNT(*) FROM invoicing.documents d2 WHERE d2.client_id = c.client_id) AS total_invoices, (SELECT MAX(d3.issue_date) FROM invoicing.documents d3 WHERE d3.client_id = c.client_id) AS last_invoice_date, (SELECT COALESCE(SUM(d4.balance_due), 0) FROM invoicing.documents d4 WHERE d4.client_id = c.client_id AND d4.document_status IN ('unpaid', 'partially_paid')) AS outstanding_amount FROM invoicing.clients c WHERE 1=1";
     $params = [];
-
-    // Example filter by $Variable
     if (!empty($type)) {
         $sql .= " AND c.client_type = :type";
         $params[':type'] = $type;
     }
-
-    // Example search
     if (!empty($search)) {
-        $sql .= " AND (
-            c.client_name ILIKE :search
-            OR c.first_name ILIKE :search
-            OR c.last_name ILIKE :search
-        )";
+        $sql .= " AND (c.client_name ILIKE :search OR c.first_name ILIKE :search OR c.last_name ILIKE :search)";
         $params[':search'] = '%' . $search . '%';
     }
-
-    // Add sorting and pagination
     $sql .= " ORDER BY $sortBy $sortDir LIMIT :limit OFFSET :offset";
-
     try {
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-
-        // Bind all other values
         foreach ($params as $key => $value) {
             $stmt->bindValue($key, $value);
         }
-
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // Get total count for pagination
+        $countSql = "SELECT COUNT(*) FROM invoicing.clients c WHERE 1=1";
+        if (!empty($type)) $countSql .= " AND c.client_type = :type";
+        if (!empty($search)) $countSql .= " AND (c.client_name ILIKE :search OR c.first_name ILIKE :search OR c.last_name ILIKE :search)";
+        $countStmt = $conn->prepare($countSql);
+        foreach ($params as $key => $value) {
+            $countStmt->bindValue($key, $value);
+        }
+        $countStmt->execute();
+        $total = $countStmt->fetchColumn();
+        return [
+            'success' => true,
+            'message' => 'Clients retrieved successfully',
+            'data' => $data,
+            'total' => (int)$total,
+            'page' => $page,
+            'limit' => $limit
+        ];
     } catch (\PDOException $e) {
-        error_log("Query failed: " . $e->getMessage());
-        return [];
+        $msg = "Query failed: " . $e->getMessage();
+        error_log($msg);
+        log_user_action(null, 'list_clients', null, $msg);
+        return [
+            'success' => false,
+            'message' => 'Database error occurred',
+            'data' => null,
+            'error_code' => 'CLIENT_LIST_ERROR'
+        ];
     }
 }
 
-function get_client_details(int $client_id): ?array {
+function get_client_details(int $client_id): array {
     global $conn;
-
     try {
-        // 1. Get client main details
-        $sql = "SELECT *
-                FROM invoicing.clients
-                WHERE client_id = :client_id
-                LIMIT 1";
+        $sql = "SELECT * FROM invoicing.clients WHERE client_id = :client_id LIMIT 1";
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
         $stmt->execute();
         $client = $stmt->fetch(PDO::FETCH_ASSOC);
-
         if (!$client) {
-            return null;
+            $msg = 'Client not found';
+            error_log($msg);
+            log_user_action(null, 'get_client_details', $client_id, $msg);
+            return [
+                'success' => false,
+                'message' => $msg,
+                'data' => null,
+                'error_code' => 'CLIENT_NOT_FOUND'
+            ];
         }
-
-        // 2. Get addresses
-        $addressSql = "SELECT a.*
-                       FROM invoicing.address a
-                       INNER JOIN invoicing.client_addresses ca ON ca.address_id = a.address_id
-                       WHERE ca.client_id = :client_id AND (a.deleted_at IS NULL OR a.deleted_at > NOW())";
+        $addressSql = "SELECT a.* FROM invoicing.address a INNER JOIN invoicing.client_addresses ca ON ca.address_id = a.address_id WHERE ca.client_id = :client_id AND (a.deleted_at IS NULL OR a.deleted_at > NOW())";
         $addressStmt = $conn->prepare($addressSql);
         $addressStmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
         $addressStmt->execute();
         $addresses = $addressStmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // 3. Get contacts
-        $contactSql = "SELECT cp.*
-                       FROM invoicing.contact_person cp
-                       INNER JOIN invoicing.client_contacts cc ON cc.contact_id = cp.contact_id
-                       WHERE cc.client_id = :client_id AND (cp.deleted_at IS NULL OR cp.deleted_at > NOW())";
+        $contactSql = "SELECT cp.* FROM invoicing.contact_person cp INNER JOIN invoicing.client_contacts cc ON cc.contact_id = cp.contact_id WHERE cc.client_id = :client_id AND (cp.deleted_at IS NULL OR cp.deleted_at > NOW())";
         $contactStmt = $conn->prepare($contactSql);
         $contactStmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
         $contactStmt->execute();
         $contacts = $contactStmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // 4. Return all details
         $client['addresses'] = $addresses;
         $client['contacts'] = $contacts;
-
-        return $client;
-
+        return [
+            'success' => true,
+            'message' => 'Client details retrieved successfully',
+            'data' => $client
+        ];
     } catch (\PDOException $e) {
-        error_log("Error in get_client_details: " . $e->getMessage());
-        return null;
+        $msg = "Error in get_client_details: " . $e->getMessage();
+        error_log($msg);
+        log_user_action(null, 'get_client_details', $client_id, $msg);
+        return [
+            'success' => false,
+            'message' => 'Database error occurred',
+            'data' => null,
+            'error_code' => 'CLIENT_DETAILS_ERROR'
+        ];
     }
 }
 
-function create_client(array $data): ?int {
+function create_client(array $data): array {
     global $conn;
-
+    // Permission check (assume $data['created_by'] is set)
+    $user_id = $data['created_by'] ?? null;
+    if (!check_user_permission($user_id, 'create_client')) {
+        $msg = "Permission denied for user $user_id to create client";
+        error_log($msg);
+        log_user_action($user_id, 'create_client', null, $msg);
+        return [
+            'success' => false,
+            'message' => $msg,
+            'data' => null,
+            'error_code' => 'PERMISSION_DENIED'
+        ];
+    }
     // 1. Insert client
     $clientFields = [
         'client_type',
@@ -172,8 +171,15 @@ function create_client(array $data): ?int {
     }
 
     if (empty($insertFields)) {
-        error_log("create_client error: No valid fields provided.");
-        return null;
+        $msg = "create_client error: No valid fields provided.";
+        error_log($msg);
+        log_user_action($user_id, 'create_client', null, $msg);
+        return [
+            'success' => false,
+            'message' => $msg,
+            'data' => null,
+            'error_code' => 'CLIENT_CREATE_ERROR'
+        ];
     }
 
     $sql = "INSERT INTO invoicing.clients (" . implode(', ', $insertFields) . ")
@@ -293,17 +299,43 @@ function create_client(array $data): ?int {
         }
 
         $conn->commit();
-        return (int)$client_id;
+        log_user_action($user_id, 'create_client', $client_id, json_encode($data));
+        send_notification($user_id, "Client #$client_id created successfully.");
+        return [
+            'success' => true,
+            'message' => 'Client created successfully',
+            'data' => ['client_id' => (int)$client_id]
+        ];
     } catch (\PDOException $e) {
-        $conn->rollBack();
-        error_log("create_client error: " . $e->getMessage());
-        return null;
+        if ($conn->inTransaction()) {
+            $conn->rollBack();
+        }
+        $msg = "create_client error: " . $e->getMessage();
+        error_log($msg);
+        log_user_action($user_id, 'create_client', null, $msg);
+        return [
+            'success' => false,
+            'message' => 'Failed to create client',
+            'data' => null,
+            'error_code' => 'CLIENT_CREATE_ERROR'
+        ];
     }
 }
 
-function update_client(int $client_id, array $data): bool {
+function update_client(int $client_id, array $data): array {
     global $conn;
-
+    $user_id = $data['updated_by'] ?? null;
+    if (!check_user_permission($user_id, 'update_client', $client_id)) {
+        $msg = "Permission denied for user $user_id to update client $client_id";
+        error_log($msg);
+        log_user_action($user_id, 'update_client', $client_id, $msg);
+        return [
+            'success' => false,
+            'message' => $msg,
+            'data' => null,
+            'error_code' => 'PERMISSION_DENIED'
+        ];
+    }
     try {
         $conn->beginTransaction();
 
@@ -514,57 +546,92 @@ function update_client(int $client_id, array $data): bool {
         }
 
         $conn->commit();
-        return true;
+        log_user_action($user_id, 'update_client', $client_id, json_encode($data));
+        send_notification($user_id, "Client #$client_id updated successfully.");
+        return [
+            'success' => true,
+            'message' => 'Client updated successfully',
+            'data' => ['client_id' => $client_id]
+        ];
     } catch (\PDOException $e) {
-        $conn->rollBack();
-        error_log("update_client error: " . $e->getMessage());
-        return false;
+        if ($conn->inTransaction()) {
+            $conn->rollBack();
+        }
+        $msg = "update_client error: " . $e->getMessage();
+        error_log($msg);
+        log_user_action($user_id, 'update_client', $client_id, $msg);
+        return [
+            'success' => false,
+            'message' => 'Failed to update client',
+            'data' => null,
+            'error_code' => 'CLIENT_UPDATE_ERROR'
+        ];
     }
 }
 
-function delete_client(int $client_id): bool {
+function delete_client(int $client_id, int $deleted_by): array {
+    if (!check_user_permission($deleted_by, 'delete_client', $client_id)) {
+        $msg = "Permission denied for user $deleted_by to delete client $client_id";
+        error_log($msg);
+        log_user_action($deleted_by, 'delete_client', $client_id, $msg);
+        return [
+            'success' => false,
+            'message' => $msg,
+            'data' => null,
+            'error_code' => 'PERMISSION_DENIED'
+        ];
+    }
     global $conn;
-
     try {
-        // Check for linked documents
         $sqlCheck = "SELECT COUNT(*) FROM invoicing.documents WHERE client_id = :client_id";
         $stmtCheck = $conn->prepare($sqlCheck);
         $stmtCheck->bindValue(':client_id', $client_id, PDO::PARAM_INT);
         $stmtCheck->execute();
         $docCount = (int)$stmtCheck->fetchColumn();
-
         if ($docCount > 0) {
-            // Client has linked documents, cannot delete
-            return false;
+            $msg = 'Client has linked documents, cannot delete';
+            error_log($msg);
+            log_user_action($deleted_by, 'delete_client', $client_id, $msg);
+            return [
+                'success' => false,
+                'message' => $msg,
+                'data' => null,
+                'error_code' => 'CLIENT_LINKED_DOCUMENTS'
+            ];
         }
-
         $conn->beginTransaction();
-
-        // Soft delete: set deleted_at timestamp
         $sqlDelete = "UPDATE invoicing.clients SET deleted_at = NOW() WHERE client_id = :client_id";
         $stmtDelete = $conn->prepare($sqlDelete);
         $stmtDelete->bindValue(':client_id', $client_id, PDO::PARAM_INT);
         $stmtDelete->execute();
-
-        // Optionally, also soft-delete related addresses and contacts links
-        // (not the address/contact themselves, as they may be shared)
         $sqlDeleteClientAddresses = "DELETE FROM invoicing.client_addresses WHERE client_id = :client_id";
         $stmtAddr = $conn->prepare($sqlDeleteClientAddresses);
         $stmtAddr->bindValue(':client_id', $client_id, PDO::PARAM_INT);
         $stmtAddr->execute();
-
         $sqlDeleteClientContacts = "DELETE FROM invoicing.client_contacts WHERE client_id = :client_id";
         $stmtCont = $conn->prepare($sqlDeleteClientContacts);
         $stmtCont->bindValue(':client_id', $client_id, PDO::PARAM_INT);
         $stmtCont->execute();
-
         $conn->commit();
-        return true;
+        log_user_action($deleted_by, 'delete_client', $client_id);
+        send_notification($deleted_by, "Client #$client_id deleted.");
+        return [
+            'success' => true,
+            'message' => 'Client deleted successfully',
+            'data' => ['client_id' => $client_id]
+        ];
     } catch (\PDOException $e) {
         if ($conn->inTransaction()) {
             $conn->rollBack();
         }
-        error_log("delete_client error: " . $e->getMessage());
-        return false;
+        $msg = "delete_client error: " . $e->getMessage();
+        error_log($msg);
+        log_user_action($deleted_by, 'delete_client', $client_id, $msg);
+        return [
+            'success' => false,
+            'message' => 'Failed to delete client',
+            'data' => null,
+            'error_code' => 'CLIENT_DELETE_ERROR'
+        ];
     }
 }
