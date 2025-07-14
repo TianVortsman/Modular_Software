@@ -105,6 +105,24 @@ function loginAsTechnician() {
     });
 }
 
+// Add User Modal Logic
+const addUserModal = document.getElementById('add-user-modal');
+const addUserForm = document.getElementById('add-user-form');
+
+function openAddUserModal() {
+    if (addUserModal) {
+        addUserModal.style.display = 'flex';
+        addUserForm.reset();
+    }
+}
+
+function closeAddUserModal() {
+    if (addUserModal) {
+        addUserModal.style.display = 'none';
+        addUserForm.reset();
+    }
+}
+
 // Initialize modal event listeners
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize customers data
@@ -181,6 +199,64 @@ document.addEventListener('DOMContentLoaded', function() {
             searchTimeout = setTimeout(() => {
                 searchCustomers();
             }, SEARCH_DEBOUNCE_DELAY);
+        });
+    }
+
+    // Add New User button event
+    const addNewUserBtn = document.querySelector('#users-management .button.primary');
+    if (addNewUserBtn) {
+        addNewUserBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            openAddUserModal();
+        });
+    }
+
+    // Add User modal form submit
+    if (addUserForm) {
+        addUserForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            // Validate
+            const name = document.getElementById('add-user-name').value.trim();
+            const email = document.getElementById('add-user-email').value.trim();
+            const role = document.getElementById('add-user-role').value;
+            if (!name || !email || !role) {
+                showResponseModal('All fields are required.', 'error');
+                return;
+            }
+            if (!validateEmail(email)) {
+                showResponseModal('Invalid email address.', 'error');
+                return;
+            }
+            if (!currentCustomerId) {
+                showResponseModal('No customer selected.', 'error');
+                return;
+            }
+            showLoadingModal('Adding user...');
+            try {
+                const res = await fetch('../../src/api/customer.php?action=add_user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        customer_id: currentCustomerId,
+                        name,
+                        email,
+                        role
+                    })
+                });
+                const data = await res.json();
+                hideLoadingModal();
+                if (data.success) {
+                    showResponseModal('User added successfully!', 'success');
+                    closeAddUserModal();
+                    // Refresh users list
+                    loadUsersData(currentCustomerId);
+                } else {
+                    showResponseModal(data.message || 'Failed to add user.', 'error');
+                }
+            } catch (err) {
+                hideLoadingModal();
+                showResponseModal('Error adding user: ' + err.message, 'error');
+            }
         });
     }
 });
@@ -336,12 +412,27 @@ function loadUsersData(customerId) {
 }
 
 // Modules Management
+// Master list of all 12 modules
+const ALL_MODULES = [
+    { name: 'access_control', display: 'Access Control', type: 'core' },
+    { name: 'accounting', display: 'Accounting', type: 'core' },
+    { name: 'crm', display: 'CRM', type: 'core' },
+    { name: 'fleet_management', display: 'Fleet Management', type: 'core' },
+    { name: 'hr', display: 'HR', type: 'core' },
+    { name: 'inventory_management', display: 'Inventory Management', type: 'core' },
+    { name: 'invoicing', display: 'Invoicing', type: 'core' },
+    { name: 'payroll', display: 'Payroll', type: 'core' },
+    { name: 'support', display: 'Support', type: 'core' },
+    { name: 'time_and_attendance', display: 'Time and Attendance', type: 'core' },
+    { name: 'projects', display: 'Projects', type: 'core' },
+    { name: 'documents', display: 'Documents', type: 'core' }
+];
+
 function loadModulesData(customerId) {
     if (!customerId) {
         console.error('No customer ID provided to loadModulesData');
         return;
     }
-
     fetch(`../../src/api/customer.php?action=modules&customer_id=${customerId}`)
         .then(response => {
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -349,10 +440,18 @@ function loadModulesData(customerId) {
         })
         .then(data => {
             if (!data.success) throw new Error(data.error || 'Failed to load modules');
-            
-            updateModulesList('core-modules', data.core_modules);
-            updateModulesList('additional-features', data.additional_features);
-            updateModulesList('mobile-features', data.mobile_features);
+            // New backend: data.modules is an array of {module_name, display_name, active}
+            const activeMap = {};
+            (data.modules || []).forEach(mod => {
+                activeMap[mod.module_name] = !!mod.active;
+            });
+            // Build the list for toggles from ALL_MODULES
+            const allToggles = ALL_MODULES.map(mod => ({
+                name: mod.name,
+                display: mod.display,
+                status: activeMap[mod.name] ? 'active' : 'inactive'
+            }));
+            updateModulesList('core-modules', allToggles);
         })
         .catch(error => {
             console.error('Error loading modules:', error);
@@ -363,19 +462,17 @@ function loadModulesData(customerId) {
 function updateModulesList(containerId, modules) {
     const container = document.getElementById(containerId);
     if (!container) return;
-
     container.innerHTML = '';
     modules.forEach(module => {
         const moduleDiv = document.createElement('div');
         moduleDiv.className = `module-item ${module.status}`;
+        const moduleId = `${containerId}-toggle-${module.name}`;
+        // Ensure input is immediately followed by .toggle-slider for CSS
         moduleDiv.innerHTML = `
-            <span class="module-name">${escapeHtml(module.name)}</span>
-            <span class="module-status">${module.status}</span>
-            <div class="module-actions">
-                <button class="icon-button" onclick="toggleModule('${module.name}', '${module.status}')">
-                    <i class="material-icons">${module.status === 'active' ? 'toggle_on' : 'toggle_off'}</i>
-                </button>
-            </div>
+            <label class="module-toggle-label">
+                <input type="checkbox" class="module-toggle" id="${moduleId}" data-module-name="${module.name}" ${module.status === 'active' ? 'checked' : ''}>
+                <span class="toggle-slider"></span><span class="module-name">${escapeHtml(module.display)}</span>
+            </label>
         `;
         container.appendChild(moduleDiv);
     });
@@ -711,6 +808,12 @@ function formatDate(dateStr) {
     }
 }
 
+// Utility: Validate email
+function validateEmail(email) {
+    // Simple email regex
+    return /^\S+@\S+\.\S+$/.test(email);
+}
+
 // Function to handle tab switching
 function initializeTabSwitching() {
     document.querySelectorAll('.tab-button').forEach(button => {
@@ -1022,6 +1125,41 @@ function toggleModule(moduleName, currentStatus) {
 }
 
 function saveModuleSettings() {
-    console.log('Saving module settings');
-    showToast('Module settings saved', 'success');
+    if (!currentCustomerId) {
+        showResponseModal('No customer selected.', 'error');
+        return;
+    }
+    // Collect all module toggles
+    const toggles = document.querySelectorAll('.module-toggle');
+    const modules = [];
+    toggles.forEach(toggle => {
+        modules.push({
+            module_name: toggle.getAttribute('data-module-name'),
+            active: toggle.checked
+        });
+    });
+    showLoadingModal('Saving module settings...');
+    fetch('../../src/api/customer.php?action=update_modules', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            customer_id: currentCustomerId,
+            modules
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        hideLoadingModal();
+        if (data.success) {
+            showResponseModal('Module settings saved!', 'success');
+            // Optionally reload modules
+            loadModulesData(currentCustomerId);
+        } else {
+            showResponseModal(data.message || 'Failed to save module settings.', 'error');
+        }
+    })
+    .catch(err => {
+        hideLoadingModal();
+        showResponseModal('Error saving module settings: ' + err.message, 'error');
+    });
 }

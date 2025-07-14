@@ -50,6 +50,13 @@ if (!$controllerLoaded) {
         private static $maxRetries = 3;
         // Delay between retries in microseconds (0.5 seconds)
         private static $retryDelay = 500000;
+        // Debug flag
+        private static $debug = false;
+
+        // Set debug flag from global
+        public static function setDebug($value) {
+            self::$debug = $value;
+        }
         
         public static function getStatus($accountNumber) {
             // Try multiple possible URLs for the clock server with retry logic
@@ -86,7 +93,7 @@ if (!$controllerLoaded) {
             foreach ($urls as $url) {
                 // Implement retry logic for each URL
                 for ($attempt = 1; $attempt <= self::$maxRetries; $attempt++) {
-                    if ($debug) {
+                    if (self::$debug) {
                         error_log("Attempt $attempt for URL: $url");
                     }
                     
@@ -94,7 +101,7 @@ if (!$controllerLoaded) {
                     
                     // If successful, return immediately
                     if (!isset($result['error'])) {
-                        if ($debug) {
+                        if (self::$debug) {
                             error_log("Success for URL: $url on attempt $attempt");
                         }
                         return $result;
@@ -102,7 +109,7 @@ if (!$controllerLoaded) {
                     
                     // If this wasn't the last attempt, wait before retrying
                     if ($attempt < self::$maxRetries) {
-                        if ($debug) {
+                        if (self::$debug) {
                             error_log("Retrying $url in " . (self::$retryDelay / 1000000) . " seconds...");
                         }
                         usleep(self::$retryDelay);
@@ -152,7 +159,7 @@ if (!$controllerLoaded) {
                     }
                 } else {
                     // Error response
-                    if ($debug) {
+                    if (self::$debug) {
                         error_log("HTTP error $status for URL: $url");
                     }
                     return [
@@ -162,7 +169,7 @@ if (!$controllerLoaded) {
                     ];
                 }
             } catch (Exception $e) {
-                if ($debug) {
+                if (self::$debug) {
                     error_log("Exception for URL $url: " . $e->getMessage());
                 }
                 return ['success' => false, 'error' => $e->getMessage()];
@@ -173,6 +180,9 @@ if (!$controllerLoaded) {
         }
     }
     
+    // Set debug flag for fallback controller
+    FallbackClockServerController::setDebug($debug);
+
     if ($debug) {
         // Show warning for debugging
         echo "<div style='background: #ffd; border: 1px solid #db0; padding: 10px; margin: 10px;'>";
@@ -603,7 +613,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['acc
                 <div id="users-management" class="tab-content active">
                     <div class="tab-header">
                         <h3>User Management</h3>
-                        <button class="button primary" onclick="addNewUser()">
+                        <button class="button primary">
                             <i class="material-icons">person_add</i>
                             Add New User
                         </button>
@@ -779,6 +789,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['acc
             </div>
         </div>
     </div>
+
+    <!-- Add User Modal -->
+    <div id="add-user-modal" class="modal" data-mode="add" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>
+                    <i class="material-icons">person_add</i>
+                    Add New User
+                </h2>
+                <button class="close-button" onclick="closeAddUserModal()">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="add-user-form">
+                    <div class="form-group">
+                        <label for="add-user-name">Name</label>
+                        <input type="text" id="add-user-name" name="name" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="add-user-email">Email</label>
+                        <input type="email" id="add-user-email" name="email" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="add-user-role">Role</label>
+                        <select id="add-user-role" name="role" required>
+                            <option value="admin">Admin</option>
+                            <option value="manager">Manager</option>
+                            <option value="user">User</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="button secondary" onclick="closeAddUserModal()">Cancel</button>
+                        <button type="submit" class="button primary">Add User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- End Add User Modal -->
 
     <!-- Debug Link -->
     <div style="position: fixed; bottom: 10px; right: 10px; font-size: 12px; opacity: 0.5;">

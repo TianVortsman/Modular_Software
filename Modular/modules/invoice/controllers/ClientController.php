@@ -4,6 +4,7 @@ namespace App\modules\invoice\controllers;
 use PDO;
 use Exception;
 
+require_once __DIR__ . '/../../../src/Helpers/helpers.php';
 
 function list_clients(array $options = []): array {
     global $conn;
@@ -125,7 +126,7 @@ function get_client_details(int $client_id): array {
 function create_client(array $data): array {
     global $conn;
     // Permission check (assume $data['created_by'] is set)
-    $user_id = $data['created_by'] ?? null;
+    $user_id = $data['created_by'] ?? ($_SESSION['tech_id'] ?? null);
     if (!check_user_permission($user_id, 'create_client')) {
         $msg = "Permission denied for user $user_id to create client";
         error_log($msg);
@@ -324,7 +325,7 @@ function create_client(array $data): array {
 
 function update_client(int $client_id, array $data): array {
     global $conn;
-    $user_id = $data['updated_by'] ?? null;
+    $user_id = $data['updated_by'] ?? ($_SESSION['tech_id'] ?? null);
     if (!check_user_permission($user_id, 'update_client', $client_id)) {
         $msg = "Permission denied for user $user_id to update client $client_id";
         error_log($msg);
@@ -570,10 +571,11 @@ function update_client(int $client_id, array $data): array {
 }
 
 function delete_client(int $client_id, int $deleted_by): array {
-    if (!check_user_permission($deleted_by, 'delete_client', $client_id)) {
-        $msg = "Permission denied for user $deleted_by to delete client $client_id";
+    $user_id = $deleted_by ?? ($_SESSION['tech_id'] ?? null);
+    if (!check_user_permission($user_id, 'delete_client', $client_id)) {
+        $msg = "Permission denied for user $user_id to delete client $client_id";
         error_log($msg);
-        log_user_action($deleted_by, 'delete_client', $client_id, $msg);
+        log_user_action($user_id, 'delete_client', $client_id, $msg);
         return [
             'success' => false,
             'message' => $msg,
@@ -591,7 +593,7 @@ function delete_client(int $client_id, int $deleted_by): array {
         if ($docCount > 0) {
             $msg = 'Client has linked documents, cannot delete';
             error_log($msg);
-            log_user_action($deleted_by, 'delete_client', $client_id, $msg);
+            log_user_action($user_id, 'delete_client', $client_id, $msg);
             return [
                 'success' => false,
                 'message' => $msg,
@@ -613,8 +615,8 @@ function delete_client(int $client_id, int $deleted_by): array {
         $stmtCont->bindValue(':client_id', $client_id, PDO::PARAM_INT);
         $stmtCont->execute();
         $conn->commit();
-        log_user_action($deleted_by, 'delete_client', $client_id);
-        send_notification($deleted_by, "Client #$client_id deleted.");
+        log_user_action($user_id, 'delete_client', $client_id);
+        send_notification($user_id, "Client #$client_id deleted.");
         return [
             'success' => true,
             'message' => 'Client deleted successfully',
@@ -626,7 +628,7 @@ function delete_client(int $client_id, int $deleted_by): array {
         }
         $msg = "delete_client error: " . $e->getMessage();
         error_log($msg);
-        log_user_action($deleted_by, 'delete_client', $client_id, $msg);
+        log_user_action($user_id, 'delete_client', $client_id, $msg);
         return [
             'success' => false,
             'message' => 'Failed to delete client',

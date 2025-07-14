@@ -201,6 +201,7 @@ h2 {
 .client-table-container {
     overflow-y: auto;
     border-radius: var(--radius-medium); /* Rounded table container */
+    background-color: var(--color-background);
 }
 
 .client-table, .business-client-table {
@@ -211,6 +212,60 @@ h2 {
     box-shadow: var(--shadow-medium);
     border-radius: var(--radius-medium);
     overflow: hidden;
+    table-layout: fixed;
+}
+.client-table th:nth-child(1), .business-client-table th:nth-child(1),
+.client-table td:nth-child(1), .business-client-table td:nth-child(1) {
+    width: 90px;
+    min-width: 90px;
+    max-width: 90px;
+    word-break: break-all;
+}
+.client-table th:nth-child(2), .business-client-table th:nth-child(2),
+.client-table td:nth-child(2), .business-client-table td:nth-child(2) {
+    width: 180px;
+    min-width: 180px;
+    max-width: 220px;
+    word-break: break-word;
+}
+.client-table th:nth-child(3), .business-client-table th:nth-child(3),
+.client-table td:nth-child(3), .business-client-table td:nth-child(3) {
+    width: 180px;
+    min-width: 120px;
+    max-width: 220px;
+    word-break: break-word;
+}
+.client-table th:nth-child(4), .business-client-table th:nth-child(4),
+.client-table td:nth-child(4), .business-client-table td:nth-child(4) {
+    width: 120px;
+    min-width: 100px;
+    max-width: 140px;
+    word-break: break-word;
+}
+.client-table th:nth-child(5), .business-client-table th:nth-child(5),
+.client-table td:nth-child(5), .business-client-table td:nth-child(5) {
+    width: 140px;
+    min-width: 120px;
+    max-width: 180px;
+    word-break: break-word;
+}
+.client-table th:nth-child(6), .business-client-table th:nth-child(6),
+.client-table td:nth-child(6), .business-client-table td:nth-child(6) {
+    width: 120px;
+    min-width: 100px;
+    max-width: 140px;
+    word-break: break-word;
+}
+.client-table th:nth-child(7), .business-client-table th:nth-child(7),
+.client-table td:nth-child(7), .business-client-table td:nth-child(7) {
+    width: 120px;
+    min-width: 100px;
+    max-width: 140px;
+    word-break: break-word;
+}
+
+.client-table tbody tr, .business-client-table tbody tr {
+    background-color: var(--color-background);
 }
 
 .client-table thead, .business-client-table thead {
@@ -228,7 +283,7 @@ h2 {
 }
 
 .client-table tbody tr:hover, .business-client-table tbody tr:hover {
-    background-color: var(--color-secondary);
+    background-color: var(--color-hover);
 }
 
 .client-table .action-icons, .business-client-table .action-icons {

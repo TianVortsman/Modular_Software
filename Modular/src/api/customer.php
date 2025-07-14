@@ -42,6 +42,12 @@ try {
             $result = $customerController->getCustomerModules($customerId);
             break;
             
+        case 'update_modules':
+            // Update modules for a customer
+            $input = json_decode(file_get_contents('php://input'), true);
+            $result = $customerController->updateCustomerModules($input);
+            break;
+            
         case 'list':
             // Get all customers with optional search/filter/pagination
             $searchTerm = $_GET['search'] ?? '';
@@ -60,6 +66,12 @@ try {
                 $sortBy,
                 $sortDirection
             );
+            break;
+            
+        case 'add_user':
+            // Add a new user for a client
+            $input = json_decode(file_get_contents('php://input'), true);
+            $result = $customerController->addUser($input);
             break;
             
         default:

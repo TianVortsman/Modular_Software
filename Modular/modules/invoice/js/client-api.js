@@ -8,14 +8,14 @@ import { buildQueryParams } from '../../../public/assets/js/helpers.js';
  * @param {Object} options - {search, type, page, limit, sort_by, sort_dir}
  * @returns {Promise<Object>} Modal-compatible response
  */
-export async function fetchClients({ page = 1, limit = 10, type = 'private' } = {}) {
+export async function fetchClients({ page = 1, limit = 10, type = 'private', search = '' } = {}) {
     try {
-        const params = new URLSearchParams({
-            action: 'list_clients',
-            page,
-            limit,
-            type
-        });
+        const params = buildQueryParams(
+            { action: 'list_clients' },
+            { type },
+            search,
+            { page, limit }
+        );
         const res = await fetch(`/modules/invoice/api/client-api.php?${params.toString()}`);
         const json = await res.json();
         // Ensure total is present for pagination
@@ -34,7 +34,17 @@ export async function fetchClients({ page = 1, limit = 10, type = 'private' } = 
  * @returns {Promise<Object>} Modal-compatible response
  */
 export async function fetchClientDetails(clientId) {
-    // TODO: Implement API call to backend (get_client_details)
+    try {
+        const params = buildQueryParams(
+            { action: 'get_client_details' },
+            { client_id: clientId }
+        );
+        const res = await fetch(`/modules/invoice/api/client-api.php?${params.toString()}`);
+        const json = await res.json();
+        return json;
+    } catch (e) {
+        return { success: false, message: 'Failed to fetch client details', data: null };
+    }
 }
 
 /**
@@ -43,7 +53,18 @@ export async function fetchClientDetails(clientId) {
  * @returns {Promise<Object>} Modal-compatible response
  */
 export async function createClient(data) {
-    // TODO: Implement API call to backend (create_client)
+    try {
+        const params = buildQueryParams({ action: 'create_client' });
+        const res = await fetch(`/modules/invoice/api/client-api.php?${params.toString()}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        const json = await res.json();
+        return json;
+    } catch (e) {
+        return { success: false, message: 'Failed to create client', data: null };
+    }
 }
 
 /**
@@ -53,7 +74,18 @@ export async function createClient(data) {
  * @returns {Promise<Object>} Modal-compatible response
  */
 export async function updateClient(clientId, data) {
-    // TODO: Implement API call to backend (update_client)
+    try {
+        const params = buildQueryParams({ action: 'update_client', client_id: clientId });
+        const res = await fetch(`/modules/invoice/api/client-api.php?${params.toString()}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        const json = await res.json();
+        return json;
+    } catch (e) {
+        return { success: false, message: 'Failed to update client', data: null };
+    }
 }
 
 /**

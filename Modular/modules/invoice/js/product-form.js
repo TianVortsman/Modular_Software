@@ -30,6 +30,7 @@ import { ProductAPI } from './product-api.js';
                 }
                 productIdField.value = data.product_id;
             }
+            // Refactored fieldMappings to match backend controller fields
             const fieldMappings = {
                 'product_name': 'product_name',
                 'product_description': 'product_description',
@@ -37,25 +38,23 @@ import { ProductAPI } from './product-api.js';
                 'product_status': 'product_status',
                 'sku': 'sku',
                 'barcode': 'barcode',
+                'product_type_id': 'product_type_id',
+                'category_id': 'category_id',
+                'subcategory_id': 'subcategory_id',
                 'tax_rate_id': 'tax_rate_id',
                 'discount': 'discount',
                 'notes': 'notes',
-                'brand': 'brand',
-                'manufacturer': 'manufacturer',
+                // Inventory fields
+                'product_stock_quantity': 'product_stock_quantity',
+                'product_reorder_level': 'product_reorder_level',
+                'product_lead_time': 'product_lead_time',
                 'product_weight': 'product_weight',
-                'dimensions': 'dimensions',
+                'product_dimensions': 'product_dimensions',
+                'product_brand': 'product_brand',
+                'product_manufacturer': 'product_manufacturer',
                 'warranty_period': 'warranty_period',
-                'stock_quantity': 'stock_quantity',
-                'reorder_level': 'reorder_level',
-                'lead_time': 'lead_time',
-                'labor_cost': 'labor_cost',
-                'estimated_time': 'estimated_time',
-                'service_frequency': 'service_frequency',
-                'material': 'material',
-                'oem_part_number': 'oem_part_number',
-                'compatible_vehicles': 'compatible_vehicles',
-                'bundle_items': 'bundle_items',
-                'installation_required': 'installation_required'
+                // Supplier
+                'supplier_id': 'supplier_id'
             };
             Object.entries(fieldMappings).forEach(([apiField, formField]) => {
                 const element = this.form.querySelector(`[name="${formField}"]`);

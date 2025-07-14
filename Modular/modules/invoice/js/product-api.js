@@ -16,6 +16,8 @@ export class ProductAPI {
 
     // Add a new product
     static addProduct(formData) {
+        // Ensure all required fields are present in formData
+        // (Handled by form logic)
         return fetch('/modules/invoice/api/products.php?action=add', {
             method: 'POST',
             body: formData,

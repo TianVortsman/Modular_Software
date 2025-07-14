@@ -8113,7 +8113,7 @@ add
 Content-Disposition: form-data; name="item_image"; filename="DLR.png"
 Content-Type: image/png
 
-‰PNG
+ï¿½PNG
 
 
 [07-Jul-2025 12:24:43 UTC] Parsed PUT data: Array
@@ -14029,7 +14029,7 @@ add
 Content-Disposition: form-data; name="item_image"; filename="WhatsApp Image 2025-06-19 at 19.26.44_6528e63f.jpg"
 Content-Type: image/jpeg
 
-ÿØÿà
+ï¿½ï¿½ï¿½ï¿½
 [07-Jul-2025 13:06:51 UTC] Parsed PUT data: Array
 (
     [modal_mode] => add
@@ -61528,134 +61528,3 @@ Stack trace:
 [13-Jul-2025 13:25:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
 [13-Jul-2025 13:25:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
 [13-Jul-2025 13:25:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
-[13-Jul-2025 13:43:23 UTC] Current file: /var/www/html/public/admin/techlogin.php
-[13-Jul-2025 13:43:23 UTC] Current directory: /var/www/html/public/admin
-[13-Jul-2025 13:43:23 UTC] Document root: /var/www/html
-[13-Jul-2025 13:43:23 UTC] Trying controller path: /var/www/html/public/admin/../../../src/Controllers/ClockServerController.php - NOT FOUND
-[13-Jul-2025 13:43:23 UTC] Trying alt path: /var/www/html/public/admin/../../src/Controllers/ClockServerController.php - EXISTS
-[13-Jul-2025 13:43:23 UTC] Trying relative path: src/Controllers/ClockServerController.php - NOT FOUND
-[13-Jul-2025 13:43:23 UTC] Controller successfully loaded from file
-[13-Jul-2025 13:43:24 UTC] Customer list API called with: search=, page=1, perPage=10, sortBy=company_name, sortDirection=asc
-[13-Jul-2025 13:43:27 UTC] Current file: /var/www/html/public/admin/techlogin.php
-[13-Jul-2025 13:43:27 UTC] Current directory: /var/www/html/public/admin
-[13-Jul-2025 13:43:27 UTC] Failed to execute query: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "customer_modules" does not exist
-LINE 7:                 FROM customer_modules 
-                             ^
-[13-Jul-2025 13:43:27 UTC] PHP Warning:  foreach() argument must be of type array|object, bool given in /var/www/html/src/Controllers/CustomerController.php on line 151
-[13-Jul-2025 13:43:27 UTC] Document root: /var/www/html
-[13-Jul-2025 13:43:27 UTC] Trying controller path: /var/www/html/public/admin/../../../src/Controllers/ClockServerController.php - NOT FOUND
-[13-Jul-2025 13:43:27 UTC] Trying alt path: /var/www/html/public/admin/../../src/Controllers/ClockServerController.php - EXISTS
-[13-Jul-2025 13:43:27 UTC] Trying relative path: src/Controllers/ClockServerController.php - NOT FOUND
-[13-Jul-2025 13:43:27 UTC] Controller successfully loaded from file
-[13-Jul-2025 13:43:27 UTC] [ClockServerController] Checking server availability at: http://hikvision-server:3000/clock/status/ACC001
-[13-Jul-2025 13:43:27 UTC] Successfully connected to clock server at: http://hikvision-server:3000/clock/status/ACC001
-[13-Jul-2025 13:43:27 UTC] [ClockServerController] Server available: YES
-[13-Jul-2025 13:43:28 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
-[13-Jul-2025 13:43:28 UTC] [DatabaseConfig] Client config created with dbname: ACC002
-[13-Jul-2025 13:44:03 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
-[13-Jul-2025 13:44:03 UTC] [DatabaseConfig] Client config created with dbname: ACC002
-[13-Jul-2025 13:44:05 UTC] First row (headers): Array
-(
-    [0] => client_type
-    [1] => client_name
-    [2] => first_name
-    [3] => last_name
-    [4] => client_email
-    [5] => client_cell
-    [6] => client_tell
-    [7] => client_status
-    [8] => address_line1
-    [9] => address_line2
-    [10] => city
-    [11] => province
-    [12] => postal_code
-    [13] => country
-    [14] => contact_name
-    [15] => contact_email
-    [16] => contact_cell
-    [17] => contact_tell
-    [18] => notes
-    [19] => vat_number
-    [20] => company_registration
-)
-
-[13-Jul-2025 13:44:05 UTC] Second row (first data row): Array
-(
-    [0] => Private
-    [1] => 
-    [2] => Manuel
-    [3] => Howard
-    [4] => chrisjohnson@miller.com
-    [5] => 0606970379
-    [6] => 0606970402
-    [7] => active
-    [8] => 71312 Jones Landing
-    [9] => Suite 216
-    [10] => Bloemfontein
-    [11] => Gauteng
-    [12] => 40217
-    [13] => South Africa
-    [14] => Destiny Collins
-    [15] => utaylor@contreras.net
-    [16] => +1-523-640-7275x405
-    [17] => 812.368.6553
-    [18] => Subject wear executive network resource own cut.
-    [19] => VAT79802317
-    [20] => 
-)
-
-[13-Jul-2025 13:44:14 UTC] Session contents: Array
-(
-    [user_logged_in] => 
-    [tech_logged_in] => 1
-    [tech_email] => tianryno01@gmail.com
-    [tech_name] => Tian
-    [tech_id] => 1
-    [user_type] => technician
-    [user_id] => 1
-    [csrf_token] => 5adc2ae610d50e242f6f4edc3aaa60fec3aa795d732839381698024a35b12af4
-    [tech_access_token] => c37a8ffd9efd1535b177d7c62bf950d5db1caeb78a78f3725a4b56975312788e
-    [tech_account_number] => ACC002
-    [tech_access_expiration] => 1752417808
-    [account_number] => ACC002
-)
-
-[13-Jul-2025 13:44:14 UTC] Account number from session: ACC002
-[13-Jul-2025 13:44:14 UTC] User name: Tian
-[13-Jul-2025 13:44:14 UTC] Multiple accounts: false
-[13-Jul-2025 13:44:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
-[13-Jul-2025 13:44:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
-[13-Jul-2025 13:44:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
-[13-Jul-2025 13:44:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
-[13-Jul-2025 13:44:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
-[13-Jul-2025 13:44:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
-[13-Jul-2025 13:44:47 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
-[13-Jul-2025 13:44:47 UTC] [DatabaseConfig] Client config created with dbname: ACC002
-[13-Jul-2025 13:44:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
-[13-Jul-2025 13:44:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
-[13-Jul-2025 13:45:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
-[13-Jul-2025 13:45:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
-[13-Jul-2025 13:45:34 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
-[13-Jul-2025 13:45:34 UTC] [DatabaseConfig] Client config created with dbname: ACC002
-[13-Jul-2025 13:45:35 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
-[13-Jul-2025 13:45:35 UTC] [DatabaseConfig] Client config created with dbname: ACC002
-[13-Jul-2025 13:45:36 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
-[13-Jul-2025 13:45:36 UTC] [DatabaseConfig] Client config created with dbname: ACC002
-[13-Jul-2025 13:45:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
-[13-Jul-2025 13:45:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
-[13-Jul-2025 13:45:38 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
-[13-Jul-2025 13:45:38 UTC] [DatabaseConfig] Client config created with dbname: ACC002
-[13-Jul-2025 13:45:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
-[13-Jul-2025 13:45:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
-[13-Jul-2025 13:45:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
-[13-Jul-2025 13:45:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
-[13-Jul-2025 13:45:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
-[13-Jul-2025 13:45:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
-[13-Jul-2025 13:45:48 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
-[13-Jul-2025 13:45:48 UTC] [DatabaseConfig] Client config created with dbname: ACC002
-[13-Jul-2025 14:00:08 UTC] PHP Warning:  Undefined variable $csrf_token in /var/www/html/modules/time_and_attendance/views/schedules.php on line 34
-[13-Jul-2025 14:00:08 UTC] PHP Warning:  Undefined variable $account in /var/www/html/modules/time_and_attendance/views/schedules.php on line 42
-[13-Jul-2025 14:00:08 UTC] PHP Warning:  Trying to access array offset on value of type null in /var/www/html/modules/time_and_attendance/views/schedules.php on line 42
-[13-Jul-2025 14:00:08 UTC] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in /var/www/html/modules/time_and_attendance/views/schedules.php on line 42
-[13-Jul-2025 14:00:08 UTC] PHP Warning:  Undefined variable $csrf_token in /var/www/html/modules/time_and_attendance/modals/add-shift-modal.php on line 36
-[13-Jul-2025 14:00:08 UTC] PHP Warning:  Undefined variable $csrf_token in /var/www/html/modules/time_and_attendance/modals/add-shift-modal.php on line 312

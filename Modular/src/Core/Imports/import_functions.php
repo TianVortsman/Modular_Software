@@ -914,6 +914,8 @@ function importClients($spreadsheet, $conn) {
             'totalRows' => 0
         ];
     }
+    // Explicitly check for registration_number header
+    $hasRegNumHeader = isset($headerMap['registration_number']);
 
     for ($i = 2; $i <= count($sheetData); $i++) {
         $row = $sheetData[$i];
@@ -928,6 +930,24 @@ function importClients($spreadsheet, $conn) {
         $client_name = $get('client_name');
         $industry = $get('industry');
         $registration_number = $get('registration_number');
+        // Error logging for registration_number
+        if (($client_type === 'company' || $client_type === 'business')) {
+            if (!$hasRegNumHeader) {
+                $errors[] = [
+                    'row' => $i,
+                    'client_type' => $client_type,
+                    'client_email' => $client_email,
+                    'reason' => 'Missing registration_number column in header.'
+                ];
+            } else if ($registration_number === '') {
+                $errors[] = [
+                    'row' => $i,
+                    'client_type' => $client_type,
+                    'client_email' => $client_email,
+                    'reason' => 'registration_number is blank for business client.'
+                ];
+            }
+        }
         $vat_number = $get('vat_number');
         $website = $get('website');
         // Customer fields
@@ -953,12 +973,17 @@ function importClients($spreadsheet, $conn) {
         $is_primary = nullIfEmptyBool($get('is_primary'));
         // Contact fields
         $contact_type_id = $get('contact_type_id') ?: 1;
-        $contact_first_name = $get('contact_first_name') ?: $first_name;
-        $contact_last_name = $get('contact_last_name') ?: $last_name;
+        if ($client_type === 'company' || $client_type === 'business') {
+            $contact_first_name = $get('contact_first_name');
+            $contact_last_name = $get('contact_last_name');
+        } else {
+            $contact_first_name = $get('contact_first_name') ?: $first_name;
+            $contact_last_name = $get('contact_last_name') ?: $last_name;
+        }
         $contact_position = $get('contact_position');
         $contact_email = $get('contact_email') ?: $client_email;
-        $contact_phone = $get('contact_phone') ?: $client_tell;
-        $contact_cell = $get('contact_cell') ?: $client_cell;
+        $contact_phone = $get('contact_phone'); // No fallback to client_tell
+        $contact_cell = $get('contact_cell');   // No fallback to client_cell
         $contact_is_primary = nullIfEmptyBool($get('contact_is_primary'));
 
         // Validation
@@ -1021,7 +1046,16 @@ function importClients($spreadsheet, $conn) {
             foreach ($clientFields as $k => $v) {
                 $stmt->bindValue(':' . $k, $v);
             }
-            $stmt->execute();
+            if (!$stmt->execute()) {
+                $conn->rollBack();
+                $errors[] = [
+                    'row' => $i,
+                    'client_type' => $client_type,
+                    'client_email' => $client_email,
+                    'reason' => 'Failed to insert client: ' . ($stmt->errorInfo()[2] ?? 'Unknown error')
+                ];
+                continue;
+            }
             $client_id = $conn->lastInsertId();
 
             // 2. Insert address
@@ -1045,44 +1079,122 @@ function importClients($spreadsheet, $conn) {
                 foreach ($addressFields as $k => $v) {
                     $astmt->bindValue(':' . $k, $v);
                 }
-                $astmt->execute();
+                if (!$astmt->execute()) {
+                    $conn->rollBack();
+                    $errors[] = [
+                        'row' => $i,
+                        'client_type' => $client_type,
+                        'client_email' => $client_email,
+                        'reason' => 'Failed to insert address: ' . ($astmt->errorInfo()[2] ?? 'Unknown error')
+                    ];
+                    continue;
+                }
                 $address_id = $conn->lastInsertId();
             }
 
             // 3. Insert contact
             $contact_id = null;
-            if ($contact_first_name && $contact_last_name && $contact_email) {
-                $contactFields = [
-                    'contact_type_id' => $contact_type_id,
-                    'first_name' => $contact_first_name,
-                    'last_name' => $contact_last_name,
-                    'position' => $contact_position,
-                    'email' => $contact_email,
-                    'phone' => $contact_phone,
-                    'cell' => $contact_cell,
-                    'is_primary' => $contact_is_primary
-                ];
-                $cfields = array_keys($contactFields);
-                $cplaceholders = array_map(function($f) { return ':' . $f; }, $cfields);
-                $csql = "INSERT INTO invoicing.contact_person (" . implode(',', $cfields) . ") VALUES (" . implode(',', $cplaceholders) . ")";
-                $cstmt = $conn->prepare($csql);
-                foreach ($contactFields as $k => $v) {
-                    $cstmt->bindValue(':' . $k, $v);
+            $contact_error = null;
+            if ($client_type === 'company' || $client_type === 'business') {
+                if ($contact_first_name && $contact_last_name && $contact_email) {
+                    $contactFields = [
+                        'contact_type_id' => $contact_type_id,
+                        'first_name' => $contact_first_name,
+                        'last_name' => $contact_last_name,
+                        'position' => $contact_position,
+                        'email' => $contact_email,
+                        'phone' => $contact_phone,
+                        'cell' => $contact_cell,
+                        'is_primary' => $contact_is_primary
+                    ];
+                    $cfields = array_keys($contactFields);
+                    $cplaceholders = array_map(function($f) { return ':' . $f; }, $cfields);
+                    $csql = "INSERT INTO invoicing.contact_person (" . implode(',', $cfields) . ") VALUES (" . implode(',', $cplaceholders) . ")";
+                    $cstmt = $conn->prepare($csql);
+                    foreach ($contactFields as $k => $v) {
+                        $cstmt->bindValue(':' . $k, $v);
+                    }
+                    if (!$cstmt->execute()) {
+                        $conn->rollBack();
+                        $errors[] = [
+                            'row' => $i,
+                            'client_type' => $client_type,
+                            'client_email' => $client_email,
+                            'reason' => 'Failed to insert contact: ' . ($cstmt->errorInfo()[2] ?? 'Unknown error')
+                        ];
+                        continue;
+                    }
+                    $contact_id = $conn->lastInsertId();
+                } else if ($contact_email) {
+                    // Warn if missing contact name for business client
+                    $errors[] = [
+                        'row' => $i,
+                        'client_type' => $client_type,
+                        'client_email' => $client_email,
+                        'reason' => 'Business client missing contact_first_name or contact_last_name, contact not inserted.'
+                    ];
                 }
-                $cstmt->execute();
-                $contact_id = $conn->lastInsertId();
+            } else {
+                if ($contact_first_name && $contact_last_name && $contact_email) {
+                    $contactFields = [
+                        'contact_type_id' => $contact_type_id,
+                        'first_name' => $contact_first_name,
+                        'last_name' => $contact_last_name,
+                        'position' => $contact_position,
+                        'email' => $contact_email,
+                        'phone' => $contact_phone,
+                        'cell' => $contact_cell,
+                        'is_primary' => $contact_is_primary
+                    ];
+                    $cfields = array_keys($contactFields);
+                    $cplaceholders = array_map(function($f) { return ':' . $f; }, $cfields);
+                    $csql = "INSERT INTO invoicing.contact_person (" . implode(',', $cfields) . ") VALUES (" . implode(',', $cplaceholders) . ")";
+                    $cstmt = $conn->prepare($csql);
+                    foreach ($contactFields as $k => $v) {
+                        $cstmt->bindValue(':' . $k, $v);
+                    }
+                    if (!$cstmt->execute()) {
+                        $conn->rollBack();
+                        $errors[] = [
+                            'row' => $i,
+                            'client_type' => $client_type,
+                            'client_email' => $client_email,
+                            'reason' => 'Failed to insert contact: ' . ($cstmt->errorInfo()[2] ?? 'Unknown error')
+                        ];
+                        continue;
+                    }
+                    $contact_id = $conn->lastInsertId();
+                }
             }
 
             // 4. Link client to address
             if ($client_id && $address_id) {
                 $linkAddr = $conn->prepare("INSERT INTO invoicing.client_addresses (client_id, address_id) VALUES (?, ?)");
-                $linkAddr->execute([$client_id, $address_id]);
+                if (!$linkAddr->execute([$client_id, $address_id])) {
+                    $conn->rollBack();
+                    $errors[] = [
+                        'row' => $i,
+                        'client_type' => $client_type,
+                        'client_email' => $client_email,
+                        'reason' => 'Failed to link client to address: ' . ($linkAddr->errorInfo()[2] ?? 'Unknown error')
+                    ];
+                    continue;
+                }
             }
 
             // 5. Link client to contact
             if ($client_id && $contact_id) {
                 $linkCont = $conn->prepare("INSERT INTO invoicing.client_contacts (client_id, contact_id) VALUES (?, ?)");
-                $linkCont->execute([$client_id, $contact_id]);
+                if (!$linkCont->execute([$client_id, $contact_id])) {
+                    $conn->rollBack();
+                    $errors[] = [
+                        'row' => $i,
+                        'client_type' => $client_type,
+                        'client_email' => $client_email,
+                        'reason' => 'Failed to link client to contact: ' . ($linkCont->errorInfo()[2] ?? 'Unknown error')
+                    ];
+                    continue;
+                }
             }
 
             $conn->commit();
