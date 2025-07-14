@@ -1,18 +1,44 @@
 // Client Screen Logic: Handles main screen rendering, event binding, and table updates
 // Usage: import { initClientScreen, renderClientTable, bindEvents, handleSearch, handleFilter, handlePagination, handleRowClick, refreshClientTable } from './client-screen.js';
-
+import { openClientModal, closeModal, } from './client-modal.js';
 import { fetchClients } from './client-api.js';
 
 let isLoading = false;
 let currentType = 'private';
 let currentPage = 1;
-let currentLimit = 10;
+let currentLimitPrivate = 10;
+let currentLimitBusiness = 10;
+let currentSearchPrivate = '';
+let currentSearchBusiness = '';
+let searchDebounceTimeout = null;
 
 function getCurrentTableBody() {
     if (currentType === 'private') {
         return document.getElementById('client-body-private');
     } else {
         return document.getElementById('client-body-business');
+    }
+}
+
+function getCurrentLimit() {
+    return currentType === 'private' ? currentLimitPrivate : currentLimitBusiness;
+}
+function setCurrentLimit(val) {
+    if (currentType === 'private') {
+        currentLimitPrivate = val;
+    } else {
+        currentLimitBusiness = val;
+    }
+}
+
+function getCurrentSearch() {
+    return currentType === 'private' ? currentSearchPrivate : currentSearchBusiness;
+}
+function setCurrentSearch(val) {
+    if (currentType === 'private') {
+        currentSearchPrivate = val;
+    } else {
+        currentSearchBusiness = val;
     }
 }
 
@@ -26,14 +52,26 @@ export async function initClientScreen() {
     await refreshClientTable();
 }
 
+// Set a min-height for the table container to prevent height jumps
+function setTableMinHeight() {
+    const containers = document.querySelectorAll('.client-table-container');
+    containers.forEach(container => {
+        container.style.minHeight = '1200px'; // Adjust as needed for your UI
+    });
+}
+
 /**
  * Render the client table with data
  * @param {Array} clients
  */
 export function renderClientTable(clients, total = 0) {
+    setTableMinHeight();
     const tableBody = getCurrentTableBody();
     if (!tableBody) return;
-    tableBody.innerHTML = '';
+    // Remove all existing rows (but keep tbody in DOM)
+    while (tableBody.firstChild) {
+        tableBody.removeChild(tableBody.firstChild);
+    }
     if (!clients || clients.length === 0) {
         const row = document.createElement('tr');
         const cell = document.createElement('td');
@@ -46,7 +84,6 @@ export function renderClientTable(clients, total = 0) {
     }
     clients.forEach(client => {
         const row = document.createElement('tr');
-        // Fix: Always show correct name for business/private
         let name = client.client_name || ((client.first_name || '') + ' ' + (client.last_name || ''));
         row.innerHTML = `
             <td>${client.client_id}</td>
@@ -57,13 +94,23 @@ export function renderClientTable(clients, total = 0) {
             <td>${client.outstanding_amount !== undefined ? client.outstanding_amount : '-'}</td>
             <td>${client.total_invoices !== undefined ? client.total_invoices : '-'}</td>
         `;
+        row.addEventListener('dblclick', () => {
+            if (typeof openClientModal === 'function') {
+                openClientModal(client.client_id);
+            } else {
+                console.warn('openClientModal(client_id) not implemented');
+            }
+        });
         tableBody.appendChild(row);
     });
-    renderPagination(currentPage, currentLimit, total);
+    renderPagination(currentPage, getCurrentLimit(), total);
 }
 
 function renderLoading(tableBody) {
-    tableBody.innerHTML = '';
+    // Remove all existing rows (but keep tbody in DOM)
+    while (tableBody.firstChild) {
+        tableBody.removeChild(tableBody.firstChild);
+    }
     const row = document.createElement('tr');
     const cell = document.createElement('td');
     cell.colSpan = 7;
@@ -136,6 +183,12 @@ export function bindEvents() {
             section2.classList.remove('active');
             currentType = 'private';
             currentPage = 1;
+            // Set select value for private
+            const select = section1.querySelector('.rows-per-page');
+            if (select) select.value = currentLimitPrivate;
+            // Update search input for private
+            const searchInput = document.getElementById('client-search');
+            if (searchInput) searchInput.value = getCurrentSearch();
             refreshClientTable();
         });
         businessBtn.addEventListener('click', () => {
@@ -145,18 +198,50 @@ export function bindEvents() {
             section1.classList.remove('active');
             currentType = 'business';
             currentPage = 1;
+            // Set select value for business
+            const select = section2.querySelector('.rows-per-page');
+            if (select) select.value = currentLimitBusiness;
+            // Update search input for business
+            const searchInput = document.getElementById('client-search');
+            if (searchInput) searchInput.value = getCurrentSearch();
             refreshClientTable();
         });
     }
-    // Rows per page select
+    // Rows per page select (per section)
     document.querySelectorAll('.rows-per-page').forEach(select => {
         select.addEventListener('change', (e) => {
-            currentLimit = parseInt(e.target.value, 10);
+            setCurrentLimit(parseInt(e.target.value, 10));
             currentPage = 1;
             refreshClientTable();
         });
     });
-    // TODO: Add pagination controls and search/filter events
+    // Search input
+    const searchInput = document.getElementById('client-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const val = searchInput.value.trim();
+            setCurrentSearch(val);
+            currentPage = 1;
+            if (searchDebounceTimeout) clearTimeout(searchDebounceTimeout);
+            searchDebounceTimeout = setTimeout(() => {
+                if (val.length === 0 || val.length >= 2) {
+                    refreshClientTable();
+                }
+            }, 300);
+        });
+        // Optional: search icon click
+        const searchIcon = document.querySelector('.search-icon');
+        if (searchIcon) {
+            searchIcon.addEventListener('click', () => {
+                const val = searchInput.value.trim();
+                setCurrentSearch(val);
+                currentPage = 1;
+                if (val.length === 0 || val.length >= 2) {
+                    refreshClientTable();
+                }
+            });
+        }
+    }
 }
 
 /**
@@ -199,7 +284,7 @@ export async function refreshClientTable() {
     if (!tableBody) return;
     isLoading = true;
     renderLoading(tableBody);
-    const response = await fetchClients({ page: currentPage, limit: currentLimit, type: currentType });
+    const response = await fetchClients({ page: currentPage, limit: getCurrentLimit(), type: currentType, search: getCurrentSearch() });
     isLoading = false;
     if (response.success) {
         // Pass total count for pagination

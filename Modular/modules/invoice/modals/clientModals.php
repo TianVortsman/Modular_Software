@@ -38,10 +38,6 @@
                                 <input type="text" id="companyRegisNo" name="companyRegisNo">
                             </div>
                             <div class="form-group">
-                                <label for="companyType">Company Type:</label>
-                                <input type="text" id="companyType" name="companyType">
-                            </div>
-                            <div class="form-group">
                                 <label for="companyIndustry">Industry:</label>
                                 <input type="text" id="companyIndustry" name="companyIndustry">
                             </div>
@@ -100,8 +96,12 @@
                         <fieldset class="contact-info">
                             <legend>Company Contact</legend>
                             <div class="form-group">
-                                <label for="contactName">Contact Name:</label>
-                                <input type="text" id="contactName" name="contactName">
+                                <label for="contactFirstName">Contact First Name:</label>
+                                <input type="text" id="contactFirstName" name="contactFirstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactLastName">Contact Last Name:</label>
+                                <input type="text" id="contactLastName" name="contactLastName" required>
                             </div>
                             <div class="form-group">
                                 <label for="contactEmail">Contact Email:</label>
@@ -300,221 +300,6 @@
                         <button type="submit">
                             <i class="material-icons">save</i>Save Changes
                         </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Add Client Modal -->
-<div id="add-modal" class="modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <span class="close" id="closeAddClientModal">&times;</span>
-                <h2>Add Client</h2>
-            </div>
-            <!-- Modal Body -->
-            <div class="modal-body">
-                <form id="addClientForm">
-                    <!-- Client Type Selection -->
-                    <fieldset class="client-type">
-                        <legend>Client Type</legend>
-                        <div class="form-group">
-                            <label for="clientType">Select Client Type:</label>
-                            <select id="clientType" name="clientType" required>
-                                <option value="">Select</option>
-                                <option value="company">Company</option>
-                                <option value="customer">Customer</option>
-                            </select>
-                        </div>
-                    </fieldset>
-
-                    <!-- Company Fields -->
-                    <div id="companyFields" class="client-fields" style="display: none;">
-                        <fieldset class="company-info">
-                            <legend>Company Information</legend>
-                            <div class="form-group">
-                                <label for="add-company-name">Company Name:</label>
-                                <input type="text" id="add-company-name" name="add-company-name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="add-registration-number">Registration Number:</label>
-                                <input type="text" id="add-registration-number" name="add-registration-number">
-                            </div>
-                            <div class="form-group">
-                                <label for="add-vat-number">VAT Number:</label>
-                                <input type="text" id="add-vat-number" name="add-vat-number">
-                            </div>
-                            <div class="form-group">
-                                <label for="add-industry">Industry:</label>
-                                <input type="text" id="add-industry" name="add-industry">
-                            </div>
-                            <div class="form-group">
-                                <label for="add-website">Website:</label>
-                                <input type="url" id="add-website" name="add-website" placeholder="https://">
-                            </div>
-                        </fieldset>
-
-                        <fieldset class="company-address">
-                            <legend>Company Address</legend>
-                            <div class="form-group">
-                                <label for="add-company-address-line1">Address Line 1:</label>
-                                <input type="text" id="add-company-address-line1" name="add-company-address-line1" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="add-company-address-line2">Address Line 2:</label>
-                                <input type="text" id="add-company-address-line2" name="add-company-address-line2">
-                            </div>
-                            <div class="form-group">
-                                <label for="add-company-suburb">Suburb:</label>
-                                <input type="text" id="add-company-suburb" name="add-company-suburb">
-                            </div>
-                            <div class="form-group">
-                                <label for="add-company-city">City:</label>
-                                <input type="text" id="add-company-city" name="add-company-city" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="add-company-province">Province:</label>
-                                <input type="text" id="add-company-province" name="add-company-province">
-                            </div>
-                            <div class="form-group">
-                                <label for="add-company-postal-code">Postal Code:</label>
-                                <input type="text" id="add-company-postal-code" name="add-company-postal-code" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="add-company-country">Country:</label>
-                                <input type="text" id="add-company-country" name="add-company-country" required>
-                            </div>
-                        </fieldset>
-
-                        <fieldset class="company-contact">
-                            <legend>Company Contact</legend>
-                            <div class="form-group">
-                                <label for="add-contact-first-name">First Name:</label>
-                                <input type="text" id="add-contact-first-name" name="add-contact-first-name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="add-contact-last-name">Last Name:</label>
-                                <input type="text" id="add-contact-last-name" name="add-contact-last-name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="add-contact-position">Position:</label>
-                                <input type="text" id="add-contact-position" name="add-contact-position">
-                            </div>
-                            <div class="form-group">
-                                <label for="add-contact-email">Email:</label>
-                                <input type="email" id="add-contact-email" name="add-contact-email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="add-contact-phone">Phone:</label>
-                                <input type="text" id="add-contact-phone" name="add-contact-phone" required>
-                            </div>
-                        </fieldset>
-                    </div>
-
-                    <!-- Customer Fields -->
-                    <div id="customerFields" class="client-fields" style="display: none;">
-                        <fieldset class="customer-info">
-                            <legend>Personal Information</legend>
-                            <div class="form-group">
-                                <label for="add-title">Title:</label>
-                                <select id="add-title" name="add-title">
-                                    <option value="">Select</option>
-                                    <option value="Mr">Mr</option>
-                                    <option value="Mrs">Mrs</option>
-                                    <option value="Ms">Ms</option>
-                                    <option value="Dr">Dr</option>
-                                    <option value="Prof">Prof</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="add-first-name">First Name:</label>
-                                <input type="text" id="add-first-name" name="add-first-name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="add-last-name">Last Name:</label>
-                                <input type="text" id="add-last-name" name="add-last-name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="add-dob">Date of Birth:</label>
-                                <input type="date" id="add-dob" name="add-dob">
-                            </div>
-                            <div class="form-group">
-                                <label for="add-gender">Gender:</label>
-                                <select id="add-gender" name="add-gender">
-                                    <option value="">Select</option>
-                                    <option value="female">Female</option>
-                                    <option value="male">Male</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="add-loyalty">Loyalty Level:</label>
-                                <select id="add-loyalty" name="add-loyalty">
-                                    <option value="">Select</option>
-                                    <option value="bronze">Bronze</option>
-                                    <option value="silver">Silver</option>
-                                    <option value="gold">Gold</option>
-                                    <option value="platinum">Platinum</option>
-                                </select>
-                            </div>
-                        </fieldset>
-
-                        <fieldset class="customer-contact">
-                            <legend>Contact Information</legend>
-                            <div class="form-group">
-                                <label for="add-email">Email:</label>
-                                <input type="email" id="add-email" name="add-email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="add-phone">Cell:</label>
-                                <input type="text" id="add-phone" name="add-phone" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="add-tel">Telephone:</label>
-                                <input type="text" id="add-tel" name="add-tel">
-                            </div>
-                        </fieldset>
-
-                        <fieldset class="customer-address">
-                            <legend>Address Details</legend>
-                            <div class="form-group">
-                                <label for="add-customer-address-line1">Address Line 1:</label>
-                                <input type="text" id="add-customer-address-line1" name="add-customer-address-line1" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="add-customer-address-line2">Address Line 2:</label>
-                                <input type="text" id="add-customer-address-line2" name="add-customer-address-line2">
-                            </div>
-                            <div class="form-group">
-                                <label for="add-customer-suburb">Suburb:</label>
-                                <input type="text" id="add-customer-suburb" name="add-customer-suburb">
-                            </div>
-                            <div class="form-group">
-                                <label for="add-customer-city">City:</label>
-                                <input type="text" id="add-customer-city" name="add-customer-city" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="add-customer-province">Province:</label>
-                                <input type="text" id="add-customer-province" name="add-customer-province">
-                            </div>
-                            <div class="form-group">
-                                <label for="add-customer-postal-code">Postal Code:</label>
-                                <input type="text" id="add-customer-postal-code" name="add-customer-postal-code" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="add-customer-country">Country:</label>
-                                <input type="text" id="add-customer-country" name="add-customer-country" required>
-                            </div>
-                        </fieldset>
-                    </div>
-
-                    <!-- Form Action -->
-                    <div class="form-actions">
-                        <button type="submit" id="saveClient">Save Client</button>
                     </div>
                 </form>
             </div>
