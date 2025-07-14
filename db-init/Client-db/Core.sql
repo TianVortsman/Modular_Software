@@ -1,4 +1,3 @@
--- Active: 1751521549530@@127.0.0.1@5432@ACC002
 
 -- Core Schema
 CREATE SCHEMA IF NOT EXISTS core;

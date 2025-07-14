@@ -1,0 +1,91 @@
+<?php
+namespace App\modules\invoice\controllers;
+
+use PDO;
+use Exception;
+use PDOExeption;
+
+
+    // Record payment
+    // need the invoice_id and the payment_method_id
+    // need the amount paid and the payment date
+    // need the payment_number and the payment_status
+    // need the payment_notes and the payment_reference
+    // need the payment_created_by and the payment_created_at
+    // Ensure only authorized users can add payments
+
+    function create_payment(array $options): array {
+        $conn = get_db_connection();
+
+        $invoice_id = $options['invoice_id'];
+        $payment_method_id = $options['payment_method_id'];
+        $amount_paid = $options['amount_paid'];
+        $payment_date = $options['payment_date'];
+        $payment_number = $options['payment_number'];
+        $payment_status = $options['payment_status'];
+        $payment_notes = $options['payment_notes'];
+        $payment_reference = $options['payment_reference'];
+        $payment_created_by = $options['payment_created_by'];
+        $payment_created_at = $options['payment_created_at'];
+
+    }
+
+    function create_payment(array $data): ?int {
+        global $conn;
+    
+        $sql = "INSERT INTO schema.table (
+                    column1, column2
+                ) VALUES (
+                    :column1, :column2
+                )";
+    
+        try {
+            $stmt = $conn->prepare($sql);
+            $stmt->bindValue(':column1', $data['column1']);
+            $stmt->bindValue(':column2', $data['column2']);
+            $stmt->execute();
+            return $conn->lastInsertId();
+        } catch (PDOException $e) {
+            error_log("create_entity error: " . $e->getMessage());
+            return null;
+        }
+    }
+
+
+
+
+// Record refund
+// need the invoice_id and the payment_method_id
+// need the amount refunded and the refund date
+// need the refund_number and the refund_status
+// need the refund_notes and the refund_reference
+// need the refund_created_by and the refund_created_at
+
+
+
+
+// Get credit note application 
+
+
+
+
+
+// Create credit note 
+
+
+
+
+// Apply credit note 
+
+
+
+
+// Update balances after payment / refund / credit note 
+
+
+
+// Update document status after payment / refund / credit note e.g., to "Paid", "Refunded", "Credited", etc.).
+
+
+
+

@@ -145,7 +145,42 @@ CREATE TABLE time.unknown_clockings (
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+-- Table: weekly_templates
+CREATE TABLE weekly_templates (
+    weekly_templates_id SERIAL PRIMARY KEY,
+    weekly_name VARCHAR(100) NOT NULL,
+    weekly_description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
+-- Table: shifts
+CREATE TABLE shifts (
+    shift_id SERIAL PRIMARY KEY,
+    shift_name VARCHAR(100) NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    rounding_rule VARCHAR(50), -- e.g. 'nearest_15', 'up_5', etc.
+    break_minutes INT DEFAULT 0,
+    shift_description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: weekly_template_days
+CREATE TABLE weekly_template_days (
+    weekly_template_id INT NOT NULL REFERENCES weekly_templates(weekly_templates_id) ON DELETE CASCADE,
+    day_of_week INT NOT NULL CHECK (day_of_week BETWEEN 1 AND 7), -- 1=Monday, 7=Sunday
+    shift_id INT NOT NULL REFERENCES shifts(shift_id) ON DELETE CASCADE,
+    PRIMARY KEY (weekly_template_id, day_of_week, shift_id)
+);
+-- Table: employee_weekly_template_assignments
+CREATE TABLE employee_weekly_template_assignments (
+    assignment_id SERIAL PRIMARY KEY,
+    employee_id INT NOT NULL REFERENCES core.employees(employee_id) ON DELETE CASCADE,
+    weekly_template_id INT NOT NULL REFERENCES weekly_templates(weekly_templates_id) ON DELETE CASCADE,
+    start_date DATE NOT NULL,
+    end_date DATE, -- NULL means open-ended
+    assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 -- Create indexes
 CREATE INDEX IF NOT EXISTS idx_weekly_hours_employee ON time.weekly_hours(employee_id);
 CREATE INDEX IF NOT EXISTS idx_roster_employee ON time.monthly_rosters(employee_id);

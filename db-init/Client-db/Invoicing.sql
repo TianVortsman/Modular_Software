@@ -224,14 +224,18 @@ CREATE TABLE invoicing.invoice_items (
 -- 9. Invoice Payment (references invoices)
 DROP TABLE IF EXISTS invoicing.invoice_payment CASCADE;
 CREATE TABLE invoicing.invoice_payment (
-    inv_paym_id SERIAL PRIMARY KEY,
+    invoice_payment_id SERIAL PRIMARY KEY,
     invoice_id INTEGER REFERENCES invoicing.invoices(invoice_id) ON DELETE CASCADE,
-    paym_date DATE NOT NULL,
-    paym_amount NUMERIC(12,0) NOT NULL,
+    payment_date DATE NOT NULL,
+    payment_amount NUMERIC(12,2) NOT NULL,
+    payment_type VARCHAR(20) DEFAULT 'payment' CHECK (payment_type IN ('payment', 'refund')),
+    related_document_id INTEGER REFERENCES invoicing.customer_credit_notes(credit_note_id),
+    related_document_type VARCHAR(20) CHECK (related_document_type IN ('credit_note', 'invoice')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
 );
+
 
 -- 10. Document History (references core.employees)
 DROP TABLE IF EXISTS invoicing.document_history CASCADE;
@@ -277,4 +281,13 @@ CREATE TABLE invoicing.customer_credit_notes (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
+);
+-- 13. Credit Note Applications (track application of credit notes to invoices)
+CREATE TABLE IF NOT EXISTS invoicing.credit_note_applications (
+    application_id SERIAL PRIMARY KEY,
+    credit_note_id INTEGER NOT NULL REFERENCES invoicing.customer_credit_notes(credit_note_id) ON DELETE CASCADE,
+    invoice_id INTEGER NOT NULL REFERENCES invoicing.invoices(invoice_id) ON DELETE CASCADE,
+    amount_applied NUMERIC(12,2) NOT NULL CHECK (amount_applied > 0),
+    applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    applied_by INTEGER REFERENCES core.employees(employee_id)
 );
