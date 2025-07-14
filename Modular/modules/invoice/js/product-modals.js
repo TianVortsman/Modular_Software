@@ -124,12 +124,18 @@ class ProductModalUI {
             showResponseModal('Please fill in all required fields.', 'error');
             return;
         }
-        // Extra safety: remove lingering product_id field in add mode
+        // Remove lingering product_id field in add mode
         if (this.mode === 'add' && this.formManager.form) {
             const pidFields = this.formManager.form.querySelectorAll('input[name="product_id"]');
             pidFields.forEach(f => f.remove());
         }
+        // Collect all required fields for backend
         const formData = new FormData(this.formManager.form);
+        // Ensure supplier_id is included if present
+        const supplierDropdown = this.formManager.supplierDropdown;
+        if (supplierDropdown && supplierDropdown.value) {
+            formData.set('supplier_id', supplierDropdown.value);
+        }
         const isEditMode = this.mode === 'edit';
         showLoadingModal(isEditMode ? 'Saving changes...' : 'Adding product...');
         let apiCall = isEditMode
@@ -142,7 +148,6 @@ class ProductModalUI {
                 const imageInput = this.formManager.imageInput;
                 if (imageInput && imageInput.files && imageInput.files.length > 0) {
                     const file = imageInput.files[0];
-                    // Determine type/category for upload
                     let uploadType = null;
                     if (this.formManager && this.formManager.typeDropdown) {
                         uploadType = this.formManager.typeDropdown.options[this.formManager.typeDropdown.selectedIndex]?.textContent?.toLowerCase() || 'product';
@@ -151,10 +156,8 @@ class ProductModalUI {
                     } else {
                         uploadType = 'product';
                     }
-                    // Always use the product_id returned from backend for add
                     const uploadProductId = data.data && data.data.product_id ? data.data.product_id : (data.product_id || this.productId);
                     await ProductAPI.uploadImage(file, uploadProductId, uploadType);
-                    // Update modal preview image live
                     const preview = document.getElementById('universalItemImagePreview');
                     if (preview) {
                         const url = preview.src.split('?')[0];

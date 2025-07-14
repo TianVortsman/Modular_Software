@@ -149,6 +149,7 @@ class ProductScreenManager {
         if (product.status === 'discontinued') statusBadge = '<span class="status-badge">Discontinued</span>';
         else if (product.status === 'disabled' || product.status === 'inactive') statusBadge = '<span class="status-badge">Disabled</span>';
         else if (product.stock_quantity !== undefined && product.stock_quantity <= 2) statusBadge = '<span class="status-badge">Low Stock</span>';
+        // Use backend field names for badges and info
         let badges = '';
         if (product.category_name) badges += `<span class="category-badge">${product.category_name}</span>`;
         if (product.subcategory_name) badges += `<span class="subcategory-badge">${product.subcategory_name}</span>`;
