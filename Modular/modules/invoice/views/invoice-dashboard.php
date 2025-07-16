@@ -170,7 +170,7 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
     <footer>
         <p>&copy; 2024 Modular Software. All rights reserved.</p>
     </footer>
-    <?php include('../modals/invoice-modal.php'); ?>
+    <?php include('../modals/document-modal.php'); ?>
     <?php include '../../../src/UI/response-modal.php'; ?>
     <?php include '../../../src/UI/loading-modal.php'; ?>
     <script type="module" src="../js/dashboard.js"></script>

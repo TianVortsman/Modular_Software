@@ -1,8 +1,8 @@
-import { fetchDashboardCards, fetchInvoices, fetchRecurringInvoices, fetchInvoiceChartData, saveInvoiceApi } from './invoice-api.js';
-import { openInvoiceModal, setModalMode, closeInvoiceModal } from './invoice-modal.js';
-import { buildQueryParams } from '../../../public/assets/js/api.js';
-import { setInvoiceFormData } from './invoice-form.js';
-import { fetchAndSetInvoice } from './invoice-api.js';
+import { fetchDashboardCards, fetchInvoices, fetchRecurringInvoices, fetchInvoiceChartData } from './document-api.js';
+import { openDocumentModal, setModalMode, closeDocumentModal } from './document-modal.js';
+import { buildQueryParams } from '../../../public/assets/js/helpers.js';
+import { setDocumentFormData } from './document-form.js';
+import { fetchAndSetDocument } from './document-api.js';
 
 // Add custom context menu HTML to the page
 const contextMenu = document.createElement('div');
@@ -36,21 +36,19 @@ document.addEventListener('DOMContentLoaded', async function() {
       // Always available options
       const options = [
         { label: 'Edit', action: async (invoice) => {
-          // Fetch full invoice data, open modal in edit mode, and fill form
+          // Fetch full document data, open modal in edit mode, and fill form
           try {
-            const res = await fetch(`../api/invoice_modal.php?action=fetch_invoice&invoice_id=${encodeURIComponent(invoice.invoice_id)}`);
+            const res = await fetch(`../api/document_modal.php?action=fetch_document&document_id=${encodeURIComponent(invoice.document_id)}`);
             const result = await res.json();
-            if (result.success && result.invoice) {
-                window._lastInvoiceType = result.invoice.invoice_type || 'quotation';
-                openInvoiceModal('edit');
+            if (result.success && result.document) {
+                openDocumentModal('edit');
               setModalMode('edit');
-              console.log('[dashboard.js] Passing to setInvoiceFormData:', result.invoice);
-              setInvoiceFormData(result.invoice);
+              setDocumentFormData(result.document);
             } else {
-              showResponseModal(result.message || 'Failed to load invoice for editing', 'error');
+              showResponseModal(result.message || 'Failed to load document for editing', 'error');
             }
           } catch (err) {
-            showResponseModal('Error loading invoice: ' + (err.message || err), 'error');
+            showResponseModal('Error loading document: ' + (err.message || err), 'error');
           }
         } },
         { label: 'Finalize', action: () => {/* TODO: implement */} },
@@ -226,14 +224,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
 
-    const openInvoiceBtn = document.getElementById('open-invoice-modal-btn');
-    if (openInvoiceBtn) {
-        openInvoiceBtn.addEventListener('click', () => openInvoiceModal('create'));
+    const openDocumentBtn = document.getElementById('open-invoice-modal-btn');
+    if (openDocumentBtn) {
+        openDocumentBtn.addEventListener('click', () => openDocumentModal('create'));
     }
 
-    const closeInvoiceBtn = document.getElementById('modal-invoice-close-btn');
-    if (closeInvoiceBtn) {
-        closeInvoiceBtn.addEventListener('click', closeInvoiceModal);
+    const closeDocumentBtn = document.getElementById('modal-invoice-close-btn');
+    if (closeDocumentBtn) {
+        closeDocumentBtn.addEventListener('click', closeDocumentModal);
     }
 
     // Initial load

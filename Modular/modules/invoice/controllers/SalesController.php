@@ -32,3 +32,39 @@ function list_salespeople(): array {
         ];
     }
 }
+function search_salesperson(string $search = ''): array {
+    global $conn;
+    try {
+        $sql = "SELECT employee_id, employee_first_name, employee_last_name 
+                FROM core.employees 
+                WHERE is_sales = TRUE";
+        $params = [];
+        if (!empty($search)) {
+            $sql .= " AND (employee_first_name ILIKE :search OR employee_last_name ILIKE :search OR CAST(employee_id AS TEXT) ILIKE :search)";
+            $params[':search'] = '%' . $search . '%';
+        }
+        $sql .= " ORDER BY employee_last_name, employee_first_name";
+        $stmt = $conn->prepare($sql);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+        $stmt->execute();
+        $salespeople = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return [
+            'success' => true,
+            'message' => 'Salespeople search successful',
+            'data' => $salespeople
+        ];
+    } catch (Exception $e) {
+        $msg = '[search_salesperson] ' . $e->getMessage();
+        error_log($msg);
+        log_user_action(null, 'search_salesperson', null, $msg);
+        return [
+            'success' => false,
+            'message' => 'Failed to search salespeople',
+            'data' => null,
+            'error_code' => 'SALESPERSON_SEARCH_ERROR'
+        ];
+    }
+}
+

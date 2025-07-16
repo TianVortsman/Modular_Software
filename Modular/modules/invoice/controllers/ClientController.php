@@ -23,7 +23,17 @@ function list_clients(array $options = []): array {
         $sortDir = 'desc';
     }
     $offset = ($page - 1) * $limit;
-    $sql = "SELECT c.client_id, c.client_type, c.client_name, c.first_name, c.last_name, c.client_email, c.client_cell, c.client_tell, (SELECT COUNT(*) FROM invoicing.documents d2 WHERE d2.client_id = c.client_id) AS total_invoices, (SELECT MAX(d3.issue_date) FROM invoicing.documents d3 WHERE d3.client_id = c.client_id) AS last_invoice_date, (SELECT COALESCE(SUM(d4.balance_due), 0) FROM invoicing.documents d4 WHERE d4.client_id = c.client_id AND d4.document_status IN ('unpaid', 'partially_paid')) AS outstanding_amount FROM invoicing.clients c WHERE 1=1";
+    $sql = "SELECT c.client_id, c.client_type, c.client_name, c.first_name, c.last_name, c.client_email, c.client_cell, c.client_tell, c.vat_number, c.registration_number, 
+        (SELECT COUNT(*) FROM invoicing.documents d2 WHERE d2.client_id = c.client_id) AS total_invoices, 
+        (SELECT MAX(d3.issue_date) FROM invoicing.documents d3 WHERE d3.client_id = c.client_id) AS last_invoice_date, 
+        (SELECT COALESCE(SUM(d4.balance_due), 0) FROM invoicing.documents d4 WHERE d4.client_id = c.client_id AND d4.document_status IN ('unpaid', 'partially_paid')) AS outstanding_amount, 
+        a.address_line1, a.address_line2, a.city, a.suburb, a.province, a.country, a.postal_code
+        FROM invoicing.clients c
+        LEFT JOIN invoicing.client_addresses ca ON ca.client_id = c.client_id AND ca.address_id = (
+            SELECT address_id FROM invoicing.client_addresses ca2 WHERE ca2.client_id = c.client_id LIMIT 1
+        )
+        LEFT JOIN invoicing.address a ON a.address_id = ca.address_id AND (a.deleted_at IS NULL OR a.deleted_at > NOW())
+        WHERE 1=1";
     $params = [];
     if (!empty($type)) {
         $sql .= " AND c.client_type = :type";

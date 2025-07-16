@@ -1,457 +1,343 @@
-/* Base Styles */
-:root {
-  --background-color: var(--color-background);
-  --text-color: var(--color-text-light);
-  --primary-accent: var(--color-primary);
-  --input-bg: var(--color-secondary);
-  --border-color: var(--color-text-dark);
-  --btn-hover-bg: var(--color-hover);
-  --highlight-color: var(--color-hover);
-}
-
-/* Modal Container */
-.modal-invoice-container {
-  display: none;
-  justify-content: center;
-  align-items: center;
+.modal-document-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
-  z-index: var(--z-index-modal);
-}
-
-.modal-invoice-content {
-  background-color: var(--color-secondary);
-  border-radius: var(--radius-medium);
-  width: 90%;
-  max-width: var(--max-width);
-  margin: var(--spacing-small);
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: var(--z-index-modal, 2000);
   display: flex;
-  flex-direction: column;
-  padding: 8px;
-}
-
-.company-info-section{
-  background-color: var(--background-color);
-  border-radius: 6px;
-  padding: 10px;
-  margin-top: 16px;
-}
-
-/* Modal Header */
-.modal-invoice-header {
-  background-color: var(--primary-accent);
-  padding: var(--spacing-medium);
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  color: var(--background-color);
-  font-size: var(--font-size-large);
-  height: 60px;
-  margin-bottom: 10px;
+  justify-content: center;
 }
 
-.modal-invoice-close {
-  font-size: var(--font-size-large);
-  color: var(--background-color);
-  cursor: pointer;
-  background-color: red;
-  padding: 3px 5px;
-  border-radius: 4px;
-  opacity: 0.5;
-}
-
-.modal-invoice-close:hover {
-  opacity: 1;
-  transform: rotate(180deg) 0.5;
-  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-}
-
-/* Modal Body */
-.modal-invoice-body {
-  padding: var(--spacing-medium);
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-
-/* Form */
-.modal-invoice-form {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: var(--spacing-medium);
-}
-
-/* Left Section */
-.modal-invoice-left,
-.modal-invoice-right {
-  width: 48%;
+.modal-document {
+  background: var(--modal-bg, var(--color-background));
+  color: var(--color-text-light);
+  border-radius: var(--radius-large);
+  box-shadow: 0 8px 40px var(--shadow-dark);
+  border: 1px solid var(--modal-border, var(--border-color));
+  padding: var(--modal-padding, var(--spacing-large));
+  width: 95vw;
+  max-height: 95vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-small);
+  gap: var(--spacing-large);
+  font-family: var(--font-primary);
 }
 
-.modal-invoice-table-container{
-  border-radius: 4px;
-}
-
-.modal-invoice-left select,
-.modal-invoice-left input,
-.modal-invoice-right input,
-.modal-invoice-right select,
-.modal-invoice-notes textarea,
-.modal-invoice-table input,
-.modal-invoice-table select,
-.modal-dealership-vehicle-details input,
-.modal-dealership-vehicle-details select,
-.modal-dealership-extras input,
-.modal-dealership-extras select {
-  padding: var(--spacing-small);
-  border: 1px solid var(--border-color);
-  background-color: var(--input-bg);
-  color: var(--text-color);
-  border-radius: var(--radius-small);
-}
-
-/* Invoice Table */
-.modal-invoice-table, 
-.modal-dealership-invoice-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin-bottom: var(--spacing-medium);
-  box-shadow: var(--shadow-medium);
-  border: 1px solid var(--color-text-dark);
-  border-radius: var(--radius-small);
-  background-color: var(--color-secondary);
-}
-
-.modal-invoice-table th,
-.modal-invoice-table td,
-.modal-dealership-invoice-table th,
-.modal-dealership-invoice-table td {
-  padding: var(--spacing-small);
-  border: 0.5px solid var(--color-hover);
-  border-radius: 4px;
-  text-align: center;
-  background-color: var(--color-secondary);
-  color: var(--text-color);
-}
-
-.modal-invoice-table th,
-.modal-dealership-invoice-table th {
-  font-weight: bold;
-}
-
-/* Totals Section */
-.modal-invoice-totals {
-  margin-top: var(--spacing-medium);
+.modal-document-header {
   display: flex;
-  justify-content: flex-end;
-  width: 100%;
-}
-
-.invoice-totals {
-  display: flex;
-  flex-direction: column;
-  align-items: end;
-  gap: var(--spacing-small);
-}
-
-.invoice-totals p {
-  font-size: var(--font-size-large);
-  text-wrap: nowrap;
-}
-
-.subtotal,
-.tax-total,
-.final-total {
-  font-weight: bold;
-  color: var(--color-hover);
-}
-
-/* Footer Section */
-.modal-invoice-footer {
-  padding: var(--spacing-medium);
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-top: auto;
-  width: 100%;
-  background-color: var(--color-secondary);
-  border-top: 1px solid var(--border-color);
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: var(--spacing-small);
 }
 
-.modal-invoice-footer p {
-  color: var(--text-color);
-  font-size: var(--font-size-small);
+.modal-document-title {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: var(--color-primary);
 }
 
-/* Notes Section */
-.modal-invoice-notes {
-  width: 32%;
-  display: inline-block;
-  margin-right: 2%;
-}
-
-.modal-invoice-notes textarea {
-  width: 100%;
-  height: 100px;
-  padding: var(--spacing-small);
-  background-color: var(--input-bg);
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-small);
-  resize: none;
-}
-
-/* Action Buttons */
-.modal-invoice-buttons {
-  width: 100%;
-  display: flex;
-  gap: var(--spacing-medium);
-  justify-content: flex-start;
-  margin-top: var(--spacing-small);
-  order: -1;
-  flex-wrap: wrap;
-  padding: 0; /* Optional: Add padding to the container if needed */
-}
-
-.modal-invoice-add-item,
-.modal-invoice-add-discount,
-.modal-invoice-clear,
-.modal-invoice-preview,
-.modal-invoice-create {
-  background-color: var(--btn-bg);
-  color: var(--text-color);
-  padding: var(--spacing-small) var(--spacing-medium); /* Adjust this to make buttons smaller */
-  border-radius: var(--radius-small);
+.modal-document-close {
+  background: none;
   border: none;
+  color: var(--color-text-light);
+  font-size: 2.2rem;
   cursor: pointer;
-  font-size: var(--font-size-small);
-  width: auto; /* Ensure buttons are not stretched to full width */
-  max-width: 200px;
-  height: fit-content; 
+  opacity: 0.7;
+  line-height: 1;
+  padding: 0 10px;
+  border-radius: 50%;
+}
+.modal-document-close:hover {
+  color: var(--color-error);
+  background: var(--color-secondary);
+  opacity: 1;
 }
 
-.modal-invoice-add-item:hover,
-.modal-invoice-add-discount:hover,
-.modal-invoice-clear:hover,
-.modal-invoice-preview:hover,
-.modal-invoice-create:hover {
-  background-color: var(--btn-hover-bg);
+.modal-document-top-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-large);
+  width: 100%;
 }
 
-.total-container{
+.modal-document-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-large);
+  width: 100%;
+}
+
+.modal-document-left,
+.modal-document-right {
+  flex: 1 1 300px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-small);
+  min-width: 280px;
+}
+
+.modal-document-left input,
+.modal-document-left select,
+.modal-document-right input,
+.modal-document-right select {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--input-bg);
+  color: var(--color-text-light);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-small);
+  padding: var(--spacing-small) var(--spacing-medium);
+  font-size: var(--font-size-base);
+  font-family: var(--font-primary);
+  outline: none;
+  transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+  box-shadow: 0 1px 2px var(--shadow-light);
+}
+.modal-document-left input:focus,
+.modal-document-right input:focus,
+.modal-document-left select:focus,
+.modal-document-right select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-fade);
+}
+
+.search-client-container,
+.search-salesperson-container {
   position: relative;
 }
 
-/* Remove Button */
-.remove-row {
-  opacity: 0;
-  visibility: hidden;
-  background-color: #e74c3c;
-  color: var(--color-text-light);
-  border: none;
-  border-radius: var(--radius-small);
-  padding: var(--spacing-small);
-  font-size: var(--font-size-large);
-  cursor: pointer;
-  transition: opacity var(--transition-speed), visibility var(--transition-speed), background-color var(--transition-speed);
+.search-client-dropdown,
+.search-salesperson-dropdown {
   position: absolute;
-  top: 10%;
-  right: 5%;
-}
-
-.modal-invoice-table tr:hover .remove-row {
-  opacity: 1;
-  visibility: visible;
-}
-
-.remove-row:hover {
-  background-color: #c0392b;
-}
-
-/* Dealership Tables */
-.modal-invoice-table-container .modal-dealership-vehicle-details,
-.modal-invoice-table-container .modal-dealership-extras {
-  background-color: var(--color-secondary);
-  padding: var(--spacing-small);
-  margin-bottom: var(--spacing-medium);
-}
-
-/* Dealership and Extras Tables */
-.modal-invoice-table-container .modal-dealership-vehicle-details,
-.modal-invoice-table-container .modal-dealership-extras {
+  top: 100%;
+  left: 0;
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin-bottom: var(--spacing-medium);
-  box-shadow: var(--shadow-medium);
-  border: 1px solid var(--border-color);
+  max-height: 180px;
+  overflow-y: auto;
+  background: var(--color-secondary);
+  border: 1px solid var(--color-primary);
   border-radius: var(--radius-small);
-  background-color: var(--color-secondary);
+  box-shadow: 0 4px 12px var(--shadow-medium);
+  z-index: 10001;
+  display: none;
+}
+.search-client-dropdown.active,
+.search-salesperson-dropdown.active {
+  display: block;
+}
+.search-result-client,
+.search-result-salesperson {
+  padding: var(--spacing-small) var(--spacing-medium);
+  cursor: pointer;
+  transition: background var(--transition-speed), color var(--transition-speed);
+  border-bottom: 1px solid var(--border-color);
+}
+.search-result-client:last-child,
+.search-result-salesperson:last-child {
+  border-bottom: none;
+}
+.search-result-client:hover,
+.search-result-salesperson:hover {
+  background: var(--color-primary-fade);
+  color: var(--color-primary-dark);
 }
 
-.modal-invoice-table-container .modal-dealership-vehicle-details th,
-.modal-invoice-table-container .modal-dealership-vehicle-details td,
-.modal-invoice-table-container .modal-dealership-extras th,
-.modal-invoice-table-container .modal-dealership-extras td {
-  padding: var(--spacing-small);
-  border: 0.5px solid var(--highlight-color);
-  text-align: center;
-  color: var(--text-color);
-  background-color: var(--color-secondary);
+.modal-document-table-container,
+.vehicle-section,
+.vehicle-extras-section {
+  overflow-x: auto;
+  margin-top: var(--spacing-medium);
+  background: var(--color-background-light);
+  border-radius: var(--radius-medium);
+  box-shadow: 0 2px 8px var(--shadow-light);
+  padding: var(--spacing-medium);
+  width: 100%;
 }
 
-.modal-invoice-table-container .modal-dealership-vehicle-details th,
-.modal-invoice-table-container .modal-dealership-extras th {
+.modal-document-table,
+.modal-vehicle-table,
+.modal-extras-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.modal-document-table th,
+.modal-document-table td,
+.modal-vehicle-table th,
+.modal-vehicle-table td,
+.modal-extras-table th,
+.modal-extras-table td {
+  padding: var(--spacing-small) var(--spacing-medium);
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  font-size: var(--font-size-base);
+}
+.modal-document-table th,
+.modal-vehicle-table th,
+.modal-extras-table th {
+  background: var(--color-secondary);
+  color: var(--color-primary);
   font-weight: bold;
 }
-
-
-invoice-number :Hover{
-  cursor: not-allowed;
-}
-
-.search-customer-container input{
+.modal-document-table input,
+.modal-document-table select,
+.modal-vehicle-table input,
+.modal-vehicle-table select,
+.modal-extras-table input,
+.modal-extras-table select {
   width: 100%;
-  padding: var(--spacing-small);
+  background: var(--input-bg);
+  color: var(--color-text-light);
   border: 1px solid var(--border-color);
-  background-color: var(--input-bg);
-  color: var(--text-color);
   border-radius: var(--radius-small);
+  padding: var(--spacing-small);
+  font-family: var(--font-primary);
+  box-shadow: 0 1px 2px var(--shadow-light);
+}
+.modal-document-table input:focus,
+.modal-document-table select:focus,
+.modal-vehicle-table input:focus,
+.modal-vehicle-table select:focus,
+.modal-extras-table input:focus,
+.modal-extras-table select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-fade);
 }
 
-
-.search-container {
-  position: relative !important;
-}
-.search-dropdown1, .search-dropdown2 {
-  position: absolute;
-  top: 100%; /* Position the dropdown right below the input */
-  left: 10%;
-  width: 80%; /* Ensure the dropdown matches the width of the input */
-  max-height: 160px;
-  overflow-y: auto;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 10001;
-  display: none; /* Hidden by default */
-  font-size: 14px;
-  color: #333;
+.modal-document-bottom-section {
+  margin-top: var(--spacing-large);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-medium);
 }
 
-.search-container2 {
-  position: relative !important; /* Ensure that .search-container2 is the reference point for the dropdowns */
+.modal-document-totals {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-background-light);
+  border-radius: var(--radius-medium);
+  padding: var(--spacing-small) var(--spacing-medium);
+  box-shadow: 0 1px 4px var(--shadow-light);
 }
 
-
-
-.search-dropdown3, .search-dropdown4 {
-  position: absolute; /* Ensure these dropdowns are relative to .search-container2 */
-  top: 100%; /* Position the dropdown right below the input */
-  left: 10%;
-  width: 80%;
-  max-height: 160px;
-  overflow-y: auto;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 10001;
-  display: none; /* Hidden by default */
-  font-size: 14px;
-  color: #333;
+.document-totals p {
+  margin: 0 0 2px 0;
+  font-size: 1.1rem;
+  color: var(--color-primary);
+  font-weight: 500;
 }
 
-.search-vehicle-container{
-  position: relative !important;
+.modal-document-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-large);
 }
 
-.search-dropdown5, .search-dropdown6{
-  position: absolute;
-  top: 100%; /* Position the dropdown right below the input */
-  left: 10%;
-  width: 80%;
-  max-height: 160px;
-  overflow-y: auto;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 10001;
-  display: none; /* Hidden by default */
-  font-size: 14px;
-  color: #333;
+.modal-document-notes {
+  flex: 2 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-small);
+}
+.modal-document-notes textarea {
+  width: 100%;
+  min-height: 60px;
+  background: var(--input-bg);
+  color: var(--color-text-light);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-small);
+  padding: var(--spacing-small) var(--spacing-medium);
+  font-family: var(--font-primary);
+  resize: vertical;
+  transition: border-color var(--transition-speed);
+}
+.modal-document-notes textarea:focus {
+  border-color: var(--color-primary);
 }
 
-
-.search-customer-dropdown{
-  position: absolute;
-  top: 100%; /* Position the dropdown right below the input */
-  left: 10%;
-  width: 80%;
-  max-height: 160px;
-  overflow-y: auto;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 10001;
-  display: none; /* Hidden by default */
-  font-size: 14px;
-  color: #333;
+.modal-document-actions {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-small);
 }
 
-
-.search-results-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  background-color: var(--background-color);
-}
-
-.search-result-item {
-  padding: 10px;
+.modal-document-actions button,
+.modal-document-btn {
+  background: var(--btn-bg);
+  color: var(--color-text-light);
+  border: none;
+  border-radius: var(--radius-medium);
+  padding: var(--spacing-medium) var(--spacing-large);
+  font-size: var(--font-size-large);
+  font-weight: 600;
   cursor: pointer;
-  color: white; /* Set default text color */
-  align-content: center;
-  justify-content: center;
-  font-weight: 400;
-  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth hover transition */
-  height: 30px;
+  transition: background var(--transition-speed), box-shadow var(--transition-speed);
+  box-shadow: 0 2px 8px var(--shadow-light);
+}
+.modal-document-actions button:hover {
+  background: var(--btn-hover-bg);
 }
 
-.search-result-customer{
-  padding: 10px;
+
+.modal-document-buttons button {
+  background: var(--btn-bg);
+  color: var(--color-text-light);
+  border: none;
+  border-radius: var(--radius-medium);
+  padding: var(--spacing-medium) var(--spacing-large);
+  font-size: var(--font-size-base);
+  font-weight: 500;
   cursor: pointer;
-  color: white; /* Set default text color */
-  align-content: center;
+  transition: background var(--transition-speed), box-shadow var(--transition-speed);
+  box-shadow: 0 2px 8px var(--shadow-light);
+  margin-right: var(--spacing-small);
+}
+
+.modal-document-buttons button:last-child {
+  margin-right: 0;
+}
+
+.modal-document-buttons button:hover {
+  background: var(--btn-hover-bg);
+}
+
+.total-cell {
+  position: relative;
+  text-align: center;
+  pointer-events: none;
+}
+.remove-row-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--color-error);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  font-weight: 400;
-  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth hover transition */
-  height: 30px;
-  background-color: #333;
+  cursor: pointer;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: auto;
+  transition: opacity 0.2s, background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px var(--shadow-dark);
 }
-
-.search-result-customer :hover{
-  background-color: #ffd700; /* Gold hover effect */
-  color: #1a1a1d; /* Dark text for visibility on hover */
+.document-item-row:hover .remove-row-btn {
+  opacity: 1;
 }
-
-.search-result-item :hover {
-  background-color: #ffd700; /* Gold hover effect */
-  color: #1a1a1d; /* Dark text for visibility on hover */
+.remove-row-btn:hover {
+  background: var(--color-danger);
+  box-shadow: 0 6px 24px var(--shadow-dark);
 }
-
-.search-result-item:active {
-  background-color: #e5b100; /* Darker gold on click */
-}
-
