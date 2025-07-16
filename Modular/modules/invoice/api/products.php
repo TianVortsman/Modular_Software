@@ -237,8 +237,8 @@ try {
                         p.product_price, 
                         p.tax_rate_id, 
                         tr.rate AS tax_rate, 
-                        pi.stock_quantity
-                    FROM core.product p
+                        pi.product_stock_quantity
+                    FROM core.products p
                     LEFT JOIN inventory.product_inventory pi ON p.product_id = pi.product_id
                     LEFT JOIN core.tax_rates tr ON p.tax_rate_id = tr.tax_rate_id
                     WHERE (p.product_name ILIKE :q OR p.sku ILIKE :q OR p.barcode ILIKE :q OR p.product_description ILIKE :q)

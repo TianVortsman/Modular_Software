@@ -113,6 +113,17 @@ try {
             $result = delete_client($client_id, $deleted_by);
             echo json_encode($result);
             exit;
+        case 'search':
+            // Use list_clients to search the real DB
+            $options = [
+                'search' => $_GET['query'] ?? '',
+                'limit' => 10,
+                'page' => 1
+            ];
+            $result = list_clients($options);
+            // Return only the data array for dropdown compatibility
+            echo json_encode($result['data'] ?? []);
+            exit;
         default:
             echo json_encode(['success' => false, 'message' => 'Invalid action', 'data' => null, 'error_code' => 'INVALID_ACTION']);
             exit;

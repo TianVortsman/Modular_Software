@@ -7,8 +7,7 @@ if (session_status() === PHP_SESSION_NONE) {
 date_default_timezone_set('UTC');
 require_once __DIR__ . '/../../../src/Core/Database/ClientDatabase.php';
 use App\Core\Database\ClientDatabase;
-require_once __DIR__ . '/../controllers/InvoiceController.php';
-use App\modules\invoice\controllers\InvoiceController;
+require_once __DIR__ . '/../controllers/SalesController.php';
 
 header('Content-Type: application/json');
 error_reporting(E_ALL);
@@ -34,6 +33,39 @@ try {
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $action = $_GET['action'] ?? '';
     $method = $_SERVER['REQUEST_METHOD'];
+
+    // Handle mock search endpoints
+    if ($action === 'search_salesperson') {
+        require_once __DIR__ . '/../controllers/SalesController.php';
+        $query = $_GET['query'] ?? '';
+        $result = \App\modules\invoice\controllers\search_salesperson($query);
+        // Only return id and name
+        $data = [];
+        if ($result['success'] && is_array($result['data'])) {
+            foreach ($result['data'] as $sp) {
+                $data[] = [
+                    'salesperson_id' => $sp['employee_id'],
+                    'salesperson_name' => trim(($sp['employee_first_name'] ?? '') . ' ' . ($sp['employee_last_name'] ?? ''))
+                ];
+            }
+        }
+        echo json_encode(['success' => true, 'results' => $data]);
+        exit;
+    }
+    if ($action === 'search_product') {
+        // Return mock product search results
+        $results = [
+            [ 'product_id' => 1, 'sku' => 'P1001', 'product_name' => 'Widget A', 'product_description' => 'A Widget', 'product_price' => 100, 'tax_rate' => 15 ],
+            [ 'product_id' => 2, 'sku' => 'P1002', 'product_name' => 'Widget B', 'product_description' => 'B Widget', 'product_price' => 200, 'tax_rate' => 15 ],
+            [ 'product_id' => 3, 'sku' => 'P1003', 'product_name' => 'Widget C', 'product_description' => 'C Widget', 'product_price' => 300, 'tax_rate' => 15 ]
+        ];
+        $query = $_GET['query'] ?? '';
+        $filtered = array_filter($results, function($p) use ($query) {
+            return stripos($p['product_name'], $query) !== false || stripos($p['sku'], $query) !== false;
+        });
+        echo json_encode(array_values($filtered));
+        exit;
+    }
 
     switch ($action) {
         case 'get_company_info':
@@ -98,6 +130,7 @@ try {
             ]);
             break;
         case 'fetch_invoice':
+            require_once __DIR__ . '/../controllers/InvoiceController.php';
             if ($method !== 'GET') {
                 throw new Exception('GET method required for fetch_invoice action');
             }
@@ -110,11 +143,12 @@ try {
                 ]);
                 break;
             }
-            $controller = new InvoiceController($conn);
+            $controller = new \App\modules\invoice\controllers\InvoiceController($conn);
             $result = $controller->fetchInvoice($invoice_id);
             echo json_encode($result);
             break;
         case 'save_invoice':
+            require_once __DIR__ . '/../controllers/InvoiceController.php';
             if ($method !== 'POST') {
                 throw new Exception('POST method required for save_invoice action');
             }
