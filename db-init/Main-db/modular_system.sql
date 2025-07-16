@@ -111,20 +111,20 @@ INSERT INTO public.customers (
     clock_server_port
 ) VALUES 
 (
-    'Company A',
-    'companya@example.com',
-    'ACC001',
-    'db1',
+    'Pokenossie',
+    'pokenossie@example.com',
+    'ACC003',
+    'db3',
     '2025-01-28 21:37:13.950026',
     'active',
     NULL,
     10000
 ),
 (
-    'Company B',
-    'companyb@example.com',
-    'ACC002',
-    'db2',
+    'pokenossie toets',
+    'pokenossietoets@example.com',
+    'ACC004',
+    'db4',
     '2025-01-28 21:37:13.950026',
     'active',
     NULL,

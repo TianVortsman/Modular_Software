@@ -78211,3 +78211,2343 @@ Content-Disposition: form-data; name="product_id"
 [16-Jul-2025 06:58:28 UTC] [DatabaseConfig] Client config created with dbname: ACC002
 [16-Jul-2025 06:58:28 UTC] Processing action: list with method: GET
 [16-Jul-2025 06:58:28 UTC] Request processed successfully for action: list
+[16-Jul-2025 10:26:51 UTC] Login attempt from 172.18.0.1 with email: tianryno01@gmail.com
+[16-Jul-2025 10:26:51 UTC] Starting login process for email: tianryno01@gmail.com
+[16-Jul-2025 10:26:51 UTC] Attempting technician authentication for: tianryno01@gmail.com
+[16-Jul-2025 10:26:51 UTC] Executing technician query with statement: check_tech_17526616112276
+[16-Jul-2025 10:26:51 UTC] Technician query execution successful
+[16-Jul-2025 10:26:51 UTC] Technician found. Checking password...
+[16-Jul-2025 10:26:51 UTC] Password verification result: Success (Hash starts with: $2y$10$k.Q...)
+[16-Jul-2025 10:26:51 UTC] Technician login successful - Session setup complete
+[16-Jul-2025 10:26:51 UTC] Technician authentication result: SUCCESS - Technician login successful
+[16-Jul-2025 10:26:51 UTC] Login successful for tianryno01@gmail.com. Redirecting to: ../../../public/admin/techlogin.php
+[16-Jul-2025 10:26:51 UTC] Current file: /var/www/html/public/admin/techlogin.php
+[16-Jul-2025 10:26:51 UTC] Current directory: /var/www/html/public/admin
+[16-Jul-2025 10:26:51 UTC] Document root: /var/www/html
+[16-Jul-2025 10:26:51 UTC] Trying controller path: /var/www/html/public/admin/../../../src/Controllers/ClockServerController.php - NOT FOUND
+[16-Jul-2025 10:26:51 UTC] Trying alt path: /var/www/html/public/admin/../../src/Controllers/ClockServerController.php - EXISTS
+[16-Jul-2025 10:26:51 UTC] Trying relative path: src/Controllers/ClockServerController.php - NOT FOUND
+[16-Jul-2025 10:26:51 UTC] Controller successfully loaded from file
+[16-Jul-2025 10:26:52 UTC] Customer list API called with: search=, page=1, perPage=10, sortBy=company_name, sortDirection=asc
+[16-Jul-2025 11:14:09 UTC] Current file: /var/www/html/public/admin/techlogin.php
+[16-Jul-2025 11:14:09 UTC] CustomerController->getCustomerModules error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "modules" does not exist
+LINE 1: SELECT module_id, module_name, display_name FROM modules ORD...
+                                                         ^
+[16-Jul-2025 11:14:09 UTC] Current directory: /var/www/html/public/admin
+[16-Jul-2025 11:14:09 UTC] Document root: /var/www/html
+[16-Jul-2025 11:14:09 UTC] Trying controller path: /var/www/html/public/admin/../../../src/Controllers/ClockServerController.php - NOT FOUND
+[16-Jul-2025 11:14:09 UTC] Trying alt path: /var/www/html/public/admin/../../src/Controllers/ClockServerController.php - EXISTS
+[16-Jul-2025 11:14:09 UTC] Trying relative path: src/Controllers/ClockServerController.php - NOT FOUND
+[16-Jul-2025 11:14:09 UTC] Controller successfully loaded from file
+[16-Jul-2025 11:14:09 UTC] [ClockServerController] Checking server availability at: http://hikvision-server:3000/clock/status/ACC001
+[16-Jul-2025 11:14:09 UTC] Successfully connected to clock server at: http://hikvision-server:3000/clock/status/ACC001
+[16-Jul-2025 11:14:09 UTC] [ClockServerController] Server available: YES
+[16-Jul-2025 11:14:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:14:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:16:07 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 5adc2ae610d50e242f6f4edc3aaa60fec3aa795d732839381698024a35b12af4
+    [tech_access_token] => 78b5ef2c1141791cf255204a5249ca4ae151365ed9b56fb7bd2e03c083ac41eb
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752668065
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:16:07 UTC] Received request - Method: GET, Action: list
+[16-Jul-2025 11:16:07 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:16:07 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:16:07 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:16:07 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:16:07 UTC] Processing action: list with method: GET
+[16-Jul-2025 11:16:07 UTC] [listProducts] DB Error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "inventory.product_inventory" does not exist
+LINE 21:             LEFT JOIN inventory.product_inventory pi ON p.pr...
+                               ^
+[16-Jul-2025 11:16:07 UTC] log_user_action error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "audit.user_actions" does not exist
+LINE 1: INSERT INTO audit.user_actions (user_id, module, action, rel...
+                    ^
+[16-Jul-2025 11:16:07 UTC] Request processed successfully for action: list
+[16-Jul-2025 11:16:07 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 5adc2ae610d50e242f6f4edc3aaa60fec3aa795d732839381698024a35b12af4
+    [tech_access_token] => 78b5ef2c1141791cf255204a5249ca4ae151365ed9b56fb7bd2e03c083ac41eb
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752668065
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:16:07 UTC] Received request - Method: GET, Action: list_types
+[16-Jul-2025 11:16:07 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:16:07 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:16:07 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:16:07 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:16:07 UTC] Processing action: list_types with method: GET
+[16-Jul-2025 11:16:07 UTC] Request processed successfully for action: list_types
+[16-Jul-2025 11:16:07 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 5adc2ae610d50e242f6f4edc3aaa60fec3aa795d732839381698024a35b12af4
+    [tech_access_token] => 78b5ef2c1141791cf255204a5249ca4ae151365ed9b56fb7bd2e03c083ac41eb
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752668065
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:16:07 UTC] Received request - Method: GET, Action: list_types
+[16-Jul-2025 11:16:07 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:16:08 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:16:08 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:16:08 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:16:08 UTC] Processing action: list_types with method: GET
+[16-Jul-2025 11:16:08 UTC] Request processed successfully for action: list_types
+[16-Jul-2025 11:16:08 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 5adc2ae610d50e242f6f4edc3aaa60fec3aa795d732839381698024a35b12af4
+    [tech_access_token] => 78b5ef2c1141791cf255204a5249ca4ae151365ed9b56fb7bd2e03c083ac41eb
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752668065
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:16:08 UTC] Received request - Method: GET, Action: list_categories
+[16-Jul-2025 11:16:08 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:16:08 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:16:08 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:16:08 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:16:08 UTC] Processing action: list_categories with method: GET
+[16-Jul-2025 11:16:08 UTC] Request processed successfully for action: list_categories
+[16-Jul-2025 11:17:06 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 5adc2ae610d50e242f6f4edc3aaa60fec3aa795d732839381698024a35b12af4
+    [tech_access_token] => 78b5ef2c1141791cf255204a5249ca4ae151365ed9b56fb7bd2e03c083ac41eb
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752668065
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:17:06 UTC] Received request - Method: GET, Action: list_types
+[16-Jul-2025 11:17:07 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:17:07 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:17:07 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:17:07 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:17:07 UTC] Processing action: list_types with method: GET
+[16-Jul-2025 11:17:07 UTC] Request processed successfully for action: list_types
+[16-Jul-2025 11:17:07 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 5adc2ae610d50e242f6f4edc3aaa60fec3aa795d732839381698024a35b12af4
+    [tech_access_token] => 78b5ef2c1141791cf255204a5249ca4ae151365ed9b56fb7bd2e03c083ac41eb
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752668065
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:17:07 UTC] Received request - Method: GET, Action: list_types
+[16-Jul-2025 11:17:07 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:17:07 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:17:07 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:17:07 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:17:07 UTC] Processing action: list_types with method: GET
+[16-Jul-2025 11:17:07 UTC] Request processed successfully for action: list_types
+[16-Jul-2025 11:17:07 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 5adc2ae610d50e242f6f4edc3aaa60fec3aa795d732839381698024a35b12af4
+    [tech_access_token] => 78b5ef2c1141791cf255204a5249ca4ae151365ed9b56fb7bd2e03c083ac41eb
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752668065
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:17:07 UTC] Received request - Method: GET, Action: list_categories
+[16-Jul-2025 11:17:07 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:17:07 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:17:07 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:17:07 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:17:07 UTC] Processing action: list_categories with method: GET
+[16-Jul-2025 11:17:07 UTC] Request processed successfully for action: list_categories
+[16-Jul-2025 11:17:07 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:17:07 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:17:07 UTC] [list_suppliers] SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "inventory.supplier" does not exist
+LINE 1: SELECT * FROM inventory.supplier WHERE deleted_at IS NULL OR...
+                      ^
+[16-Jul-2025 11:17:07 UTC] log_user_action error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "audit.user_actions" does not exist
+LINE 1: INSERT INTO audit.user_actions (user_id, module, action, rel...
+                    ^
+[16-Jul-2025 11:17:07 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 5adc2ae610d50e242f6f4edc3aaa60fec3aa795d732839381698024a35b12af4
+    [tech_access_token] => 78b5ef2c1141791cf255204a5249ca4ae151365ed9b56fb7bd2e03c083ac41eb
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752668065
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:17:07 UTC] Received request - Method: GET, Action: list_categories
+[16-Jul-2025 11:17:07 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:17:07 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:17:07 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:17:07 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:17:07 UTC] Processing action: list_categories with method: GET
+[16-Jul-2025 11:17:07 UTC] Request processed successfully for action: list_categories
+[16-Jul-2025 11:17:07 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 5adc2ae610d50e242f6f4edc3aaa60fec3aa795d732839381698024a35b12af4
+    [tech_access_token] => 78b5ef2c1141791cf255204a5249ca4ae151365ed9b56fb7bd2e03c083ac41eb
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752668065
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:17:07 UTC] Received request - Method: GET, Action: list_tax_rates
+[16-Jul-2025 11:17:07 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:17:07 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:17:07 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:17:07 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:17:07 UTC] Processing action: list_tax_rates with method: GET
+[16-Jul-2025 11:17:07 UTC] Request processed successfully for action: list_tax_rates
+[16-Jul-2025 11:21:36 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 5adc2ae610d50e242f6f4edc3aaa60fec3aa795d732839381698024a35b12af4
+    [tech_access_token] => 78b5ef2c1141791cf255204a5249ca4ae151365ed9b56fb7bd2e03c083ac41eb
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752668065
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:21:36 UTC] Received request - Method: POST, Action: add
+[16-Jul-2025 11:21:36 UTC] POST data: Array
+(
+    [product_name] => Badsout
+    [product_description] => Badsout
+    [product_price] => 6.50
+    [product_status] => active
+    [sku] => 
+    [barcode] => 
+    [product_type_id] => 1
+    [category_id] => 
+    [subcategory_id] => 
+    [tax_rate_id] => 2
+    [discount] => 0
+    [notes] => 
+    [product_stock_quantity] => 24
+    [product_reorder_level] => 12
+    [product_lead_time] => 0
+    [product_weight] => .45
+    [product_dimensions] => 
+    [product_brand] => 
+    [product_manufacturer] => SF
+    [warranty_period] => 
+    [product_material] => 
+    [supplier_id] => 
+    [compatible_vehicles] => 
+    [oem_part_number] => 
+    [estimated_time] => 
+    [service_frequency] => 
+    [bundle_items] => 
+    [installation_required] => false
+    [labor_cost] => 0
+)
+
+[16-Jul-2025 11:21:36 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:21:36 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:21:36 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:21:36 UTC] Processing action: add with method: POST
+[16-Jul-2025 11:21:36 UTC] [insert_product_inventory] Error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "inventory.product_inventory" does not exist
+LINE 1: INSERT INTO inventory.product_inventory (
+                    ^
+[16-Jul-2025 11:21:36 UTC] [add_product] Failed to insert product inventory
+[16-Jul-2025 11:21:36 UTC] log_user_action error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "audit.user_actions" does not exist
+LINE 1: INSERT INTO audit.user_actions (user_id, module, action, rel...
+                    ^
+[16-Jul-2025 11:21:36 UTC] [add_product] Failed to add product: Failed to insert product inventory
+[16-Jul-2025 11:21:36 UTC] log_user_action error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "audit.user_actions" does not exist
+LINE 1: INSERT INTO audit.user_actions (user_id, module, action, rel...
+                    ^
+[16-Jul-2025 11:21:36 UTC] Request processed successfully for action: add
+[16-Jul-2025 11:21:45 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 5adc2ae610d50e242f6f4edc3aaa60fec3aa795d732839381698024a35b12af4
+    [tech_access_token] => 78b5ef2c1141791cf255204a5249ca4ae151365ed9b56fb7bd2e03c083ac41eb
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752668065
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:21:45 UTC] Received request - Method: POST, Action: add
+[16-Jul-2025 11:21:45 UTC] POST data: Array
+(
+    [product_name] => Badsout
+    [product_description] => Badsout
+    [product_price] => 6.50
+    [product_status] => active
+    [sku] => 
+    [barcode] => 
+    [product_type_id] => 1
+    [category_id] => 
+    [subcategory_id] => 
+    [tax_rate_id] => 2
+    [discount] => 0
+    [notes] => 
+    [product_stock_quantity] => 24
+    [product_reorder_level] => 12
+    [product_lead_time] => 0
+    [product_weight] => .45
+    [product_dimensions] => 
+    [product_brand] => 
+    [product_manufacturer] => SF
+    [warranty_period] => 
+    [product_material] => 
+    [supplier_id] => 
+    [compatible_vehicles] => 
+    [oem_part_number] => 
+    [estimated_time] => 
+    [service_frequency] => 
+    [bundle_items] => 
+    [installation_required] => false
+    [labor_cost] => 0
+)
+
+[16-Jul-2025 11:21:45 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:21:45 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:21:45 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:21:45 UTC] Processing action: add with method: POST
+[16-Jul-2025 11:21:45 UTC] [insert_product_inventory] Error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "inventory.product_inventory" does not exist
+LINE 1: INSERT INTO inventory.product_inventory (
+                    ^
+[16-Jul-2025 11:21:45 UTC] [add_product] Failed to insert product inventory
+[16-Jul-2025 11:21:45 UTC] log_user_action error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "audit.user_actions" does not exist
+LINE 1: INSERT INTO audit.user_actions (user_id, module, action, rel...
+                    ^
+[16-Jul-2025 11:21:45 UTC] [add_product] Failed to add product: Failed to insert product inventory
+[16-Jul-2025 11:21:45 UTC] log_user_action error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "audit.user_actions" does not exist
+LINE 1: INSERT INTO audit.user_actions (user_id, module, action, rel...
+                    ^
+[16-Jul-2025 11:21:45 UTC] Request processed successfully for action: add
+[16-Jul-2025 11:25:14 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 5adc2ae610d50e242f6f4edc3aaa60fec3aa795d732839381698024a35b12af4
+    [tech_access_token] => 78b5ef2c1141791cf255204a5249ca4ae151365ed9b56fb7bd2e03c083ac41eb
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752668065
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:25:14 UTC] Received request - Method: POST, Action: add
+[16-Jul-2025 11:25:14 UTC] POST data: Array
+(
+    [product_name] => Badsout
+    [product_description] => Badsout
+    [product_price] => 6.50
+    [product_status] => active
+    [sku] => 
+    [barcode] => 
+    [product_type_id] => 1
+    [category_id] => 
+    [subcategory_id] => 
+    [tax_rate_id] => 2
+    [discount] => 0
+    [notes] => 
+    [product_stock_quantity] => 24
+    [product_reorder_level] => 12
+    [product_lead_time] => 0
+    [product_weight] => .45
+    [product_dimensions] => 
+    [product_brand] => 
+    [product_manufacturer] => SF
+    [warranty_period] => 
+    [product_material] => 
+    [supplier_id] => 
+    [compatible_vehicles] => 
+    [oem_part_number] => 
+    [estimated_time] => 
+    [service_frequency] => 
+    [bundle_items] => 
+    [installation_required] => false
+    [labor_cost] => 0
+)
+
+[16-Jul-2025 11:25:14 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:25:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:25:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:25:14 UTC] Processing action: add with method: POST
+[16-Jul-2025 11:25:14 UTC] [insert_product_inventory] Error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "inventory.product_inventory" does not exist
+LINE 1: INSERT INTO inventory.product_inventory (
+                    ^
+[16-Jul-2025 11:25:14 UTC] [add_product] Failed to insert product inventory
+[16-Jul-2025 11:25:14 UTC] log_user_action error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "audit.user_actions" does not exist
+LINE 1: INSERT INTO audit.user_actions (user_id, module, action, rel...
+                    ^
+[16-Jul-2025 11:25:14 UTC] [add_product] Failed to add product: Failed to insert product inventory
+[16-Jul-2025 11:25:14 UTC] log_user_action error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "audit.user_actions" does not exist
+LINE 1: INSERT INTO audit.user_actions (user_id, module, action, rel...
+                    ^
+[16-Jul-2025 11:25:14 UTC] Request processed successfully for action: add
+[16-Jul-2025 11:25:26 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 5adc2ae610d50e242f6f4edc3aaa60fec3aa795d732839381698024a35b12af4
+    [tech_access_token] => 78b5ef2c1141791cf255204a5249ca4ae151365ed9b56fb7bd2e03c083ac41eb
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752668065
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:25:27 UTC] Received request - Method: POST, Action: add
+[16-Jul-2025 11:25:27 UTC] POST data: Array
+(
+    [product_name] => Badsout
+    [product_description] => Badsout
+    [product_price] => 6.50
+    [product_status] => active
+    [sku] => 
+    [barcode] => 
+    [product_type_id] => 1
+    [category_id] => 
+    [subcategory_id] => 
+    [tax_rate_id] => 2
+    [discount] => 0
+    [notes] => 
+    [product_stock_quantity] => 24
+    [product_reorder_level] => 12
+    [product_lead_time] => 0
+    [product_weight] => .45
+    [product_dimensions] => 
+    [product_brand] => 
+    [product_manufacturer] => SF
+    [warranty_period] => 
+    [product_material] => 
+    [supplier_id] => 
+    [compatible_vehicles] => 
+    [oem_part_number] => 
+    [estimated_time] => 
+    [service_frequency] => 
+    [bundle_items] => 
+    [installation_required] => false
+    [labor_cost] => 0
+)
+
+[16-Jul-2025 11:25:27 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:25:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:25:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:25:27 UTC] Processing action: add with method: POST
+[16-Jul-2025 11:25:27 UTC] [insert_product_inventory] Error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "inventory.product_inventory" does not exist
+LINE 1: INSERT INTO inventory.product_inventory (
+                    ^
+[16-Jul-2025 11:25:27 UTC] [add_product] Failed to insert product inventory
+[16-Jul-2025 11:25:27 UTC] log_user_action error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "audit.user_actions" does not exist
+LINE 1: INSERT INTO audit.user_actions (user_id, module, action, rel...
+                    ^
+[16-Jul-2025 11:25:27 UTC] [add_product] Failed to add product: Failed to insert product inventory
+[16-Jul-2025 11:25:27 UTC] log_user_action error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "audit.user_actions" does not exist
+LINE 1: INSERT INTO audit.user_actions (user_id, module, action, rel...
+                    ^
+[16-Jul-2025 11:25:27 UTC] Request processed successfully for action: add
+[16-Jul-2025 11:26:17 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 5adc2ae610d50e242f6f4edc3aaa60fec3aa795d732839381698024a35b12af4
+    [tech_access_token] => 78b5ef2c1141791cf255204a5249ca4ae151365ed9b56fb7bd2e03c083ac41eb
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752668065
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:26:17 UTC] Received request - Method: POST, Action: add
+[16-Jul-2025 11:26:17 UTC] POST data: Array
+(
+    [product_name] => Badsout
+    [product_description] => Badsout
+    [product_price] => 6.50
+    [product_status] => active
+    [sku] => 
+    [barcode] => 
+    [product_type_id] => 1
+    [category_id] => 
+    [subcategory_id] => 
+    [tax_rate_id] => 2
+    [discount] => 0
+    [notes] => 
+    [product_stock_quantity] => 0
+    [product_reorder_level] => 0
+    [product_lead_time] => 0
+    [product_weight] => .45
+    [product_dimensions] => 
+    [product_brand] => 
+    [product_manufacturer] => SF
+    [warranty_period] => 
+    [product_material] => 
+    [supplier_id] => 
+    [compatible_vehicles] => 
+    [oem_part_number] => 
+    [estimated_time] => 
+    [service_frequency] => 
+    [bundle_items] => 
+    [installation_required] => false
+    [labor_cost] => 0
+)
+
+[16-Jul-2025 11:26:17 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:26:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:26:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:26:17 UTC] Processing action: add with method: POST
+[16-Jul-2025 11:26:17 UTC] [insert_product_inventory] Error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "inventory.product_inventory" does not exist
+LINE 1: INSERT INTO inventory.product_inventory (
+                    ^
+[16-Jul-2025 11:26:17 UTC] [add_product] Failed to insert product inventory
+[16-Jul-2025 11:26:17 UTC] log_user_action error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "audit.user_actions" does not exist
+LINE 1: INSERT INTO audit.user_actions (user_id, module, action, rel...
+                    ^
+[16-Jul-2025 11:26:17 UTC] [add_product] Failed to add product: Failed to insert product inventory
+[16-Jul-2025 11:26:17 UTC] log_user_action error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "audit.user_actions" does not exist
+LINE 1: INSERT INTO audit.user_actions (user_id, module, action, rel...
+                    ^
+[16-Jul-2025 11:26:17 UTC] Request processed successfully for action: add
+[16-Jul-2025 11:27:05 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 5adc2ae610d50e242f6f4edc3aaa60fec3aa795d732839381698024a35b12af4
+    [tech_access_token] => 78b5ef2c1141791cf255204a5249ca4ae151365ed9b56fb7bd2e03c083ac41eb
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752668065
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:27:05 UTC] Received request - Method: POST, Action: add
+[16-Jul-2025 11:27:05 UTC] POST data: Array
+(
+    [product_name] => Badsout
+    [product_description] => Badsout
+    [product_price] => 6.50
+    [product_status] => active
+    [sku] => Bad001
+    [barcode] => 5565675
+    [product_type_id] => 1
+    [category_id] => 
+    [subcategory_id] => 
+    [tax_rate_id] => 2
+    [discount] => 0
+    [notes] => 
+    [product_stock_quantity] => 24
+    [product_reorder_level] => 5
+    [product_lead_time] => 0
+    [product_weight] => .45
+    [product_dimensions] => 
+    [product_brand] => 
+    [product_manufacturer] => SF
+    [warranty_period] => 
+    [product_material] => 
+    [supplier_id] => 
+    [compatible_vehicles] => 
+    [oem_part_number] => 
+    [estimated_time] => 
+    [service_frequency] => 
+    [bundle_items] => 
+    [installation_required] => false
+    [labor_cost] => 0
+)
+
+[16-Jul-2025 11:27:05 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:27:05 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:27:05 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:27:05 UTC] Processing action: add with method: POST
+[16-Jul-2025 11:27:05 UTC] [insert_product_inventory] Error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "inventory.product_inventory" does not exist
+LINE 1: INSERT INTO inventory.product_inventory (
+                    ^
+[16-Jul-2025 11:27:05 UTC] [add_product] Failed to insert product inventory
+[16-Jul-2025 11:27:05 UTC] log_user_action error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "audit.user_actions" does not exist
+LINE 1: INSERT INTO audit.user_actions (user_id, module, action, rel...
+                    ^
+[16-Jul-2025 11:27:05 UTC] [add_product] Failed to add product: Failed to insert product inventory
+[16-Jul-2025 11:27:05 UTC] log_user_action error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "audit.user_actions" does not exist
+LINE 1: INSERT INTO audit.user_actions (user_id, module, action, rel...
+                    ^
+[16-Jul-2025 11:27:05 UTC] Request processed successfully for action: add
+[16-Jul-2025 11:35:34 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 5adc2ae610d50e242f6f4edc3aaa60fec3aa795d732839381698024a35b12af4
+    [tech_access_token] => 78b5ef2c1141791cf255204a5249ca4ae151365ed9b56fb7bd2e03c083ac41eb
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752668065
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:35:34 UTC] Received request - Method: POST, Action: add
+[16-Jul-2025 11:35:34 UTC] POST data: Array
+(
+    [product_name] => Badsout
+    [product_description] => Badsout
+    [product_price] => 6.50
+    [product_status] => active
+    [sku] => Bad001
+    [barcode] => 5565675
+    [product_type_id] => 1
+    [category_id] => 
+    [subcategory_id] => 
+    [tax_rate_id] => 2
+    [discount] => 0
+    [notes] => 
+    [product_stock_quantity] => 24
+    [product_reorder_level] => 5
+    [product_lead_time] => 0
+    [product_weight] => .45
+    [product_dimensions] => 
+    [product_brand] => 
+    [product_manufacturer] => SF
+    [warranty_period] => 
+    [product_material] => 
+    [supplier_id] => 
+    [compatible_vehicles] => 
+    [oem_part_number] => 
+    [estimated_time] => 
+    [service_frequency] => 
+    [bundle_items] => 
+    [installation_required] => false
+    [labor_cost] => 0
+)
+
+[16-Jul-2025 11:35:34 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:35:34 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:35:34 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:35:34 UTC] Processing action: add with method: POST
+[16-Jul-2025 11:35:34 UTC] [insert_product_inventory] Error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "inventory.product_inventory" does not exist
+LINE 1: INSERT INTO inventory.product_inventory (
+                    ^
+[16-Jul-2025 11:35:34 UTC] [add_product] Failed to insert product inventory
+[16-Jul-2025 11:35:34 UTC] log_user_action error: SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table "user_actions" violates foreign key constraint "user_actions_user_id_fkey"
+DETAIL:  Key (user_id)=(1) is not present in table "users".
+[16-Jul-2025 11:35:34 UTC] [add_product] Failed to add product: Failed to insert product inventory
+[16-Jul-2025 11:35:34 UTC] log_user_action error: SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table "user_actions" violates foreign key constraint "user_actions_user_id_fkey"
+DETAIL:  Key (user_id)=(1) is not present in table "users".
+[16-Jul-2025 11:35:34 UTC] Request processed successfully for action: add
+[16-Jul-2025 11:46:48 UTC] Login attempt from 172.18.0.1 with email: tianryno01@gmail.com
+[16-Jul-2025 11:46:48 UTC] Starting login process for email: tianryno01@gmail.com
+[16-Jul-2025 11:46:48 UTC] Attempting technician authentication for: tianryno01@gmail.com
+[16-Jul-2025 11:46:48 UTC] Executing technician query with statement: check_tech_17526664088629
+[16-Jul-2025 11:46:48 UTC] Technician query execution successful
+[16-Jul-2025 11:46:48 UTC] Technician found. Checking password...
+[16-Jul-2025 11:46:48 UTC] Password verification result: Success (Hash starts with: $2y$10$k.Q...)
+[16-Jul-2025 11:46:48 UTC] Technician login successful - Session setup complete
+[16-Jul-2025 11:46:48 UTC] Technician authentication result: SUCCESS - Technician login successful
+[16-Jul-2025 11:46:48 UTC] Login successful for tianryno01@gmail.com. Redirecting to: ../../../public/admin/techlogin.php
+[16-Jul-2025 11:46:48 UTC] Current file: /var/www/html/public/admin/techlogin.php
+[16-Jul-2025 11:46:48 UTC] Current directory: /var/www/html/public/admin
+[16-Jul-2025 11:46:48 UTC] Document root: /var/www/html
+[16-Jul-2025 11:46:48 UTC] Trying controller path: /var/www/html/public/admin/../../../src/Controllers/ClockServerController.php - NOT FOUND
+[16-Jul-2025 11:46:48 UTC] Trying alt path: /var/www/html/public/admin/../../src/Controllers/ClockServerController.php - EXISTS
+[16-Jul-2025 11:46:48 UTC] Trying relative path: src/Controllers/ClockServerController.php - NOT FOUND
+[16-Jul-2025 11:46:48 UTC] Controller successfully loaded from file
+[16-Jul-2025 11:46:49 UTC] Customer list API called with: search=, page=1, perPage=10, sortBy=company_name, sortDirection=asc
+[16-Jul-2025 11:46:51 UTC] Current file: /var/www/html/public/admin/techlogin.php
+[16-Jul-2025 11:46:51 UTC] Current directory: /var/www/html/public/admin
+[16-Jul-2025 11:46:51 UTC] Document root: /var/www/html
+[16-Jul-2025 11:46:51 UTC] Trying controller path: /var/www/html/public/admin/../../../src/Controllers/ClockServerController.php - NOT FOUND
+[16-Jul-2025 11:46:51 UTC] Trying alt path: /var/www/html/public/admin/../../src/Controllers/ClockServerController.php - EXISTS
+[16-Jul-2025 11:46:51 UTC] Trying relative path: src/Controllers/ClockServerController.php - NOT FOUND
+[16-Jul-2025 11:46:51 UTC] Controller successfully loaded from file
+[16-Jul-2025 11:46:51 UTC] [ClockServerController] Checking server availability at: http://hikvision-server:3000/clock/status/ACC001
+[16-Jul-2025 11:46:51 UTC] Successfully connected to clock server at: http://hikvision-server:3000/clock/status/ACC001
+[16-Jul-2025 11:46:51 UTC] [ClockServerController] Server available: YES
+[16-Jul-2025 11:46:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:46:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:46:57 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:46:57 UTC] Received request - Method: GET, Action: list
+[16-Jul-2025 11:46:57 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:46:57 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:46:57 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:46:57 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:46:57 UTC] Processing action: list with method: GET
+[16-Jul-2025 11:46:57 UTC] [listProducts] DB Error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "inventory.product_inventory" does not exist
+LINE 21:             LEFT JOIN inventory.product_inventory pi ON p.pr...
+                               ^
+[16-Jul-2025 11:46:57 UTC] log_user_action error: SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table "user_actions" violates foreign key constraint "user_actions_user_id_fkey"
+DETAIL:  Key (user_id)=(1) is not present in table "users".
+[16-Jul-2025 11:46:57 UTC] Request processed successfully for action: list
+[16-Jul-2025 11:46:57 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:46:57 UTC] Received request - Method: GET, Action: list_types
+[16-Jul-2025 11:46:57 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:46:57 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:46:57 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:46:57 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:46:57 UTC] Processing action: list_types with method: GET
+[16-Jul-2025 11:46:57 UTC] Request processed successfully for action: list_types
+[16-Jul-2025 11:46:57 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:46:57 UTC] Received request - Method: GET, Action: list_types
+[16-Jul-2025 11:46:57 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:46:57 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:46:57 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:46:57 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:46:57 UTC] Processing action: list_types with method: GET
+[16-Jul-2025 11:46:57 UTC] Request processed successfully for action: list_types
+[16-Jul-2025 11:46:57 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:46:57 UTC] Received request - Method: GET, Action: list_categories
+[16-Jul-2025 11:46:58 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:46:58 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:46:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:46:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:46:58 UTC] Processing action: list_categories with method: GET
+[16-Jul-2025 11:46:58 UTC] Request processed successfully for action: list_categories
+[16-Jul-2025 11:46:59 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:46:59 UTC] Received request - Method: GET, Action: list_types
+[16-Jul-2025 11:46:59 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:46:59 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:46:59 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:46:59 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:46:59 UTC] Processing action: list_types with method: GET
+[16-Jul-2025 11:46:59 UTC] Request processed successfully for action: list_types
+[16-Jul-2025 11:46:59 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:46:59 UTC] Received request - Method: GET, Action: list_types
+[16-Jul-2025 11:46:59 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:46:59 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:46:59 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:46:59 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:47:00 UTC] Processing action: list_types with method: GET
+[16-Jul-2025 11:47:00 UTC] Request processed successfully for action: list_types
+[16-Jul-2025 11:47:00 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:47:00 UTC] Received request - Method: GET, Action: list_categories
+[16-Jul-2025 11:47:00 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:47:00 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:47:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:47:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:47:00 UTC] Processing action: list_categories with method: GET
+[16-Jul-2025 11:47:00 UTC] Request processed successfully for action: list_categories
+[16-Jul-2025 11:47:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:47:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:47:00 UTC] [list_suppliers] SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "inventory.supplier" does not exist
+LINE 1: SELECT * FROM inventory.supplier WHERE deleted_at IS NULL OR...
+                      ^
+[16-Jul-2025 11:47:00 UTC] log_user_action error: SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "user_id" of relation "user_actions" violates not-null constraint
+DETAIL:  Failing row contains (4, null, invoicing, list_suppliers, invoice, null, null, null, SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "inventory...., 172.18.0.1, Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KH..., 56c7d5215ae0d43eb62761cd72b12c68, 2025-07-16 11:47:00.353155).
+[16-Jul-2025 11:47:00 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:47:00 UTC] Received request - Method: GET, Action: list_categories
+[16-Jul-2025 11:47:00 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:47:00 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:47:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:47:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:47:00 UTC] Processing action: list_categories with method: GET
+[16-Jul-2025 11:47:00 UTC] Request processed successfully for action: list_categories
+[16-Jul-2025 11:47:00 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:47:00 UTC] Received request - Method: GET, Action: list_tax_rates
+[16-Jul-2025 11:47:00 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:47:00 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:47:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:47:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:47:00 UTC] Processing action: list_tax_rates with method: GET
+[16-Jul-2025 11:47:00 UTC] Request processed successfully for action: list_tax_rates
+[16-Jul-2025 11:47:29 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:47:29 UTC] Received request - Method: POST, Action: add
+[16-Jul-2025 11:47:29 UTC] POST data: Array
+(
+    [product_name] => Badsout
+    [product_description] => 
+    [product_price] => 6.5
+    [product_status] => active
+    [sku] => 
+    [barcode] => 
+    [product_type_id] => 1
+    [category_id] => 
+    [subcategory_id] => 
+    [tax_rate_id] => 2
+    [discount] => 0
+    [notes] => 
+    [product_stock_quantity] => 0
+    [product_reorder_level] => 0
+    [product_lead_time] => 0
+    [product_weight] => 0
+    [product_dimensions] => 
+    [product_brand] => 
+    [product_manufacturer] => 
+    [warranty_period] => 
+    [product_material] => 
+    [supplier_id] => 
+    [compatible_vehicles] => 
+    [oem_part_number] => 
+    [estimated_time] => 
+    [service_frequency] => 
+    [bundle_items] => 
+    [installation_required] => false
+    [labor_cost] => 0
+)
+
+[16-Jul-2025 11:47:29 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:47:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:47:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:47:29 UTC] Processing action: add with method: POST
+[16-Jul-2025 11:47:29 UTC] [insert_product_inventory] Error: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "inventory.product_inventory" does not exist
+LINE 1: INSERT INTO inventory.product_inventory (
+                    ^
+[16-Jul-2025 11:47:29 UTC] [add_product] Failed to insert product inventory
+[16-Jul-2025 11:47:29 UTC] log_user_action error: SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table "user_actions" violates foreign key constraint "user_actions_user_id_fkey"
+DETAIL:  Key (user_id)=(1) is not present in table "users".
+[16-Jul-2025 11:47:29 UTC] [add_product] Failed to add product: Failed to insert product inventory
+[16-Jul-2025 11:47:29 UTC] log_user_action error: SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table "user_actions" violates foreign key constraint "user_actions_user_id_fkey"
+DETAIL:  Key (user_id)=(1) is not present in table "users".
+[16-Jul-2025 11:47:29 UTC] Request processed successfully for action: add
+[16-Jul-2025 11:52:11 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:52:11 UTC] Received request - Method: POST, Action: add
+[16-Jul-2025 11:52:11 UTC] POST data: Array
+(
+    [product_name] => Badsout
+    [product_description] => 
+    [product_price] => 6.5
+    [product_status] => active
+    [sku] => 
+    [barcode] => 
+    [product_type_id] => 1
+    [category_id] => 
+    [subcategory_id] => 
+    [tax_rate_id] => 2
+    [discount] => 0
+    [notes] => 
+    [product_stock_quantity] => 0
+    [product_reorder_level] => 0
+    [product_lead_time] => 0
+    [product_weight] => 0
+    [product_dimensions] => 
+    [product_brand] => 
+    [product_manufacturer] => 
+    [warranty_period] => 
+    [product_material] => 
+    [supplier_id] => 
+    [compatible_vehicles] => 
+    [oem_part_number] => 
+    [estimated_time] => 
+    [service_frequency] => 
+    [bundle_items] => 
+    [installation_required] => false
+    [labor_cost] => 0
+)
+
+[16-Jul-2025 11:52:11 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:52:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:52:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:52:11 UTC] Processing action: add with method: POST
+[16-Jul-2025 11:52:11 UTC] log_user_action error: SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table "user_actions" violates foreign key constraint "user_actions_user_id_fkey"
+DETAIL:  Key (user_id)=(1) is not present in table "users".
+[16-Jul-2025 11:52:11 UTC] send_notification error: SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table "notifications" violates foreign key constraint "notifications_user_id_fkey"
+DETAIL:  Key (user_id)=(1) is not present in table "users".
+[16-Jul-2025 11:52:11 UTC] Request processed successfully for action: add
+[16-Jul-2025 11:52:11 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:52:11 UTC] Received request - Method: GET, Action: list
+[16-Jul-2025 11:52:11 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:52:11 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:52:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:52:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:52:11 UTC] Processing action: list with method: GET
+[16-Jul-2025 11:52:12 UTC] Request processed successfully for action: list
+[16-Jul-2025 11:52:21 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:52:21 UTC] Received request - Method: GET, Action: list_types
+[16-Jul-2025 11:52:21 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:52:21 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:52:21 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:52:21 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:52:21 UTC] Processing action: list_types with method: GET
+[16-Jul-2025 11:52:21 UTC] Request processed successfully for action: list_types
+[16-Jul-2025 11:52:21 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:52:21 UTC] Received request - Method: GET, Action: list_types
+[16-Jul-2025 11:52:21 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:52:22 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:52:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:52:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:52:22 UTC] Processing action: list_types with method: GET
+[16-Jul-2025 11:52:22 UTC] Request processed successfully for action: list_types
+[16-Jul-2025 11:52:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:52:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:52:22 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:52:22 UTC] Received request - Method: GET, Action: list_categories
+[16-Jul-2025 11:52:22 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:52:22 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:52:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:52:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:52:22 UTC] Processing action: list_categories with method: GET
+[16-Jul-2025 11:52:22 UTC] Request processed successfully for action: list_categories
+[16-Jul-2025 11:52:22 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:52:22 UTC] Received request - Method: GET, Action: list_tax_rates
+[16-Jul-2025 11:52:22 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:52:22 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:52:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:52:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:52:22 UTC] Processing action: list_tax_rates with method: GET
+[16-Jul-2025 11:52:22 UTC] Request processed successfully for action: list_tax_rates
+[16-Jul-2025 11:52:22 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:52:22 UTC] Received request - Method: GET, Action: get
+[16-Jul-2025 11:52:22 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:52:22 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:52:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:52:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:52:22 UTC] Processing action: get with method: GET
+[16-Jul-2025 11:52:22 UTC] Request processed successfully for action: get
+[16-Jul-2025 11:52:22 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:52:22 UTC] Received request - Method: GET, Action: list_types
+[16-Jul-2025 11:52:22 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:52:22 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:52:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:52:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:52:23 UTC] Processing action: list_types with method: GET
+[16-Jul-2025 11:52:23 UTC] Request processed successfully for action: list_types
+[16-Jul-2025 11:52:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:52:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:52:23 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:52:23 UTC] Received request - Method: GET, Action: list_categories
+[16-Jul-2025 11:52:23 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:52:23 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:52:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:52:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:52:23 UTC] Processing action: list_categories with method: GET
+[16-Jul-2025 11:52:23 UTC] Request processed successfully for action: list_categories
+[16-Jul-2025 11:52:23 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:52:23 UTC] Received request - Method: GET, Action: list_tax_rates
+[16-Jul-2025 11:52:23 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:52:23 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:52:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:52:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:52:23 UTC] Processing action: list_tax_rates with method: GET
+[16-Jul-2025 11:52:23 UTC] Request processed successfully for action: list_tax_rates
+[16-Jul-2025 11:53:16 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:53:16 UTC] Received request - Method: GET, Action: list
+[16-Jul-2025 11:53:16 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:53:16 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:53:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:53:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:53:16 UTC] Processing action: list with method: GET
+[16-Jul-2025 11:53:16 UTC] Request processed successfully for action: list
+[16-Jul-2025 11:53:16 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:53:16 UTC] Received request - Method: GET, Action: list_types
+[16-Jul-2025 11:53:16 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:53:16 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:53:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:53:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:53:16 UTC] Processing action: list_types with method: GET
+[16-Jul-2025 11:53:16 UTC] Request processed successfully for action: list_types
+[16-Jul-2025 11:53:16 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:53:16 UTC] Received request - Method: GET, Action: list_types
+[16-Jul-2025 11:53:16 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:53:16 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:53:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:53:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:53:16 UTC] Processing action: list_types with method: GET
+[16-Jul-2025 11:53:16 UTC] Request processed successfully for action: list_types
+[16-Jul-2025 11:53:16 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:53:16 UTC] Received request - Method: GET, Action: list_categories
+[16-Jul-2025 11:53:16 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:53:16 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:53:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:53:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:53:17 UTC] Processing action: list_categories with method: GET
+[16-Jul-2025 11:53:17 UTC] Request processed successfully for action: list_categories
+[16-Jul-2025 11:53:18 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:53:18 UTC] Received request - Method: GET, Action: list_types
+[16-Jul-2025 11:53:18 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:53:18 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:53:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:53:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:53:18 UTC] Processing action: list_types with method: GET
+[16-Jul-2025 11:53:18 UTC] Request processed successfully for action: list_types
+[16-Jul-2025 11:53:18 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:53:18 UTC] Received request - Method: GET, Action: list_types
+[16-Jul-2025 11:53:18 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:53:18 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:53:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:53:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:53:18 UTC] Processing action: list_types with method: GET
+[16-Jul-2025 11:53:18 UTC] Request processed successfully for action: list_types
+[16-Jul-2025 11:53:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:53:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:53:18 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:53:18 UTC] Received request - Method: GET, Action: list_categories
+[16-Jul-2025 11:53:18 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:53:18 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:53:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:53:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:53:18 UTC] Processing action: list_categories with method: GET
+[16-Jul-2025 11:53:18 UTC] Request processed successfully for action: list_categories
+[16-Jul-2025 11:53:19 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:53:19 UTC] Received request - Method: GET, Action: list_tax_rates
+[16-Jul-2025 11:53:19 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:53:19 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:53:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:53:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:53:19 UTC] Processing action: list_tax_rates with method: GET
+[16-Jul-2025 11:53:19 UTC] Request processed successfully for action: list_tax_rates
+[16-Jul-2025 11:53:19 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:53:19 UTC] Received request - Method: GET, Action: get
+[16-Jul-2025 11:53:19 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:53:19 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:53:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:53:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:53:19 UTC] Processing action: get with method: GET
+[16-Jul-2025 11:53:19 UTC] Request processed successfully for action: get
+[16-Jul-2025 11:53:19 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:53:19 UTC] Received request - Method: GET, Action: list_types
+[16-Jul-2025 11:53:19 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:53:19 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:53:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:53:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:53:19 UTC] Processing action: list_types with method: GET
+[16-Jul-2025 11:53:19 UTC] Request processed successfully for action: list_types
+[16-Jul-2025 11:53:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:53:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:53:19 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:53:19 UTC] Received request - Method: GET, Action: list_categories
+[16-Jul-2025 11:53:19 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:53:19 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:53:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:53:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:53:19 UTC] Processing action: list_categories with method: GET
+[16-Jul-2025 11:53:19 UTC] Request processed successfully for action: list_categories
+[16-Jul-2025 11:53:19 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:53:19 UTC] Received request - Method: GET, Action: list_tax_rates
+[16-Jul-2025 11:53:20 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:53:20 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:53:20 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:53:20 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:53:20 UTC] Processing action: list_tax_rates with method: GET
+[16-Jul-2025 11:53:20 UTC] Request processed successfully for action: list_tax_rates
+[16-Jul-2025 11:54:30 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:54:30 UTC] Received request - Method: PUT, Action: edit
+[16-Jul-2025 11:54:30 UTC] Raw PUT data: ------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="product_name"
+
+Badsout
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="product_description"
+
+
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="product_price"
+
+6.50
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="product_status"
+
+active
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="sku"
+
+
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="barcode"
+
+
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="product_type_id"
+
+1
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="category_id"
+
+
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="subcategory_id"
+
+
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="tax_rate_id"
+
+2
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="discount"
+
+0.00
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="notes"
+
+
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="product_stock_quantity"
+
+24
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="product_reorder_level"
+
+5
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="product_lead_time"
+
+0
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="product_weight"
+
+0.00
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="product_dimensions"
+
+
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="product_brand"
+
+
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="product_manufacturer"
+
+
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="warranty_period"
+
+
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="product_material"
+
+
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="supplier_id"
+
+
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="compatible_vehicles"
+
+
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="oem_part_number"
+
+
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="estimated_time"
+
+
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="service_frequency"
+
+
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="bundle_items"
+
+
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="installation_required"
+
+
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="labor_cost"
+
+0
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F
+Content-Disposition: form-data; name="product_id"
+
+9
+------WebKitFormBoundaryEGvx9PFMNIl5EY4F--
+
+[16-Jul-2025 11:54:30 UTC] Parsed PUT data: Array
+(
+    [product_name] => Badsout
+    [product_description] => 
+    [product_price] => 6.50
+    [product_status] => active
+    [sku] => 
+    [barcode] => 
+    [product_type_id] => 1
+    [category_id] => 
+    [subcategory_id] => 
+    [tax_rate_id] => 2
+    [discount] => 0.00
+    [notes] => 
+    [product_stock_quantity] => 24
+    [product_reorder_level] => 5
+    [product_lead_time] => 0
+    [product_weight] => 0.00
+    [product_dimensions] => 
+    [product_brand] => 
+    [product_manufacturer] => 
+    [warranty_period] => 
+    [product_material] => 
+    [supplier_id] => 
+    [compatible_vehicles] => 
+    [oem_part_number] => 
+    [estimated_time] => 
+    [service_frequency] => 
+    [bundle_items] => 
+    [installation_required] => 
+    [labor_cost] => 0
+    [product_id] => 9
+)
+
+[16-Jul-2025 11:54:30 UTC] POST data: Array
+(
+    [product_name] => Badsout
+    [product_description] => 
+    [product_price] => 6.50
+    [product_status] => active
+    [sku] => 
+    [barcode] => 
+    [product_type_id] => 1
+    [category_id] => 
+    [subcategory_id] => 
+    [tax_rate_id] => 2
+    [discount] => 0.00
+    [notes] => 
+    [product_stock_quantity] => 24
+    [product_reorder_level] => 5
+    [product_lead_time] => 0
+    [product_weight] => 0.00
+    [product_dimensions] => 
+    [product_brand] => 
+    [product_manufacturer] => 
+    [warranty_period] => 
+    [product_material] => 
+    [supplier_id] => 
+    [compatible_vehicles] => 
+    [oem_part_number] => 
+    [estimated_time] => 
+    [service_frequency] => 
+    [bundle_items] => 
+    [installation_required] => 
+    [labor_cost] => 0
+    [product_id] => 9
+)
+
+[16-Jul-2025 11:54:30 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:54:30 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:54:30 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:54:30 UTC] Processing action: edit with method: PUT
+[16-Jul-2025 11:54:30 UTC] log_user_action error: SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table "user_actions" violates foreign key constraint "user_actions_user_id_fkey"
+DETAIL:  Key (user_id)=(1) is not present in table "users".
+[16-Jul-2025 11:54:31 UTC] send_notification error: SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table "notifications" violates foreign key constraint "notifications_user_id_fkey"
+DETAIL:  Key (user_id)=(1) is not present in table "users".
+[16-Jul-2025 11:54:31 UTC] Request processed successfully for action: edit
+[16-Jul-2025 11:54:31 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:54:31 UTC] Received request - Method: GET, Action: list
+[16-Jul-2025 11:54:31 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:54:31 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:54:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:54:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:54:31 UTC] Processing action: list with method: GET
+[16-Jul-2025 11:54:31 UTC] Request processed successfully for action: list
+[16-Jul-2025 11:54:34 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:54:34 UTC] Received request - Method: GET, Action: list_types
+[16-Jul-2025 11:54:34 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:54:34 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:54:34 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:54:34 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:54:34 UTC] Processing action: list_types with method: GET
+[16-Jul-2025 11:54:34 UTC] Request processed successfully for action: list_types
+[16-Jul-2025 11:54:34 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:54:34 UTC] Received request - Method: GET, Action: list_types
+[16-Jul-2025 11:54:34 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:54:34 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:54:34 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:54:34 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:54:34 UTC] Processing action: list_types with method: GET
+[16-Jul-2025 11:54:35 UTC] Request processed successfully for action: list_types
+[16-Jul-2025 11:54:35 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:54:35 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:54:35 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:54:35 UTC] Received request - Method: GET, Action: list_categories
+[16-Jul-2025 11:54:35 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:54:35 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:54:35 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:54:35 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:54:35 UTC] Processing action: list_categories with method: GET
+[16-Jul-2025 11:54:35 UTC] Request processed successfully for action: list_categories
+[16-Jul-2025 11:54:35 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:54:35 UTC] Received request - Method: GET, Action: list_tax_rates
+[16-Jul-2025 11:54:35 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:54:35 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:54:35 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:54:35 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:54:35 UTC] Processing action: list_tax_rates with method: GET
+[16-Jul-2025 11:54:35 UTC] Request processed successfully for action: list_tax_rates
+[16-Jul-2025 11:54:35 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:54:35 UTC] Received request - Method: GET, Action: get
+[16-Jul-2025 11:54:35 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:54:35 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:54:35 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:54:35 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:54:35 UTC] Processing action: get with method: GET
+[16-Jul-2025 11:54:35 UTC] Request processed successfully for action: get
+[16-Jul-2025 11:54:35 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:54:35 UTC] Received request - Method: GET, Action: list_types
+[16-Jul-2025 11:54:35 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:54:35 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:54:35 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:54:35 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:54:35 UTC] Processing action: list_types with method: GET
+[16-Jul-2025 11:54:35 UTC] Request processed successfully for action: list_types
+[16-Jul-2025 11:54:35 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:54:35 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:54:36 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:54:36 UTC] Received request - Method: GET, Action: list_categories
+[16-Jul-2025 11:54:36 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:54:36 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:54:36 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:54:36 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:54:36 UTC] Processing action: list_categories with method: GET
+[16-Jul-2025 11:54:36 UTC] Request processed successfully for action: list_categories
+[16-Jul-2025 11:54:36 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => 7a0f33d6a69d7a9ee26e88bb59fe17b5d4fccd5a13804320b215e2733628f0d9
+    [tech_access_token] => fb14cfd78bad97de35b011f05c2092fb09aa208055127b02082e81999605bb88
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752670013
+    [account_number] => ACC002
+)
+
+[16-Jul-2025 11:54:36 UTC] Received request - Method: GET, Action: list_tax_rates
+[16-Jul-2025 11:54:36 UTC] POST data: Array
+(
+)
+
+[16-Jul-2025 11:54:36 UTC] FILES data: Array
+(
+)
+
+[16-Jul-2025 11:54:36 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[16-Jul-2025 11:54:36 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[16-Jul-2025 11:54:36 UTC] Processing action: list_tax_rates with method: GET
+[16-Jul-2025 11:54:36 UTC] Request processed successfully for action: list_tax_rates
+[16-Jul-2025 11:57:08 UTC] Current file: /var/www/html/public/admin/techlogin.php
+[16-Jul-2025 11:57:08 UTC] Current directory: /var/www/html/public/admin
+[16-Jul-2025 11:57:08 UTC] Document root: /var/www/html
+[16-Jul-2025 11:57:08 UTC] Trying controller path: /var/www/html/public/admin/../../../src/Controllers/ClockServerController.php - NOT FOUND
+[16-Jul-2025 11:57:08 UTC] Trying alt path: /var/www/html/public/admin/../../src/Controllers/ClockServerController.php - EXISTS
+[16-Jul-2025 11:57:08 UTC] Trying relative path: src/Controllers/ClockServerController.php - NOT FOUND
+[16-Jul-2025 11:57:08 UTC] Controller successfully loaded from file
+[16-Jul-2025 11:57:08 UTC] Customer list API called with: search=, page=1, perPage=10, sortBy=company_name, sortDirection=asc
+[16-Jul-2025 14:49:08 UTC] Current file: /var/www/html/public/admin/techlogin.php
+[16-Jul-2025 14:49:08 UTC] Current directory: /var/www/html/public/admin
+[16-Jul-2025 14:49:08 UTC] Document root: /var/www/html
+[16-Jul-2025 14:49:08 UTC] Trying controller path: /var/www/html/public/admin/../../../src/Controllers/ClockServerController.php - NOT FOUND
+[16-Jul-2025 14:49:08 UTC] Trying alt path: /var/www/html/public/admin/../../src/Controllers/ClockServerController.php - EXISTS
+[16-Jul-2025 14:49:08 UTC] Trying relative path: src/Controllers/ClockServerController.php - NOT FOUND
+[16-Jul-2025 14:49:08 UTC] Controller successfully loaded from file
+[16-Jul-2025 14:49:08 UTC] [ClockServerController] Checking server availability at: http://hikvision-server:3000/clock/status/ACC001
+[16-Jul-2025 14:49:08 UTC] Successfully connected to clock server at: http://hikvision-server:3000/clock/status/ACC001
+[16-Jul-2025 14:49:08 UTC] [ClockServerController] Server available: YES
