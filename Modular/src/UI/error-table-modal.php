@@ -227,7 +227,7 @@ function showErrorTable(data) {
             row.innerHTML = `
                 <td>${error.row || 'N/A'}</td>
                 <td>${error.product_name || error.name || 'N/A'}</td>
-                <td>${error.status || 'N/A'}</td>
+                <td>${error.product_status || error.status || 'N/A'}</td>
                 <td>${reason}</td>
             `;
             tbody.appendChild(row);

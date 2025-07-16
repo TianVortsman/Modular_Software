@@ -1,4 +1,5 @@
 import { ProductAPI } from './product-api.js';
+import './product-modals.js';
 console.log('product-screen.js loaded');
 // --- ProductScreenManager: Handles product screen (view, grid, filters, cards, etc.) ---
 class ProductScreenManager {
@@ -239,8 +240,11 @@ class ProductScreenManager {
         });
         // Double-click to edit
         productCard.addEventListener('dblclick', () => {
+            console.log('Double-clicked product card:', product.product_id);
             if (window.productModalUI) {
                 window.productModalUI.openModal('edit', product.product_id);
+            } else {
+                console.error('window.productModalUI is not initialized!');
             }
         });
         // Selection logic

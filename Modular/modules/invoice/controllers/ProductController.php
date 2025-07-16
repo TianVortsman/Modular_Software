@@ -1,5 +1,5 @@
 <?php
-namespace App\modules\product\controllers;
+namespace App\modules\invoice\controllers;
 
 use PDO;
 use Exception;
@@ -23,7 +23,7 @@ function getTaxRates() {
     }
 }
 
-function listProducts(array $options = []): array {
+function list_products(array $options = []): array {
     global $conn;
 
     try {
@@ -61,16 +61,17 @@ function listProducts(array $options = []): array {
                 pt.product_type_name, 
                 pc.category_name, 
                 psc.subcategory_name, 
-                pi.stock_quantity, 
-                pi.reorder_level, 
-                pi.lead_time, 
+                pi.product_stock_quantity, 
+                pi.product_reorder_level, 
+                pi.product_lead_time, 
                 pi.product_weight, 
-                pi.dimensions, 
-                pi.brand, 
-                pi.manufacturer, 
+                pi.product_dimensions, 
+                pi.product_brand, 
+                pi.product_manufacturer, 
                 pi.warranty_period, 
+                pi.product_material, 
                 tr.rate AS tax_rate
-            FROM core.product p
+            FROM core.products p
             LEFT JOIN core.product_types pt ON p.product_type_id = pt.product_type_id
             LEFT JOIN core.product_categories pc ON p.category_id = pc.category_id
             LEFT JOIN core.product_subcategories psc ON p.subcategory_id = psc.subcategory_id
@@ -239,7 +240,7 @@ function update_product(array $data, int $user_id): array {
             $conn->beginTransaction();
         }
         // For now, just update the core product table
-        $sql = "UPDATE core.product SET
+        $sql = "UPDATE core.products SET
             product_name = :product_name,
             product_description = :product_description,
             product_price = :product_price,
@@ -270,10 +271,22 @@ function update_product(array $data, int $user_id): array {
             'discount'           => $data['discount'] !== '' ? $data['discount'] : 0,
             'notes'              => $data['notes'] ?? null
         ]);
-        // Update inventory if product_stock_quantity is provided
-        if (isset($data['product_stock_quantity'])) {
+        // Update inventory if any inventory field is present
+        $inventoryFields = [
+            'product_stock_quantity', 'product_reorder_level', 'product_lead_time',
+            'product_weight', 'product_dimensions', 'product_brand',
+            'product_manufacturer', 'warranty_period', 'product_material'
+        ];
+        $hasInventoryData = false;
+        foreach ($inventoryFields as $field) {
+            if (isset($data[$field])) {
+                $hasInventoryData = true;
+                break;
+            }
+        }
+        if ($hasInventoryData) {
             $updateInventoryData = [
-                'product_stock_quantity' => $data['product_stock_quantity'],
+                'product_stock_quantity' => $data['product_stock_quantity'] ?? null,
                 'product_reorder_level' => $data['product_reorder_level'] ?? 0,
                 'product_lead_time' => $data['product_lead_time'] ?? null,
                 'product_weight' => $data['product_weight'] ?? null,
@@ -281,6 +294,7 @@ function update_product(array $data, int $user_id): array {
                 'product_brand' => $data['product_brand'] ?? null,
                 'product_manufacturer' => $data['product_manufacturer'] ?? null,
                 'warranty_period' => $data['warranty_period'] ?? null,
+                'product_material' => $data['product_material'] ?? null,
             ];
             if (!update_product_inventory($productId, $updateInventoryData)) {
                 $conn->rollBack();
@@ -410,17 +424,18 @@ function get_product_details(int $productId): array {
                 pt.product_type_name, 
                 pc.category_name, 
                 psc.subcategory_name, 
-                pi.stock_quantity, 
-                pi.reorder_level, 
-                pi.lead_time, 
+                pi.product_stock_quantity, 
+                pi.product_reorder_level, 
+                pi.product_lead_time, 
                 pi.product_weight, 
-                pi.dimensions, 
-                pi.brand, 
-                pi.manufacturer, 
+                pi.product_dimensions, 
+                pi.product_brand, 
+                pi.product_manufacturer, 
                 pi.warranty_period, 
+                pi.product_material, 
                 tr.rate AS tax_rate, 
                 ps.supplier_id
-            FROM core.product p
+            FROM core.products p
             LEFT JOIN core.product_types pt ON p.product_type_id = pt.product_type_id
             LEFT JOIN core.product_categories pc ON p.category_id = pc.category_id
             LEFT JOIN core.product_subcategories psc ON p.subcategory_id = psc.subcategory_id
@@ -570,7 +585,7 @@ function get_product_subcategories(?int $categoryId = null): array {
 function insert_product(array $data): ?int {
     global $conn;
 
-    $sql = "INSERT INTO core.product (
+    $sql = "INSERT INTO core.products (
                 product_name, product_description, product_price, product_status,
                 sku, barcode, product_type_id, category_id, subcategory_id,
                 tax_rate_id, discount, notes
@@ -640,7 +655,7 @@ function update_product_status(int $productId, string $status, int $user_id): ar
             throw new Exception('Invalid status');
         }
 
-        $sql = "UPDATE core.product 
+        $sql = "UPDATE core.products 
                 SET product_status = :status, updated_at = CURRENT_TIMESTAMP 
                 WHERE product_id = :product_id";
 
@@ -686,7 +701,7 @@ function delete_product(int $productId, int $user_id): array {
 
     try {
         // Soft delete - update status to 'deleted' instead of actually deleting
-        $sql = "UPDATE core.product 
+        $sql = "UPDATE core.products 
                 SET product_status = 'deleted', updated_at = CURRENT_TIMESTAMP 
                 WHERE product_id = :product_id";
 
@@ -726,9 +741,9 @@ function delete_product(int $productId, int $user_id): array {
 function insert_product_inventory(int $productId, array $data): bool {
     global $conn;
     $sql = "INSERT INTO inventory.product_inventory (
-                product_id, product_stock_quantity, product_reorder_level, product_lead_time, product_weight, product_dimensions, product_brand, product_manufacturer, warranty_period
+                product_id, product_stock_quantity, product_reorder_level, product_lead_time, product_weight, product_dimensions, product_brand, product_manufacturer, warranty_period, product_material
             ) VALUES (
-                :product_id, :product_stock_quantity, :product_reorder_level, :product_lead_time, :product_weight, :product_dimensions, :product_brand, :product_manufacturer, :warranty_period
+                :product_id, :product_stock_quantity, :product_reorder_level, :product_lead_time, :product_weight, :product_dimensions, :product_brand, :product_manufacturer, :warranty_period, :product_material
             )";
     try {
         $stmt = $conn->prepare($sql);
@@ -742,6 +757,7 @@ function insert_product_inventory(int $productId, array $data): bool {
             'product_brand' => $data['product_brand'] ?? null,
             'product_manufacturer' => $data['product_manufacturer'] ?? null,
             'warranty_period' => $data['warranty_period'] ?? null,
+            'product_material' => $data['product_material'] ?? null,
         ]);
         return true;
     } catch (Throwable $e) {
@@ -752,6 +768,33 @@ function insert_product_inventory(int $productId, array $data): bool {
 
 function update_product_inventory(int $productId, array $data): bool {
     global $conn;
+    // Fetch current inventory row
+    $stmt = $conn->prepare("SELECT * FROM inventory.product_inventory WHERE product_id = :product_id");
+    $stmt->execute(['product_id' => $productId]);
+    $current = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$current) {
+        // If no row exists, insert new
+        return insert_product_inventory($productId, $data);
+    }
+    $fields = [
+        'product_stock_quantity',
+        'product_reorder_level',
+        'product_lead_time',
+        'product_weight',
+        'product_dimensions',
+        'product_brand',
+        'product_manufacturer',
+        'warranty_period',
+        'product_material',
+    ];
+    $update = [];
+    foreach ($fields as $field) {
+        if (array_key_exists($field, $data)) {
+            $update[$field] = $data[$field];
+        } else {
+            $update[$field] = $current[$field];
+        }
+    }
     $sql = "UPDATE inventory.product_inventory SET
                 product_stock_quantity = :product_stock_quantity,
                 product_reorder_level = :product_reorder_level,
@@ -761,20 +804,22 @@ function update_product_inventory(int $productId, array $data): bool {
                 product_brand = :product_brand,
                 product_manufacturer = :product_manufacturer,
                 warranty_period = :warranty_period,
+                product_material = :product_material,
                 updated_at = CURRENT_TIMESTAMP
             WHERE product_id = :product_id";
     try {
         $stmt = $conn->prepare($sql);
         $stmt->execute([
             'product_id' => $productId,
-            'product_stock_quantity' => $data['product_stock_quantity'] ?? null,
-            'product_reorder_level' => $data['product_reorder_level'] ?? 0,
-            'product_lead_time' => $data['product_lead_time'] ?? null,
-            'product_weight' => $data['product_weight'] ?? null,
-            'product_dimensions' => $data['product_dimensions'] ?? null,
-            'product_brand' => $data['product_brand'] ?? null,
-            'product_manufacturer' => $data['product_manufacturer'] ?? null,
-            'warranty_period' => $data['warranty_period'] ?? null,
+            'product_stock_quantity' => $update['product_stock_quantity'],
+            'product_reorder_level' => $update['product_reorder_level'],
+            'product_lead_time' => $update['product_lead_time'],
+            'product_weight' => $update['product_weight'],
+            'product_dimensions' => $update['product_dimensions'],
+            'product_brand' => $update['product_brand'],
+            'product_manufacturer' => $update['product_manufacturer'],
+            'warranty_period' => $update['warranty_period'],
+            'product_material' => $update['product_material'],
         ]);
         return true;
     } catch (Throwable $e) {
@@ -808,7 +853,7 @@ function bulk_delete_products(array $productIds, int $user_id): array {
         }
         foreach ($productIds as $pid) {
             try {
-                $sql = "UPDATE core.product SET product_status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE product_id = :product_id";
+                $sql = "UPDATE core.products SET product_status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE product_id = :product_id";
                 $stmt = $conn->prepare($sql);
                 $stmt->bindValue(':product_id', (int)$pid, PDO::PARAM_INT);
                 $stmt->execute();

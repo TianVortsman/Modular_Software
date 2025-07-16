@@ -752,6 +752,7 @@ function importProducts($spreadsheet, $conn) {
         $product_status = strtolower($get('product_status') ?: 'active');
         $sku = strtoupper($get('sku'));
         $barcode = $get('barcode');
+        if ($barcode === '') $barcode = null;
         $product_type_name = strtolower(trim($get('product_type_name')));
         $category_name = ucwords($get('category_name'));
         $subcategory_name = ucwords($get('subcategory_name'));
@@ -827,11 +828,26 @@ function importProducts($spreadsheet, $conn) {
             $successCount++;
         } catch (PDOException $e) {
             $reason = $e->getMessage();
-            // User-friendly duplicate barcode error
-            if (strpos($reason, 'duplicate key value violates unique constraint') !== false && strpos($reason, 'product_barcode_key') !== false) {
-                $reason = 'Duplicate barcode' . ($barcode ? ': ' . $barcode : '');
-            } else if (strpos($reason, 'duplicate key value violates unique constraint') !== false) {
-                $reason = 'Duplicate value for a unique field.';
+            $status = 'failed';
+            // User-friendly duplicate constraint error parsing
+            if (strpos($reason, 'duplicate key value violates unique constraint') !== false) {
+                // Try to extract constraint name
+                if (preg_match('/unique constraint \"([^\"]+)\"/', $reason, $matches)) {
+                    $constraint = $matches[1];
+                    // Map known constraint names to fields
+                    $constraintMap = [
+                        'product_barcode_key' => 'barcode',
+                        'products_sku_key' => 'SKU',
+                        'products_product_name_key' => 'product name',
+                        // Add more mappings as needed
+                    ];
+                    $field = $constraintMap[$constraint] ?? $constraint;
+                    $reason = "Duplicate value for $field.";
+                    $status = "duplicate $field";
+                } else {
+                    $reason = 'Duplicate value for a unique field.';
+                    $status = 'duplicate';
+                }
             } else {
                 // Shorten generic SQL errors
                 $reason = preg_replace('/SQLSTATE\[[^]]*\]: [^:]*: [0-9]+ ERROR:  /', '', $reason);
@@ -840,7 +856,7 @@ function importProducts($spreadsheet, $conn) {
             $errors[] = [
                 'row' => $i,
                 'product_name' => $product_name,
-                'product_status' => 'failed',
+                'product_status' => $status,
                 'reason' => $reason
             ];
         }

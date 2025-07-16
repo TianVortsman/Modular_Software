@@ -30,10 +30,10 @@ import { ProductAPI } from './product-api.js';
                 }
                 productIdField.value = data.product_id;
             }
-            // Refactored fieldMappings to match backend controller fields
+            // Refactored fieldMappings to match backend controller fields and modal field names
             const fieldMappings = {
                 'product_name': 'product_name',
-                'product_description': 'product_description',
+                'product_description': 'product_descr', // textarea in modal
                 'product_price': 'product_price',
                 'product_status': 'product_status',
                 'sku': 'sku',
@@ -44,17 +44,26 @@ import { ProductAPI } from './product-api.js';
                 'tax_rate_id': 'tax_rate_id',
                 'discount': 'discount',
                 'notes': 'notes',
-                // Inventory fields
-                'product_stock_quantity': 'product_stock_quantity',
-                'product_reorder_level': 'product_reorder_level',
-                'product_lead_time': 'product_lead_time',
+                // Inventory fields (modal uses different names)
+                'product_stock_quantity': 'stock_quantity',
+                'product_reorder_level': 'reorder_level',
+                'product_lead_time': 'lead_time',
                 'product_weight': 'product_weight',
-                'product_dimensions': 'product_dimensions',
-                'product_brand': 'product_brand',
-                'product_manufacturer': 'product_manufacturer',
+                'product_dimensions': 'dimensions',
+                'product_brand': 'brand',
+                'product_manufacturer': 'manufacturer',
                 'warranty_period': 'warranty_period',
+                'product_material': 'product_material',
                 // Supplier
-                'supplier_id': 'supplier_id'
+                'supplier_id': 'supplier_id',
+                // Type-specific fields
+                'compatible_vehicles': 'compatible_vehicles',
+                'oem_part_number': 'oem_part_number',
+                'estimated_time': 'estimated_time',
+                'service_frequency': 'service_frequency',
+                'bundle_items': 'bundle_items',
+                'installation_required': 'installation_required',
+                'labor_cost': 'labor_cost',
             };
             Object.entries(fieldMappings).forEach(([apiField, formField]) => {
                 const element = this.form.querySelector(`[name="${formField}"]`);

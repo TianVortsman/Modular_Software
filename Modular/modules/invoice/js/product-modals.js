@@ -97,7 +97,11 @@ class ProductModalUI {
                     this.formManager.populateForm(result.data);
                 } else {
                     showResponseModal(result.message || 'Failed to fetch product details', 'error');
+                    console.error('Failed to fetch product details:', result);
                 }
+            }).catch(error => {
+                showResponseModal('Error fetching product details: ' + error.message, 'error');
+                console.error('Error fetching product details:', error);
             });
         }
         this.modal.classList.add('active');
@@ -129,12 +133,70 @@ class ProductModalUI {
             const pidFields = this.formManager.form.querySelectorAll('input[name="product_id"]');
             pidFields.forEach(f => f.remove());
         }
-        // Collect all required fields for backend
-        const formData = new FormData(this.formManager.form);
-        // Ensure supplier_id is included if present
-        const supplierDropdown = this.formManager.supplierDropdown;
-        if (supplierDropdown && supplierDropdown.value) {
-            formData.set('supplier_id', supplierDropdown.value);
+        // Explicitly build FormData with all mapped fields
+        const fieldMappings = {
+            'product_name': 'product_name',
+            'product_description': 'product_descr',
+            'product_price': 'product_price',
+            'product_status': 'product_status',
+            'sku': 'sku',
+            'barcode': 'barcode',
+            'product_type_id': 'product_type_id',
+            'category_id': 'category_id',
+            'subcategory_id': 'subcategory_id',
+            'tax_rate_id': 'tax_rate_id',
+            'discount': 'discount',
+            'notes': 'notes',
+            'product_stock_quantity': 'stock_quantity',
+            'product_reorder_level': 'reorder_level',
+            'product_lead_time': 'lead_time',
+            'product_weight': 'product_weight',
+            'product_dimensions': 'dimensions',
+            'product_brand': 'brand',
+            'product_manufacturer': 'manufacturer',
+            'warranty_period': 'warranty_period',
+            'product_material': 'product_material',
+            'supplier_id': 'supplier_id',
+            'compatible_vehicles': 'compatible_vehicles',
+            'oem_part_number': 'oem_part_number',
+            'estimated_time': 'estimated_time',
+            'service_frequency': 'service_frequency',
+            'bundle_items': 'bundle_items',
+            'installation_required': 'installation_required',
+            'labor_cost': 'labor_cost',
+        };
+        const formData = new FormData();
+        Object.entries(fieldMappings).forEach(([apiField, formField]) => {
+            const element = this.formManager.form.querySelector(`[name="${formField}"]`);
+            if (element) {
+                let value = element.value;
+                // For checkboxes and selects
+                if (element.type === 'checkbox') {
+                    value = element.checked ? 'true' : 'false';
+                }
+                // For number fields, default to 0 if blank
+                if ((element.type === 'number' || element.type === 'text') && value === '') {
+                    if ([
+                        'product_price', 'discount', 'labor_cost', 'product_stock_quantity',
+                        'product_reorder_level', 'product_lead_time', 'product_weight'
+                    ].includes(apiField)) {
+                        value = '0';
+                    }
+                }
+                formData.set(apiField, value);
+            } else {
+                // If field is missing in DOM, send empty string
+                formData.set(apiField, '');
+            }
+        });
+        // Add product_id if in edit mode
+        if (this.mode === 'edit' && this.productId) {
+            formData.set('product_id', this.productId);
+        }
+        // Add image if present
+        const imageInput = this.formManager.imageInput;
+        if (imageInput && imageInput.files && imageInput.files.length > 0) {
+            formData.set('item_image', imageInput.files[0]);
         }
         const isEditMode = this.mode === 'edit';
         showLoadingModal(isEditMode ? 'Saving changes...' : 'Adding product...');
@@ -144,26 +206,7 @@ class ProductModalUI {
         apiCall.then(async data => {
             hideLoadingModal();
             if (data.success) {
-                // If image is selected, upload it
-                const imageInput = this.formManager.imageInput;
-                if (imageInput && imageInput.files && imageInput.files.length > 0) {
-                    const file = imageInput.files[0];
-                    let uploadType = null;
-                    if (this.formManager && this.formManager.typeDropdown) {
-                        uploadType = this.formManager.typeDropdown.options[this.formManager.typeDropdown.selectedIndex]?.textContent?.toLowerCase() || 'product';
-                    } else if (data.product_type_name) {
-                        uploadType = data.product_type_name.toLowerCase();
-                    } else {
-                        uploadType = 'product';
-                    }
-                    const uploadProductId = data.data && data.data.product_id ? data.data.product_id : (data.product_id || this.productId);
-                    await ProductAPI.uploadImage(file, uploadProductId, uploadType);
-                    const preview = document.getElementById('universalItemImagePreview');
-                    if (preview) {
-                        const url = preview.src.split('?')[0];
-                        preview.src = url + '?t=' + Date.now();
-                    }
-                }
+                // If image is selected, upload it (already handled above)
                 this.closeModal();
                 showResponseModal('Product saved successfully', 'success', true);
                 if (window.productScreenManager && typeof window.productScreenManager.refreshProductList === 'function') {

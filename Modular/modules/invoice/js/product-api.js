@@ -9,9 +9,13 @@ export class ProductAPI {
 
     // Fetch product details by ID
     static fetchProductDetails(productId) {
+        console.log('Calling fetchProductDetails for productId:', productId);
         return fetch(`/modules/invoice/api/products.php?action=get&id=${productId}`, {
             credentials: 'include'
-        }).then(res => res.json());
+        }).then(res => res.json()).then(data => {
+            console.log('fetchProductDetails result:', data);
+            return data;
+        });
     }
 
     // Add a new product

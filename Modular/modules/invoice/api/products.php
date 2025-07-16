@@ -9,9 +9,9 @@ date_default_timezone_set('UTC');
 
 require_once __DIR__ . '/../../../src/Core/Database/ClientDatabase.php';
 require_once __DIR__ . '/../controllers/ProductController.php';
+require_once __DIR__ . '/../controllers/ImageController.php';
 
 use App\Core\Database\ClientDatabase;
-use App\modules\invoice\controllers\ProductController;
 
 // Set CORS headers
 header('Access-Control-Allow-Origin: http://localhost:8080');
@@ -102,7 +102,7 @@ try {
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Initialize controller
-    $controller = new ProductController($conn);
+    // Remove: $controller = new ProductController($conn);
 
     // Get and validate action
     $action = $_GET['action'] ?? '';
@@ -116,35 +116,38 @@ try {
             if ($method !== 'GET') {
                 throw new Exception('GET method required for list_categories action');
             }
-            $result = $controller->getProductCategories();
+            $productTypeId = isset($_GET['product_type_id']) ? (int)$_GET['product_type_id'] : null;
+            $result = \App\modules\invoice\controllers\get_product_categories($productTypeId);
             break;
 
         case 'list_subcategories':
             if ($method !== 'GET') {
                 throw new Exception('GET method required for list_subcategories action');
             }
-            $result = $controller->getProductSubcategories();
+            $categoryId = isset($_GET['category_id']) ? (int)$_GET['category_id'] : null;
+            $result = \App\modules\invoice\controllers\get_product_subcategories($categoryId);
             break;
 
         case 'list_types':
             if ($method !== 'GET') {
                 throw new Exception('GET method required for list_types action');
             }
-            $result = $controller->getProductTypes();
+            $result = \App\modules\invoice\controllers\get_product_types();
             break;
 
         case 'list_tax_rates':
             if ($method !== 'GET') {
                 throw new Exception('GET method required for list_tax_rates action');
             }
-            $result = $controller->getTaxRates();
+            $result = \App\modules\invoice\controllers\getTaxRates();
             break;
 
         case 'add':
             if ($method !== 'POST') {
                 throw new Exception('POST method required for add action');
             }
-            $result = $controller->addProduct();
+            $user_id = $_SESSION['user_id'] ?? null;
+            $result = \App\modules\invoice\controllers\add_product($_POST, $user_id);
             // In add action, after product is created, handle supplier_id
             // On add: insert into inventory.product_supplier (product_id, supplier_id)
             if (isset($_POST['supplier_id']) && $_POST['supplier_id']) {
@@ -160,7 +163,8 @@ try {
             if ($method !== 'PUT') {
                 throw new Exception('PUT method required for edit action');
             }
-            $result = $controller->updateProduct();
+            $user_id = $_SESSION['user_id'] ?? null;
+            $result = \App\modules\invoice\controllers\update_product($_POST, $user_id);
             // In edit action, after product is updated, handle supplier_id
             // On edit: update or insert as needed
             if (isset($_POST['supplier_id']) && $_POST['supplier_id']) {
@@ -184,7 +188,7 @@ try {
             if ($method !== 'POST') {
                 throw new Exception('POST method required for upload_image action');
             }
-            $result = $controller->handleImageUploadAPI();
+            $result = handleImageUpload();
             break;
 
         case 'delete':
@@ -195,14 +199,15 @@ try {
             if (isset($_GET['id'])) {
                 $_POST['product_id'] = $_GET['id'];
             }
-            $result = $controller->deleteProduct();
+            $user_id = $_SESSION['user_id'] ?? null;
+            $result = \App\modules\invoice\controllers\delete_product($_POST['product_id'], $user_id);
             break;
 
         case 'list':
             if ($method !== 'GET') {
                 throw new Exception('GET method required for list action');
             }
-            $result = $controller->getAllProducts();
+            $result = \App\modules\invoice\controllers\list_products([]); // Use snake_case to match function definition
             break;
 
         case 'get':
@@ -213,7 +218,7 @@ try {
             if (isset($_GET['id']) && !isset($_GET['product_id'])) {
                 $_GET['product_id'] = $_GET['id'];
             }
-            $result = $controller->getProduct();
+            $result = \App\modules\invoice\controllers\get_product_details($_GET['product_id']);
             break;
 
         case 'search':
@@ -248,7 +253,8 @@ try {
             if ($method !== 'POST') {
                 throw new Exception('POST method required for update_status action');
             }
-            $result = $controller->updateProductStatus();
+            $user_id = $_SESSION['user_id'] ?? null;
+            $result = \App\modules\invoice\controllers\update_product_status($_POST['product_id'], $_POST['status'], $user_id);
             break;
 
         default:

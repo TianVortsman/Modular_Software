@@ -80,6 +80,7 @@ error_log("Multiple accounts: " . ($multiple_accounts ? 'true' : 'false'));
                             <option value="10" selected>10</option>
                             <option value="25">25</option>
                             <option value="50">50</option>
+                            <option value="100">100</option>
                         </select>
                     <div class="table-container">
                         <div class="client-table-container">

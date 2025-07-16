@@ -152,7 +152,7 @@
               </div>
               <div class="upm-field">
                 <label for="universalItemMaterial">Material:</label>
-                <input type="text" name="material" id="universalItemMaterial" placeholder="e.g., Plastic, Metal, Wood">
+                <input type="text" name="product_material" id="universalItemMaterial" placeholder="e.g., Plastic, Metal, Wood">
               </div>
               <div class="upm-field">
                 <label for="universalItemWarranty">Warranty Period:</label>

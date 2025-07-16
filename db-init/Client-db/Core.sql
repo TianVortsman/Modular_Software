@@ -296,7 +296,6 @@ CREATE TABLE IF NOT EXISTS core.products (
     product_type_id INTEGER REFERENCES core.product_types(product_type_id),
     category_id INTEGER REFERENCES core.product_categories(category_id),
     subcategory_id INTEGER REFERENCES core.product_subcategories(subcategory_id),
-    image_url VARCHAR(255),
     tax_rate_id INTEGER REFERENCES core.tax_rates(tax_rate_id),
     discount NUMERIC(10,2),
     notes TEXT,
