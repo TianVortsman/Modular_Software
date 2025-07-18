@@ -32,6 +32,7 @@ function list_products(array $options = []): array {
         $typeId       = $options['type']      ?? null;
         $categoryId   = $options['category']  ?? null;
         $subcategoryId = $options['subcategory'] ?? null;
+        $supplierId   = $options['supplier_id'] ?? ($options['supplier'] ?? null);
 
         $page         = max(1, (int)($options['page'] ?? 1));
         $limit        = max(1, (int)($options['limit'] ?? 20));
@@ -70,13 +71,16 @@ function list_products(array $options = []): array {
                 pi.product_manufacturer, 
                 pi.warranty_period, 
                 pi.product_material, 
-                tr.rate AS tax_rate
+                tr.rate AS tax_rate, 
+                ps.product_supplier_id, 
+                ps.supplier_id
             FROM core.products p
             LEFT JOIN core.product_types pt ON p.product_type_id = pt.product_type_id
             LEFT JOIN core.product_categories pc ON p.category_id = pc.category_id
             LEFT JOIN core.product_subcategories psc ON p.subcategory_id = psc.subcategory_id
             LEFT JOIN inventory.product_inventory pi ON p.product_id = pi.product_id
             LEFT JOIN core.tax_rates tr ON p.tax_rate_id = tr.tax_rate_id
+            LEFT JOIN inventory.product_supplier ps ON p.product_id = ps.product_id
             WHERE 1 = 1
         ";
 
@@ -94,6 +98,12 @@ function list_products(array $options = []): array {
         if (!empty($subcategoryId)) {
             $sql .= " AND p.subcategory_id = :subcategory_id";
             $params[':subcategory_id'] = $subcategoryId;
+        }
+
+        // Filter by supplier_id if provided
+        if (!empty($supplierId)) {
+            $sql .= " AND ps.supplier_id = :supplier_id";
+            $params[':supplier_id'] = $supplierId;
         }
 
         if (!empty($search)) {
@@ -434,6 +444,7 @@ function get_product_details(int $productId): array {
                 pi.warranty_period, 
                 pi.product_material, 
                 tr.rate AS tax_rate, 
+                ps.product_supplier_id, 
                 ps.supplier_id
             FROM core.products p
             LEFT JOIN core.product_types pt ON p.product_type_id = pt.product_type_id
@@ -521,15 +532,15 @@ function get_product_types(): array {
 function get_product_categories(?int $productTypeId = null): array {
     global $conn;
     try {
-        $sql = 'SELECT * FROM core.product_categories';
+        $sql = 'SELECT c.*, t.product_type_name FROM core.product_categories c LEFT JOIN core.product_types t ON c.product_type_id = t.product_type_id';
         $params = [];
 
         if ($productTypeId !== null) {
-            $sql .= ' WHERE product_type_id = :product_type_id';
+            $sql .= ' WHERE c.product_type_id = :product_type_id';
             $params['product_type_id'] = $productTypeId;
         }
 
-        $sql .= ' ORDER BY category_name';
+        $sql .= ' ORDER BY c.category_name';
         $stmt = $conn->prepare($sql);
         $stmt->execute($params);
 
@@ -552,15 +563,15 @@ function get_product_categories(?int $productTypeId = null): array {
 function get_product_subcategories(?int $categoryId = null): array {
     global $conn;
     try {
-        $sql = 'SELECT * FROM core.product_subcategories';
+        $sql = 'SELECT s.*, c.category_name, t.product_type_name FROM core.product_subcategories s LEFT JOIN core.product_categories c ON s.category_id = c.category_id LEFT JOIN core.product_types t ON c.product_type_id = t.product_type_id';
         $params = [];
 
         if ($categoryId !== null) {
-            $sql .= ' WHERE category_id = :category_id';
+            $sql .= ' WHERE s.category_id = :category_id';
             $params['category_id'] = $categoryId;
         }
 
-        $sql .= ' ORDER BY subcategory_name';
+        $sql .= ' ORDER BY s.subcategory_name';
         $stmt = $conn->prepare($sql);
         $stmt->execute($params);
 
@@ -895,6 +906,221 @@ function bulk_delete_products(array $productIds, int $user_id): array {
             'data' => null,
             'error_code' => 'BULK_DELETE_FAILED',
             'errors' => [['reason' => $err]]
+        ];
+    }
+}
+
+// Save (add or update) a product category
+function save_product_category(array $data): array {
+    global $conn;
+    $category_id = $data['category_id'] ?? null;
+    $name = trim($data['category_name'] ?? '');
+    $desc = trim($data['category_description'] ?? '');
+    $type_id = $data['product_type_id'] ?? null;
+    if ($name === '' || !$type_id) {
+        return ['success' => false, 'message' => 'Category name and type are required'];
+    }
+    try {
+        if ($category_id) {
+            // Update
+            $sql = "UPDATE core.product_categories SET category_name = :name, category_description = :desc, product_type_id = :type_id, updated_at = NOW() WHERE category_id = :id";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([
+                'name' => $name,
+                'desc' => $desc,
+                'type_id' => $type_id,
+                'id' => $category_id
+            ]);
+            return ['success' => true, 'message' => 'Category updated'];
+        } else {
+            // Insert
+            $sql = "INSERT INTO core.product_categories (category_name, category_description, product_type_id, created_at) VALUES (:name, :desc, :type_id, NOW()) RETURNING category_id";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([
+                'name' => $name,
+                'desc' => $desc,
+                'type_id' => $type_id
+            ]);
+            $new_id = $stmt->fetchColumn();
+            return ['success' => true, 'message' => 'Category added', 'data' => ['category_id' => $new_id]];
+        }
+    } catch (Throwable $e) {
+        error_log('[save_product_category] ' . $e->getMessage());
+        return ['success' => false, 'message' => 'Failed to save category'];
+    }
+}
+
+// Save (add or update) a product subcategory
+function save_product_subcategory(array $data): array {
+    global $conn;
+    $subcategory_id = $data['subcategory_id'] ?? null;
+    $name = trim($data['subcategory_name'] ?? '');
+    $desc = trim($data['subcategory_description'] ?? '');
+    $category_id = $data['category_id'] ?? null;
+    if ($name === '' || !$category_id) {
+        return ['success' => false, 'message' => 'Subcategory name and category are required'];
+    }
+    try {
+        if ($subcategory_id) {
+            // Update
+            $sql = "UPDATE core.product_subcategories SET subcategory_name = :name, subcategory_description = :desc, category_id = :category_id, updated_at = NOW() WHERE subcategory_id = :id";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([
+                'name' => $name,
+                'desc' => $desc,
+                'category_id' => $category_id,
+                'id' => $subcategory_id
+            ]);
+            return ['success' => true, 'message' => 'Subcategory updated'];
+        } else {
+            // Insert
+            $sql = "INSERT INTO core.product_subcategories (subcategory_name, subcategory_description, category_id, created_at) VALUES (:name, :desc, :category_id, NOW()) RETURNING subcategory_id";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([
+                'name' => $name,
+                'desc' => $desc,
+                'category_id' => $category_id
+            ]);
+            $new_id = $stmt->fetchColumn();
+            return ['success' => true, 'message' => 'Subcategory added', 'data' => ['subcategory_id' => $new_id]];
+        }
+    } catch (Throwable $e) {
+        error_log('[save_product_subcategory] ' . $e->getMessage());
+        return ['success' => false, 'message' => 'Failed to save subcategory'];
+    }
+}
+
+// Add helper for linking product to supplier using product_supplier_id
+function link_product_to_supplier_by_id(int $product_id, int $supplier_id, int $user_id): array {
+    global $conn;
+    if (!check_user_permission($user_id, 'update_product')) {
+        $msg = 'Permission denied';
+        error_log('[link_product_to_supplier_by_id] ' . $msg);
+        log_user_action($user_id, 'link_product_to_supplier_by_id', $product_id, $msg);
+        return ['success' => false, 'message' => $msg, 'data' => null, 'error_code' => 'PERMISSION_DENIED'];
+    }
+    try {
+        $sql = "INSERT INTO inventory.product_supplier (product_id, supplier_id) VALUES (:product_id, :supplier_id) RETURNING product_supplier_id";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['product_id' => $product_id, 'supplier_id' => $supplier_id]);
+        $product_supplier_id = $stmt->fetchColumn();
+        log_user_action($user_id, 'link_product_to_supplier_by_id', $product_id, $product_supplier_id);
+        return ['success' => true, 'message' => 'Product linked to supplier', 'data' => ['product_supplier_id' => $product_supplier_id]];
+    } catch (Throwable $e) {
+        $msg = $e->getMessage();
+        error_log('[link_product_to_supplier_by_id] ' . $msg);
+        log_user_action($user_id, 'link_product_to_supplier_by_id', $product_id, $msg);
+        return ['success' => false, 'message' => 'Failed to link product to supplier', 'data' => null, 'error_code' => 'PRODUCT_SUPPLIER_LINK_ERROR'];
+    }
+}
+// Add helper for unlinking by product_supplier_id
+function unlink_product_supplier_by_id(int $product_supplier_id, int $user_id): array {
+    global $conn;
+    if (!check_user_permission($user_id, 'update_product')) {
+        $msg = 'Permission denied';
+        error_log('[unlink_product_supplier_by_id] ' . $msg);
+        log_user_action($user_id, 'unlink_product_supplier_by_id', $product_supplier_id, $msg);
+        return ['success' => false, 'message' => $msg, 'data' => null, 'error_code' => 'PERMISSION_DENIED'];
+    }
+    try {
+        $sql = "DELETE FROM inventory.product_supplier WHERE product_supplier_id = :product_supplier_id";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['product_supplier_id' => $product_supplier_id]);
+        log_user_action($user_id, 'unlink_product_supplier_by_id', $product_supplier_id);
+        return ['success' => true, 'message' => 'Product-supplier link removed', 'data' => ['product_supplier_id' => $product_supplier_id]];
+    } catch (Throwable $e) {
+        $msg = $e->getMessage();
+        error_log('[unlink_product_supplier_by_id] ' . $msg);
+        log_user_action($user_id, 'unlink_product_supplier_by_id', $product_supplier_id, $msg);
+        return ['success' => false, 'message' => 'Failed to unlink product-supplier', 'data' => null, 'error_code' => 'PRODUCT_SUPPLIER_UNLINK_ERROR'];
+    }
+}
+
+// --- API: Get all suppliers and stock info for a product ---
+function get_product_suppliers_and_stock(int $productId): array {
+    global $conn;
+    try {
+        // 1. Get all product_supplier links for this product
+        $sql = "SELECT ps.product_supplier_id, s.supplier_id, s.supplier_name, s.supplier_contact, s.supplier_email, s.website_url
+                FROM inventory.product_supplier ps
+                JOIN inventory.supplier s ON ps.supplier_id = s.supplier_id
+                WHERE ps.product_id = :product_id AND s.deleted_at IS NULL";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([':product_id' => $productId]);
+        $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = [];
+        foreach ($suppliers as $supplier) {
+            $product_supplier_id = $supplier['product_supplier_id'];
+            // 2. Get all stock entries for this product_supplier_id (FIFO table)
+            $sqlStock = "SELECT stock_entry_id, quantity, remaining_quantity, cost_per_unit, received_at, notes
+                         FROM inventory.product_stock_entries
+                         WHERE product_supplier_id = :psid
+                         ORDER BY received_at DESC";
+            $stmtStock = $conn->prepare($sqlStock);
+            $stmtStock->execute([':psid' => $product_supplier_id]);
+            $fifo_entries = $stmtStock->fetchAll(PDO::FETCH_ASSOC);
+            // 3. Calculate total stock (sum of remaining_quantity)
+            $total_stock = 0;
+            $last_restock = null;
+            $last_price = null;
+            if ($fifo_entries) {
+                foreach ($fifo_entries as $entry) {
+                    $total_stock += (int)$entry['remaining_quantity'];
+                }
+                // Last restock = most recent received_at
+                $last_restock = $fifo_entries[0]['received_at'];
+                $last_price = $fifo_entries[0]['cost_per_unit'];
+            }
+            $result[] = [
+                'supplier_id' => $supplier['supplier_id'],
+                'supplier_name' => $supplier['supplier_name'],
+                'supplier_contact' => $supplier['supplier_contact'],
+                'supplier_email' => $supplier['supplier_email'],
+                'website_url' => $supplier['website_url'],
+                'total_stock' => $total_stock,
+                'last_restock' => $last_restock,
+                'last_price' => $last_price,
+                'fifo_entries' => $fifo_entries
+            ];
+        }
+        return [
+            'success' => true,
+            'data' => $result
+        ];
+    } catch (\Throwable $e) {
+        error_log('[get_product_suppliers_and_stock] ' . $e->getMessage());
+        return [
+            'success' => false,
+            'message' => 'Failed to fetch suppliers and stock info',
+            'error' => $e->getMessage(),
+            'data' => null
+        ];
+    }
+}
+
+// --- API: Adjust product stock (manual adjustment, admin only) ---
+function adjust_product_stock($product_supplier_id, $quantity, $cost_per_unit = null, $notes = null): array {
+    global $conn;
+    try {
+        $sql = "INSERT INTO inventory.product_stock_entries (product_supplier_id, quantity, remaining_quantity, cost_per_unit, notes) VALUES (:psid, :qty, :rem, :cost, :notes)";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([
+            ':psid' => $product_supplier_id,
+            ':qty' => $quantity,
+            ':rem' => $quantity, // For adjustments, remaining = quantity (can be negative)
+            ':cost' => $cost_per_unit,
+            ':notes' => $notes
+        ]);
+        return [
+            'success' => true,
+            'message' => 'Stock adjustment recorded.'
+        ];
+    } catch (\Throwable $e) {
+        error_log('[adjust_product_stock] ' . $e->getMessage());
+        return [
+            'success' => false,
+            'message' => 'Failed to adjust stock.',
+            'error' => $e->getMessage()
         ];
     }
 }

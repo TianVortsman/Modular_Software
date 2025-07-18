@@ -1,8 +1,13 @@
 // --- ProductModalAPI: Handles all API calls for products ---
+import { buildQueryParams } from '../../../public/assets/js/helpers.js';
+
 export class ProductAPI {
-    // Fetch all products
-    static fetchProducts() {
-        return fetch('/modules/invoice/api/products.php?action=list', {
+    // Fetch all products, optionally with filters
+    static fetchProducts(filters = {}) {
+        // Use the shared buildQueryParams helper for consistency
+        const params = buildQueryParams({ action: 'list' }, filters);
+        const url = '/modules/invoice/api/products.php?' + params.toString();
+        return fetch(url, {
             credentials: 'include'
         }).then(res => res.json());
     }
@@ -108,6 +113,13 @@ export class ProductAPI {
         return fetch('/modules/invoice/api/products.php?action=update_status', {
             method: 'POST',
             body: formData,
+            credentials: 'include'
+        }).then(res => res.json());
+    }
+
+    // Fetch suppliers and stock info for a product (for modal Suppliers tab)
+    static fetchProductSuppliersAndStock(productId) {
+        return fetch(`/modules/invoice/api/products.php?action=get_product_suppliers_and_stock&product_id=${productId}`, {
             credentials: 'include'
         }).then(res => res.json());
     }

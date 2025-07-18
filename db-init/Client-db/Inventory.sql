@@ -17,6 +17,19 @@ CREATE TABLE IF NOT EXISTS inventory.product_inventory (
     deleted_at TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS inventory.product_stock_entries (
+    stock_entry_id SERIAL PRIMARY KEY,
+    product_supplier_id INT NOT NULL REFERENCES inventory.product_supplier(product_supplier_id) ON DELETE CASCADE,
+    quantity INT NOT NULL CHECK (quantity <> 0),
+    remaining_quantity INT NOT NULL CHECK (remaining_quantity >= 0),
+    cost_per_unit NUMERIC(10,2) NOT NULL CHECK (cost_per_unit >= 0),
+    received_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    notes TEXT
+);
+
+CREATE INDEX idx_stock_entries_product_id
+ON inventory.product_stock_entries(product_supplier_id);
+
 CREATE TABLE IF NOT EXISTS inventory.product_parts (
     product_id INTEGER PRIMARY KEY REFERENCES core.products(product_id) ON DELETE CASCADE,
     oem_part_number VARCHAR(100),
@@ -49,33 +62,63 @@ CREATE TABLE IF NOT EXISTS inventory.product_bundle (
 -- Base Tables (No Dependencies)
 CREATE TABLE IF NOT EXISTS inventory.supplier (
     supplier_id SERIAL PRIMARY KEY,
-    supplier_name VARCHAR(100) NOT NULL,
+    -- Basic Info
+    supplier_name VARCHAR(100) NOT NULL CHECK (TRIM(supplier_name) <> ''),
     supplier_address TEXT,
-    supplier_contact VARCHAR(30),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP
+    supplier_contact VARCHAR(30) CHECK (supplier_contact ~ '^[\d\+\-\s\(\)]*$'),
+    supplier_email VARCHAR(100),
+    -- Metadata
+    website_url VARCHAR(200) CHECK (website_url ~* '^https?://'),
+    -- Audit Columns
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP,
+    -- Constraints
+    CHECK (deleted_at IS NULL OR deleted_at >= created_at)
 );
 
 -- Dependent Tables
 CREATE TABLE IF NOT EXISTS inventory.product_supplier (
-    product_id INTEGER REFERENCES core.products(product_id) ON DELETE CASCADE,
-    supplier_id INTEGER REFERENCES inventory.supplier(supplier_id) ON DELETE CASCADE,
+    product_supplier_id SERIAL PRIMARY KEY,
+    product_id INTEGER NOT NULL REFERENCES core.products(product_id) ON DELETE CASCADE,
+    supplier_id INTEGER NOT NULL REFERENCES inventory.supplier(supplier_id) ON DELETE CASCADE,
+
+    supplier_product_code VARCHAR(100),
+    preferred BOOLEAN DEFAULT FALSE,
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT product_supplier_pkey PRIMARY KEY (product_id, supplier_id)
+
+    UNIQUE (product_id, supplier_id) -- optional constraint
+);
+
+CREATE TABLE IF NOT EXISTS inventory.supplier_contact_person (
+    contact_person_id SERIAL PRIMARY KEY,
+    supplier_id INTEGER NOT NULL REFERENCES inventory.supplier(supplier_id) ON DELETE CASCADE,
+    full_name VARCHAR(100) NOT NULL,
+    position VARCHAR(100),
+    email VARCHAR(150) CHECK (email ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$'),
+    phone VARCHAR(30) CHECK (phone ~ '^[\d\+\-\s\(\)]*$'),
+    notes TEXT,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS inventory.product_supplier_price_history (
     product_supplier_price_history_id SERIAL PRIMARY KEY,
-    product_id INTEGER REFERENCES core.products(product_id) ON DELETE CASCADE,
-    supplier_id INTEGER REFERENCES inventory.supplier(supplier_id) ON DELETE CASCADE,
+
+    product_supplier_id INTEGER NOT NULL
+        REFERENCES inventory.product_supplier(product_id, supplier_id)
+        ON DELETE CASCADE,
+
     purchase_price NUMERIC(12,2) NOT NULL,
     start_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     end_date TIMESTAMP,
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 
 CREATE TABLE IF NOT EXISTS inventory.purchase_order (
     purchase_order_id SERIAL PRIMARY KEY,

@@ -8,7 +8,8 @@ class ProductScreenManager {
         this.currentFilters = {
             search: '',
             category: '',
-            subcategory: ''
+            subcategory: '',
+            supplier: ''
         };
         this.allProducts = [];
     }
@@ -16,6 +17,7 @@ class ProductScreenManager {
         const searchInput = document.getElementById('search-input');
         const categoryFilter = document.getElementById('category-filter');
         const subcategoryFilter = document.getElementById('subcategory-filter');
+        const supplierFilter = document.getElementById('supplier-filter');
         const clearFiltersBtn = document.getElementById('clear-filters');
         if (searchInput) {
             searchInput.addEventListener('input', (e) => {
@@ -36,25 +38,54 @@ class ProductScreenManager {
                 this.applyFilters();
             });
         }
+        if (supplierFilter) {
+            supplierFilter.addEventListener('change', (e) => {
+                this.currentFilters.supplier = e.target.value;
+                this.applyFilters();
+            });
+        }
         if (clearFiltersBtn) {
             clearFiltersBtn.addEventListener('click', () => {
                 this.clearAllFilters();
             });
+        }
+        // Populate supplier filter dropdown
+        this.populateSupplierFilter();
+    }
+    async populateSupplierFilter() {
+        const supplierFilter = document.getElementById('supplier-filter');
+        if (!supplierFilter) return;
+        supplierFilter.innerHTML = '<option value="">All Suppliers</option>';
+        try {
+            const data = await window.ProductAPI.fetchSuppliers();
+            if (data.success && Array.isArray(data.data)) {
+                data.data.forEach(supplier => {
+                    const option = document.createElement('option');
+                    option.value = supplier.supplier_id;
+                    option.textContent = supplier.supplier_name;
+                    supplierFilter.appendChild(option);
+                });
+            }
+        } catch (e) {
+            console.error('Failed to load suppliers:', e);
         }
     }
     clearAllFilters() {
         const searchInput = document.getElementById('search-input');
         const categoryFilter = document.getElementById('category-filter');
         const subcategoryFilter = document.getElementById('subcategory-filter');
+        const supplierFilter = document.getElementById('supplier-filter');
         this.currentFilters.search = '';
         this.currentFilters.category = '';
         this.currentFilters.subcategory = '';
+        this.currentFilters.supplier = '';
         if (searchInput) searchInput.value = '';
         if (categoryFilter) categoryFilter.value = '';
         if (subcategoryFilter) {
             subcategoryFilter.innerHTML = '<option value="">All Subcategories</option>';
             subcategoryFilter.value = '';
         }
+        if (supplierFilter) supplierFilter.value = '';
         this.applyFilters();
     }
     async updateSubcategoryFilter() {
@@ -89,6 +120,9 @@ class ProductScreenManager {
                 return false;
             }
             if (this.currentFilters.subcategory && product.subcategory_id != this.currentFilters.subcategory) {
+                return false;
+            }
+            if (this.currentFilters.supplier && product.supplier_id != this.currentFilters.supplier) {
                 return false;
             }
             if (sectionType === 'product') {

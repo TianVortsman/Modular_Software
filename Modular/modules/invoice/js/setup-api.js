@@ -1,146 +1,98 @@
-// Centralized API class for Invoice Setup
-// All API calls from invoice-setup.js should be routed through here
+// --- Supplier API ---
+export async function getSuppliers() {
+    const res = await fetch('../api/setup-api.php?action=getSuppliers');
+    return await res.json();
+}
 
-export default class SetupAPI {
-    // Product Categories
-    static async getCategories() {
-        return fetch('../api/setup.php?action=get_categories', {
-            method: 'GET', credentials: 'include'
-        }).then(res => res.json());
-    }
-    static async saveCategory(formData) {
-        return fetch('../api/setup.php?action=save_category', {
-            method: 'POST', body: formData, credentials: 'include'
-        }).then(res => res.json());
-    }
-    static async deleteCategory(id) {
-        return fetch(`../api/setup.php?action=delete_category&id=${id}`, {
-            method: 'DELETE', credentials: 'include'
-        }).then(res => res.json());
-    }
+export async function getSupplier(supplierId) {
+    const res = await fetch(`../api/setup-api.php?action=getSupplier&supplier_id=${encodeURIComponent(supplierId)}`);
+    return await res.json();
+}
 
-    // Product Subcategories
-    static async getSubcategories() {
-        return fetch('../api/setup.php?action=list_subcategories', {
-            method: 'GET', credentials: 'include'
-        }).then(res => res.json());
-    }
-    static async saveSubcategory(formData) {
-        return fetch('../api/setup.php?action=save_subcategory', {
-            method: 'POST', body: formData, credentials: 'include'
-        }).then(res => res.json());
-    }
-    static async deleteSubcategory(id) {
-        return fetch(`../api/setup.php?action=delete_subcategory&id=${id}`, {
-            method: 'DELETE', credentials: 'include'
-        }).then(res => res.json());
-    }
+export async function saveSupplier(formData) {
+    const res = await fetch('../api/setup-api.php?action=saveSupplier', {
+        method: 'POST',
+        body: formData
+    });
+    return await res.json();
+}
 
-    // Product Types
-    static async getProductTypes() {
-        return fetch('../api/setup.php?action=get_product_types', {
-            method: 'GET', credentials: 'include'
-        }).then(res => res.json());
-    }
-    static async deleteProductType(id) {
-        return fetch(`../api/setup.php?action=delete_product_type&id=${id}`, {
-            method: 'DELETE', credentials: 'include'
-        }).then(res => res.json());
-    }
+// --- Category & Subcategory API ---
+export async function getCategories() {
+    const res = await fetch('../api/setup-api.php?action=getCategories');
+    return await res.json();
+}
 
-    // Bank Info
-    static async getBankInfo() {
-        return fetch('../api/setup.php?action=get_bank_info', {
-            method: 'GET', credentials: 'include'
-        }).then(res => res.json());
-    }
-    static async saveBankInfo(formData) {
-        return fetch('../api/setup.php?action=save_bank_info', {
-            method: 'POST', body: formData, credentials: 'include'
-        }).then(res => res.json());
-    }
+export async function getSubcategories() {
+    const res = await fetch('../api/setup-api.php?action=getSubcategories');
+    return await res.json();
+}
 
-    // Company Info
-    static async getCompanyInfo() {
-        return fetch('../api/setup.php?action=get_company_info', {
-            method: 'GET', credentials: 'include'
-        }).then(res => res.json());
-    }
-    static async saveCompanyInfo(formData) {
-        return fetch('../api/setup.php?action=save_company_info', {
-            method: 'POST', body: formData, credentials: 'include'
-        }).then(res => res.json());
-    }
+export async function saveCategory(formData) {
+    const res = await fetch('../api/setup-api.php?action=saveCategory', {
+        method: 'POST',
+        body: formData
+    });
+    return await res.json();
+}
 
-    // Sales Targets
-    static async getSalesTargets() {
-        return fetch('../api/setup.php?action=get_sales_targets', {
-            method: 'GET', credentials: 'include'
-        }).then(res => res.json());
-    }
-    static async deleteSalesTarget(id) {
-        return fetch(`../api/setup.php?action=delete_sales_target&id=${id}`, {
-            method: 'DELETE', credentials: 'include'
-        }).then(res => res.json());
-    }
+export async function saveSubcategory(formData) {
+    const res = await fetch('../api/setup-api.php?action=saveSubcategory', {
+        method: 'POST',
+        body: formData
+    });
+    return await res.json();
+}
 
-    // Suppliers
-    static async getSuppliers() {
-        return fetch('../api/setup.php?action=get_suppliers', {
-            method: 'GET', credentials: 'include'
-        }).then(res => res.json());
-    }
-    static async deleteSupplier(id) {
-        return fetch(`../api/setup.php?action=delete_supplier&id=${id}`, {
-            method: 'DELETE', credentials: 'include'
-        }).then(res => res.json());
-    }
+// --- Sales Target API ---
+export async function getSalesTargets() {
+    const res = await fetch('../api/setup-api.php?action=getSalesTargets');
+    return await res.json();
+}
 
-    // Credit Policy
-    static async getCreditPolicy() {
-        return fetch('../api/setup.php?action=get_credit_policy', {
-            method: 'GET', credentials: 'include'
-        }).then(res => res.json());
-    }
-    static async saveCreditPolicy(formData) {
-        return fetch('../api/setup.php?action=save_credit_policy', {
-            method: 'POST', body: formData, credentials: 'include'
-        }).then(res => res.json());
-    }
+export async function getSalesTarget(targetId) {
+    const res = await fetch(`../api/setup-api.php?action=getSalesTarget&sales_target_id=${encodeURIComponent(targetId)}`);
+    return await res.json();
+}
 
-    // Credit Reasons
-    static async getCreditReasons() {
-        return fetch('../api/setup.php?action=get_credit_reasons', {
-            method: 'GET', credentials: 'include'
-        }).then(res => res.json());
-    }
-    static async deleteCreditReason(id) {
-        return fetch(`../api/setup.php?action=delete_credit_reason&id=${id}`, {
-            method: 'DELETE', credentials: 'include'
-        }).then(res => res.json());
-    }
+export async function saveSalesTarget(formData) {
+    const res = await fetch('../api/setup-api.php?action=saveSalesTarget', {
+        method: 'POST',
+        body: formData
+    });
+    return await res.json();
+}
 
-    // Numbering
-    static async getNumberingSettings() {
-        return fetch('../api/setup.php?action=get_numbering_settings', {
-            method: 'GET', credentials: 'include'
-        }).then(res => res.json());
-    }
-    static async saveNumberingSettings(formData) {
-        return fetch('../api/setup.php?action=save_numbering_settings', {
-            method: 'POST', body: formData, credentials: 'include'
-        }).then(res => res.json());
-    }
+export async function getSalesUsers() {
+    const res = await fetch('../api/setup-api.php?action=getSalesUsers');
+    return await res.json();
+}
 
-    // Terms
-    static async getTermsSettings() {
-        return fetch('../api/setup.php?action=get_terms_settings', {
-            method: 'GET', credentials: 'include'
-        }).then(res => res.json());
-    }
-    static async saveTermsSettings(formData) {
-        return fetch('../api/setup.php?action=save_terms_settings', {
-            method: 'POST', body: formData, credentials: 'include'
-        }).then(res => res.json());
-    }
-} 
+export async function getSupplierContacts(supplierId) {
+    const res = await fetch(`../api/setup-api.php?action=getSupplierContacts&supplier_id=${encodeURIComponent(supplierId)}`);
+    return await res.json();
+}
+
+export async function addSupplierContact(formData) {
+    const res = await fetch('../api/setup-api.php?action=addSupplierContact', {
+        method: 'POST',
+        body: formData
+    });
+    return await res.json();
+}
+
+export async function updateSupplierContact(formData) {
+    const res = await fetch('../api/setup-api.php?action=updateSupplierContact', {
+        method: 'POST',
+        body: formData
+    });
+    return await res.json();
+}
+
+export async function deleteSupplierContact(formData) {
+    const res = await fetch('../api/setup-api.php?action=deleteSupplierContact', {
+        method: 'POST',
+        body: formData
+    });
+    return await res.json();
+}

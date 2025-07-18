@@ -11,27 +11,27 @@
                 
                 <div class="form-group">
                     <label for="supplier-name">Supplier Name *</label>
-                    <input type="text" id="supplier-name" name="name" class="form-input" required>
+                    <input type="text" id="supplier-name" name="supplier_name" class="form-input" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="supplier-email">Email</label>
-                    <input type="email" id="supplier-email" name="email" class="form-input">
+                    <input type="email" id="supplier-email" name="supplier_email" class="form-input">
                 </div>
                 
                 <div class="form-group">
-                    <label for="supplier-phone">Phone</label>
-                    <input type="tel" id="supplier-phone" name="phone" class="form-input">
+                    <label for="supplier-contact">Contact</label>
+                    <input type="tel" id="supplier-contact" name="supplier_contact" class="form-input">
                 </div>
                 
                 <div class="form-group">
                     <label for="supplier-address">Address</label>
-                    <textarea id="supplier-address" name="address" class="form-textarea" rows="3"></textarea>
+                    <textarea id="supplier-address" name="supplier_address" class="form-textarea" rows="3"></textarea>
                 </div>
                 
                 <div class="form-group">
-                    <label for="supplier-contact-person">Contact Person</label>
-                    <input type="text" id="supplier-contact-person" name="contact_person" class="form-input">
+                    <label for="supplier-website">Website</label>
+                    <input type="url" id="supplier-website" name="website_url" class="form-input">
                 </div>
                 
                 <div class="form-actions">
@@ -41,46 +41,55 @@
                     </button>
                 </div>
             </form>
+            <div id="supplier-contacts-section" style="display:none; margin-top:32px;">
+                <h3>Contact Persons</h3>
+                <button class="btn-primary" type="button" onclick="openSupplierContactModal()">
+                    <span class="material-icons">add</span> Add Contact
+                </button>
+                <div id="supplier-contacts-list" class="data-list" style="margin-top:16px;"></div>
+            </div>
         </div>
     </div>
 </div>
 
-<script>
-function openSupplierModal(supplierId = null) {
-    const modal = document.getElementById('supplierModal');
-    const title = document.getElementById('supplierModalTitle');
-    const form = document.getElementById('supplierForm');
-    
-    // Reset form
-    form.reset();
-    document.getElementById('supplier-id').value = '';
-    
-    if (supplierId) {
-        title.textContent = 'Edit Supplier';
-        // Load supplier data for editing
-        loadSupplierData(supplierId);
-    } else {
-        title.textContent = 'Add Supplier';
-    }
-    
-    modal.style.display = 'block';
-}
-
-function closeSupplierModal() {
-    const modal = document.getElementById('supplierModal');
-    modal.style.display = 'none';
-}
-
-function loadSupplierData(supplierId) {
-    // This would load existing supplier data for editing
-    // Implementation depends on your data loading approach
-}
-
-// Close modal when clicking outside
-window.onclick = function(event) {
-    const modal = document.getElementById('supplierModal');
-    if (event.target === modal) {
-        closeSupplierModal();
-    }
-}
-</script> 
+<!-- Supplier Contact Modal -->
+<div id="supplierContactModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="supplierContactModalTitle">Add Contact</h2>
+            <span class="close" onclick="closeSupplierContactModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="supplierContactForm" class="modal-form">
+                <input type="hidden" id="contact-person-id" name="contact_person_id">
+                <input type="hidden" id="contact-supplier-id" name="supplier_id">
+                <div class="form-group">
+                    <label for="contact-full-name">Full Name *</label>
+                    <input type="text" id="contact-full-name" name="full_name" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="contact-position">Position</label>
+                    <input type="text" id="contact-position" name="position" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="contact-email">Email</label>
+                    <input type="email" id="contact-email" name="email" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="contact-phone">Phone</label>
+                    <input type="tel" id="contact-phone" name="phone" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="contact-notes">Notes</label>
+                    <textarea id="contact-notes" name="notes" class="form-textarea" rows="2"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeSupplierContactModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">
+                        <span class="material-icons">save</span> Save Contact
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

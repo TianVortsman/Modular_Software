@@ -16,13 +16,13 @@
                 
                 <div class="form-group">
                     <label for="category-type">Product Type *</label>
-                    <select id="category-type" name="categories_type_id" class="form-select" required>
+                    <select id="category-type" name="product_type_id" class="form-select" required>
                     </select>
                 </div>
                 
                 <div class="form-group">
                     <label for="category-description">Description</label>
-                    <textarea id="category-description" name="description" class="form-textarea" rows="3"></textarea>
+                    <textarea id="category-description" name="category_description" class="form-textarea" rows="3"></textarea>
                 </div>
                 
                 <div class="form-actions">
