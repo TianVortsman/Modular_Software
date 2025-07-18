@@ -1,3 +1,4 @@
+console.log('Loading product-modals.js');
 import { ProductAPI } from './product-api.js';
 window.ProductAPI = ProductAPI;
 
@@ -55,6 +56,7 @@ class ProductModalUI {
         }
     }
     async openModal(mode = 'add', productId = null, typeId = null) {
+        console.log ('Opening product modal');
         this.mode = mode;
         this.productId = productId;
         this.modal.dataset.mode = mode;
