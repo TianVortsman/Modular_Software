@@ -96,3 +96,84 @@ export async function deleteSupplierContact(formData) {
     });
     return await res.json();
 }
+
+// --- Credit Reason API ---
+export async function getCreditReasons() {
+    const res = await fetch('../api/setup-api.php?action=getCreditReasons', {
+        credentials: 'include'
+    });
+    return await res.json();
+}
+
+export async function addCreditReason(formData) {
+    const res = await fetch('../api/setup-api.php?action=addCreditReason', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+    });
+    return await res.json();
+}
+
+export async function updateCreditReason(formData) {
+    const res = await fetch('../api/setup-api.php?action=updateCreditReason', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+    });
+    return await res.json();
+}
+
+export async function deleteCreditReason(formData) {
+    const res = await fetch('../api/setup-api.php?action=deleteCreditReason', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+    });
+    return await res.json();
+}
+
+// --- Payment Term API ---
+export async function getPaymentTerms() {
+    const res = await fetch('../api/setup-api.php?action=getPaymentTerms');
+    return await res.json();
+}
+
+export async function addPaymentTerm(formData) {
+    const res = await fetch('../api/setup-api.php?action=addPaymentTerm', {
+        method: 'POST',
+        body: formData
+    });
+    return await res.json();
+}
+
+export async function updatePaymentTerm(formData) {
+    const res = await fetch('../api/setup-api.php?action=updatePaymentTerm', {
+        method: 'POST',
+        body: formData
+    });
+    return await res.json();
+}
+
+export async function deletePaymentTerm(formData) {
+    const res = await fetch('../api/setup-api.php?action=deletePaymentTerm', {
+        method: 'POST',
+        body: formData
+    });
+    return await res.json();
+}
+
+export async function getCreditPolicy() {
+    const res = await fetch('../api/setup-api.php?action=getCreditPolicy', {
+        credentials: 'include'
+    });
+    return await res.json();
+}
+
+export async function saveCreditPolicy(formData) {
+    const res = await fetch('../api/setup-api.php?action=saveCreditPolicy', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+    });
+    return await res.json();
+}

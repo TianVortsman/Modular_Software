@@ -24,6 +24,10 @@ CREATE TABLE IF NOT EXISTS settings.invoice_settings (
 
     date_format VARCHAR(20) DEFAULT 'Y-m-d',
 
+    -- Credit Policy
+    allow_credit_notes BOOLEAN DEFAULT FALSE,
+    require_approval BOOLEAN DEFAULT FALSE,
+
     -- Company Info
     company_name VARCHAR(255),
     company_address TEXT,
@@ -45,5 +49,27 @@ CREATE TABLE IF NOT EXISTS settings.invoice_settings (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Add Credit Reasons Table
+CREATE TABLE IF NOT EXISTS settings.credit_reasons (
+    credit_reason_id SERIAL PRIMARY KEY,
+    reason TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Add Default Payment Terms Table
+CREATE TABLE IF NOT EXISTS settings.payment_terms (
+    payment_term_id SERIAL PRIMARY KEY,
+    term_name VARCHAR(100) NOT NULL,
+    days_due INTEGER NOT NULL,
+    is_default BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Optionally, add default_payment_term_id to invoice_settings for reference
+ALTER TABLE settings.invoice_settings
+ADD COLUMN IF NOT EXISTS default_payment_term_id INTEGER REFERENCES settings.payment_terms(payment_term_id);
 
 

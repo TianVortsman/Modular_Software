@@ -5,6 +5,8 @@
 
 import * as SetupAPI from './setup-api.js';
 import { ProductAPI } from './product-api.js';
+import { openCreditReasonModal } from './setup-modals.js';
+import { loadCreditPolicyForm } from './setup-form.js';
 
 class InvoiceSetup {
     constructor() {
@@ -912,3 +914,73 @@ if (supplierContactForm) {
         }
     });
 }
+
+// --- Credit Reasons List Logic ---
+const creditReasonsList = document.getElementById('creditReasonsList');
+const addCreditReasonBtn = document.getElementById('addCreditReasonBtn');
+
+async function loadCreditReasons() {
+    if (!creditReasonsList) return;
+    showLoadingModal('Loading credit reasons...');
+    const res = await SetupAPI.getCreditReasons();
+    hideLoadingModal();
+    creditReasonsList.innerHTML = '';
+    if (!res.success || !Array.isArray(res.data)) {
+        showResponseModal('Failed to load credit reasons', 'error');
+        return;
+    }
+    res.data.forEach(reason => {
+        const row = document.createElement('div');
+        row.className = 'credit-reason-row';
+        row.innerHTML = `
+            <span class="credit-reason-text">${reason.reason}</span>
+            <button class="edit-credit-reason-btn" data-id="${reason.credit_reason_id}">Edit</button>
+            <button class="delete-credit-reason-btn" data-id="${reason.credit_reason_id}">Delete</button>
+        `;
+        creditReasonsList.appendChild(row);
+    });
+    // Attach handlers
+    creditReasonsList.querySelectorAll('.edit-credit-reason-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+            const id = btn.getAttribute('data-id');
+            const reason = res.data.find(r => r.credit_reason_id == id);
+            openCreditReasonModal('edit', reason);
+        });
+    });
+    creditReasonsList.querySelectorAll('.delete-credit-reason-btn').forEach(btn => {
+        btn.addEventListener('click', async e => {
+            const id = btn.getAttribute('data-id');
+            if (!confirm('Delete this credit reason?')) return;
+            showLoadingModal('Deleting...');
+            const delRes = await SetupAPI.deleteCreditReason(id);
+            hideLoadingModal();
+            if (delRes.success) {
+                showResponseModal('Credit reason deleted', 'success');
+                loadCreditReasons();
+            } else {
+                showResponseModal(delRes.message || 'Delete failed', 'error');
+            }
+        });
+    });
+}
+
+if (addCreditReasonBtn) {
+    addCreditReasonBtn.addEventListener('click', () => openCreditReasonModal('add'));
+}
+
+// Expose for reload after add/edit
+window.loadCreditReasons = loadCreditReasons;
+
+// Initial load
+if (creditReasonsList) loadCreditReasons();
+
+// Tab switch logic (ensure this runs on tab change)
+document.addEventListener('DOMContentLoaded', function() {
+    const creditTab = document.getElementById('credit');
+    if (creditTab) {
+        creditTab.addEventListener('show', function() {
+            loadCreditPolicyForm();
+            if (window.loadCreditReasons) window.loadCreditReasons();
+        });
+    }
+});

@@ -1068,3 +1068,158 @@ body {
   color: var(--color-text-light, #fff);
 }
 /* --- End Supplier Contact Modal Styling --- */
+
+/* --- Credit Policy Section Styling --- */
+.credit-policy-section {
+  background: var(--color-secondary);
+  border-radius: var(--radius-medium);
+  box-shadow: 0 2px 8px var(--shadow-light);
+  padding: 24px 20px 16px 20px;
+  margin-bottom: 32px;
+  font-family: var(--font-primary);
+  color: var(--color-text-dark);
+}
+
+.credit-policy-section h2 {
+  color: var(--color-h2);
+  font-size: 1.3rem;
+  margin-bottom: var(--spacing-medium);
+  font-weight: 600;
+}
+
+.credit-policy-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-medium);
+}
+
+.credit-policy-form .form-group {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-small);
+  margin-bottom: var(--spacing-small);
+}
+
+.credit-policy-form .form-label {
+  font-size: var(--font-size-base);
+  color: var(--color-text-dark);
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+.credit-policy-form .form-checkbox {
+  accent-color: var(--color-primary);
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+}
+
+.credit-policy-form .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--spacing-medium);
+}
+
+.credit-policy-form .btn-primary {
+  background: var(--btn-bg);
+  color: var(--color-text-light);
+  border: none;
+  border-radius: var(--radius-small);
+  padding: 8px 20px;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-speed);
+}
+
+.credit-policy-form .btn-primary:hover {
+  background: var(--btn-hover-bg);
+}
+
+@media (max-width: 600px) {
+  .credit-policy-section {
+    padding: 12px 6px 8px 6px;
+  }
+  .credit-policy-form .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .credit-policy-form .btn-primary {
+    width: 100%;
+  }
+}
+
+/* --- End Credit Policy Section Styling --- */
+
+/* --- Credit Reasons List & Row Styling --- */
+#creditReasonsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-small);
+  margin-bottom: var(--spacing-medium);
+}
+
+.credit-reason-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-small);
+  padding: 12px 16px;
+  box-shadow: 0 1px 4px var(--shadow-light);
+  transition: box-shadow var(--transition-speed), border-color var(--transition-speed);
+}
+
+.credit-reason-row:hover {
+  box-shadow: 0 2px 8px var(--shadow-medium);
+  border-color: var(--color-primary);
+}
+
+.credit-reason-text {
+  font-size: var(--font-size-base);
+  color: var(--color-text-light);
+  flex: 1 1 auto;
+  font-weight: 500;
+}
+
+.credit-reason-row button {
+  margin-left: var(--spacing-small);
+  padding: 6px 14px;
+  border-radius: var(--radius-small);
+  font-size: var(--font-size-small);
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition-speed), color var(--transition-speed);
+}
+
+.edit-credit-reason-btn {
+  background: var(--btn-bg);
+  color: var(--color-text-light);
+}
+.edit-credit-reason-btn:hover {
+  background: var(--btn-hover-bg);
+}
+
+.delete-credit-reason-btn {
+  background: var(--color-danger);
+  color: #fff;
+}
+.delete-credit-reason-btn:hover {
+  background: var(--color-error);
+}
+
+@media (max-width: 600px) {
+  .credit-reason-row {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px 8px;
+  }
+  .credit-reason-row button {
+    width: 100%;
+    margin: 6px 0 0 0;
+  }
+}
+
+/* --- End Credit Reasons List & Row Styling --- */

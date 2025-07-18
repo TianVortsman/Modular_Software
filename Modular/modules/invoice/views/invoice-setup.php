@@ -240,51 +240,37 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
 
                 <!-- Credit Notes Tab -->
                 <div id="credit" class="tab-panel">
-                    <div class="setup-section">
+                    <section class="credit-policy-section">
                         <h2>Credit Notes & Refund Policy</h2>
-                        <div class="setup-grid">
-                            <div class="setup-card">
-                                <form id="credit-policy-form" class="setup-form">
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            <input type="checkbox" id="allow-credit-notes" name="allow_credit_notes" class="form-checkbox">
-                                            Allow credit notes
-                                        </label>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            <input type="checkbox" id="require-approval" name="require_approval" class="form-checkbox">
-                                            Require approval before refunds
-                                        </label>
-                                    </div>
-                                    <div class="form-actions">
-                                        <button type="submit" class="btn-primary">
-                                            <span class="material-icons">save</span> Save Policy
-                                        </button>
-                                    </div>
-                                </form>
+                        <form id="credit-policy-form" class="credit-policy-form">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <input type="checkbox" id="allow-credit-notes" name="allow_credit_notes" class="form-checkbox">
+                                    Allow credit notes
+                                </label>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="setup-section">
-                        <h2>Credit Note Reasons</h2>
-                        <div class="setup-grid">
-                            <div class="setup-card">
-                                <div class="card-header">
-                                    <h3>Default Reasons</h3>
-                                    <button class="btn-primary" onclick="openCreditReasonModal()">
-                                        <span class="material-icons">add</span> Add Reason
-                                    </button>
-                                </div>
-                                <div class="card-content">
-                                    <div id="credit-reasons-list" class="data-list">
-                                        <!-- Credit reasons will be loaded here -->
-                                    </div>
-                                </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <input type="checkbox" id="require-approval" name="require_approval" class="form-checkbox">
+                                    Require approval before refunds
+                                </label>
                             </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary">
+                                    <span class="material-icons">save</span> Save Policy
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+                    <!-- Credit Reasons Section -->
+                    <section id="credit-reasons-section">
+                        <h3>Credit Reasons</h3>
+                        <p>Manage reasons for issuing credit notes (e.g., returns, overpayment, goodwill).</p>
+                        <div id="creditReasonsList" class="data-list">
+                            <!-- Credit reasons will be loaded here -->
                         </div>
-                    </div>
+                        <button id="addCreditReasonBtn" class="btn btn-primary">Add Credit Reason</button>
+                    </section>
                 </div>
 
                 <!-- Invoice Numbering Tab -->
