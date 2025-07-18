@@ -68,6 +68,10 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
                     <select id="subcategory-filter" class="filter-dropdown">
                         <option value="">All Subcategories</option>
                     </select>
+                    <select id="supplier-filter" class="filter-dropdown">
+                        <option value="">All Suppliers</option>
+                        <!-- JS should populate supplier options here -->
+                    </select>
                     <button id="clear-filters" class="clear-filters-btn">Clear Filters</button>
                 </div>
                 

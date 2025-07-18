@@ -419,31 +419,6 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
     <?php include '../../../src/UI/response-modal.php'; ?>
     <?php include '../../../src/UI/loading-modal.php'; ?>
 
-    <script type="module" src="../js/invoice-setup.js"></script>
-    <script>
-    function previewInvoiceTemplate(template) {
-        showLoadingModal('Generating preview...');
-        fetch('../api/generate_invoice_pdf.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ template, preview: 1 })
-        })
-        .then(res => res.json())
-        .then(result => {
-            hideLoadingModal();
-            console.log('Preview result:', result);
-            if (result.success && result.url) {
-                window.open(result.url, '_blank');
-            } else {
-                showResponseModal(result.message || 'Failed to generate preview', 'error');
-            }
-        })
-        .catch(err => {
-            hideLoadingModal();
-            showResponseModal('Error generating preview: ' + (err.message || err), 'error');
-        });
-    }
-    </script>
+    <script type="module" src="../js/setup-screen.js"></script>
 </body>
 </html>

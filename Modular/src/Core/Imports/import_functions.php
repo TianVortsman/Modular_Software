@@ -767,9 +767,12 @@ function importProducts($spreadsheet, $conn) {
         $product_brand = ucwords($get('brand'));
         $product_manufacturer = ucwords($get('manufacturer'));
         $warranty_period = $get('warranty_period');
+        // --- Supplier fields (new schema) ---
         $supplier_name = ucwords($get('supplier_name'));
         $supplier_address = $get('supplier_address');
         $supplier_contact = $get('supplier_contact');
+        $supplier_email = isset($headerMap['supplier_email']) ? $get('supplier_email') : '';
+        $website_url = isset($headerMap['website_url']) ? $get('website_url') : '';
 
         try {
             // 1. Resolve type/category/subcategory IDs (create if not exist)
@@ -777,10 +780,12 @@ function importProducts($spreadsheet, $conn) {
             $category_id = $category_name ? getOrCreateId($conn, 'core.product_categories', 'category_name', $category_name, 'category_id', ['product_type_id' => $product_type_id]) : null;
             $subcategory_id = $subcategory_name ? getOrCreateId($conn, 'core.product_subcategories', 'subcategory_name', $subcategory_name, 'subcategory_id', ['category_id' => $category_id]) : null;
 
-            // 2. Supplier: get or create
+            // 2. Supplier: get or create (new schema fields)
             $supplier_id = getOrCreateId($conn, 'inventory.supplier', 'supplier_name', $supplier_name, 'supplier_id', [
                 'supplier_address' => $supplier_address,
-                'supplier_contact' => $supplier_contact
+                'supplier_contact' => $supplier_contact,
+                'supplier_email' => $supplier_email,
+                'website_url' => $website_url
             ]);
 
             // 3. Tax Rate: get or create tax_rate_id
@@ -799,7 +804,7 @@ function importProducts($spreadsheet, $conn) {
                 }
             }
 
-            // 4. Insert into core.products (not core.product)
+            // 4. Insert into core.products
             $stmt = $conn->prepare("
                 INSERT INTO core.products (
                     product_name, product_description, product_price, product_status, sku, barcode, product_type_id, category_id, subcategory_id, tax_rate_id, discount, notes
@@ -811,7 +816,7 @@ function importProducts($spreadsheet, $conn) {
             ]);
             $product_id = $stmt->fetchColumn();
 
-            // 5. Insert into inventory.product_inventory (use correct field names)
+            // 5. Insert into inventory.product_inventory
             $stmt2 = $conn->prepare("
                 INSERT INTO inventory.product_inventory (
                     product_id, product_stock_quantity, product_reorder_level, product_lead_time, product_weight, product_dimensions, product_brand, product_manufacturer, warranty_period
@@ -821,9 +826,27 @@ function importProducts($spreadsheet, $conn) {
                 $product_id, $product_stock_quantity, $product_reorder_level, $product_lead_time, $product_weight, $product_dimensions, $product_brand, $product_manufacturer, $warranty_period
             ]);
 
-            // 6. Link product to supplier
+            // 6. Link product to supplier (new schema: product_supplier_id PK, but only need product_id, supplier_id for import)
             $stmt3 = $conn->prepare("INSERT INTO inventory.product_supplier (product_id, supplier_id) VALUES (?, ?) ON CONFLICT DO NOTHING");
             $stmt3->execute([$product_id, $supplier_id]);
+
+            // --- NEW: Insert into inventory.product_stock_entries ---
+            // Find product_supplier_id
+            $stmtPS = $conn->prepare("SELECT product_supplier_id FROM inventory.product_supplier WHERE product_id = ? AND supplier_id = ?");
+            $stmtPS->execute([$product_id, $supplier_id]);
+            $product_supplier_id = $stmtPS->fetchColumn();
+            if ($product_supplier_id) {
+                // Determine quantity and cost per unit
+                $quantity = isset($headerMap['quantity']) ? intval($get('quantity')) : (isset($headerMap['stock_quantity']) ? intval($get('stock_quantity')) : 0);
+                $cost_per_unit = isset($headerMap['purchase_price']) ? floatval($get('purchase_price')) : (isset($headerMap['cost_per_unit']) ? floatval($get('cost_per_unit')) : floatval($get('product_price')));
+                // Only insert if quantity is not zero
+                if ($quantity !== 0) {
+                    $stmtStock = $conn->prepare("INSERT INTO inventory.product_stock_entries (product_supplier_id, quantity, remaining_quantity, cost_per_unit) VALUES (?, ?, ?, ?)");
+                    $stmtStock->execute([$product_supplier_id, $quantity, $quantity, $cost_per_unit]);
+                }
+            } else {
+                error_log("[importProducts] Could not find product_supplier_id for product_id $product_id and supplier_id $supplier_id");
+            }
 
             $successCount++;
         } catch (PDOException $e) {
@@ -839,18 +862,99 @@ function importProducts($spreadsheet, $conn) {
                         'product_barcode_key' => 'barcode',
                         'products_sku_key' => 'SKU',
                         'products_product_name_key' => 'product name',
+                        'product_categories_category_name_key' => 'category',
                         // Add more mappings as needed
                     ];
                     $field = $constraintMap[$constraint] ?? $constraint;
-                    $reason = "Duplicate value for $field.";
                     $status = "duplicate $field";
+                    $reason = "Duplicate value for $field.";
                 } else {
-                    $reason = 'Duplicate value for a unique field.';
                     $status = 'duplicate';
+                    $reason = 'Duplicate value for a unique field.';
                 }
+
+                // --- NEW: Try to link product to supplier if both exist ---
+                // 1. Ensure category_id is set (if not, look it up)
+                if (!$category_id && $category_name && $product_type_id) {
+                    $stmtCat = $conn->prepare("SELECT category_id FROM core.product_categories WHERE category_name = ? AND product_type_id = ?");
+                    $stmtCat->execute([$category_name, $product_type_id]);
+                    $category_id = $stmtCat->fetchColumn();
+                }
+                // 2. Robust product lookup
+                $product_id = null;
+                $sql = "SELECT product_id FROM core.products WHERE product_name = ?";
+                $params = [$product_name];
+                if ($category_id) {
+                    $sql .= " AND category_id = ?";
+                    $params[] = $category_id;
+                }
+                $stmtP = $conn->prepare($sql);
+                $stmtP->execute($params);
+                $product_id = $stmtP->fetchColumn();
+                // If not found, try by product_name and product_type_id
+                if (!$product_id && $product_type_id) {
+                    $sql2 = "SELECT product_id FROM core.products WHERE product_name = ? AND product_type_id = ?";
+                    $stmtP2 = $conn->prepare($sql2);
+                    $stmtP2->execute([$product_name, $product_type_id]);
+                    $product_id = $stmtP2->fetchColumn();
+                }
+                // As last resort, try by product_name only
+                if (!$product_id) {
+                    $sql3 = "SELECT product_id FROM core.products WHERE product_name = ?";
+                    $stmtP3 = $conn->prepare($sql3);
+                    $stmtP3->execute([$product_name]);
+                    $product_id = $stmtP3->fetchColumn();
+                }
+                // 3. Robust supplier lookup
+                // supplier_id is usually set above, but double-check
+                if (!$supplier_id && $supplier_name) {
+                    // Try by supplier_name and supplier_email
+                    if ($supplier_email) {
+                        $stmtS = $conn->prepare("SELECT supplier_id FROM inventory.supplier WHERE supplier_name = ? AND supplier_email = ?");
+                        $stmtS->execute([$supplier_name, $supplier_email]);
+                        $supplier_id = $stmtS->fetchColumn();
+                    }
+                    // As last resort, try by supplier_name only
+                    if (!$supplier_id) {
+                        $stmtS2 = $conn->prepare("SELECT supplier_id FROM inventory.supplier WHERE supplier_name = ?");
+                        $stmtS2->execute([$supplier_name]);
+                        $supplier_id = $stmtS2->fetchColumn();
+                    }
+                }
+                if ($product_id && $supplier_id) {
+                    // Check if link exists
+                    $stmtL = $conn->prepare("SELECT 1 FROM inventory.product_supplier WHERE product_id = ? AND supplier_id = ?");
+                    $stmtL->execute([$product_id, $supplier_id]);
+                    if (!$stmtL->fetchColumn()) {
+                        // Create link
+                        $stmtC = $conn->prepare("INSERT INTO inventory.product_supplier (product_id, supplier_id) VALUES (?, ?) ON CONFLICT DO NOTHING");
+                        $stmtC->execute([$product_id, $supplier_id]);
+                        $errors[] = [
+                            'row' => $i,
+                            'product_name' => $product_name,
+                            'product_status' => $status,
+                            'reason' => $reason . ' Product-supplier link created.'
+                        ];
+                    } else {
+                        $errors[] = [
+                            'row' => $i,
+                            'product_name' => $product_name,
+                            'product_status' => $status,
+                            'reason' => $reason . ' Link already existed.'
+                        ];
+                    }
+                } else {
+                    $errors[] = [
+                        'row' => $i,
+                        'product_name' => $product_name,
+                        'product_status' => $status,
+                        'reason' => $reason . ' Could not find product or supplier to link. (Tried product_name/category_id/product_type_id and supplier_name/email)'
+                    ];
+                }
+                continue; // Skip to next row
             } else {
                 // Shorten generic SQL errors
-                $reason = preg_replace('/SQLSTATE\[[^]]*\]: [^:]*: [0-9]+ ERROR:  /', '', $reason);
+                $reason = preg_replace('/SQLSTATE\\[[^]]*\\]: [^:]*: [0-9]+ ERROR:  /', '', $reason);
                 $reason = strtok($reason, "\n"); // Only first line
             }
             $errors[] = [

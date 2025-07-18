@@ -3,7 +3,8 @@
  * Handles all setup functionality including tabs, forms, and API interactions
  */
 
-import SetupAPI from './setup-api.js';
+import * as SetupAPI from './setup-api.js';
+import { ProductAPI } from './product-api.js';
 
 class InvoiceSetup {
     constructor() {
@@ -18,25 +19,52 @@ class InvoiceSetup {
     }
 
     setupTabNavigation() {
-        const tabButtons = document.querySelectorAll('.tab-btn');
+        // Support both sidebar tabs (class 'tab') and any '.tab-btn' buttons
+        const tabButtons = document.querySelectorAll('.tab, .tab-btn');
         tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
                 const targetTab = button.getAttribute('data-tab');
-                this.switchTab(targetTab);
+                if (targetTab) {
+                    this.switchTab(targetTab);
+                }
             });
         });
     }
 
     switchTab(tabName) {
-        document.querySelectorAll('.tab-btn').forEach(btn => {
+        // --- HARD RESET: Remove any extra .tab-panel elements not matching original tab IDs ---
+        const validTabIds = ['products','banking','sales','suppliers','credit','numbering','terms'];
+        document.querySelectorAll('.tab-panel').forEach(panel => {
+            if (!validTabIds.includes(panel.id)) {
+                panel.parentNode.removeChild(panel);
+            }
+        });
+
+        // Remove .active from all tab buttons (sidebar and in-page)
+        document.querySelectorAll('.tab, .tab-btn').forEach(btn => {
             btn.classList.remove('active');
         });
-        document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-
-        document.querySelectorAll('.tab-panel').forEach(panel => {
-            panel.classList.remove('active');
+        // Add .active to the clicked tab button (sidebar or in-page)
+        document.querySelectorAll(`.tab[data-tab="${tabName}"], .tab-btn[data-tab="${tabName}"]`).forEach(btn => {
+            btn.classList.add('active');
         });
-        document.getElementById(tabName).classList.add('active');
+
+        // Forcibly remove .active from all tab panels
+        const allPanels = document.querySelectorAll('.tab-panel');
+        allPanels.forEach(panel => panel.classList.remove('active'));
+        // Add .active to the selected tab panel only
+        const panel = document.getElementById(tabName);
+        if (panel) panel.classList.add('active');
+
+        // Debug: log all active panels
+        const activePanels = document.querySelectorAll('.tab-panel.active');
+        if (activePanels.length > 1) {
+            console.warn('More than one tab-panel is active! IDs:', Array.from(activePanels).map(p => p.id));
+        }
+        if (activePanels.length === 0) {
+            console.warn('No tab-panel is active!');
+        }
 
         this.currentTab = tabName;
         this.loadTabData(tabName);
@@ -223,6 +251,28 @@ class InvoiceSetup {
             showResponseModal('Error', 'Failed to save numbering settings', 'error');
         }
     }
+
+    // --- Add stubs for missing methods to prevent runtime errors ---
+    async loadSalesTargets() {
+        console.log('loadSalesTargets called (stub)');
+        // TODO: Implement using existing controller/API
+    }
+    async loadSuppliers() {
+        console.log('loadSuppliers called (stub)');
+        // TODO: Implement using existing controller/API
+    }
+    async loadCreditPolicy() {
+        console.log('loadCreditPolicy called (stub)');
+        // TODO: Implement using existing controller/API
+    }
+    async loadCreditReasons() {
+        console.log('loadCreditReasons called (stub)');
+        // TODO: Implement using existing controller/API
+    }
+    async loadTermsSettings() {
+        console.log('loadTermsSettings called (stub)');
+        // TODO: Implement using existing controller/API
+    }
 }
 
 function openCategoryModal(categoryId = null) {
@@ -277,6 +327,106 @@ function closeSubcategoryModal() {
 }
 window.closeSubcategoryModal = closeSubcategoryModal;
 
+// --- SUPPLIER MODAL LOGIC ---
+function openSupplierModal(supplierId = null) {
+    const modal = document.getElementById('supplierModal');
+    const title = document.getElementById('supplierModalTitle');
+    const form = document.getElementById('supplierForm');
+    // Reset form
+    form.reset();
+    document.getElementById('supplier-id').value = '';
+    document.getElementById('supplier-email').value = '';
+    if (supplierId) {
+        title.textContent = 'Edit Supplier';
+        loadSupplierData(supplierId);
+    } else {
+        title.textContent = 'Add Supplier';
+        showSupplierContactsSection(null);
+    }
+    modal.style.display = 'block';
+}
+window.openSupplierModal = openSupplierModal;
+
+function closeSupplierModal() {
+    const modal = document.getElementById('supplierModal');
+    modal.style.display = 'none';
+}
+window.closeSupplierModal = closeSupplierModal;
+
+async function loadSupplierData(supplierId) {
+    const data = await SetupAPI.getSupplier(supplierId);
+    if (data.success && data.data) {
+        document.getElementById('supplier-id').value = data.data.supplier_id;
+        document.getElementById('supplier-name').value = data.data.supplier_name || '';
+        document.getElementById('supplier-email').value = data.data.supplier_email || '';
+        document.getElementById('supplier-contact').value = data.data.supplier_contact || '';
+        document.getElementById('supplier-address').value = data.data.supplier_address || '';
+        document.getElementById('supplier-website').value = data.data.website_url || '';
+        showSupplierContactsSection(data.data.supplier_id);
+    } else {
+        showSupplierContactsSection(null);
+    }
+}
+window.loadSupplierData = loadSupplierData;
+
+const supplierForm = document.getElementById('supplierForm');
+if (supplierForm) {
+    supplierForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        try {
+            showLoadingModal('Saving supplier...');
+            const formData = new FormData(supplierForm);
+            const data = await SetupAPI.saveSupplier(formData);
+            hideLoadingModal();
+            if (data.success) {
+                showResponseModal('Success', 'Supplier saved successfully', 'success');
+                closeSupplierModal();
+                loadSuppliersList();
+            } else {
+                showResponseModal('Error', data.message, 'error');
+            }
+        } catch (error) {
+            hideLoadingModal();
+            showResponseModal('Error', 'Failed to save supplier', 'error');
+        }
+    });
+}
+
+async function loadSuppliersList() {
+    const container = document.getElementById('suppliers-list');
+    if (!container) return;
+    const data = await SetupAPI.getSuppliers();
+    if (!data.success || !Array.isArray(data.data) || data.data.length === 0) {
+        container.innerHTML = `<div class="empty-state"><span class="material-icons">local_shipping</span><h3>No Suppliers</h3><p>Add your first supplier to get started</p></div>`;
+        return;
+    }
+    container.innerHTML = data.data.map(supplier => `
+        <div class="data-item supplier-item" data-id="${supplier.supplier_id}">
+            <div class="data-item-info">
+                <div class="data-item-title">${supplier.supplier_name}</div>
+                <div class="data-item-subtitle">Email: ${supplier.supplier_email || ''}</div>
+                <div class="data-item-subtitle">Contact: ${supplier.supplier_contact || ''}</div>
+                ${supplier.supplier_address ? `<div class="data-item-description">${supplier.supplier_address}</div>` : ''}
+                ${supplier.website_url ? `<div class="data-item-description">Website: <a href="${supplier.website_url}" target="_blank">${supplier.website_url}</a></div>` : ''}
+            </div>
+        </div>
+    `).join('');
+    // Add double-click event listeners for edit
+    container.querySelectorAll('.supplier-item').forEach(item => {
+        item.addEventListener('dblclick', () => {
+            const id = item.getAttribute('data-id');
+            openSupplierModal(id);
+        });
+    });
+}
+window.loadSuppliersList = loadSuppliersList;
+
+// Load suppliers list on tab switch
+const suppliersTab = document.getElementById('suppliers');
+if (suppliersTab) {
+    suppliersTab.addEventListener('show', loadSuppliersList);
+}
+
 // --- CLEAN PRODUCT SETUP LOGIC ---
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -293,6 +443,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('category-type-filter').addEventListener('change', applyCategoryFilter);
     document.getElementById('subcategory-type-filter').addEventListener('change', applySubcategoryFilter);
     document.getElementById('subcategory-category-filter').addEventListener('change', applySubcategoryFilter);
+
+    // Load suppliers list on page load
+    loadSuppliersList();
 });
 
 let allCategories = [];
@@ -303,7 +456,7 @@ async function populateCategoryTypeFilter() {
     const select = document.getElementById('category-type-filter');
     if (!select) return;
     select.innerHTML = '<option value="">All Types</option>';
-    const data = await SetupAPI.getProductTypes();
+    const data = await ProductAPI.fetchProductTypes();
     if (data.success && Array.isArray(data.data)) {
         data.data.forEach(type => {
             const option = document.createElement('option');
@@ -318,7 +471,7 @@ async function populateSubcategoryTypeFilter() {
     const select = document.getElementById('subcategory-type-filter');
     if (!select) return;
     select.innerHTML = '<option value="">All Types</option>';
-    const data = await SetupAPI.getProductTypes();
+    const data = await ProductAPI.fetchProductTypes();
         if (data.success && Array.isArray(data.data)) {
         data.data.forEach(type => {
             const option = document.createElement('option');
@@ -373,7 +526,7 @@ function applySubcategoryFilter() {
 async function loadProductSetupData() {
     // Fetch all data in parallel
     const [typesRes, categoriesRes, subcategoriesRes] = await Promise.all([
-        SetupAPI.getProductTypes(),
+        ProductAPI.fetchProductTypes(),
         SetupAPI.getCategories(),
         SetupAPI.getSubcategories()
     ]);
@@ -441,9 +594,8 @@ function renderProductSubcategories(subcategories) {
 }
 
 // Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    window.invoiceSetup = new InvoiceSetup();
-});
+// Ensure invoiceSetup is globally available for sidebar onclick
+window.invoiceSetup = new InvoiceSetup();
 
 // --- Invoice Template Preference Logic ---
 
@@ -546,7 +698,7 @@ function populateProductTypeDropdown() {
     const select = document.getElementById('category-type');
     if (!select) return;
     select.innerHTML = '<option value="">Select Product Type</option>';
-    SetupAPI.getProductTypes().then(data => {
+    ProductAPI.fetchProductTypes().then(data => {
         if (data.success && Array.isArray(data.data)) {
             data.data.forEach(type => {
                 const option = document.createElement('option');
@@ -609,6 +761,154 @@ if (subcategoryForm) {
         } catch (error) {
             hideLoadingModal();
             showResponseModal('Error', 'Failed to save subcategory', 'error');
+        }
+    });
+}
+
+function previewInvoiceTemplate(template) {
+    showLoadingModal('Generating preview...');
+    fetch('../api/generate_invoice_pdf.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ template, preview: 1 })
+    })
+    .then(res => res.json())
+    .then(result => {
+        hideLoadingModal();
+        console.log('Preview result:', result);
+        if (result.success && result.url) {
+            window.open(result.url, '_blank');
+        } else {
+            showResponseModal(result.message || 'Failed to generate preview', 'error');
+        }
+    })
+    .catch(err => {
+        hideLoadingModal();
+        showResponseModal('Error generating preview: ' + (err.message || err), 'error');
+    });
+}
+
+// --- SUPPLIER CONTACT PERSON LOGIC ---
+function showSupplierContactsSection(supplierId) {
+    const section = document.getElementById('supplier-contacts-section');
+    if (!section) return;
+    if (supplierId) {
+        section.style.display = '';
+        document.getElementById('contact-supplier-id').value = supplierId;
+        loadSupplierContactsList(supplierId);
+    } else {
+        section.style.display = 'none';
+    }
+}
+
+async function loadSupplierContactsList(supplierId) {
+    const container = document.getElementById('supplier-contacts-list');
+    if (!container) return;
+    container.innerHTML = '<div class="loading">Loading contacts...</div>';
+    const data = await SetupAPI.getSupplierContacts(supplierId);
+    if (!data.success || !Array.isArray(data.data) || data.data.length === 0) {
+        container.innerHTML = `<div class="empty-state"><span class="material-icons">person_off</span><h4>No Contacts</h4><p>Add a contact person for this supplier</p></div>`;
+        return;
+    }
+    container.innerHTML = data.data.map(contact => `
+        <div class="data-item contact-item" data-id="${contact.contact_person_id}">
+            <div class="data-item-info">
+                <div class="data-item-title">${contact.full_name}</div>
+                <div class="data-item-subtitle">${contact.position || ''}</div>
+                <div class="data-item-description">${contact.email ? 'Email: ' + contact.email + '<br>' : ''}${contact.phone ? 'Phone: ' + contact.phone : ''}</div>
+                ${contact.notes ? `<div class="data-item-description">${contact.notes}</div>` : ''}
+            </div>
+            <div class="data-item-actions">
+                <button class="btn-secondary" type="button" onclick="editSupplierContact(${contact.contact_person_id}, ${contact.supplier_id})"><span class="material-icons">edit</span></button>
+                <button class="btn-danger" type="button" onclick="deleteSupplierContact(${contact.contact_person_id}, ${contact.supplier_id})"><span class="material-icons">delete</span></button>
+            </div>
+        </div>
+    `).join('');
+}
+window.loadSupplierContactsList = loadSupplierContactsList;
+
+function openSupplierContactModal(supplierId = null) {
+    const modal = document.getElementById('supplierContactModal');
+    const title = document.getElementById('supplierContactModalTitle');
+    const form = document.getElementById('supplierContactForm');
+    form.reset();
+    document.getElementById('contact-person-id').value = '';
+    if (supplierId) {
+        document.getElementById('contact-supplier-id').value = supplierId;
+    }
+    title.textContent = 'Add Contact';
+    modal.style.display = 'block';
+}
+window.openSupplierContactModal = openSupplierContactModal;
+
+function closeSupplierContactModal() {
+    const modal = document.getElementById('supplierContactModal');
+    modal.style.display = 'none';
+}
+window.closeSupplierContactModal = closeSupplierContactModal;
+
+async function editSupplierContact(contactId, supplierId) {
+    const data = await SetupAPI.getSupplierContacts(supplierId);
+    if (data.success && Array.isArray(data.data)) {
+        const contact = data.data.find(c => c.contact_person_id == contactId);
+        if (contact) {
+            const form = document.getElementById('supplierContactForm');
+            form.reset();
+            document.getElementById('contact-person-id').value = contact.contact_person_id;
+            document.getElementById('contact-supplier-id').value = contact.supplier_id;
+            document.getElementById('contact-full-name').value = contact.full_name || '';
+            document.getElementById('contact-position').value = contact.position || '';
+            document.getElementById('contact-email').value = contact.email || '';
+            document.getElementById('contact-phone').value = contact.phone || '';
+            document.getElementById('contact-notes').value = contact.notes || '';
+            document.getElementById('supplierContactModalTitle').textContent = 'Edit Contact';
+            document.getElementById('supplierContactModal').style.display = 'block';
+        }
+    }
+}
+window.editSupplierContact = editSupplierContact;
+
+async function deleteSupplierContact(contactId, supplierId) {
+    if (!confirm('Are you sure you want to delete this contact?')) return;
+    showLoadingModal('Deleting contact...');
+    const formData = new FormData();
+    formData.append('contact_person_id', contactId);
+    const data = await SetupAPI.deleteSupplierContact(formData);
+    hideLoadingModal();
+    if (data.success) {
+        showResponseModal('Success', 'Contact deleted', 'success');
+        loadSupplierContactsList(supplierId);
+    } else {
+        showResponseModal('Error', data.message, 'error');
+    }
+}
+window.deleteSupplierContact = deleteSupplierContact;
+
+const supplierContactForm = document.getElementById('supplierContactForm');
+if (supplierContactForm) {
+    supplierContactForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        try {
+            showLoadingModal('Saving contact...');
+            const formData = new FormData(supplierContactForm);
+            let data;
+            if (formData.get('contact_person_id')) {
+                data = await SetupAPI.updateSupplierContact(formData);
+            } else {
+                data = await SetupAPI.addSupplierContact(formData);
+            }
+            hideLoadingModal();
+            if (data.success) {
+                showResponseModal('Success', 'Contact saved', 'success');
+                closeSupplierContactModal();
+                loadSupplierContactsList(formData.get('supplier_id'));
+            } else {
+                showResponseModal('Error', data.message, 'error');
+            }
+        } catch (error) {
+            hideLoadingModal();
+            showResponseModal('Error', 'Failed to save contact', 'error');
         }
     });
 }

@@ -62,6 +62,8 @@
             <button type="button" class="upm-tab-btn" data-tab="attributes">Attributes</button>
             <button type="button" class="upm-tab-btn" data-tab="specific">Type Specific</button>
             <button type="button" class="upm-tab-btn" data-tab="notes">Notes</button>
+            <button type="button" class="upm-tab-btn" data-tab="suppliers">Suppliers</button>
+            <button type="button" class="upm-tab-btn" data-tab="stock-history">Stock History</button>
           </div>
 
           <!-- Tab Content -->
@@ -211,6 +213,84 @@
                 <label for="universalItemNotes">Additional Notes:</label>
                 <textarea name="notes" id="universalItemNotes" placeholder="Any additional information..." class="upm-notes-textarea"></textarea>
               </div>
+            </div>
+
+            <!-- Suppliers Tab -->
+            <div class="upm-tab-pane" id="upm-tab-suppliers">
+              <h3>Suppliers for this Product</h3>
+              <div id="product-suppliers-list">
+                <!-- JS will populate supplier cards here -->
+              </div>
+              <template id="product-supplier-card-template">
+                <div class="product-supplier-card">
+                  <div class="supplier-main-info">
+                    <span class="supplier-name"></span>
+                    <span class="supplier-contact"></span>
+                    <span class="supplier-email"></span>
+                    <span class="supplier-website"></span>
+                  </div>
+                  <div class="supplier-stock-info">
+                    <span class="supplier-total-stock"></span>
+                    <span class="supplier-last-restock-date"></span>
+                    <span class="supplier-last-price"></span>
+                  </div>
+                  <div class="supplier-price-trend">
+                    <!-- Placeholder for mini FIFO table or sparkline chart -->
+                  </div>
+                </div>
+              </template>
+              <div class="supplier-fifo-table-placeholder">
+                <!-- Placeholder: JS will render FIFO table or chart per supplier here -->
+              </div>
+            </div>
+
+            <!-- Stock History Tab -->
+            <div class="upm-tab-pane" id="upm-tab-stock-history">
+              <h3>Stock History</h3>
+              <button type="button" class="btn-adjust-stock" id="openAdjustStockModalBtn">Adjust Stock</button>
+              <div id="product-stock-history-list">
+                <!-- JS will populate stock history rows here -->
+              </div>
+              <template id="product-stock-history-row-template">
+                <div class="product-stock-history-row">
+                  <span class="stock-supplier-name"></span>
+                  <span class="stock-quantity"></span>
+                  <span class="stock-remaining"></span>
+                  <span class="stock-cost"></span>
+                  <span class="stock-date"></span>
+                  <span class="stock-notes"></span>
+                </div>
+              </template>
+              <!-- Manual Stock Adjustment Modal (hidden by default) -->
+              <div class="adjust-stock-modal" id="adjustStockModal" style="display:none;">
+                <div class="adjust-stock-modal-content">
+                  <span class="adjust-stock-modal-close" id="closeAdjustStockModalBtn">&times;</span>
+                  <h4>Adjust Stock</h4>
+                  <form id="adjustStockForm">
+                    <div class="adjust-stock-field">
+                      <label for="adjustStockSupplier">Supplier:</label>
+                      <select id="adjustStockSupplier" name="supplier_id" required></select>
+                    </div>
+                    <div class="adjust-stock-field">
+                      <label for="adjustStockQuantity">Quantity (use negative for removal):</label>
+                      <input type="number" id="adjustStockQuantity" name="quantity" required>
+                    </div>
+                    <div class="adjust-stock-field">
+                      <label for="adjustStockCost">Cost per Unit (optional):</label>
+                      <input type="number" step="0.01" id="adjustStockCost" name="cost_per_unit">
+                    </div>
+                    <div class="adjust-stock-field">
+                      <label for="adjustStockNotes">Notes (optional):</label>
+                      <input type="text" id="adjustStockNotes" name="notes">
+                    </div>
+                    <div class="adjust-stock-actions">
+                      <button type="submit" class="btn-primary">Submit Adjustment</button>
+                      <button type="button" class="btn-secondary" id="cancelAdjustStockBtn">Cancel</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <!-- JS will handle opening, submitting, and closing the adjustment modal -->
             </div>
           </div>
         </div>

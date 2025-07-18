@@ -100,13 +100,13 @@ document.addEventListener('DOMContentLoaded', function () {
         ],
         "invoice-setup": [
             { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
-            { href: "#products", icon: "inventory", text: "Product Setup", tab: "products", class: "tab", onclick: "invoiceSetup.switchTab('products')" },
-            { href: "#banking", icon: "account_balance", text: "Bank & Company", tab: "banking", class: "tab", onclick: "invoiceSetup.switchTab('banking')" },
-            { href: "#sales", icon: "trending_up", text: "Sales Configuration", tab: "sales", class: "tab", onclick: "invoiceSetup.switchTab('sales')" },
-            { href: "#suppliers", icon: "business", text: "Suppliers", tab: "suppliers", class: "tab", onclick: "invoiceSetup.switchTab('suppliers')" },
-            { href: "#credit", icon: "receipt_long", text: "Credit Notes", tab: "credit", class: "tab", onclick: "invoiceSetup.switchTab('credit')" },
-            { href: "#numbering", icon: "format_list_numbered", text: "Invoice Numbering", tab: "numbering", class: "tab", onclick: "invoiceSetup.switchTab('numbering')" },
-            { href: "#terms", icon: "description", text: "Terms & Footer", tab: "terms", class: "tab", onclick: "invoiceSetup.switchTab('terms')" }
+            { href: "#", icon: "inventory", text: "Product Setup", tab: "products", class: "tab", onclick: "invoiceSetup.switchTab('products')" },
+            { href: "#", icon: "account_balance", text: "Bank & Company", tab: "banking", class: "tab", onclick: "invoiceSetup.switchTab('banking')" },
+            { href: "#", icon: "trending_up", text: "Sales Configuration", tab: "sales", class: "tab", onclick: "invoiceSetup.switchTab('sales')" },
+            { href: "#", icon: "business", text: "Suppliers", tab: "suppliers", class: "tab", onclick: "invoiceSetup.switchTab('suppliers')" },
+            { href: "#", icon: "receipt_long", text: "Credit Notes", tab: "credit", class: "tab", onclick: "invoiceSetup.switchTab('credit')" },
+            { href: "#", icon: "format_list_numbered", text: "Invoice Numbering", tab: "numbering", class: "tab", onclick: "invoiceSetup.switchTab('numbering')" },
+            { href: "#", icon: "description", text: "Terms & Footer", tab: "terms", class: "tab", onclick: "invoiceSetup.switchTab('terms')" }
         ],
         "TandA": [
             { href: "/public/views/dashboard.php", icon: "home", text: "Home" },

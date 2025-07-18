@@ -24,7 +24,7 @@
                 
                 <div class="form-group">
                     <label for="subcategory-description">Description</label>
-                    <textarea id="subcategory-description" name="description" class="form-textarea" rows="3"></textarea>
+                    <textarea id="subcategory-description" name="subcategory_description" class="form-textarea" rows="3"></textarea>
                 </div>
                 
                 <div class="form-actions">

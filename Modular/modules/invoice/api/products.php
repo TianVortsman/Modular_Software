@@ -257,6 +257,30 @@ try {
             $result = \App\modules\invoice\controllers\update_product_status($_POST['product_id'], $_POST['status'], $user_id);
             break;
 
+        case 'get_product_suppliers_and_stock':
+            if ($method !== 'GET') {
+                throw new Exception('GET method required for get_product_suppliers_and_stock action');
+            }
+            $productId = isset($_GET['product_id']) ? (int)$_GET['product_id'] : 0;
+            if (!$productId) throw new Exception('Missing product_id');
+            $result = \App\modules\invoice\controllers\get_product_suppliers_and_stock($productId);
+            break;
+
+        case 'adjust_stock':
+            if ($method !== 'POST') {
+                throw new Exception('POST method required for adjust_stock action');
+            }
+            $input = json_decode(file_get_contents('php://input'), true);
+            $product_supplier_id = $input['product_supplier_id'] ?? null;
+            $quantity = $input['quantity'] ?? null;
+            $cost_per_unit = $input['cost_per_unit'] ?? null;
+            $notes = $input['notes'] ?? null;
+            if (!$product_supplier_id || !$quantity) {
+                throw new Exception('Missing required fields');
+            }
+            $result = \App\modules\invoice\controllers\adjust_product_stock($product_supplier_id, $quantity, $cost_per_unit, $notes);
+            break;
+
         default:
             throw new Exception("Invalid action: $action");
     }

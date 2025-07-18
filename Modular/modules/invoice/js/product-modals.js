@@ -16,6 +16,7 @@ class ProductModalUI {
             4: 'Product'
         };
         this.initEventListeners();
+        this.lastSuppliersForStock = [];
     }
     initEventListeners() {
         const closeButton = this.modal?.querySelector('.universal-product-modal-close');
@@ -53,8 +54,33 @@ class ProductModalUI {
         if (this.formManager.form) {
             this.formManager.form.addEventListener('submit', (e) => this.handleSubmit(e));
         }
+        // Stock Adjustment Modal logic
+        const openAdjustBtn = document.getElementById('openAdjustStockModalBtn');
+        const adjustModal = document.getElementById('adjustStockModal');
+        const closeAdjustBtn = document.getElementById('closeAdjustStockModalBtn');
+        const cancelAdjustBtn = document.getElementById('cancelAdjustStockBtn');
+        const adjustForm = document.getElementById('adjustStockForm');
+        if (openAdjustBtn && adjustModal) {
+            openAdjustBtn.addEventListener('click', () => {
+                this.openAdjustStockModal();
+            });
+        }
+        if (closeAdjustBtn && adjustModal) {
+            closeAdjustBtn.addEventListener('click', () => {
+                adjustModal.style.display = 'none';
+            });
+        }
+        if (cancelAdjustBtn && adjustModal) {
+            cancelAdjustBtn.addEventListener('click', () => {
+                adjustModal.style.display = 'none';
+            });
+        }
+        if (adjustForm) {
+            adjustForm.addEventListener('submit', (e) => this.handleAdjustStockSubmit(e));
+        }
     }
     async openModal(mode = 'add', productId = null, typeId = null) {
+        console.log('opening product modal');
         this.mode = mode;
         this.productId = productId;
         this.modal.dataset.mode = mode;
@@ -95,6 +121,10 @@ class ProductModalUI {
                     await this.formManager.populateSubcategoryDropdown(result.data.category_id, result.data.subcategory_id);
                     await this.formManager.populateTaxRateDropdown(result.data.tax_rate_id);
                     this.formManager.populateForm(result.data);
+                    // --- Populate Suppliers tab ---
+                    this.populateSuppliersTab(productId);
+                    // --- Populate Stock History tab ---
+                    this.populateStockHistoryTab(productId);
                 } else {
                     showResponseModal(result.message || 'Failed to fetch product details', 'error');
                     console.error('Failed to fetch product details:', result);
@@ -246,6 +276,194 @@ class ProductModalUI {
             showResponseModal('Failed to delete product: ' + error.message, 'error');
             console.error('Error deleting product:', error);
         });
+    }
+    async populateSuppliersTab(productId) {
+        const container = this.modal.querySelector('#product-suppliers-list');
+        if (!container) return;
+        container.innerHTML = '<div class="loading">Loading suppliers...</div>';
+        try {
+            const data = await ProductAPI.fetchProductSuppliersAndStock(productId);
+            if (!data.success || !Array.isArray(data.data) || data.data.length === 0) {
+                container.innerHTML = '<div class="empty-state">No suppliers linked to this product.</div>';
+                return;
+            }
+            container.innerHTML = '';
+            const template = document.getElementById('product-supplier-card-template');
+            data.data.forEach(supplier => {
+                const card = template.content.cloneNode(true);
+                // Modern card layout
+                const nameSpan = card.querySelector('.supplier-name');
+                nameSpan.textContent = supplier.supplier_name;
+                // Contact
+                const contactSpan = card.querySelector('.supplier-contact');
+                contactSpan.innerHTML = supplier.supplier_contact ? `<span class="material-icons" style="font-size:1em;vertical-align:middle;">call</span> ${supplier.supplier_contact}` : '';
+                // Email
+                const emailSpan = card.querySelector('.supplier-email');
+                emailSpan.innerHTML = supplier.supplier_email ? `<span class="material-icons" style="font-size:1em;vertical-align:middle;">email</span> <a href="mailto:${supplier.supplier_email}">${supplier.supplier_email}</a>` : '';
+                // Website
+                const websiteSpan = card.querySelector('.supplier-website');
+                websiteSpan.innerHTML = supplier.website_url ? `<span class="material-icons" style="font-size:1em;vertical-align:middle;">public</span> <a href="${supplier.website_url}" target="_blank">${supplier.website_url}</a>` : '';
+                // Stock info
+                const totalStockSpan = card.querySelector('.supplier-total-stock');
+                totalStockSpan.textContent = `Total Stock: ${supplier.total_stock}`;
+                if (supplier.total_stock <= 2) totalStockSpan.classList.add('low-stock');
+                card.querySelector('.supplier-last-restock-date').textContent = supplier.last_restock ? `Last Restock: ${supplier.last_restock}` : '';
+                card.querySelector('.supplier-last-price').textContent = supplier.last_price ? `Last Price: R${supplier.last_price}` : '';
+                // Mini FIFO table
+                const trendDiv = card.querySelector('.supplier-price-trend');
+                if (Array.isArray(supplier.fifo_entries) && supplier.fifo_entries.length > 0) {
+                    const table = document.createElement('table');
+                    table.className = 'fifo-table';
+                    table.innerHTML = '<thead><tr><th>Qty</th><th>Rem</th><th>Price</th><th>Date</th></tr></thead>';
+                    const tbody = document.createElement('tbody');
+                    supplier.fifo_entries.forEach(entry => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${entry.quantity}</td><td>${entry.remaining_quantity}</td><td>R${entry.cost_per_unit}</td><td>${entry.received_at}</td>`;
+                        tbody.appendChild(tr);
+                    });
+                    table.appendChild(tbody);
+                    trendDiv.appendChild(table);
+                } else {
+                    trendDiv.textContent = 'No stock entries.';
+                }
+                container.appendChild(card);
+            });
+        } catch (e) {
+            container.innerHTML = '<div class="error">Failed to load suppliers.</div>';
+            console.error('Error loading suppliers for product:', e);
+        }
+    }
+    async populateStockHistoryTab(productId) {
+        const container = this.modal.querySelector('#product-stock-history-list');
+        if (!container) return;
+        container.innerHTML = '<div class="loading">Loading stock history...</div>';
+        try {
+            const data = await ProductAPI.fetchProductSuppliersAndStock(productId);
+            if (!data.success || !Array.isArray(data.data)) {
+                container.innerHTML = '<div class="error">Failed to load stock history.</div>';
+                return;
+            }
+            // Flatten all fifo_entries with supplier name
+            let allEntries = [];
+            data.data.forEach(supplier => {
+                if (Array.isArray(supplier.fifo_entries)) {
+                    supplier.fifo_entries.forEach(entry => {
+                        allEntries.push({
+                            supplier_name: supplier.supplier_name,
+                            quantity: entry.quantity,
+                            remaining_quantity: entry.remaining_quantity,
+                            cost_per_unit: entry.cost_per_unit,
+                            received_at: entry.received_at,
+                            notes: entry.notes || ''
+                        });
+                    });
+                }
+            });
+            // Sort by received_at descending
+            allEntries.sort((a, b) => new Date(b.received_at) - new Date(a.received_at));
+            container.innerHTML = '';
+            if (allEntries.length === 0) {
+                container.innerHTML = '<div class="empty-state">No stock history for this product.</div>';
+                return;
+            }
+            const template = document.getElementById('product-stock-history-row-template');
+            // Header row
+            const header = document.createElement('div');
+            header.className = 'product-stock-history-row product-stock-history-header';
+            header.innerHTML = '<span>Supplier</span><span>Qty</span><span>Rem</span><span>Cost</span><span>Date</span><span>Notes</span>';
+            container.appendChild(header);
+            allEntries.forEach(entry => {
+                const row = template.content.cloneNode(true);
+                row.querySelector('.stock-supplier-name').textContent = entry.supplier_name;
+                row.querySelector('.stock-quantity').textContent = entry.quantity;
+                row.querySelector('.stock-remaining').textContent = entry.remaining_quantity;
+                row.querySelector('.stock-cost').textContent = `R${entry.cost_per_unit}`;
+                row.querySelector('.stock-date').textContent = entry.received_at;
+                row.querySelector('.stock-notes').textContent = entry.notes;
+                container.appendChild(row);
+            });
+        } catch (e) {
+            container.innerHTML = '<div class="error">Failed to load stock history.</div>';
+            console.error('Error loading stock history for product:', e);
+        }
+    }
+    async openAdjustStockModal() {
+        const adjustModal = document.getElementById('adjustStockModal');
+        const supplierSelect = document.getElementById('adjustStockSupplier');
+        if (!adjustModal || !supplierSelect) return;
+        // Fetch suppliers for this product
+        if (!this.productId) return;
+        supplierSelect.innerHTML = '<option value="">Loading...</option>';
+        try {
+            const data = await ProductAPI.fetchProductSuppliersAndStock(this.productId);
+            if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+                supplierSelect.innerHTML = '';
+                this.lastSuppliersForStock = data.data;
+                data.data.forEach(supplier => {
+                    const opt = document.createElement('option');
+                    opt.value = supplier.supplier_id;
+                    opt.textContent = supplier.supplier_name;
+                    supplierSelect.appendChild(opt);
+                });
+            } else {
+                supplierSelect.innerHTML = '<option value="">No suppliers</option>';
+            }
+        } catch (e) {
+            supplierSelect.innerHTML = '<option value="">Error loading suppliers</option>';
+        }
+        adjustModal.style.display = 'block';
+    }
+    async handleAdjustStockSubmit(e) {
+        e.preventDefault();
+        const adjustModal = document.getElementById('adjustStockModal');
+        const form = document.getElementById('adjustStockForm');
+        if (!form || !this.productId) return;
+        const supplier_id = form.supplier_id.value;
+        const quantity = parseInt(form.quantity.value, 10);
+        const cost_per_unit = form.cost_per_unit.value ? parseFloat(form.cost_per_unit.value) : null;
+        const notes = form.notes.value;
+        if (!supplier_id || isNaN(quantity) || quantity === 0) {
+            showResponseModal('Please select a supplier and enter a non-zero quantity.', 'error');
+            return;
+        }
+        // Find product_supplier_id
+        let product_supplier_id = null;
+        if (this.lastSuppliersForStock && Array.isArray(this.lastSuppliersForStock)) {
+            const found = this.lastSuppliersForStock.find(s => String(s.supplier_id) === String(supplier_id));
+            if (found && found.fifo_entries && found.fifo_entries[0] && found.fifo_entries[0].product_supplier_id) {
+                product_supplier_id = found.fifo_entries[0].product_supplier_id;
+            }
+        }
+        // If not found, fallback to API (to be implemented)
+        if (!product_supplier_id) {
+            showResponseModal('Could not resolve product-supplier link.', 'error');
+            return;
+        }
+        // Send adjustment to API (endpoint to be implemented)
+        try {
+            const res = await fetch('/modules/invoice/api/products.php?action=adjust_stock', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    product_supplier_id,
+                    quantity,
+                    cost_per_unit,
+                    notes
+                })
+            });
+            const result = await res.json();
+            if (result.success) {
+                showResponseModal('Stock adjustment successful.', 'success');
+                adjustModal.style.display = 'none';
+                this.populateStockHistoryTab(this.productId);
+                this.populateSuppliersTab(this.productId);
+            } else {
+                showResponseModal(result.message || 'Failed to adjust stock.', 'error');
+            }
+        } catch (err) {
+            showResponseModal('Error adjusting stock: ' + (err.message || err), 'error');
+        }
     }
     confirmWithResponseModal(message) {
     return new Promise((resolve) => {

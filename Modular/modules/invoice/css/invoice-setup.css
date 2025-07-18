@@ -63,6 +63,14 @@ body {
     display: block;
 }
 
+/* Bulletproof tab panel visibility */
+.tab-content > .tab-panel {
+  display: none;
+}
+.tab-content > .tab-panel.active {
+  display: block;
+}
+
 /* Setup Sections */
 .setup-section {
     margin-bottom: 40px;
@@ -268,12 +276,16 @@ body {
 
 .data-item-subtitle {
     font-size: 0.85em;
-    color: var(--color-text-muted);
+    color: var(--color-text-light);
 }
 
 .data-item-actions {
     display: flex;
     gap: 8px;
+}
+
+.data-item-description{
+    color: var(--color-text-light);
 }
 
 /* Target Settings */
@@ -291,7 +303,7 @@ body {
 .empty-state {
     text-align: center;
     padding: 40px 20px;
-    color: var(--color-text-muted);
+    color: var(--color-text-light);
 }
 
 .empty-state .material-icons {
@@ -622,3 +634,437 @@ body {
         padding: 12px 8px 8px 8px;
     }
 }
+
+/* Modal Overlay Styles for Supplier Modal */
+#supplierModal.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+}
+#supplierModal.modal[style*="display: block"] {
+    display: flex !important;
+}
+#supplierModal .modal-content {
+    background: var(--color-background, #fff);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    max-width: 500px;
+    width: 95vw;
+    margin: 40px auto;
+    padding: 32px 24px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    animation: modalFadeIn 0.3s ease;
+}
+#supplierModal .modal-header {
+    background: var(--color-primary, #4a90e2);
+    color: #fff;
+    border-radius: 12px 12px 0 0;
+    padding: 16px 24px 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#supplierModal .modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+#supplierModal .close {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+#supplierModal .close:hover {
+    background: rgba(255,255,255,0.1);
+}
+#supplierModal .modal-body {
+    padding: 24px 0 0 0;
+    flex: 1;
+    overflow-y: auto;
+}
+@media (max-width: 600px) {
+    #supplierModal .modal-content {
+        max-width: 98vw;
+        padding: 12px 4px;
+    }
+    #supplierModal .modal-header {
+        padding: 12px 8px 8px 8px;
+    }
+}
+
+/* Modal Overlay Styles for Sales Target Modal */
+#salesTargetModal.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+}
+#salesTargetModal.modal[style*="display: block"] {
+    display: flex !important;
+}
+#salesTargetModal .modal-content {
+    background: var(--color-background, #fff);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    max-width: 500px;
+    width: 95vw;
+    margin: 40px auto;
+    padding: 32px 24px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    animation: modalFadeIn 0.3s ease;
+}
+#salesTargetModal .modal-header {
+    background: var(--color-primary, #4a90e2);
+    color: #fff;
+    border-radius: 12px 12px 0 0;
+    padding: 16px 24px 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#salesTargetModal .modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+#salesTargetModal .close {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+#salesTargetModal .close:hover {
+    background: rgba(255,255,255,0.1);
+}
+#salesTargetModal .modal-body {
+    padding: 24px 0 0 0;
+    flex: 1;
+    overflow-y: auto;
+}
+@media (max-width: 600px) {
+    #salesTargetModal .modal-content {
+        max-width: 98vw;
+        padding: 12px 4px;
+    }
+    #salesTargetModal .modal-header {
+        padding: 12px 8px 8px 8px;
+    }
+}
+
+/* Modal Overlay Styles for Credit Reason Modal */
+#creditReasonModal.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+}
+#creditReasonModal.modal[style*="display: block"] {
+    display: flex !important;
+}
+#creditReasonModal .modal-content {
+    background: var(--color-background, #fff);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    max-width: 500px;
+    width: 95vw;
+    margin: 40px auto;
+    padding: 32px 24px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    animation: modalFadeIn 0.3s ease;
+}
+#creditReasonModal .modal-header {
+    background: var(--color-primary, #4a90e2);
+    color: #fff;
+    border-radius: 12px 12px 0 0;
+    padding: 16px 24px 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#creditReasonModal .modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+#creditReasonModal .close {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+#creditReasonModal .close:hover {
+    background: rgba(255,255,255,0.1);
+}
+#creditReasonModal .modal-body {
+    padding: 24px 0 0 0;
+    flex: 1;
+    overflow-y: auto;
+}
+@media (max-width: 600px) {
+    #creditReasonModal .modal-content {
+        max-width: 98vw;
+        padding: 12px 4px;
+    }
+    #creditReasonModal .modal-header {
+        padding: 12px 8px 8px 8px;
+    }
+}
+
+/* --- Supplier Contacts Section Styling (Root Variables) --- */
+#supplier-contacts-section {
+  background: var(--card-bg, var(--color-secondary, #f8f9fa));
+  border-radius: var(--radius-medium, 8px);
+  box-shadow: 0 2px 8px var(--shadow-light, rgba(0,0,0,0.04));
+  padding: 24px 20px 16px 20px;
+  margin-top: 32px;
+  font-family: var(--font-primary);
+  color: var(--color-text-light, #222);
+}
+#supplier-contacts-section h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 1.15em;
+  color: var(--color-primary, #1a73e8);
+  font-weight: 600;
+}
+#supplier-contacts-section .btn-primary {
+  margin-bottom: 12px;
+  background: var(--btn-bg, #007BFF);
+  color: var(--color-text-light, #fff);
+  border: none;
+  border-radius: var(--radius-small, 4px);
+  padding: 8px 18px;
+  font-size: var(--font-size-base, 14px);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#supplier-contacts-section .btn-primary:hover {
+  background: var(--btn-hover-bg, #0056b3);
+}
+#supplier-contacts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.data-item.contact-item {
+  background: var(--color-secondary, #fff);
+  border-radius: var(--radius-small, 4px);
+  box-shadow: 0 1px 4px var(--shadow-light, rgba(0,0,0,0.03));
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  transition: box-shadow 0.2s;
+  color: var(--color-text-light, #222);
+}
+.data-item.contact-item:hover {
+  box-shadow: 0 2px 8px var(--shadow-light, rgba(26,115,232,0.08));
+}
+.data-item.contact-item .data-item-info {
+  flex: 1 1 auto;
+}
+.data-item.contact-item .data-item-title {
+  font-weight: 600;
+  font-size: 1.05em;
+  margin-bottom: 2px;
+  color: var(--color-primary, #1a73e8);
+}
+.data-item.contact-item .data-item-subtitle {
+  color: var(--color-text-dark, #888);
+  font-size: 0.97em;
+  margin-bottom: 2px;
+}
+.data-item.contact-item .data-item-description {
+  font-size: 0.97em;
+  color: var(--color-text-light, #444);
+  margin-bottom: 2px;
+}
+.data-item.contact-item .data-item-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+  margin-left: 16px;
+}
+.data-item.contact-item .btn-secondary, .data-item.contact-item .btn-danger {
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  border: none;
+}
+.data-item.contact-item .btn-danger {
+  background: var(--color-error, #f44336);
+  color: var(--color-text-light, #fff);
+}
+.data-item.contact-item .btn-secondary {
+  background: var(--btn-bg, #e3eafc);
+  color: var(--color-primary, #1a73e8);
+}
+.data-item.contact-item .btn-secondary:hover {
+  background: var(--btn-hover-bg, #0056b3);
+  color: var(--color-text-light, #fff);
+}
+#supplier-contacts-list .empty-state {
+  text-align: center;
+  color: var(--color-text-dark, #888);
+  padding: 18px 0 8px 0;
+}
+#supplier-contacts-list .empty-state .material-icons {
+  font-size: 2.2em;
+  color: var(--btn-bg, #e3eafc);
+  margin-bottom: 4px;
+}
+#supplier-contacts-list .loading {
+  text-align: center;
+  color: var(--color-text-dark, #888);
+  padding: 12px 0;
+}
+/* --- End Supplier Contacts Section Styling --- */
+
+/* --- Supplier Contact Modal: Root Variable Styling --- */
+#supplierContactModal {
+  display: none;
+  position: fixed;
+  z-index: var(--z-index-modal, 2000);
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.25);
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-primary);
+}
+#supplierContactModal.active {
+  display: flex;
+}
+#supplierContactModal .modal-content {
+  background: var(--modal-bg, #fff);
+  border-radius: var(--radius-medium, 8px);
+  box-shadow: var(--modal-shadow, 0 4px 24px rgba(0,0,0,0.12));
+  border: 1.5px solid var(--modal-border, #444444);
+  padding: var(--modal-padding, 20px);
+  max-width: 420px;
+  width: 100%;
+  margin: auto;
+  color: var(--color-text-light, #222);
+  font-size: var(--font-size-base, 14px);
+}
+#supplierContactModal .modal-header h2 {
+  color: var(--color-primary, #007BFF);
+  margin: 0 0 8px 0;
+  font-size: 1.2em;
+}
+#supplierContactModal .close {
+  color: var(--color-error, #F44336);
+  font-size: 1.5em;
+  cursor: pointer;
+  float: right;
+}
+#supplierContactModal .form-group label {
+  font-weight: 500;
+  color: var(--color-primary, #007BFF);
+}
+#supplierContactModal .form-input, #supplierContactModal .form-textarea {
+  width: 100%;
+  border-radius: var(--radius-small, 4px);
+  border: 1px solid var(--border-color, #d0d7de);
+  padding: 8px 10px;
+  margin-top: 2px;
+  margin-bottom: 10px;
+  font-size: var(--font-size-base, 14px);
+  background: var(--input-bg, #fff);
+  color: var(--color-text-light, #222);
+}
+#supplierContactModal .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+#supplierContactModal .btn-primary {
+  background: var(--btn-bg, #007BFF);
+  color: var(--color-text-light, #fff);
+  border: none;
+  border-radius: var(--radius-small, 4px);
+  padding: 8px 18px;
+  font-size: var(--font-size-base, 14px);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#supplierContactModal .btn-primary:hover {
+  background: var(--btn-hover-bg, #0056b3);
+}
+#supplierContactModal .btn-secondary {
+  background: var(--color-secondary, #f0f0f0);
+  color: var(--color-primary, #007BFF);
+  border: 1px solid var(--color-primary, #007BFF);
+  border-radius: var(--radius-small, 4px);
+  padding: 8px 18px;
+  font-size: var(--font-size-base, 14px);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+#supplierContactModal .btn-secondary:hover {
+  background: var(--color-primary-fade, #e3eafc);
+  color: var(--color-text-light, #fff);
+}
+/* --- End Supplier Contact Modal Styling --- */
