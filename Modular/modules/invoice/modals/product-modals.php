@@ -269,11 +269,11 @@
                   <form id="adjustStockForm">
                     <div class="adjust-stock-field">
                       <label for="adjustStockSupplier">Supplier:</label>
-                      <select id="adjustStockSupplier" name="supplier_id" required></select>
+                      <select id="adjustStockSupplier" name="supplier_id" ></select>
                     </div>
                     <div class="adjust-stock-field">
                       <label for="adjustStockQuantity">Quantity (use negative for removal):</label>
-                      <input type="number" id="adjustStockQuantity" name="quantity" required>
+                      <input type="number" id="adjustStockQuantity" name="quantity" >
                     </div>
                     <div class="adjust-stock-field">
                       <label for="adjustStockCost">Cost per Unit (optional):</label>

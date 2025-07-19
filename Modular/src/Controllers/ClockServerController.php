@@ -143,7 +143,11 @@ class ClockServerController {
                 'status' => $status
             ];
         } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+                'error' => $e->getMessage()
+            ];
         }
     }
 } 

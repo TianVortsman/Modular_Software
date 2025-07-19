@@ -45,3 +45,42 @@ export function buildQueryParams(base = {}, filters = {}, search = '', paginatio
     return params;
 }
 
+/**
+ * Centralized API response handler for fetch/AJAX calls
+ * Usage: .then(handleApiResponse)
+ * Shows errors in ResponseModal if present, returns data on success
+ */
+function handleApiResponse(data) {
+    window.lastApiRawResponse = data;
+    if (data && (data.success === false || data.status >= 400)) {
+        // Always prefer AI-friendly message
+        const msg = data.message || data.error || 'An unknown error occurred.';
+        showResponseModal(msg, 'error');
+        throw new Error(msg);
+    }
+    return data;
+}
+
+window.handleApiResponse = handleApiResponse;
+
+window.onerror = async function(message, source, lineno, colno, error) {
+    const errorCode = Math.random().toString(36).substring(2, 8).toUpperCase(); // e.g. 7H2G3T
+    try {
+        const res = await fetch('/public/php/log-js-error.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                message, source, lineno, colno, stack: error?.stack, code: errorCode
+            })
+        });
+        const data = await res.json();
+        if (data && data.error) {
+            showResponseModal(data.error, 'error');
+        } else {
+            showResponseModal('Oops! Something went wrong. Please contact Modular Software Support. Error Code: ' + errorCode, 'error');
+        }
+    } catch (e) {
+        showResponseModal('Oops! Something went wrong. Please contact Modular Software Support. Error Code: ' + errorCode, 'error');
+    }
+};
+

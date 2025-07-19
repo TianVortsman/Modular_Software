@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../../src/Utils/errorHandler.php';
 // Start session before any output
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -8,10 +9,6 @@ if (session_status() === PHP_SESSION_NONE) {
 if (!ini_get('date.timezone')) {
     date_default_timezone_set('UTC');
 }
-
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
 require_once __DIR__ . '/../../../src/Core/Database/ClientDatabase.php';
 require_once __DIR__ . '/../controllers/ProductController.php';
@@ -190,6 +187,15 @@ switch ($action) {
     case 'saveCreditPolicy':
         $data = $_POST;
         $result = App\modules\invoice\controllers\save_credit_policy($data);
+        echo json_encode($result);
+        break;
+    case 'getDocumentNumbering':
+        $result = App\modules\invoice\controllers\get_document_numbering();
+        echo json_encode($result);
+        break;
+    case 'saveDocumentNumbering':
+        $data = $_POST;
+        $result = App\modules\invoice\controllers\save_document_numbering($data);
         echo json_encode($result);
         break;
     // Add other actions as needed...

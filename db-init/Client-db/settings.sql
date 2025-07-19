@@ -22,6 +22,16 @@ CREATE TABLE IF NOT EXISTS settings.invoice_settings (
     credit_note_starting_number INTEGER DEFAULT 1,
     credit_note_current_number INTEGER,
 
+    -- Pro Forma Invoice Numbering Settings
+    proforma_prefix VARCHAR(50),
+    proforma_starting_number INTEGER DEFAULT 1,
+    proforma_current_number INTEGER,
+
+    -- Delivery Note Numbering Settings
+    delivery_note_prefix VARCHAR(50),
+    delivery_note_starting_number INTEGER DEFAULT 1,
+    delivery_note_current_number INTEGER,
+
     date_format VARCHAR(20) DEFAULT 'Y-m-d',
 
     -- Credit Policy
@@ -50,6 +60,9 @@ CREATE TABLE IF NOT EXISTS settings.invoice_settings (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Ensure at least one row exists for settings.invoice_settings
+INSERT INTO settings.invoice_settings DEFAULT VALUES ON CONFLICT DO NOTHING;
+
 -- Add Credit Reasons Table
 CREATE TABLE IF NOT EXISTS settings.credit_reasons (
     credit_reason_id SERIAL PRIMARY KEY,
@@ -71,5 +84,3 @@ CREATE TABLE IF NOT EXISTS settings.payment_terms (
 -- Optionally, add default_payment_term_id to invoice_settings for reference
 ALTER TABLE settings.invoice_settings
 ADD COLUMN IF NOT EXISTS default_payment_term_id INTEGER REFERENCES settings.payment_terms(payment_term_id);
-
-

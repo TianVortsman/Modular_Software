@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../../src/Utils/errorHandler.php';
 // Start session before any output
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -10,8 +11,6 @@ use App\Core\Database\ClientDatabase;
 require_once __DIR__ . '/../controllers/SalesController.php';
 
 header('Content-Type: application/json');
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
 function clean_numeric($value) {
     return is_null($value) ? 0 : floatval(preg_replace('/[^\d.\-]/', '', $value));

@@ -153,6 +153,7 @@ class AccessController
             error_log("Error in AccessController->getAccessActivity: " . $e->getMessage());
             return [
                 'success' => false,
+                'message' => $e->getMessage(),
                 'error' => $e->getMessage()
             ];
         }

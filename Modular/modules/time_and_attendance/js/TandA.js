@@ -69,6 +69,7 @@ async function fetchRecentActivity() {
         }
         
         const data = await response.json();
+        window.handleApiResponse(data);
         
         if (data.success) {
             // Process activities for different tabs
@@ -136,7 +137,7 @@ async function fetchRecentActivity() {
             console.error('Failed to fetch recent activity:', data.message);
         }
     } catch (error) {
-        console.error('Error fetching recent activity:', error);
+        showResponseModal(error.message, 'error');
     }
 }
 
@@ -307,6 +308,7 @@ async function updateDashboardStats() {
         }
         
         const data = await response.json();
+        window.handleApiResponse(data);
         
         if (data.success) {
             // Update dashboard widgets with new stats
@@ -321,7 +323,7 @@ async function updateDashboardStats() {
             console.error('Failed to fetch dashboard stats:', data.message);
         }
     } catch (error) {
-        console.error('Error fetching dashboard stats:', error);
+        showResponseModal(error.message, 'error');
     }
 }
 
@@ -414,6 +416,7 @@ async function fetchAccessActivity() {
         }
         
         const data = await response.json();
+        window.handleApiResponse(data);
         
         if (data.success) {
             // Split activities into categories
@@ -477,7 +480,7 @@ async function fetchAccessActivity() {
             console.error('Failed to fetch access activity:', data.message);
         }
     } catch (error) {
-        console.error('Error fetching access activity:', error);
+        showResponseModal(error.message, 'error');
     }
 }
 

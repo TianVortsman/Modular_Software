@@ -37,6 +37,7 @@ function searchClient(inputElement) {
             const noResults = document.createElement('div');
             noResults.textContent = 'No clients found';
             resultsContainer.appendChild(noResults);
+            window.handleApiResponse({ success: false, message: 'No clients found' });
         }
     });
 }

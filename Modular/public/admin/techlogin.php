@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../src/Utils/errorHandler.php';
 session_start();
 if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -836,7 +837,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['acc
     </div>
 
     <!-- Scripts -->
-    <script src="../assets/js/techlogin.js"></script>
+    <script type="module" src="../assets/js/techlogin.js"></script>
     <?php include '../../src/UI/loading-modal.php'; ?>
     <?php include '../../src/UI/response-modal.php'; ?>
     <?php include '../../src/UI/error-table-modal.php'; ?>

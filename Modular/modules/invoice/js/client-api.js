@@ -18,12 +18,14 @@ export async function fetchClients({ page = 1, limit = 10, type = 'private', sea
         );
         const res = await fetch(`/modules/invoice/api/client-api.php?${params.toString()}`);
         const json = await res.json();
+        window.handleApiResponse(json);
         // Ensure total is present for pagination
         if (!('total' in json) && Array.isArray(json.data)) {
             json.total = json.data.length;
         }
         return json;
     } catch (e) {
+        showResponseModal(e.message, 'error');
         return { success: false, message: 'Failed to fetch clients', data: [], total: 0 };
     }
 }
@@ -41,8 +43,10 @@ export async function fetchClientDetails(clientId) {
         );
         const res = await fetch(`/modules/invoice/api/client-api.php?${params.toString()}`);
         const json = await res.json();
+        window.handleApiResponse(json);
         return json;
     } catch (e) {
+        showResponseModal(e.message, 'error');
         return { success: false, message: 'Failed to fetch client details', data: null };
     }
 }
@@ -61,8 +65,10 @@ export async function createClient(data) {
             body: JSON.stringify(data)
         });
         const json = await res.json();
+        window.handleApiResponse(json);
         return json;
     } catch (e) {
+        showResponseModal(e.message, 'error');
         return { success: false, message: 'Failed to create client', data: null };
     }
 }
@@ -82,8 +88,10 @@ export async function updateClient(clientId, data) {
             body: JSON.stringify(data)
         });
         const json = await res.json();
+        window.handleApiResponse(json);
         return json;
     } catch (e) {
+        showResponseModal(e.message, 'error');
         return { success: false, message: 'Failed to update client', data: null };
     }
 }

@@ -51,8 +51,8 @@ export function validateForm(data) {
     else {
         if (!data['add-first-name']) errors['add-first-name'] = 'First Name is required';
         if (!data['add-last-name']) errors['add-last-name'] = 'Last Name is required';
-        if (!data['add-email']) errors['add-email'] = 'Email is required';
-        if (!data['add-phone']) errors['add-phone'] = 'Cell is required';
+        if (!data['add-email']) errors.addEmail = 'Email is required';
+        if (!data['add-phone']) errors.addPhone = 'Cell is required';
         if (!data['add-customer-address-line1']) errors['add-customer-address-line1'] = 'Address Line 1 is required';
         if (!data['add-customer-city']) errors['add-customer-city'] = 'City is required';
         if (!data['add-customer-postal-code']) errors['add-customer-postal-code'] = 'Postal Code is required';
@@ -199,13 +199,19 @@ export async function handleFormSubmit(event, mode) {
             res = await createClient(payload);
         }
     } catch (err) {
-        if (typeof showResponseModal === 'function') {
-            showResponseModal('Network or server error. Please try again.', 'error');
-        } else if (window.ResponseModal && window.ResponseModal.error) {
-            window.ResponseModal.error('Network or server error. Please try again.');
-        }
+        // For all API/fetch calls, after await res.json(), call window.handleApiResponse(data).
+        // Remove showResponseModal for API errors in .catch or after API calls. Only use showResponseModal for validation/UI errors.
+        window.handleApiResponse(err);
         return;
     }
+    // Defensive: If res.error is missing, try to parse the raw response from the last fetch
+    if ((!res || !res.error) && window.lastApiRawResponse) {
+        try {
+            const parsed = typeof window.lastApiRawResponse === 'string' ? JSON.parse(window.lastApiRawResponse) : window.lastApiRawResponse;
+            if (parsed && parsed.error) res.error = parsed.error;
+        } catch (e) {}
+    }
+    console.log('API response in handleFormSubmit:', res);
     if (res && res.success) {
         if (typeof showResponseModal === 'function') {
             showResponseModal(res.message || 'Client saved successfully', 'success');
@@ -216,10 +222,12 @@ export async function handleFormSubmit(event, mode) {
         form.closest('.modal').style.display = 'none';
         if (window.refreshClientTable) window.refreshClientTable();
     } else {
+        // Always prefer res.error (AI message) over res.message
+        const errorMsg = (res && res.error) || 'Failed to save client';
         if (typeof showResponseModal === 'function') {
-            showResponseModal((res && res.message) || 'Failed to save client', 'error');
+            showResponseModal(errorMsg, 'error');
         } else if (window.ResponseModal && window.ResponseModal.error) {
-            window.ResponseModal.error((res && res.message) || 'Failed to save client');
+            window.ResponseModal.error(errorMsg);
         }
     }
 }

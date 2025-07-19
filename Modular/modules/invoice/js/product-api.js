@@ -9,7 +9,10 @@ export class ProductAPI {
         const url = '/modules/invoice/api/products.php?' + params.toString();
         return fetch(url, {
             credentials: 'include'
-        }).then(res => res.json());
+        }).then(res => res.json()).then(window.handleApiResponse)
+        .catch(error => {
+            throw error;
+        });
     }
 
     // Fetch product details by ID

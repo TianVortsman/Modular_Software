@@ -40,13 +40,7 @@ document.addEventListener('DOMContentLoaded', async function() {
           try {
             const res = await fetch(`../api/document_modal.php?action=fetch_document&document_id=${encodeURIComponent(invoice.document_id)}`);
             const result = await res.json();
-            if (result.success && result.document) {
-                openDocumentModal('edit');
-              setModalMode('edit');
-              setDocumentFormData(result.document);
-            } else {
-              showResponseModal(result.message || 'Failed to load document for editing', 'error');
-            }
+            window.handleApiResponse(result);
           } catch (err) {
             showResponseModal('Error loading document: ' + (err.message || err), 'error');
           }

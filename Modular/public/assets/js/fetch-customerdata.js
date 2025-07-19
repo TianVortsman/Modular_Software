@@ -42,18 +42,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Fetch customer data from the backend
         fetch(`../php/fetch-customers.php?${params.toString()}`)
-            .then(response => {
-                const contentType = response.headers.get("content-type");
-                if (!contentType || !contentType.includes("application/json")) {
-                    throw new Error("Server returned non-JSON response");
-                }
-                return response.json().then(data => {
-                    if (!response.ok) {
-                        throw new Error(data.error || `Server error: ${response.status}`);
-                    }
-                    return data;
-                });
-            })
+            .then(response => response.json())
+            .then(window.handleApiResponse)
             .then(data => {
                 if (!data || !Array.isArray(data.customers)) {
                     throw new Error('Invalid data format received from server');
@@ -120,7 +110,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 updateShowingInfo();
             })
             .catch(error => {
-                console.error('Error fetching customer data:', error);
                 tableBody.innerHTML = `
                     <tr>
                         <td colspan="8" class="error-message">
@@ -131,7 +120,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         </td>
                     </tr>
                 `;
-                showResponseModal('error', 'Failed to fetch customer data. Please try again.');
             })
             .finally(() => {
                 isLoading = false;
@@ -146,7 +134,7 @@ document.addEventListener("DOMContentLoaded", function () {
         
         if (!accountNumber) {
             console.error('No account number found on row');
-            showResponseModal('error', 'Unable to open customer details');
+            showResponseModal('Unable to open customer details', 'error');
             return;
         }
 
@@ -221,7 +209,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         } catch (error) {
             console.error('Error:', error);
-            showResponseModal('error', error.message || 'An error occurred');
+            showResponseModal(error.message || 'An error occurred', 'error');
         } finally {
             // Hide loading modal properly
             const loadingModal = document.getElementById('unique-loading-modal');

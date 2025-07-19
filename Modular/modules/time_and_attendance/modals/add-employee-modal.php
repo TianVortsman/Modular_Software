@@ -586,36 +586,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 const result = await response.json();
+                window.handleApiResponse(result);
                 
                 // Hide loading indicator
                 if (loadingModal) {
                     loadingModal.classList.add('hidden');
                 }
 
-                if (!response.ok) {
-                    throw new Error(result.message || 'Failed to add employee');
-                }
+                // The original code had a check for response.ok, but handleApiResponse now handles errors.
+                // If handleApiResponse throws an error, it will be caught by the catch block.
+                // If handleApiResponse returns success, it will proceed to the success block.
+                // If handleApiResponse returns a message, it will be displayed as an error.
 
-                if (result.success) {
-                    // Refresh employee list
-                    if (typeof loadEmployees === 'function') {
-                        await loadEmployees();
-                    }
-                    // Hide modal
-                    hideModal();
-                    // Show success message
-                    showNotification('Employee added successfully', 'success');
-                } else if (result.message === 'Employee number already exists') {
-                    showError('employeeNumber', 'Employee number already exists');
-                } else {
-                    throw new Error(result.message || 'Failed to add employee');
-                }
             } catch (error) {
                 console.error('Error adding employee:', error);
+                // If handleApiResponse throws an error, it will be caught here.
+                // If handleApiResponse returned a message, it will be displayed as an error.
+                // If handleApiResponse returned success, this catch block will not be reached.
                 if (error.message === 'Employee number already exists') {
                     showError('employeeNumber', 'Employee number already exists');
                 } else {
-                    showNotification(error.message, 'error');
+                    const errorMsg = error.error || error.message || 'Failed to add employee';
+                    showNotification(errorMsg, 'error');
                 }
             } finally {
                 // Reset submission state and enable button

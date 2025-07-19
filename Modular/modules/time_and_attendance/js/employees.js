@@ -530,7 +530,7 @@ class EmployeeModalManager {
             if (!response.ok) throw new Error('Failed to fetch employee data');
             
             const result = await response.json();
-            if (!result.success) throw new Error(result.message || 'Failed to fetch employee data');
+            window.handleApiResponse(result);
             
             // Hide loading indicator
             if (loadingModal) {
@@ -1095,6 +1095,7 @@ async function loadEmployees(page = 1, filters = {}) {
         }
         
         const result = await response.json();
+        window.handleApiResponse(result);
         
         // Hide loading indicator
         if (loadingModal) {

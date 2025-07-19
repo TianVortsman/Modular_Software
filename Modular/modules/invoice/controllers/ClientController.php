@@ -75,9 +75,11 @@ function list_clients(array $options = []): array {
         $msg = "Query failed: " . $e->getMessage();
         error_log($msg);
         log_user_action(null, 'list_clients', null, $msg);
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
         return [
             'success' => false,
-            'message' => 'Database error occurred',
+            'message' => get_friendly_error($e->getMessage()),
+            'error' => $e->getMessage(),
             'data' => null,
             'error_code' => 'CLIENT_LIST_ERROR'
         ];
@@ -96,9 +98,10 @@ function get_client_details(int $client_id): array {
             $msg = 'Client not found';
             error_log($msg);
             log_user_action(null, 'get_client_details', $client_id, $msg);
+            require_once __DIR__ . '/../../../src/Helpers/helpers.php';
             return [
                 'success' => false,
-                'message' => $msg,
+                'message' => get_friendly_error($msg),
                 'data' => null,
                 'error_code' => 'CLIENT_NOT_FOUND'
             ];
@@ -124,9 +127,11 @@ function get_client_details(int $client_id): array {
         $msg = "Error in get_client_details: " . $e->getMessage();
         error_log($msg);
         log_user_action(null, 'get_client_details', $client_id, $msg);
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
         return [
             'success' => false,
-            'message' => 'Database error occurred',
+            'message' => get_friendly_error($e->getMessage()),
+            'error' => $e->getMessage(),
             'data' => null,
             'error_code' => 'CLIENT_DETAILS_ERROR'
         ];
@@ -185,9 +190,10 @@ function create_client(array $data): array {
         $msg = "create_client error: No valid fields provided.";
         error_log($msg);
         log_user_action($user_id, 'create_client', null, $msg);
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
         return [
             'success' => false,
-            'message' => $msg,
+            'message' => get_friendly_error($msg),
             'data' => null,
             'error_code' => 'CLIENT_CREATE_ERROR'
         ];
@@ -321,12 +327,14 @@ function create_client(array $data): array {
         if ($conn->inTransaction()) {
             $conn->rollBack();
         }
-        $msg = "create_client error: " . $e->getMessage();
+        $msg = "Error in create_client: " . $e->getMessage();
         error_log($msg);
         log_user_action($user_id, 'create_client', null, $msg);
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
         return [
             'success' => false,
-            'message' => 'Failed to create client',
+            'message' => get_friendly_error($e->getMessage()),
+            'error' => $e->getMessage(),
             'data' => null,
             'error_code' => 'CLIENT_CREATE_ERROR'
         ];
@@ -568,12 +576,14 @@ function update_client(int $client_id, array $data): array {
         if ($conn->inTransaction()) {
             $conn->rollBack();
         }
-        $msg = "update_client error: " . $e->getMessage();
+        $msg = "Error in update_client: " . $e->getMessage();
         error_log($msg);
         log_user_action($user_id, 'update_client', $client_id, $msg);
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
         return [
             'success' => false,
-            'message' => 'Failed to update client',
+            'message' => get_friendly_error($e->getMessage()),
+            'error' => $e->getMessage(),
             'data' => null,
             'error_code' => 'CLIENT_UPDATE_ERROR'
         ];
@@ -636,12 +646,14 @@ function delete_client(int $client_id, int $deleted_by): array {
         if ($conn->inTransaction()) {
             $conn->rollBack();
         }
-        $msg = "delete_client error: " . $e->getMessage();
+        $msg = "Error in delete_client: " . $e->getMessage();
         error_log($msg);
-        log_user_action($user_id, 'delete_client', $client_id, $msg);
+        log_user_action($deleted_by, 'delete_client', $client_id, $msg);
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
         return [
             'success' => false,
-            'message' => 'Failed to delete client',
+            'message' => get_friendly_error($e->getMessage()),
+            'error' => $e->getMessage(),
             'data' => null,
             'error_code' => 'CLIENT_DELETE_ERROR'
         ];

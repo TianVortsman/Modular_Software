@@ -94,8 +94,11 @@ class ProductScreenManager {
         if (!subcategoryFilter || !categoryFilter) return;
         subcategoryFilter.innerHTML = '<option value="">All Subcategories</option>';
         if (this.currentFilters.category) {
-            // Use ProductModalAPI for fetching subcategories
-            window.ProductModalAPI.fetchProductSubcategories(this.currentFilters.category).then(data => {
+            if (!window.ProductAPI) {
+                console.error('[ProductScreenManager] window.ProductAPI is missing!');
+                return;
+            }
+            window.ProductAPI.fetchProductSubcategories(this.currentFilters.category).then(data => {
                 if (data.success && Array.isArray(data.data)) {
                     data.data.forEach(sub => {
                         const option = document.createElement('option');

@@ -159,7 +159,8 @@ function list_products(array $options = []): array {
         ];
 
     } catch (PDOException $e) {
-        $msg = 'Failed to fetch products.';
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
+        $msg = get_friendly_error($e->getMessage());
         error_log('[listProducts] DB Error: ' . $e->getMessage());
         log_user_action($_SESSION['user_id'] ?? null, 'listProducts', null, $e->getMessage());
         return [
@@ -169,7 +170,8 @@ function list_products(array $options = []): array {
             'error_code' => 'PRODUCT_LIST_DB_ERROR'
         ];
     } catch (Throwable $e) {
-        $msg = 'Unexpected error occurred while fetching products.';
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
+        $msg = get_friendly_error($e->getMessage());
         error_log('[listProducts] General Error: ' . $e->getMessage());
         log_user_action($_SESSION['user_id'] ?? null, 'listProducts', null, $e->getMessage());
         return [
@@ -211,7 +213,8 @@ function update_product(array $data, int $user_id): array {
     // Validate input (for update, allow missing fields)
     list($valid, $error) = validate_product_data($data, true);
     if (!$valid) {
-        $msg = $error;
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
+        $msg = get_friendly_error($error);
         error_log('[update_product] ' . $msg);
         log_user_action($user_id, 'update_product', $data['product_id'] ?? null, $msg);
         return [
@@ -223,7 +226,8 @@ function update_product(array $data, int $user_id): array {
     }
     // Permission check
     if (!check_user_permission($user_id, 'update_document')) {
-        $msg = "Permission denied for user $user_id to update product";
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
+        $msg = get_friendly_error("Permission denied for user $user_id to update product");
         error_log('[update_product] ' . $msg);
         log_user_action($user_id, 'update_product', $data['product_id'] ?? null, $msg);
         return [
@@ -332,7 +336,8 @@ function update_product(array $data, int $user_id): array {
         if ($conn->inTransaction()) {
             $conn->rollBack();
         }
-        $msg = 'Failed to update product: ' . $e->getMessage();
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
+        $msg = get_friendly_error($e->getMessage());
         error_log('[update_product] ' . $msg);
         log_user_action($user_id, 'update_product', $data['product_id'] ?? null, $msg);
         return [
@@ -349,7 +354,8 @@ function add_product(array $data, int $user_id): array {
     // Validate input
     list($valid, $error) = validate_product_data($data, false);
     if (!$valid) {
-        $msg = $error;
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
+        $msg = get_friendly_error($error);
         error_log('[add_product] ' . $msg);
         log_user_action($user_id, 'add_product', null, $msg);
         return [
@@ -361,7 +367,8 @@ function add_product(array $data, int $user_id): array {
     }
     // Permission check
     if (!check_user_permission($user_id, 'create_document')) {
-        $msg = "Permission denied for user $user_id to add product";
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
+        $msg = get_friendly_error("Permission denied for user $user_id to add product");
         error_log('[add_product] ' . $msg);
         log_user_action($user_id, 'add_product', null, $msg);
         return [
@@ -404,7 +411,8 @@ function add_product(array $data, int $user_id): array {
         if ($conn->inTransaction()) {
             $conn->rollBack();
         }
-        $msg = 'Failed to add product: ' . $e->getMessage();
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
+        $msg = get_friendly_error($e->getMessage());
         error_log('[add_product] ' . $msg);
         log_user_action($user_id, 'add_product', null, $msg);
         return [

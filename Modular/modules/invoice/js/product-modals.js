@@ -4,6 +4,7 @@ window.ProductAPI = ProductAPI;
 // --- ProductModalUI: Handles modal open/close, tab switching, and modal-specific UI logic ---
 class ProductModalUI {
     constructor(modalElement) {
+        console.log('[ProductModalUI] Initializing with modal:', modalElement);
         this.modal = modalElement;
         this.formManager = new window.ProductModalForm(modalElement);
         this.mode = 'add';
@@ -19,13 +20,14 @@ class ProductModalUI {
         this.lastSuppliersForStock = [];
     }
     initEventListeners() {
+        console.log('[ProductModalUI] Running initEventListeners');
         const closeButton = this.modal?.querySelector('.universal-product-modal-close');
         if (closeButton) closeButton.addEventListener('click', () => this.closeModal());
         const cancelBtn = document.getElementById('universalProductCancelBtn');
         if (cancelBtn) cancelBtn.addEventListener('click', () => this.closeModal());
-            this.modal.addEventListener('mousedown', (e) => {
+        this.modal.addEventListener('mousedown', (e) => {
             if (e.target === this.modal) this.closeModal();
-            });
+        });
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.modal.classList.contains('active')) this.closeModal();
         });
@@ -52,7 +54,10 @@ class ProductModalUI {
         }
         // Form submit
         if (this.formManager.form) {
+            console.log('[ProductModalUI] Attaching submit event to form:', this.formManager.form);
             this.formManager.form.addEventListener('submit', (e) => this.handleSubmit(e));
+        } else {
+            console.warn('[ProductModalUI] No form found to attach submit event');
         }
         // Stock Adjustment Modal logic
         const openAdjustBtn = document.getElementById('openAdjustStockModalBtn');
@@ -126,11 +131,11 @@ class ProductModalUI {
                     // --- Populate Stock History tab ---
                     this.populateStockHistoryTab(productId);
                 } else {
-                    showResponseModal(result.message || 'Failed to fetch product details', 'error');
+                    window.handleApiResponse({ success: false, message: result.message || 'Failed to fetch product details' });
                     console.error('Failed to fetch product details:', result);
                 }
             }).catch(error => {
-                showResponseModal('Error fetching product details: ' + error.message, 'error');
+                window.handleApiResponse({ success: false, message: error.message || 'Error fetching product details' });
                 console.error('Error fetching product details:', error);
             });
         }
@@ -152,9 +157,11 @@ class ProductModalUI {
         if (selectedPane) selectedPane.classList.add('upm-active');
     }
     async handleSubmit(e) {
+        console.log('[ProductModalUI] handleSubmit called', e);
         e.preventDefault();
         e.stopPropagation();
         if (!this.formManager.validateForm()) {
+            console.log('[ProductModalUI] Form validation failed');
             showResponseModal('Please fill in all required fields.', 'error');
             return;
         }
@@ -234,6 +241,7 @@ class ProductModalUI {
             ? ProductAPI.editProduct(this.productId, formData)
             : ProductAPI.addProduct(formData);
         apiCall.then(async data => {
+            console.log('[ProductModalUI] API call result:', data);
             hideLoadingModal();
             if (data.success) {
                 // If image is selected, upload it (already handled above)
@@ -243,9 +251,11 @@ class ProductModalUI {
                     window.productScreenManager.refreshProductList();
                 }
             } else {
-                showResponseModal(data.message || 'Failed to save product', 'error', true);
+                const errorMsg = data.error || data.message || 'Failed to save product';
+                showResponseModal(errorMsg, 'error', true);
             }
         }).catch(error => {
+            console.log('[ProductModalUI] API call error:', error);
             hideLoadingModal();
             showResponseModal(error.message || 'Failed to save product', 'error', true);
             console.error('Error saving product:', error);
@@ -453,14 +463,7 @@ class ProductModalUI {
                 })
             });
             const result = await res.json();
-            if (result.success) {
-                showResponseModal('Stock adjustment successful.', 'success');
-                adjustModal.style.display = 'none';
-                this.populateStockHistoryTab(this.productId);
-                this.populateSuppliersTab(this.productId);
-            } else {
-                showResponseModal(result.message || 'Failed to adjust stock.', 'error');
-            }
+            window.handleApiResponse(result);
         } catch (err) {
             showResponseModal('Error adjusting stock: ' + (err.message || err), 'error');
         }

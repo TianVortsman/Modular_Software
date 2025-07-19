@@ -7,6 +7,7 @@ import * as SetupAPI from './setup-api.js';
 import { ProductAPI } from './product-api.js';
 import { openCreditReasonModal } from './setup-modals.js';
 import { loadCreditPolicyForm } from './setup-form.js';
+import { loadDocumentNumberingForm } from './setup-form.js';
 
 class InvoiceSetup {
     constructor() {
@@ -204,7 +205,8 @@ class InvoiceSetup {
             if (data.success) {
                 showResponseModal('Success', 'Company information saved successfully', 'success');
             } else {
-                showResponseModal('Error', data.message, 'error');
+                const errorMsg = data.error || data.message || 'Failed to save company information';
+                showResponseModal('Error', errorMsg, 'error');
             }
         } catch (error) {
             hideLoadingModal();
@@ -246,7 +248,8 @@ class InvoiceSetup {
             if (data.success) {
                 showResponseModal('Success', 'Numbering settings saved successfully', 'success');
             } else {
-                showResponseModal('Error', data.message, 'error');
+                const errorMsg = data.error || data.message || 'Failed to save numbering settings';
+                showResponseModal('Error', errorMsg, 'error');
             }
         } catch (error) {
             hideLoadingModal();
@@ -981,6 +984,15 @@ document.addEventListener('DOMContentLoaded', function() {
         creditTab.addEventListener('show', function() {
             loadCreditPolicyForm();
             if (window.loadCreditReasons) window.loadCreditReasons();
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const numberingTab = document.getElementById('numbering');
+    if (numberingTab) {
+        numberingTab.addEventListener('show', function() {
+            loadDocumentNumberingForm();
         });
     }
 });

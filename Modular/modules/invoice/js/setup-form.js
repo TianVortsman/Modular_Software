@@ -19,7 +19,8 @@ if (supplierForm) {
                     window.invoiceSetup.loadSuppliers();
                 }
             } else {
-                showResponseModal('Error', data.message, 'error');
+                const errorMsg = data.error || data.message || 'Failed to save supplier';
+                showResponseModal('Error', errorMsg, 'error');
             }
         } catch (error) {
             hideLoadingModal();
@@ -46,7 +47,8 @@ if (salesTargetForm) {
                     window.invoiceSetup.loadSalesTargets();
                 }
             } else {
-                showResponseModal('Error', data.message, 'error');
+                const errorMsg = data.error || data.message || 'Failed to save sales target';
+                showResponseModal('Error', errorMsg, 'error');
             }
         } catch (error) {
             hideLoadingModal();
@@ -69,7 +71,8 @@ if (creditPolicyForm) {
                 showResponseModal('Success', 'Credit policy saved', 'success');
                 loadCreditPolicyForm();
             } else {
-                showResponseModal('Error', data.message, 'error');
+                const errorMsg = data.error || data.message || 'Failed to save credit policy';
+                showResponseModal('Error', errorMsg, 'error');
             }
         } catch (error) {
             hideLoadingModal();
@@ -88,6 +91,48 @@ export async function loadCreditPolicyForm() {
     if (res.success && res.data) {
         creditPolicyForm.querySelector('[name="allow_credit_notes"]').checked = !!res.data.allow_credit_notes;
         creditPolicyForm.querySelector('[name="require_approval"]').checked = !!res.data.require_approval;
+    }
+}
+
+// --- Document Numbering Form Submit ---
+const documentNumberingForm = document.getElementById('document-numbering-form');
+if (documentNumberingForm) {
+    documentNumberingForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        try {
+            showLoadingModal('Saving document numbering...');
+            const formData = new FormData(documentNumberingForm);
+            const data = await SetupAPI.saveDocumentNumbering(formData);
+            if (data.success) {
+                await loadDocumentNumberingForm(true); // reload and show modal after
+            } else {
+                hideLoadingModal();
+                const errorMsg = data.error || data.message || 'Failed to save document numbering';
+                showResponseModal('Error', errorMsg, 'error');
+            }
+        } catch (error) {
+            hideLoadingModal();
+            showResponseModal('Error', 'Failed to save document numbering', 'error');
+        }
+    });
+}
+
+// --- Load and Autofill Document Numbering Form ---
+export async function loadDocumentNumberingForm(showSuccess = false) {
+    const form = document.getElementById('document-numbering-form');
+    if (!form) return;
+    showLoadingModal('Loading document numbering...');
+    const res = await SetupAPI.getDocumentNumbering();
+    hideLoadingModal();
+    if (res.success && res.data) {
+        for (const [key, value] of Object.entries(res.data)) {
+            const input = form.querySelector(`[name="${key}"]`);
+            if (input) input.value = value ?? '';
+        }
+        if (showSuccess) showResponseModal('Success', 'Document numbering saved', 'success');
+        console.log('Loaded document numbering values:', res.data);
+    } else if (showSuccess) {
+        showResponseModal('Error', res.message || 'Failed to load document numbering', 'error');
     }
 }
 
@@ -114,7 +159,8 @@ function attachCreditReasonFormHandler() {
                         window.invoiceSetup.loadCreditReasons();
                     }
                 } else {
-                    showResponseModal('Error', data.message, 'error');
+                    const errorMsg = data.error || data.message || 'Failed to save credit reason';
+                    showResponseModal('Error', errorMsg, 'error');
                 }
                 console.log('Credit reason API response:', data);
             } catch (error) {

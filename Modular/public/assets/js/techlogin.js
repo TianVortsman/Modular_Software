@@ -1,3 +1,4 @@
+import './helpers.js';
 // Modal Elements
 const clientDevicesModal = document.getElementById('client-devices-modal');
 const addCustomerModal = document.getElementById('add-customer-modal');
@@ -89,6 +90,7 @@ function loginAsTechnician() {
         return response.json();
     })
     .then(data => {
+        window.handleApiResponse(data);
         if (data.success) {
             // Redirect to the provided URL
             window.location.href = data.redirect;
@@ -251,7 +253,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Refresh users list
                     loadUsersData(currentCustomerId);
                 } else {
-                    showResponseModal(data.message || 'Failed to add user.', 'error');
+                    const errorMsg = data.error || data.message || 'Failed to add user.';
+                    showResponseModal(errorMsg, 'error');
                 }
             } catch (err) {
                 hideLoadingModal();
@@ -1163,3 +1166,30 @@ function saveModuleSettings() {
         showResponseModal('Error saving module settings: ' + err.message, 'error');
     });
 }
+
+window.loginAsTechnician = loginAsTechnician;
+window.fetchCustomerDetails = fetchCustomerDetails;
+window.loadModulesData = loadModulesData;
+window.openAddCustomerModal = openAddCustomerModal;
+window.closeAddCustomerModal = closeAddCustomerModal;
+window.openManageCustomerModal = openManageCustomerModal;
+window.closeManageCustomerModal = closeManageCustomerModal;
+window.openAddUserModal = openAddUserModal;
+window.closeAddUserModal = closeAddUserModal;
+window.switchTab = switchTab;
+window.goToPage = goToPage;
+window.goToFirstPage = goToFirstPage;
+window.goToPreviousPage = goToPreviousPage;
+window.goToNextPage = goToNextPage;
+window.goToLastPage = goToLastPage;
+window.editUser = editUser;
+window.resetPassword = resetPassword;
+window.deleteUser = deleteUser;
+window.editCustomer = editCustomer;
+window.deleteCustomer = deleteCustomer;
+window.toggleModule = toggleModule;
+window.saveModuleSettings = saveModuleSettings;
+window.startDeviceDiscovery = startDeviceDiscovery;
+window.exportCustomerData = exportCustomerData;
+window.searchCustomers = searchCustomers;
+window.closeCustomerModal = closeCustomerModal;
