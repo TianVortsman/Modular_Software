@@ -127,7 +127,20 @@ export async function loadDocumentNumberingForm(showSuccess = false) {
     if (res.success && res.data) {
         for (const [key, value] of Object.entries(res.data)) {
             const input = form.querySelector(`[name="${key}"]`);
-            if (input) input.value = value ?? '';
+            if (input) {
+                if (input.tagName === 'SELECT') {
+                    input.value = value ?? '';
+                    // If value is not found, select the first option
+                    if (![...input.options].some(opt => opt.value == value)) {
+                        input.selectedIndex = 0;
+                    }
+                } else if (input.type === 'number') {
+                    // Accept 0 as valid value
+                    input.value = (value !== null && value !== undefined) ? value : '';
+                } else {
+                    input.value = value ?? '';
+                }
+            }
         }
         if (showSuccess) showResponseModal('Success', 'Document numbering saved', 'success');
         console.log('Loaded document numbering values:', res.data);

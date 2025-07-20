@@ -110,8 +110,20 @@ import { ProductAPI } from './product-api.js';
         validateForm() {
             // Add any custom validation logic here if needed
             // Return true if valid, false otherwise
-            if (!this.form) return false;
-            return this.form.checkValidity();
+            if (!this.form) {
+                console.log('[ProductModalForm] No form found for validation');
+                return false;
+            }
+            const valid = this.form.checkValidity();
+            if (!valid) {
+                // Log which fields are invalid
+                Array.from(this.form.elements).forEach(el => {
+                    if (!el.checkValidity()) {
+                        console.log('[ProductModalForm] Invalid field:', el.name, el.value, el, el.validationMessage);
+                    }
+                });
+            }
+            return valid;
         }
         async populateSupplierDropdown(selectedId = null) {
             const supplierDropdown = this.supplierDropdown;

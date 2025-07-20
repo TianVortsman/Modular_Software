@@ -5,7 +5,7 @@
     <span class="universal-product-modal-close">&times;</span>
     <h2 class="universal-product-modal-title" id="universalProductModalTitle">Product Details</h2>
 
-    <form class="universal-product-modal-form" id="universalProductForm" enctype="multipart/form-data">
+    <form class="universal-product-modal-form" id="universalProductForm" enctype="multipart/form-data" novalidate>
       <!-- Hidden fields for internal reference -->
       <input type="hidden" name="product_id" id="universalItemId">
       <!-- <input type="hidden" name="product_type" id="universalItemType" value="products"> -->
@@ -261,6 +261,20 @@
                   <span class="stock-notes"></span>
                 </div>
               </template>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Buttons -->
+      <div class="universal-product-buttons">
+        <button type="button" class="btn-universal-product-cancel" id="universalProductCancelBtn">Cancel</button>
+        <button type="submit" class="btn-universal-product-save" id="universalProductSaveBtn">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
               <!-- Manual Stock Adjustment Modal (hidden by default) -->
               <div class="adjust-stock-modal" id="adjustStockModal" style="display:none;">
                 <div class="adjust-stock-modal-content">
@@ -291,16 +305,3 @@
                 </div>
               </div>
               <!-- JS will handle opening, submitting, and closing the adjustment modal -->
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Submit Buttons -->
-      <div class="universal-product-buttons">
-        <button type="button" class="btn-universal-product-cancel" id="universalProductCancelBtn">Cancel</button>
-        <button type="submit" class="btn-universal-product-save" id="universalProductSaveBtn">Save</button>
-      </div>
-    </form>
-  </div>
-</div>

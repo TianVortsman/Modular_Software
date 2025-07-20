@@ -4,8 +4,8 @@
         <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header">
-                <span class="close" id="closeCompanyModal">&times;</span>
                 <h2>Edit Company</h2>
+                <span class="close" id="closeCompanyModal">&times;</span>
             </div>
 
             <!-- Modal Tabs -->
@@ -157,8 +157,8 @@
         <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header">
-                <span class="close" id="closeCustomerModal">&times;</span>
                 <h2>Edit Customer</h2>
+                <span class="close" id="closeCustomerModal">&times;</span>
             </div>
             
             <!-- Modal Tabs -->

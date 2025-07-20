@@ -432,7 +432,7 @@ function handleRemoveRowBtnClick(e) {
     }
 }
 
-// --- Product Search for Line Items ---
+// --- Product Search for Line Items with Keyboard Navigation ---
 function searchItem(inputElement) {
     const searchTerm = inputElement.value.trim();
     const row = inputElement.closest('tr');
@@ -440,6 +440,13 @@ function searchItem(inputElement) {
     const resultsContainer2 = row.querySelector('.search-dropdown2');
     const isDescription = inputElement.classList.contains('description');
     const resultsContainer = isDescription ? resultsContainer2 : resultsContainer1;
+
+    // Remove any previous keyboard event handler to avoid stacking
+    if (inputElement._keydownHandler) {
+        inputElement.removeEventListener('keydown', inputElement._keydownHandler);
+        inputElement._keydownHandler = null;
+    }
+
     if (searchTerm.length < 2) {
         resultsContainer.innerHTML = '';
         resultsContainer.style.display = 'none';
@@ -455,6 +462,8 @@ function searchItem(inputElement) {
                 const li = document.createElement('li');
                 li.classList.add('search-result-item');
                 li.textContent = isDescription ? result.product_description : (result.sku || result.product_name);
+                li.tabIndex = -1; // allow focus for accessibility
+                li.dataset.idx = idx;
                 li.addEventListener('click', () => {
                     autofillRow(row, {
                         item_code: result.sku || '',
@@ -468,12 +477,57 @@ function searchItem(inputElement) {
                     const next = row.querySelector('.quantity');
                     if (next && typeof next.focus === 'function') next.focus();
                 });
-                if (idx === 0) li.classList.add('highlight'); // highlight top result
                 ul.appendChild(li);
             });
             resultsContainer.appendChild(ul);
-            inputElement.onkeydown = function (event) {
-                if (event.key === 'Tab' && results.length > 0) {
+
+            // Highlight the first result by default
+            let currentIdx = 0;
+            const items = ul.querySelectorAll('.search-result-item');
+            if (items.length > 0) items[0].classList.add('highlight');
+
+            // Keyboard navigation handler
+            const keydownHandler = function(event) {
+                if (!resultsContainer || resultsContainer.style.display !== 'block') return;
+                const items = ul.querySelectorAll('.search-result-item');
+                if (!items.length) return;
+
+                // Find the currently highlighted index
+                let highlightIdx = Array.from(items).findIndex(li => li.classList.contains('highlight'));
+                if (highlightIdx === -1) highlightIdx = 0;
+
+                if (event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    items[highlightIdx].classList.remove('highlight');
+                    highlightIdx = (highlightIdx + 1) % items.length;
+                    items[highlightIdx].classList.add('highlight');
+                    items[highlightIdx].scrollIntoView({ block: 'nearest' });
+                } else if (event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    items[highlightIdx].classList.remove('highlight');
+                    highlightIdx = (highlightIdx - 1 + items.length) % items.length;
+                    items[highlightIdx].classList.add('highlight');
+                    items[highlightIdx].scrollIntoView({ block: 'nearest' });
+                } else if (event.key === 'Enter') {
+                    event.preventDefault();
+                    const selected = items[highlightIdx];
+                    if (selected) {
+                        const idx = parseInt(selected.dataset.idx, 10);
+                        const result = results[idx];
+                        autofillRow(row, {
+                            item_code: result.sku || '',
+                            product_description: result.product_description || '',
+                            unit_price: result.product_price || '',
+                            product_id: result.product_id,
+                            tax_percentage: result.tax_rate || 0
+                        });
+                        resultsContainer.style.display = 'none';
+                        // Move focus to next logical field (quantity)
+                        const next = row.querySelector('.quantity');
+                        if (next && typeof next.focus === 'function') next.focus();
+                    }
+                } else if (event.key === 'Tab' && results.length > 0) {
+                    // Tab selects the first result
                     event.preventDefault();
                     const result = results[0];
                     autofillRow(row, {
@@ -489,11 +543,15 @@ function searchItem(inputElement) {
                     if (next && typeof next.focus === 'function') next.focus();
                 }
             };
+
+            inputElement.addEventListener('keydown', keydownHandler);
+            inputElement._keydownHandler = keydownHandler;
         } else {
             resultsContainer.innerHTML = "<p>No results found.</p>";
         }
     });
 }
+
 function autofillRow(row, result) {
     row.querySelector('.item-code').value = result.item_code;
     row.querySelector('.description').value = result.product_description;

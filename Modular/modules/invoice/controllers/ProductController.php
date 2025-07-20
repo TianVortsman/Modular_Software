@@ -926,7 +926,8 @@ function save_product_category(array $data): array {
     $desc = trim($data['category_description'] ?? '');
     $type_id = $data['product_type_id'] ?? null;
     if ($name === '' || !$type_id) {
-        return ['success' => false, 'message' => 'Category name and type are required'];
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
+        return ['success' => false, 'message' => get_friendly_error('Category name and type are required')];
     }
     try {
         if ($category_id) {
@@ -953,8 +954,9 @@ function save_product_category(array $data): array {
             return ['success' => true, 'message' => 'Category added', 'data' => ['category_id' => $new_id]];
         }
     } catch (Throwable $e) {
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
         error_log('[save_product_category] ' . $e->getMessage());
-        return ['success' => false, 'message' => 'Failed to save category'];
+        return ['success' => false, 'message' => get_friendly_error($e->getMessage())];
     }
 }
 
@@ -966,7 +968,8 @@ function save_product_subcategory(array $data): array {
     $desc = trim($data['subcategory_description'] ?? '');
     $category_id = $data['category_id'] ?? null;
     if ($name === '' || !$category_id) {
-        return ['success' => false, 'message' => 'Subcategory name and category are required'];
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
+        return ['success' => false, 'message' => get_friendly_error('Subcategory name and category are required')];
     }
     try {
         if ($subcategory_id) {
@@ -993,8 +996,9 @@ function save_product_subcategory(array $data): array {
             return ['success' => true, 'message' => 'Subcategory added', 'data' => ['subcategory_id' => $new_id]];
         }
     } catch (Throwable $e) {
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
         error_log('[save_product_subcategory] ' . $e->getMessage());
-        return ['success' => false, 'message' => 'Failed to save subcategory'];
+        return ['success' => false, 'message' => get_friendly_error($e->getMessage())];
     }
 }
 
@@ -1085,6 +1089,7 @@ function get_product_suppliers_and_stock(int $productId): array {
                 'supplier_contact' => $supplier['supplier_contact'],
                 'supplier_email' => $supplier['supplier_email'],
                 'website_url' => $supplier['website_url'],
+                'product_supplier_id' => $supplier['product_supplier_id'],
                 'total_stock' => $total_stock,
                 'last_restock' => $last_restock,
                 'last_price' => $last_price,
@@ -1107,8 +1112,32 @@ function get_product_suppliers_and_stock(int $productId): array {
 }
 
 // --- API: Adjust product stock (manual adjustment, admin only) ---
-function adjust_product_stock($product_supplier_id, $quantity, $cost_per_unit = null, $notes = null): array {
+function adjust_product_stock($product_supplier_id, $quantity, $cost_per_unit = null, $notes = null, $user_id = null): array {
     global $conn;
+    require_once __DIR__ . '/../../../src/Helpers/helpers.php';
+    // Permission check
+    if (!check_user_permission($user_id, 'update_product')) {
+        $msg = get_friendly_error('Permission denied for user to adjust stock');
+        error_log('[adjust_product_stock] ' . $msg);
+        log_user_action($user_id, 'adjust_product_stock', $product_supplier_id, $msg);
+        return [
+            'success' => false,
+            'message' => $msg,
+            'data' => null,
+            'error_code' => 'PERMISSION_DENIED'
+        ];
+    }
+    // Validate input
+    if (!$product_supplier_id || !is_numeric($quantity) || $quantity == 0) {
+        $msg = get_friendly_error('Invalid stock adjustment: Quantity must not be zero. Please enter a positive or negative value to increase or decrease stock.');
+        error_log('[adjust_product_stock] ' . $msg);
+        return [
+            'success' => false,
+            'message' => $msg,
+            'data' => null,
+            'error_code' => 'VALIDATION_ERROR'
+        ];
+    }
     try {
         $sql = "INSERT INTO inventory.product_stock_entries (product_supplier_id, quantity, remaining_quantity, cost_per_unit, notes) VALUES (:psid, :qty, :rem, :cost, :notes)";
         $stmt = $conn->prepare($sql);
@@ -1119,16 +1148,20 @@ function adjust_product_stock($product_supplier_id, $quantity, $cost_per_unit = 
             ':cost' => $cost_per_unit,
             ':notes' => $notes
         ]);
+        log_user_action($user_id, 'adjust_product_stock', $product_supplier_id, json_encode(['quantity' => $quantity, 'cost_per_unit' => $cost_per_unit, 'notes' => $notes]));
         return [
             'success' => true,
-            'message' => 'Stock adjustment recorded.'
+            'message' => 'Stock adjustment recorded.',
+            'data' => null
         ];
     } catch (\Throwable $e) {
-        error_log('[adjust_product_stock] ' . $e->getMessage());
+        $msg = get_friendly_error($e->getMessage());
+        error_log('[adjust_product_stock] ' . $msg);
         return [
             'success' => false,
-            'message' => 'Failed to adjust stock.',
-            'error' => $e->getMessage()
+            'message' => $msg,
+            'data' => null,
+            'error_code' => 'STOCK_ADJUST_ERROR'
         ];
     }
 }

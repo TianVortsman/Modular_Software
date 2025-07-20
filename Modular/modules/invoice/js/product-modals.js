@@ -1,4 +1,5 @@
 import { ProductAPI } from './product-api.js';
+import { makeModalDraggable } from '../../../public/assets/js/helpers.js';
 window.ProductAPI = ProductAPI;
 
 // --- ProductModalUI: Handles modal open/close, tab switching, and modal-specific UI logic ---
@@ -100,6 +101,13 @@ class ProductModalUI {
         if (mode === 'add' && this.formManager.form) {
             const pidFields = this.formManager.form.querySelectorAll('input[name="product_id"]');
             pidFields.forEach(f => f.remove());
+        }
+        // --- Clear suppliers and stock history tabs in add mode ---
+        if (mode === 'add') {
+            const suppliersTab = this.modal.querySelector('#product-suppliers-list');
+            if (suppliersTab) suppliersTab.innerHTML = '';
+            const stockHistoryTab = this.modal.querySelector('#product-stock-history-list');
+            if (stockHistoryTab) stockHistoryTab.innerHTML = '';
         }
         // Always populate type, suppliers, and categories before showing modal
         await this.formManager.populateTypeDropdown(typeId);
@@ -376,20 +384,24 @@ class ProductModalUI {
                 container.innerHTML = '<div class="empty-state">No stock history for this product.</div>';
                 return;
             }
-            const template = document.getElementById('product-stock-history-row-template');
             // Header row
             const header = document.createElement('div');
             header.className = 'product-stock-history-row product-stock-history-header';
             header.innerHTML = '<span>Supplier</span><span>Qty</span><span>Rem</span><span>Cost</span><span>Date</span><span>Notes</span>';
             container.appendChild(header);
-            allEntries.forEach(entry => {
-                const row = template.content.cloneNode(true);
-                row.querySelector('.stock-supplier-name').textContent = entry.supplier_name;
-                row.querySelector('.stock-quantity').textContent = entry.quantity;
-                row.querySelector('.stock-remaining').textContent = entry.remaining_quantity;
-                row.querySelector('.stock-cost').textContent = `R${entry.cost_per_unit}`;
-                row.querySelector('.stock-date').textContent = entry.received_at;
-                row.querySelector('.stock-notes').textContent = entry.notes;
+            allEntries.forEach((entry, idx) => {
+                const row = document.createElement('div');
+                row.className = 'product-stock-history-row';
+                // Alternate row styling for readability
+                if (idx % 2 === 1) row.classList.add('alt-row');
+                row.innerHTML = `
+                    <span class="stock-supplier-name">${entry.supplier_name}</span>
+                    <span class="stock-quantity">${entry.quantity}</span>
+                    <span class="stock-remaining">${entry.remaining_quantity}</span>
+                    <span class="stock-cost">R${entry.cost_per_unit}</span>
+                    <span class="stock-date">${entry.received_at}</span>
+                    <span class="stock-notes">${entry.notes}</span>
+                `;
                 container.appendChild(row);
             });
         } catch (e) {
@@ -421,7 +433,7 @@ class ProductModalUI {
         } catch (e) {
             supplierSelect.innerHTML = '<option value="">Error loading suppliers</option>';
         }
-        adjustModal.style.display = 'block';
+        adjustModal.style.display = 'flex';
     }
     async handleAdjustStockSubmit(e) {
         e.preventDefault();
@@ -440,16 +452,14 @@ class ProductModalUI {
         let product_supplier_id = null;
         if (this.lastSuppliersForStock && Array.isArray(this.lastSuppliersForStock)) {
             const found = this.lastSuppliersForStock.find(s => String(s.supplier_id) === String(supplier_id));
-            if (found && found.fifo_entries && found.fifo_entries[0] && found.fifo_entries[0].product_supplier_id) {
-                product_supplier_id = found.fifo_entries[0].product_supplier_id;
+            if (found && found.product_supplier_id) {
+                product_supplier_id = found.product_supplier_id;
             }
         }
-        // If not found, fallback to API (to be implemented)
         if (!product_supplier_id) {
             showResponseModal('Could not resolve product-supplier link.', 'error');
             return;
         }
-        // Send adjustment to API (endpoint to be implemented)
         try {
             const res = await fetch('/modules/invoice/api/products.php?action=adjust_stock', {
                 method: 'POST',
@@ -463,7 +473,15 @@ class ProductModalUI {
                 })
             });
             const result = await res.json();
-            window.handleApiResponse(result);
+            if (result.success) {
+                showResponseModal(result.message || 'Stock adjustment successful.', 'success');
+                adjustModal.style.display = 'none';
+                // Refresh stock history tab
+                this.populateStockHistoryTab(this.productId);
+            } else {
+                // Use AI-friendly error message from backend
+                showResponseModal(result.message || 'Failed to adjust stock.', 'error');
+            }
         } catch (err) {
             showResponseModal('Error adjusting stock: ' + (err.message || err), 'error');
         }
@@ -527,6 +545,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modal) {
         window.productModalUI = new ProductModalUI(modal);
     }
+    // Make only the modal content boxes draggable
+    makeModalDraggable('.universal-product-modal-content', '.universal-product-modal-title');
+    makeModalDraggable('.adjust-stock-modal-content', '.adjust-stock-modal-content h4');
 });
 
 // Export for use in other files

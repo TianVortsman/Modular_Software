@@ -43,19 +43,23 @@ function searchClient(inputElement) {
 }
 
 function fillClientFields(item) {
-    document.getElementById('client-id').value = item.client_id || '';
-    document.getElementById('client-name').value = item.client_name || '';
-    document.getElementById('client-email').value = item.client_email || '';
-    document.getElementById('client-phone').value = item.client_cell || item.client_tell || '';
-    document.getElementById('client-vat-number').value = item.vat_number || '';
-    document.getElementById('client-reg-number').value = item.registration_number || '';
-    document.getElementById('client-address-1').value = item.address_line1 || '';
-    document.getElementById('client-address-2').value = item.address_line2 || '';
-    document.getElementById('client-city').value = item.city || '';
-    document.getElementById('client-suburb').value = item.suburb || '';
-    document.getElementById('client-province').value = item.province || '';
-    document.getElementById('client-country').value = item.country || '';
-    document.getElementById('client-postal-code').value = item.postal_code || '';
+    const set = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.value = value || '';
+    };
+    set('client-id', item.client_id);
+    set('client-name', item.client_name);
+    set('client-email', item.client_email);
+    set('client-phone', item.client_cell || item.client_tell);
+    set('client-vat-number', item.vat_number);
+    set('client-reg-number', item.registration_number);
+    set('client-address-1', item.address_line1);
+    set('client-address-2', item.address_line2);
+    set('client-city', item.city);
+    set('client-suburb', item.suburb);
+    set('client-province', item.province);
+    set('client-country', item.country);
+    set('client-postal-code', item.postal_code);
 }
 
 // --- Add Tab key and blur support for client search ---
@@ -306,6 +310,119 @@ function getDocumentFormData() {
         tax_amount,
         total_amount
     };
+}
+
+function searchItem(inputElement) {
+    const searchTerm = inputElement.value.trim();
+    const row = inputElement.closest('tr');
+    const resultsContainer1 = row.querySelector('.search-dropdown1');
+    const resultsContainer2 = row.querySelector('.search-dropdown2');
+    const isDescription = inputElement.classList.contains('description');
+    const resultsContainer = isDescription ? resultsContainer2 : resultsContainer1;
+
+    // Remove any previous keyboard event handler to avoid stacking
+    if (inputElement._keydownHandler) {
+        inputElement.removeEventListener('keydown', inputElement._keydownHandler);
+        inputElement._keydownHandler = null;
+    }
+
+    if (searchTerm.length < 2) {
+        resultsContainer.innerHTML = '';
+        resultsContainer.style.display = 'none';
+        return;
+    }
+    resultsContainer.style.display = 'block';
+    searchProducts(searchTerm, isDescription).then(results => {
+        resultsContainer.innerHTML = '';
+        if (Array.isArray(results) && results.length > 0) {
+            const ul = document.createElement('ul');
+            ul.classList.add('search-results-list');
+            results.forEach((item, idx) => {
+                const li = document.createElement('li');
+                li.classList.add('search-result-product');
+                li.textContent = item.product_code + ' - ' + item.product_description;
+                li.tabIndex = -1;
+                li.dataset.idx = idx;
+                li.addEventListener('mousedown', () => {
+                    autofillProductRow(row, item);
+                    resultsContainer.style.display = 'none';
+                    // Move focus to next logical field (quantity)
+                    const next = row.querySelector('.quantity');
+                    if (next && typeof next.focus === 'function') next.focus();
+                });
+                ul.appendChild(li);
+            });
+            resultsContainer.appendChild(ul);
+
+            // Highlight the first result by default
+            let currentIdx = 0;
+            const items = ul.querySelectorAll('.search-result-product');
+            if (items.length > 0) items[0].classList.add('highlight');
+
+            // Keyboard navigation handler
+            const keydownHandler = function(event) {
+                if (!resultsContainer || resultsContainer.style.display !== 'block') return;
+                const items = ul.querySelectorAll('.search-result-product');
+                if (!items.length) return;
+
+                // Find the currently highlighted index
+                let highlightIdx = Array.from(items).findIndex(li => li.classList.contains('highlight'));
+                if (highlightIdx === -1) highlightIdx = 0;
+
+                if (event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    items[highlightIdx].classList.remove('highlight');
+                    highlightIdx = (highlightIdx + 1) % items.length;
+                    items[highlightIdx].classList.add('highlight');
+                    items[highlightIdx].scrollIntoView({ block: 'nearest' });
+                } else if (event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    items[highlightIdx].classList.remove('highlight');
+                    highlightIdx = (highlightIdx - 1 + items.length) % items.length;
+                    items[highlightIdx].classList.add('highlight');
+                    items[highlightIdx].scrollIntoView({ block: 'nearest' });
+                } else if (event.key === 'Enter') {
+                    event.preventDefault();
+                    const selected = items[highlightIdx];
+                    if (selected) {
+                        const idx = parseInt(selected.dataset.idx, 10);
+                        const result = results[idx];
+                        autofillProductRow(row, result);
+                        resultsContainer.style.display = 'none';
+                        // Move focus to next logical field (quantity)
+                        const next = row.querySelector('.quantity');
+                        if (next && typeof next.focus === 'function') next.focus();
+                    }
+                } else if (event.key === 'Tab' && results.length > 0) {
+                    // Tab selects the first result
+                    event.preventDefault();
+                    const result = results[0];
+                    autofillProductRow(row, result);
+                    resultsContainer.style.display = 'none';
+                    // Move focus to next logical field (quantity)
+                    const next = row.querySelector('.quantity');
+                    if (next && typeof next.focus === 'function') next.focus();
+                } else if (event.key === 'Escape') {
+                    resultsContainer.style.display = 'none';
+                }
+            };
+
+            inputElement.addEventListener('keydown', keydownHandler);
+            inputElement._keydownHandler = keydownHandler;
+        } else {
+            resultsContainer.innerHTML = "<p>No results found.</p>";
+        }
+    });
+}
+
+function autofillProductRow(row, item) {
+    row.querySelector('.product-id').value = item.product_id;
+    row.querySelector('.item-code').value = item.product_code;
+    row.querySelector('.description').value = item.product_description;
+    row.querySelector('.unit-price').value = item.unit_price;
+    // Optionally fill other fields
+    calculateRowTotal(row);
+    updateTotals();
 }
 
 export { searchClient, searchSalesperson, setDocumentFormData, getDocumentFormData };

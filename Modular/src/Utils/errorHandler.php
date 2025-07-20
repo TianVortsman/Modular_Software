@@ -5,18 +5,23 @@ function generateErrorCode() {
     return strtoupper(substr(md5(uniqid('', true)), 0, 6)); // e.g. A1B2C3
 }
 
-function getFriendlyMessageFromAI($error) {
+function getFriendlyMessageFromAI($error, $formData = null) {
     $config = require __DIR__ . '/../Config/app.php';
     $endpoint = $config['AI_ENDPOINT'];
 
     // Use the model name from LM Studio or fallback
     $model = getenv('AI_MODEL') ?: 'nous-hermes-2-mistral-7b-dpo';
 
+    $userContent = $error;
+    if ($formData) {
+        $userContent .= "\n\nForm data submitted: " . json_encode($formData);
+    }
+
     $data = [
         "model" => $model,
         "messages" => [
             ["role" => "system", "content" => "You are a helpful assistant that rewrites technical errors into short, friendly messages for users. If the error is something the user can fix (like invalid input), explain how to fix it. If the error is not fixable by the user (like a missing database table, server error, or code bug), and the environment is production, do NOT show technical details—just say: 'Something went wrong. Please contact support.' Always keep your response concise (max 1-2 sentences)."],
-            ["role" => "user", "content" => $error]
+            ["role" => "user", "content" => $userContent]
         ],
         "temperature" => 0.5,
         "max_tokens" => 256,
@@ -33,7 +38,17 @@ function getFriendlyMessageFromAI($error) {
     ];
 
     $context  = stream_context_create($options);
+
+    // --- Start timing ---
+    $start = microtime(true);
+
     $result = @file_get_contents($endpoint, false, $context);
+
+    // --- End timing ---
+    $end = microtime(true);
+    $duration = $end - $start;
+    error_log("[AI Error Handler] Time taken: " . round($duration, 3) . " seconds");
+
     if (!$result) return null;
 
     $json = json_decode($result, true);

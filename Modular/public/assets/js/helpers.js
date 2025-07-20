@@ -84,3 +84,47 @@ window.onerror = async function(message, source, lineno, colno, error) {
     }
 };
 
+export function makeModalDraggable(modalSelector, dragHandleSelector) {
+    const modal = document.querySelector(modalSelector);
+    if (!modal) return console.warn(`Modal not found: ${modalSelector}`);
+  
+    const dragHandle = modal.querySelector(dragHandleSelector);
+    if (!dragHandle) return console.warn(`Drag handle not found: ${dragHandleSelector}`);
+  
+    let isDragging = false;
+    let startX, startY;
+    let initialLeft, initialTop;
+  
+    dragHandle.style.cursor = 'move';
+  
+    dragHandle.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+  
+      const rect = modal.getBoundingClientRect();
+      initialLeft = rect.left;
+      initialTop = rect.top;
+  
+      document.body.style.userSelect = 'none';
+    });
+  
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+  
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+  
+      modal.style.position = 'fixed';
+      modal.style.left = initialLeft + dx + 'px';
+      modal.style.top = initialTop + dy + 'px';
+    });
+  
+    document.addEventListener('mouseup', () => {
+      if (isDragging) {
+        isDragging = false;
+        document.body.style.userSelect = '';
+      }
+    });
+}
+  
