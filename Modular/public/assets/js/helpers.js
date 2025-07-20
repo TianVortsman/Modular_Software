@@ -46,12 +46,32 @@ export function buildQueryParams(base = {}, filters = {}, search = '', paginatio
 }
 
 /**
+ * Fetch with timeout helper
+ */
+export async function fetchWithTimeout(resource, options = {}, timeout = 5000) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    try {
+        const response = await fetch(resource, { ...options, signal: controller.signal });
+        clearTimeout(id);
+        return response;
+    } catch (error) {
+        clearTimeout(id);
+        throw error;
+    }
+}
+
+/**
  * Centralized API response handler for fetch/AJAX calls
  * Usage: .then(handleApiResponse)
  * Shows errors in ResponseModal if present, returns data on success
  */
 function handleApiResponse(data) {
     window.lastApiRawResponse = data;
+    if (!data) {
+        showResponseModal('No response from server. Please check your connection or try again later.', 'error');
+        throw new Error('No response from server.');
+    }
     if (data && (data.success === false || data.status >= 400)) {
         // Always prefer AI-friendly message
         const msg = data.message || data.error || 'An unknown error occurred.';
