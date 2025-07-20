@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/Utils/errorHandler.php';
 require_once __DIR__ . '/Controllers/AuthController.php';
 
 use App\Controllers\AuthController;

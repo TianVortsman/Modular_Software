@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../../src/Utils/errorHandler.php';
 // Start session before any output
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -9,12 +10,9 @@ if (!ini_get('date.timezone')) {
     date_default_timezone_set('UTC');
 }
 
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 require_once __DIR__ . '/../../../src/Core/Database/ClientDatabase.php';
 require_once __DIR__ . '/../controllers/ProductController.php';
+require_once __DIR__ . '/../controllers/SettingsController.php';
 
 use App\Core\Database\ClientDatabase;
 use function App\modules\invoice\controllers\get_product_categories;
@@ -124,6 +122,80 @@ switch ($action) {
         } else {
             $result = ['success' => false, 'message' => 'Missing contact_person_id'];
         }
+        echo json_encode($result);
+        break;
+    case 'getCreditReasons':
+        $result = App\modules\invoice\controllers\list_credit_reasons();
+        echo json_encode($result);
+        break;
+    case 'addCreditReason':
+        $data = $_POST;
+        $result = App\modules\invoice\controllers\add_credit_reason($data);
+        echo json_encode($result);
+        break;
+    case 'updateCreditReason':
+        $id = $_POST['credit_reason_id'] ?? null;
+        $data = $_POST;
+        if ($id) {
+            $result = App\modules\invoice\controllers\update_credit_reason((int)$id, $data);
+        } else {
+            $result = ['success' => false, 'message' => 'Missing credit_reason_id'];
+        }
+        echo json_encode($result);
+        break;
+    case 'deleteCreditReason':
+        $id = $_POST['credit_reason_id'] ?? null;
+        if ($id) {
+            $result = App\modules\invoice\controllers\delete_credit_reason((int)$id);
+        } else {
+            $result = ['success' => false, 'message' => 'Missing credit_reason_id'];
+        }
+        echo json_encode($result);
+        break;
+    case 'getPaymentTerms':
+        $result = App\modules\invoice\controllers\list_payment_terms();
+        echo json_encode($result);
+        break;
+    case 'addPaymentTerm':
+        $data = $_POST;
+        $result = App\modules\invoice\controllers\add_payment_term($data);
+        echo json_encode($result);
+        break;
+    case 'updatePaymentTerm':
+        $id = $_POST['payment_term_id'] ?? null;
+        $data = $_POST;
+        if ($id) {
+            $result = App\modules\invoice\controllers\update_payment_term((int)$id, $data);
+        } else {
+            $result = ['success' => false, 'message' => 'Missing payment_term_id'];
+        }
+        echo json_encode($result);
+        break;
+    case 'deletePaymentTerm':
+        $id = $_POST['payment_term_id'] ?? null;
+        if ($id) {
+            $result = App\modules\invoice\controllers\delete_payment_term((int)$id);
+        } else {
+            $result = ['success' => false, 'message' => 'Missing payment_term_id'];
+        }
+        echo json_encode($result);
+        break;
+    case 'getCreditPolicy':
+        $result = App\modules\invoice\controllers\get_credit_policy();
+        echo json_encode($result);
+        break;
+    case 'saveCreditPolicy':
+        $data = $_POST;
+        $result = App\modules\invoice\controllers\save_credit_policy($data);
+        echo json_encode($result);
+        break;
+    case 'getDocumentNumbering':
+        $result = App\modules\invoice\controllers\get_document_numbering();
+        echo json_encode($result);
+        break;
+    case 'saveDocumentNumbering':
+        $data = $_POST;
+        $result = App\modules\invoice\controllers\save_document_numbering($data);
         echo json_encode($result);
         break;
     // Add other actions as needed...

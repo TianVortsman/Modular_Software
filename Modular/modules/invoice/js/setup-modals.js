@@ -90,6 +90,37 @@ export async function loadSalesTargetData(targetId) {
     }
 }
 
+// --- Credit Reason Modal Logic ---
+const creditReasonModal = document.getElementById('creditReasonModal');
+const creditReasonForm = document.getElementById('creditReasonForm');
+
+export function openCreditReasonModal(mode = 'add', data = null) {
+    if (!creditReasonModal || !creditReasonForm) return;
+    creditReasonModal.setAttribute('data-mode', mode);
+    creditReasonForm.reset();
+    creditReasonForm.querySelector('[name="credit_reason_id"]').value = '';
+    creditReasonForm.querySelector('[name="reason"]').value = '';
+    if (mode === 'edit' && data) {
+        creditReasonForm.querySelector('[name="credit_reason_id"]').value = data.credit_reason_id;
+        creditReasonForm.querySelector('[name="reason"]').value = data.reason;
+    }
+    creditReasonModal.style.display = 'block';
+}
+
+export function closeCreditReasonModal() {
+    if (!creditReasonModal) return;
+    creditReasonForm.reset();
+    creditReasonModal.removeAttribute('data-mode');
+    creditReasonModal.style.display = 'none';
+    // No event object here; nothing to prevent. Remove this line.
+}
+
+// Attach close event if modal has a close button
+const closeBtn = creditReasonModal?.querySelector('.modal-close-btn');
+if (closeBtn) {
+    closeBtn.addEventListener('click', closeCreditReasonModal);
+}
+
 // --- Modal Close on Outside Click ---
 document.addEventListener('click', function(event) {
     const supplierModal = document.getElementById('supplierModal');

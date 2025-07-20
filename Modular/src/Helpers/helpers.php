@@ -113,3 +113,14 @@ function log_user_action($user_id, $action, $related_id = null, $details = null,
         error_log("log_user_action error: " . $e->getMessage());
     }
 }
+
+/**
+ * Returns a user-friendly error message using the AI error handler
+ * @param string $error
+ * @return string
+ */
+function get_friendly_error($error) {
+    require_once __DIR__ . '/../Utils/errorHandler.php';
+    $aiMessage = getFriendlyMessageFromAI($error);
+    return $aiMessage ?: 'Please contact Modular Software Support.';
+}

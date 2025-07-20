@@ -94,6 +94,7 @@
 
 <script>
 function showResponseModal(message, type = 'info', persistent = false, confirm = false) {
+    console.log('showResponseModal called with:', message, type);
     const modal = document.getElementById('modalResponse');
     const title = document.getElementById('modalResponseTitle');
     const msg = document.getElementById('modalResponseMessage');
@@ -127,8 +128,8 @@ function showResponseModal(message, type = 'info', persistent = false, confirm =
                 if (typeof window._modalConfirmResolve === 'function') window._modalConfirmResolve(false);
             };
         } else {
-            // Auto-close after 1.5s, or close on click outside
-            setTimeout(() => { modal.classList.add('hidden'); }, persistent ? 2000 : 1500);
+            // Auto-close after 2.5s, or close on click outside
+            setTimeout(() => { modal.classList.add('hidden'); }, persistent ? 3000 : 2500);
         }
     }
     // Click outside to close

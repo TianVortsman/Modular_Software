@@ -1,0 +1,396 @@
+[20-Jul-2025 16:51:38 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 16:51:38 UTC] Received request - Method: GET, Action: list_types
+[20-Jul-2025 16:51:38 UTC] POST data: Array
+(
+)
+
+[20-Jul-2025 16:51:38 UTC] FILES data: Array
+(
+)
+
+[20-Jul-2025 16:51:38 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:51:38 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:51:38 UTC] Processing action: list_types with method: GET
+[20-Jul-2025 16:51:38 UTC] Request processed successfully for action: list_types
+[20-Jul-2025 16:51:38 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:51:38 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:51:38 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:51:38 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:51:39 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 16:51:39 UTC] Received request - Method: GET, Action: list_types
+[20-Jul-2025 16:51:39 UTC] POST data: Array
+(
+)
+
+[20-Jul-2025 16:51:39 UTC] FILES data: Array
+(
+)
+
+[20-Jul-2025 16:51:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:51:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:51:39 UTC] Processing action: list_types with method: GET
+[20-Jul-2025 16:51:39 UTC] Request processed successfully for action: list_types
+[20-Jul-2025 16:51:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:51:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:51:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:51:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:51:39 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 16:51:39 UTC] Received request - Method: GET, Action: list_types
+[20-Jul-2025 16:51:39 UTC] POST data: Array
+(
+)
+
+[20-Jul-2025 16:51:39 UTC] FILES data: Array
+(
+)
+
+[20-Jul-2025 16:51:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:51:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:51:39 UTC] Processing action: list_types with method: GET
+[20-Jul-2025 16:51:39 UTC] Request processed successfully for action: list_types
+[20-Jul-2025 16:51:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:51:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:51:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:51:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:52:38 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 16:52:38 UTC] Received request - Method: GET, Action: list_types
+[20-Jul-2025 16:52:38 UTC] POST data: Array
+(
+)
+
+[20-Jul-2025 16:52:38 UTC] FILES data: Array
+(
+)
+
+[20-Jul-2025 16:52:38 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:52:38 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:52:38 UTC] Processing action: list_types with method: GET
+[20-Jul-2025 16:52:38 UTC] Request processed successfully for action: list_types
+[20-Jul-2025 16:52:38 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:52:38 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:52:38 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:52:38 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:52:38 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 16:52:38 UTC] Received request - Method: GET, Action: list_types
+[20-Jul-2025 16:52:38 UTC] POST data: Array
+(
+)
+
+[20-Jul-2025 16:52:38 UTC] FILES data: Array
+(
+)
+
+[20-Jul-2025 16:52:38 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:52:38 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:52:38 UTC] Processing action: list_types with method: GET
+[20-Jul-2025 16:52:38 UTC] Request processed successfully for action: list_types
+[20-Jul-2025 16:52:38 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:52:38 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:52:38 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:52:38 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:52:38 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 16:52:38 UTC] Received request - Method: GET, Action: list_types
+[20-Jul-2025 16:52:38 UTC] POST data: Array
+(
+)
+
+[20-Jul-2025 16:52:38 UTC] FILES data: Array
+(
+)
+
+[20-Jul-2025 16:52:38 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:52:38 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:52:38 UTC] Processing action: list_types with method: GET
+[20-Jul-2025 16:52:38 UTC] Request processed successfully for action: list_types
+[20-Jul-2025 16:52:38 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:52:38 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:52:38 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:52:38 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:53:41 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:53:41 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:53:41 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 16:53:41 UTC] Received request - Method: GET, Action: list_types
+[20-Jul-2025 16:53:41 UTC] POST data: Array
+(
+)
+
+[20-Jul-2025 16:53:41 UTC] FILES data: Array
+(
+)
+
+[20-Jul-2025 16:53:41 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:53:41 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:53:41 UTC] Processing action: list_types with method: GET
+[20-Jul-2025 16:53:42 UTC] Request processed successfully for action: list_types
+[20-Jul-2025 16:53:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:53:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:53:42 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 16:53:42 UTC] Received request - Method: GET, Action: list_types
+[20-Jul-2025 16:53:42 UTC] POST data: Array
+(
+)
+
+[20-Jul-2025 16:53:42 UTC] FILES data: Array
+(
+)
+
+[20-Jul-2025 16:53:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:53:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:53:42 UTC] Processing action: list_types with method: GET
+[20-Jul-2025 16:53:42 UTC] Request processed successfully for action: list_types
+[20-Jul-2025 16:53:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:53:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:53:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:53:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:53:42 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 16:53:42 UTC] Received request - Method: GET, Action: list_types
+[20-Jul-2025 16:53:42 UTC] POST data: Array
+(
+)
+
+[20-Jul-2025 16:53:42 UTC] FILES data: Array
+(
+)
+
+[20-Jul-2025 16:53:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:53:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:53:42 UTC] Processing action: list_types with method: GET
+[20-Jul-2025 16:53:42 UTC] Request processed successfully for action: list_types
+[20-Jul-2025 16:53:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:53:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 16:53:43 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 16:53:43 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 17:00:05 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 17:00:05 UTC] Received request - Method: GET, Action: list_types
+[20-Jul-2025 17:00:05 UTC] POST data: Array
+(
+)
+
+[20-Jul-2025 17:00:06 UTC] FILES data: Array
+(
+)
+
+[20-Jul-2025 17:00:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 17:00:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 17:00:06 UTC] Processing action: list_types with method: GET
+[20-Jul-2025 17:00:06 UTC] Request processed successfully for action: list_types
+[20-Jul-2025 17:00:06 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 17:00:06 UTC] Received request - Method: GET, Action: list_types
+[20-Jul-2025 17:00:06 UTC] POST data: Array
+(
+)
+
+[20-Jul-2025 17:00:06 UTC] FILES data: Array
+(
+)
+
+[20-Jul-2025 17:00:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 17:00:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 17:00:06 UTC] Processing action: list_types with method: GET
+[20-Jul-2025 17:00:06 UTC] Request processed successfully for action: list_types
+[20-Jul-2025 17:00:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 17:00:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 17:00:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 17:00:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 17:00:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 17:00:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 17:00:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 17:00:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 17:00:06 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 17:00:06 UTC] Received request - Method: GET, Action: list_types
+[20-Jul-2025 17:00:06 UTC] POST data: Array
+(
+)
+
+[20-Jul-2025 17:00:06 UTC] FILES data: Array
+(
+)
+
+[20-Jul-2025 17:00:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 17:00:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 17:00:06 UTC] Processing action: list_types with method: GET
+[20-Jul-2025 17:00:06 UTC] Request processed successfully for action: list_types
+[20-Jul-2025 17:00:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 17:00:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 17:00:07 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 17:00:07 UTC] [DatabaseConfig] Client config created with dbname: ACC002

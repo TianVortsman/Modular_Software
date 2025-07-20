@@ -1,12 +1,16 @@
 // --- Supplier API ---
 export async function getSuppliers() {
     const res = await fetch('../api/setup-api.php?action=getSuppliers');
-    return await res.json();
+    const data = await res.json();
+    window.handleApiResponse(data);
+    return data;
 }
 
 export async function getSupplier(supplierId) {
     const res = await fetch(`../api/setup-api.php?action=getSupplier&supplier_id=${encodeURIComponent(supplierId)}`);
-    return await res.json();
+    const data = await res.json();
+    window.handleApiResponse(data);
+    return data;
 }
 
 export async function saveSupplier(formData) {
@@ -14,18 +18,23 @@ export async function saveSupplier(formData) {
         method: 'POST',
         body: formData
     });
-    return await res.json();
+    const data = await res.json();
+    window.handleApiResponse(data);
 }
 
 // --- Category & Subcategory API ---
 export async function getCategories() {
     const res = await fetch('../api/setup-api.php?action=getCategories');
-    return await res.json();
+    const data = await res.json();
+    window.handleApiResponse(data);
+    return data;
 }
 
 export async function getSubcategories() {
     const res = await fetch('../api/setup-api.php?action=getSubcategories');
-    return await res.json();
+    const data = await res.json();
+    window.handleApiResponse(data);
+    return data;
 }
 
 export async function saveCategory(formData) {
@@ -33,7 +42,9 @@ export async function saveCategory(formData) {
         method: 'POST',
         body: formData
     });
-    return await res.json();
+    const data = await res.json();
+    window.handleApiResponse(data);
+    return data;
 }
 
 export async function saveSubcategory(formData) {
@@ -41,18 +52,22 @@ export async function saveSubcategory(formData) {
         method: 'POST',
         body: formData
     });
-    return await res.json();
+    const data = await res.json();
+    window.handleApiResponse(data);
+    return data;
 }
 
 // --- Sales Target API ---
 export async function getSalesTargets() {
     const res = await fetch('../api/setup-api.php?action=getSalesTargets');
-    return await res.json();
+    const data = await res.json();
+    window.handleApiResponse(data);
 }
 
 export async function getSalesTarget(targetId) {
     const res = await fetch(`../api/setup-api.php?action=getSalesTarget&sales_target_id=${encodeURIComponent(targetId)}`);
-    return await res.json();
+    const data = await res.json();
+    window.handleApiResponse(data);
 }
 
 export async function saveSalesTarget(formData) {
@@ -60,17 +75,20 @@ export async function saveSalesTarget(formData) {
         method: 'POST',
         body: formData
     });
-    return await res.json();
+    const data = await res.json();
+    window.handleApiResponse(data);
 }
 
 export async function getSalesUsers() {
     const res = await fetch('../api/setup-api.php?action=getSalesUsers');
-    return await res.json();
+    const data = await res.json();
+    window.handleApiResponse(data);
 }
 
 export async function getSupplierContacts(supplierId) {
     const res = await fetch(`../api/setup-api.php?action=getSupplierContacts&supplier_id=${encodeURIComponent(supplierId)}`);
-    return await res.json();
+    const data = await res.json();
+    window.handleApiResponse(data);
 }
 
 export async function addSupplierContact(formData) {
@@ -78,7 +96,8 @@ export async function addSupplierContact(formData) {
         method: 'POST',
         body: formData
     });
-    return await res.json();
+    const data = await res.json();
+    window.handleApiResponse(data);
 }
 
 export async function updateSupplierContact(formData) {
@@ -86,7 +105,8 @@ export async function updateSupplierContact(formData) {
         method: 'POST',
         body: formData
     });
-    return await res.json();
+    const data = await res.json();
+    window.handleApiResponse(data);
 }
 
 export async function deleteSupplierContact(formData) {
@@ -94,5 +114,120 @@ export async function deleteSupplierContact(formData) {
         method: 'POST',
         body: formData
     });
-    return await res.json();
+    const data = await res.json();
+    window.handleApiResponse(data);
+}
+
+// --- Credit Reason API ---
+export async function getCreditReasons() {
+    const res = await fetch('../api/setup-api.php?action=getCreditReasons', {
+        credentials: 'include'
+    });
+    const data = await res.json();
+    window.handleApiResponse(data);
+    return data;
+}
+
+export async function addCreditReason(formData) {
+    const res = await fetch('../api/setup-api.php?action=addCreditReason', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+    });
+    const data = await res.json();
+    window.handleApiResponse(data);
+    return data;
+}
+
+export async function updateCreditReason(formData) {
+    const res = await fetch('../api/setup-api.php?action=updateCreditReason', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+    });
+    const data = await res.json();
+    window.handleApiResponse(data);
+    return data;
+}
+
+export async function deleteCreditReason(id) {
+    const res = await fetch(`../api/setup-api.php?action=deleteCreditReason&id=${encodeURIComponent(id)}`, {
+        method: 'POST',
+        credentials: 'include'
+    });
+    const data = await res.json();
+    window.handleApiResponse(data);
+    return data;
+}
+
+// --- Payment Term API ---
+export async function getPaymentTerms() {
+    const res = await fetch('../api/setup-api.php?action=getPaymentTerms');
+    const data = await res.json();
+    window.handleApiResponse(data);
+}
+
+export async function addPaymentTerm(formData) {
+    const res = await fetch('../api/setup-api.php?action=addPaymentTerm', {
+        method: 'POST',
+        body: formData
+    });
+    const data = await res.json();
+    window.handleApiResponse(data);
+}
+
+export async function updatePaymentTerm(formData) {
+    const res = await fetch('../api/setup-api.php?action=updatePaymentTerm', {
+        method: 'POST',
+        body: formData
+    });
+    const data = await res.json();
+    window.handleApiResponse(data);
+}
+
+export async function deletePaymentTerm(formData) {
+    const res = await fetch('../api/setup-api.php?action=deletePaymentTerm', {
+        method: 'POST',
+        body: formData
+    });
+    const data = await res.json();
+    window.handleApiResponse(data);
+}
+
+export async function getCreditPolicy() {
+    const res = await fetch('../api/setup-api.php?action=getCreditPolicy', {
+        credentials: 'include'
+    });
+    const data = await res.json();
+    window.handleApiResponse(data);
+}
+
+export async function saveCreditPolicy(formData) {
+    const res = await fetch('../api/setup-api.php?action=saveCreditPolicy', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+    });
+    const data = await res.json();
+    window.handleApiResponse(data);
+}
+
+export async function getDocumentNumbering() {
+    const res = await fetch('../api/setup-api.php?action=getDocumentNumbering', {
+        credentials: 'include'
+    });
+    const data = await res.json();
+    window.handleApiResponse(data);
+    return data;
+}
+
+export async function saveDocumentNumbering(formData) {
+    const res = await fetch('../api/setup-api.php?action=saveDocumentNumbering', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+    });
+    const data = await res.json();
+    window.handleApiResponse(data);
+    return data;
 }

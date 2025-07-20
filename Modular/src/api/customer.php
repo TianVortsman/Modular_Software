@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../Utils/errorHandler.php';
 /**
  * Customer API Endpoint
  * 
@@ -94,4 +95,9 @@ try {
 }
 
 // Output the result as JSON
+if (!$result['success'] && !empty($result['message'])) {
+    require_once __DIR__ . '/../Utils/errorHandler.php';
+    $aiMessage = getFriendlyMessageFromAI($result['message']);
+    if ($aiMessage) $result['error'] = $aiMessage;
+}
 echo json_encode($result); 

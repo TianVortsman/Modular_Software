@@ -545,9 +545,9 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
                 } else if (result.success && result.errors && result.errors.length > 0) {
                     showResponseModal('warning', `${result.message || 'Some rows failed to import'} (${result.errors.length} errors, see details below)`);
                 } else if (!result.success && result.errors && result.errors.length > 0) {
-                    showResponseModal('error', `${result.message || 'Import failed'} (${result.errors.length} errors, see details below)`);
+                    showResponseModal('error', `${result.error || result.message || 'Import failed'} (${result.errors.length} errors, see details below)`);
                 } else {
-                    showResponseModal('error', result.message || 'Import failed');
+                    showResponseModal('error', result.error || result.message || 'Import failed');
                 }
 
                 // Show error table if there are row errors

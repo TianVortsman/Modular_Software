@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../../src/Utils/errorHandler.php';
 // Start session before any output
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -28,8 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 
 // Debug session
 error_log("API Session contents: " . print_r($_SESSION, true));
@@ -154,9 +155,18 @@ try {
             if (isset($_POST['supplier_id']) && $_POST['supplier_id']) {
                 $supplier_id = $_POST['supplier_id'];
                 $product_id = $result['data']['product_id'];
-                $sql = "INSERT INTO inventory.product_supplier (product_id, supplier_id) VALUES (:product_id, :supplier_id) ON CONFLICT DO NOTHING";
-                $stmt = $conn->prepare($sql);
-                $stmt->execute([':product_id' => $product_id, ':supplier_id' => $supplier_id]);
+                try {
+                    $sql = "INSERT INTO inventory.product_supplier (product_id, supplier_id) VALUES (:product_id, :supplier_id) ON CONFLICT DO NOTHING";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->execute([':product_id' => $product_id, ':supplier_id' => $supplier_id]);
+                } catch (PDOException $e) {
+                    require_once __DIR__ . '/../../../src/Helpers/helpers.php';
+                    $result = [
+                        'success' => false,
+                        'message' => get_friendly_error($e->getMessage()),
+                        'data' => null
+                    ];
+                }
             }
             break;
 
@@ -171,17 +181,33 @@ try {
             if (isset($_POST['supplier_id']) && $_POST['supplier_id']) {
                 $supplier_id = $_POST['supplier_id'];
                 $product_id = $result['data']['product_id'];
-                $sql = "SELECT * FROM inventory.product_supplier WHERE product_id = :product_id";
-                $stmt = $conn->prepare($sql);
-                $stmt->execute([':product_id' => $product_id]);
-                $existing_supplier = $stmt->fetch(PDO::FETCH_ASSOC);
-                if ($existing_supplier) {
-                    $sql = "UPDATE inventory.product_supplier SET supplier_id = :supplier_id WHERE product_id = :product_id";
-                } else {
-                    $sql = "INSERT INTO inventory.product_supplier (product_id, supplier_id) VALUES (:product_id, :supplier_id)";
+                try {
+                    $sql = "SELECT * FROM inventory.product_supplier WHERE product_id = :product_id";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->execute([':product_id' => $product_id]);
+                    $existing_supplier = $stmt->fetch(PDO::FETCH_ASSOC);
+                    if ($existing_supplier && $existing_supplier['supplier_id'] == $supplier_id) {
+                        // The link already exists, do nothing
+                        $result['message'] = 'This supplier is already linked to the product.';
+                    } elseif ($existing_supplier) {
+                        // Update to a new supplier
+                        $sql = "UPDATE inventory.product_supplier SET supplier_id = :supplier_id WHERE product_id = :product_id";
+                        $stmt = $conn->prepare($sql);
+                        $stmt->execute([':product_id' => $product_id, ':supplier_id' => $supplier_id]);
+                    } else {
+                        // Insert new link
+                        $sql = "INSERT INTO inventory.product_supplier (product_id, supplier_id) VALUES (:product_id, :supplier_id)";
+                        $stmt = $conn->prepare($sql);
+                        $stmt->execute([':product_id' => $product_id, ':supplier_id' => $supplier_id]);
+                    }
+                } catch (PDOException $e) {
+                    require_once __DIR__ . '/../../../src/Helpers/helpers.php';
+                    $result = [
+                        'success' => false,
+                        'message' => get_friendly_error($e->getMessage()),
+                        'data' => null
+                    ];
                 }
-                $stmt = $conn->prepare($sql);
-                $stmt->execute([':product_id' => $product_id, ':supplier_id' => $supplier_id]);
             }
             break;
 
@@ -189,7 +215,8 @@ try {
             if ($method !== 'POST') {
                 throw new Exception('POST method required for upload_image action');
             }
-            $result = handleImageUpload();
+            // handleImageUpload is defined in ImageController.php and only used here
+            $result = \App\modules\product\controllers\handleImageUpload();
             break;
 
         case 'delete':
@@ -276,10 +303,11 @@ try {
             $quantity = $input['quantity'] ?? null;
             $cost_per_unit = $input['cost_per_unit'] ?? null;
             $notes = $input['notes'] ?? null;
+            $user_id = $_SESSION['user_id'] ?? null;
             if (!$product_supplier_id || !$quantity) {
                 throw new Exception('Missing required fields');
             }
-            $result = \App\modules\invoice\controllers\adjust_product_stock($product_supplier_id, $quantity, $cost_per_unit, $notes);
+            $result = \App\modules\invoice\controllers\adjust_product_stock($product_supplier_id, $quantity, $cost_per_unit, $notes, $user_id);
             break;
 
         default:

@@ -101,17 +101,7 @@ async function fetchAndSetDocument(documentId) {
             credentials: 'include'
         });
         const result = await response.json();
-        if (typeof LoadingModal !== 'undefined') LoadingModal.hide();
-        if (result.success && result.data) {
-            setDocumentFormData(result.data);
-            if (typeof ResponseModal !== 'undefined') ResponseModal.success('Document loaded successfully.');
-        } else {
-            if (typeof ResponseModal !== 'undefined') {
-                ResponseModal.error(result.message || 'Failed to fetch document.');
-            } else {
-                alert(result.message || 'Failed to fetch document.');
-            }
-        }
+        window.handleApiResponse(result);
     } catch (err) {
         if (typeof LoadingModal !== 'undefined') LoadingModal.hide();
         if (typeof ResponseModal !== 'undefined') {
@@ -139,27 +129,49 @@ async function fetchNextInvoiceNumberPreview() {
 // Add dashboard-related API functions for dashboard.js
 
 async function fetchDashboardCards(range) {
-    const res = await fetch(`../api/dashboard-api.php?action=get_dashboard_cards&range=${encodeURIComponent(range)}`);
-    return await res.json();
+    try {
+        const res = await fetch(`../api/dashboard-api.php?action=get_dashboard_cards&range=${encodeURIComponent(range)}`);
+        const data = await res.json();
+        window.handleApiResponse(data);
+        return data;
+    } catch (err) {
+        if (typeof ResponseModal !== 'undefined') {
+            ResponseModal.error('Failed to load dashboard cards: ' + (err.message || err));
+        } else {
+            alert('Failed to load dashboard cards: ' + (err.message || err));
+        }
+        return { success: false, message: err.message };
+    }
 }
 
 async function fetchInvoices(range, filters = {}, search = '', pagination = {}) {
-    const params = new URLSearchParams();
-    params.append('action', 'get_recent_invoices');
-    params.append('range', range);
-    Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
-            params.append(key, value);
+    try {
+        const params = new URLSearchParams();
+        params.append('action', 'get_recent_invoices');
+        params.append('range', range);
+        Object.entries(filters).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== '') {
+                params.append(key, value);
+            }
+        });
+        if (search.trim()) {
+            params.append('search', search.trim());
         }
-    });
-    if (search.trim()) {
-        params.append('search', search.trim());
+        const { page, limit } = pagination;
+        if (page) params.append('page', page);
+        if (limit) params.append('limit', limit);
+        const res = await fetch(`../api/dashboard-api.php?${params.toString()}`);
+        const data = await res.json();
+        window.handleApiResponse(data);
+        return data;
+    } catch (err) {
+        if (typeof ResponseModal !== 'undefined') {
+            ResponseModal.error('Failed to load invoices: ' + (err.message || err));
+        } else {
+            alert('Failed to load invoices: ' + (err.message || err));
+        }
+        return { success: false, message: err.message };
     }
-    const { page, limit } = pagination;
-    if (page) params.append('page', page);
-    if (limit) params.append('limit', limit);
-    const res = await fetch(`../api/dashboard-api.php?${params.toString()}`);
-    return await res.json();
 }
 
 async function fetchRecurringInvoices(range) {

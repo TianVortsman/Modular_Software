@@ -5,6 +5,9 @@
 
 import * as SetupAPI from './setup-api.js';
 import { ProductAPI } from './product-api.js';
+import { openCreditReasonModal } from './setup-modals.js';
+import { loadCreditPolicyForm } from './setup-form.js';
+import { loadDocumentNumberingForm } from './setup-form.js';
 
 class InvoiceSetup {
     constructor() {
@@ -87,7 +90,7 @@ class InvoiceSetup {
                 this.loadCreditReasons();
                 break;
             case 'numbering':
-                this.loadNumberingSettings();
+                loadDocumentNumberingForm(); // Use the correct loader from setup-form.js
                 break;
             case 'terms':
                 this.loadTermsSettings();
@@ -121,7 +124,7 @@ class InvoiceSetup {
                 this.saveCreditPolicy();
                 break;
             case 'numbering-form':
-                this.saveNumberingSettings();
+                // This form is now handled by setup-form.js
                 break;
             case 'terms-form':
                 this.saveTermsSettings();
@@ -202,7 +205,8 @@ class InvoiceSetup {
             if (data.success) {
                 showResponseModal('Success', 'Company information saved successfully', 'success');
             } else {
-                showResponseModal('Error', data.message, 'error');
+                const errorMsg = data.error || data.message || 'Failed to save company information';
+                showResponseModal('Error', errorMsg, 'error');
             }
         } catch (error) {
             hideLoadingModal();
@@ -211,46 +215,7 @@ class InvoiceSetup {
     }
 
     // Invoice Numbering
-    async loadNumberingSettings() {
-        try {
-            const data = await SetupAPI.getNumberingSettings();
-            if (data.success && data.data) {
-                this.populateNumberingForm(data.data);
-            }
-        } catch (error) {
-            console.error('Error loading numbering settings:', error);
-        }
-    }
-
-    populateNumberingForm(settings) {
-        const fields = ['invoice-prefix', 'starting-number', 'current-number', 'reset-frequency', 'date-format'];
-        fields.forEach(field => {
-            const element = document.getElementById(field);
-            if (element) {
-                element.value = settings[field.replace('-', '_')] || '';
-            }
-        });
-
-        const autoReset = document.getElementById('auto-reset-count');
-        if (autoReset) autoReset.checked = settings.auto_reset_count || false;
-    }
-
-    async saveNumberingSettings() {
-        try {
-            showLoadingModal('Saving numbering settings...');
-            const formData = new FormData(document.getElementById('numbering-form'));
-            const data = await SetupAPI.saveNumberingSettings(formData);
-            hideLoadingModal();
-            if (data.success) {
-                showResponseModal('Success', 'Numbering settings saved successfully', 'success');
-            } else {
-                showResponseModal('Error', data.message, 'error');
-            }
-        } catch (error) {
-            hideLoadingModal();
-            showResponseModal('Error', 'Failed to save numbering settings', 'error');
-        }
-    }
+    // REMOVE: loadNumberingSettings, populateNumberingForm, saveNumberingSettings methods
 
     // --- Add stubs for missing methods to prevent runtime errors ---
     async loadSalesTargets() {
@@ -723,21 +688,29 @@ const categoryForm = document.getElementById('categoryForm');
 if (categoryForm) {
     categoryForm.addEventListener('submit', async function(e) {
         e.preventDefault();
+        const actionStartTime = performance.now(); // Start timing
         try {
             showLoadingModal('Saving category...');
             const formData = new FormData(categoryForm);
             const data = await SetupAPI.saveCategory(formData);
             hideLoadingModal();
+            const duration = performance.now() - actionStartTime;
             if (data.success) {
+                console.log('Category save round-trip time:', duration, 'ms');
                 showResponseModal('Success', 'Category saved successfully', 'success');
                 closeCategoryModal();
                 loadProductSetupData();
             } else {
-                showResponseModal('Error', data.message, 'error');
+                console.log('Category error round-trip time:', duration, 'ms');
+                console.log('Category error:', data);
+                showResponseModal(data.message || 'Error', 'error');
             }
         } catch (error) {
             hideLoadingModal();
-            showResponseModal('Error', 'Failed to save category', 'error');
+            const duration = performance.now() - actionStartTime;
+            console.log('Category error (catch) round-trip time:', duration, 'ms');
+            console.log('Category error (catch):', error);
+            // Do not show another modal here; API/handleApiResponse already did
         }
     });
 }
@@ -746,21 +719,29 @@ const subcategoryForm = document.getElementById('subcategoryForm');
 if (subcategoryForm) {
     subcategoryForm.addEventListener('submit', async function(e) {
         e.preventDefault();
+        const actionStartTime = performance.now(); // Start timing
         try {
             showLoadingModal('Saving subcategory...');
             const formData = new FormData(subcategoryForm);
             const data = await SetupAPI.saveSubcategory(formData);
             hideLoadingModal();
+            const duration = performance.now() - actionStartTime;
             if (data.success) {
+                console.log('Subcategory save round-trip time:', duration, 'ms');
                 showResponseModal('Success', 'Subcategory saved successfully', 'success');
                 closeSubcategoryModal();
                 loadProductSetupData();
             } else {
-                showResponseModal('Error', data.message, 'error');
+                console.log('Subcategory error round-trip time:', duration, 'ms');
+                console.log('Subcategory error:', data);
+                showResponseModal(data.message || 'Error', 'error');
             }
         } catch (error) {
             hideLoadingModal();
-            showResponseModal('Error', 'Failed to save subcategory', 'error');
+            const duration = performance.now() - actionStartTime;
+            console.log('Subcategory error (catch) round-trip time:', duration, 'ms');
+            console.log('Subcategory error (catch):', error);
+            // Do not show another modal here; API/handleApiResponse already did
         }
     });
 }
@@ -912,3 +893,82 @@ if (supplierContactForm) {
         }
     });
 }
+
+// --- Credit Reasons List Logic ---
+const creditReasonsList = document.getElementById('creditReasonsList');
+const addCreditReasonBtn = document.getElementById('addCreditReasonBtn');
+
+async function loadCreditReasons() {
+    if (!creditReasonsList) return;
+    showLoadingModal('Loading credit reasons...');
+    const res = await SetupAPI.getCreditReasons();
+    hideLoadingModal();
+    creditReasonsList.innerHTML = '';
+    if (!res.success || !Array.isArray(res.data)) {
+        showResponseModal('Failed to load credit reasons', 'error');
+        return;
+    }
+    res.data.forEach(reason => {
+        const row = document.createElement('div');
+        row.className = 'credit-reason-row';
+        row.innerHTML = `
+            <span class="credit-reason-text">${reason.reason}</span>
+            <button class="edit-credit-reason-btn" data-id="${reason.credit_reason_id}">Edit</button>
+            <button class="delete-credit-reason-btn" data-id="${reason.credit_reason_id}">Delete</button>
+        `;
+        creditReasonsList.appendChild(row);
+    });
+    // Attach handlers
+    creditReasonsList.querySelectorAll('.edit-credit-reason-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+            const id = btn.getAttribute('data-id');
+            const reason = res.data.find(r => r.credit_reason_id == id);
+            openCreditReasonModal('edit', reason);
+        });
+    });
+    creditReasonsList.querySelectorAll('.delete-credit-reason-btn').forEach(btn => {
+        btn.addEventListener('click', async e => {
+            const id = btn.getAttribute('data-id');
+            if (!confirm('Delete this credit reason?')) return;
+            showLoadingModal('Deleting...');
+            const delRes = await SetupAPI.deleteCreditReason(id);
+            hideLoadingModal();
+            if (delRes.success) {
+                showResponseModal('Credit reason deleted', 'success');
+                loadCreditReasons();
+            } else {
+                showResponseModal(delRes.message || 'Delete failed', 'error');
+            }
+        });
+    });
+}
+
+if (addCreditReasonBtn) {
+    addCreditReasonBtn.addEventListener('click', () => openCreditReasonModal('add'));
+}
+
+// Expose for reload after add/edit
+window.loadCreditReasons = loadCreditReasons;
+
+// Initial load
+if (creditReasonsList) loadCreditReasons();
+
+// Tab switch logic (ensure this runs on tab change)
+document.addEventListener('DOMContentLoaded', function() {
+    const creditTab = document.getElementById('credit');
+    if (creditTab) {
+        creditTab.addEventListener('show', function() {
+            loadCreditPolicyForm();
+            if (window.loadCreditReasons) window.loadCreditReasons();
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const numberingTab = document.getElementById('numbering');
+    if (numberingTab) {
+        numberingTab.addEventListener('show', function() {
+            loadDocumentNumberingForm();
+        });
+    }
+});

@@ -1,0 +1,2 @@
+RewriteEngine On
+RewriteRule ^log-js-error$ php/log-js-error.php [L] 

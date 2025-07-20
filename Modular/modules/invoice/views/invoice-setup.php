@@ -240,72 +240,121 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
 
                 <!-- Credit Notes Tab -->
                 <div id="credit" class="tab-panel">
-                    <div class="setup-section">
+                    <section class="credit-policy-section">
                         <h2>Credit Notes & Refund Policy</h2>
-                        <div class="setup-grid">
-                            <div class="setup-card">
-                                <form id="credit-policy-form" class="setup-form">
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            <input type="checkbox" id="allow-credit-notes" name="allow_credit_notes" class="form-checkbox">
-                                            Allow credit notes
-                                        </label>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            <input type="checkbox" id="require-approval" name="require_approval" class="form-checkbox">
-                                            Require approval before refunds
-                                        </label>
-                                    </div>
-                                    <div class="form-actions">
-                                        <button type="submit" class="btn-primary">
-                                            <span class="material-icons">save</span> Save Policy
-                                        </button>
-                                    </div>
-                                </form>
+                        <form id="credit-policy-form" class="credit-policy-form">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <input type="checkbox" id="allow-credit-notes" name="allow_credit_notes" class="form-checkbox">
+                                    Allow credit notes
+                                </label>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="setup-section">
-                        <h2>Credit Note Reasons</h2>
-                        <div class="setup-grid">
-                            <div class="setup-card">
-                                <div class="card-header">
-                                    <h3>Default Reasons</h3>
-                                    <button class="btn-primary" onclick="openCreditReasonModal()">
-                                        <span class="material-icons">add</span> Add Reason
-                                    </button>
-                                </div>
-                                <div class="card-content">
-                                    <div id="credit-reasons-list" class="data-list">
-                                        <!-- Credit reasons will be loaded here -->
-                                    </div>
-                                </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <input type="checkbox" id="require-approval" name="require_approval" class="form-checkbox">
+                                    Require approval before refunds
+                                </label>
                             </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary">
+                                    <span class="material-icons">save</span> Save Policy
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+                    <!-- Credit Reasons Section -->
+                    <section id="credit-reasons-section">
+                        <h3>Credit Reasons</h3>
+                        <p>Manage reasons for issuing credit notes (e.g., returns, overpayment, goodwill).</p>
+                        <div id="creditReasonsList" class="data-list">
+                            <!-- Credit reasons will be loaded here -->
                         </div>
-                    </div>
+                        <button id="addCreditReasonBtn" class="btn btn-primary">Add Credit Reason</button>
+                    </section>
                 </div>
 
-                <!-- Invoice Numbering Tab -->
+                <!-- Document Numbering Tab -->
                 <div id="numbering" class="tab-panel">
                     <div class="setup-section">
-                        <h2>Invoice Preferences</h2>
+                        <h2>Document Numbering Preferences</h2>
                         <div class="setup-grid">
                             <div class="setup-card">
-                                <form id="numbering-form" class="setup-form">
-                                    <div class="form-group">
-                                        <label for="invoice-prefix">Invoice Number Prefix</label>
-                                        <input type="text" id="invoice-prefix" name="invoice_prefix" class="form-input" placeholder="e.g., INV-2025-">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="starting-number">Starting Number</label>
-                                        <input type="number" id="starting-number" name="starting_number" class="form-input" min="1" placeholder="1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="current-number">Current Number</label>
-                                        <input type="number" id="current-number" name="current_number" class="form-input" min="1" placeholder="(auto)">
-                                    </div>
+                                <form id="document-numbering-form" class="setup-form">
+                                    <fieldset>
+                                        <legend>Invoice</legend>
+                                        <div class="form-group">
+                                            <label for="invoice-prefix">Invoice Prefix</label>
+                                            <input type="text" id="invoice-prefix" name="invoice_prefix" class="form-input" placeholder="e.g., INV-2025-">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="invoice-starting-number">Starting Number</label>
+                                            <input type="number" id="invoice-starting-number" name="invoice_starting_number" class="form-input" min="1" placeholder="1">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="invoice-current-number">Current Number</label>
+                                            <input type="number" id="invoice-current-number" name="invoice_current_number" class="form-input" min="1" placeholder="(auto)">
+                                        </div>
+                                    </fieldset>
+                                    <fieldset>
+                                        <legend>Quotation</legend>
+                                        <div class="form-group">
+                                            <label for="quotation-prefix">Quotation Prefix</label>
+                                            <input type="text" id="quotation-prefix" name="quotation_prefix" class="form-input" placeholder="e.g., QUO-2025-">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="quotation-starting-number">Starting Number</label>
+                                            <input type="number" id="quotation-starting-number" name="quotation_starting_number" class="form-input" min="1" placeholder="1">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="quotation-current-number">Current Number</label>
+                                            <input type="number" id="quotation-current-number" name="quotation_current_number" class="form-input" min="1" placeholder="(auto)">
+                                        </div>
+                                    </fieldset>
+                                    <fieldset>
+                                        <legend>Credit Note</legend>
+                                        <div class="form-group">
+                                            <label for="credit-note-prefix">Credit Note Prefix</label>
+                                            <input type="text" id="credit-note-prefix" name="credit_note_prefix" class="form-input" placeholder="e.g., CRN-2025-">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="credit-note-starting-number">Starting Number</label>
+                                            <input type="number" id="credit-note-starting-number" name="credit_note_starting_number" class="form-input" min="1" placeholder="1">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="credit-note-current-number">Current Number</label>
+                                            <input type="number" id="credit-note-current-number" name="credit_note_current_number" class="form-input" min="1" placeholder="(auto)">
+                                        </div>
+                                    </fieldset>
+                                    <fieldset>
+                                        <legend>Pro Forma Invoice</legend>
+                                        <div class="form-group">
+                                            <label for="proforma-prefix">Pro Forma Prefix</label>
+                                            <input type="text" id="proforma-prefix" name="proforma_prefix" class="form-input" placeholder="e.g., PRO-2025-">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="proforma-starting-number">Starting Number</label>
+                                            <input type="number" id="proforma-starting-number" name="proforma_starting_number" class="form-input" min="1" placeholder="1">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="proforma-current-number">Current Number</label>
+                                            <input type="number" id="proforma-current-number" name="proforma_current_number" class="form-input" min="1" placeholder="(auto)">
+                                        </div>
+                                    </fieldset>
+                                    <fieldset>
+                                        <legend>Delivery Note</legend>
+                                        <div class="form-group">
+                                            <label for="delivery-note-prefix">Delivery Note Prefix</label>
+                                            <input type="text" id="delivery-note-prefix" name="delivery_note_prefix" class="form-input" placeholder="e.g., DEL-2025-">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="delivery-note-starting-number">Starting Number</label>
+                                            <input type="number" id="delivery-note-starting-number" name="delivery_note_starting_number" class="form-input" min="1" placeholder="1">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="delivery-note-current-number">Current Number</label>
+                                            <input type="number" id="delivery-note-current-number" name="delivery_note_current_number" class="form-input" min="1" placeholder="(auto)">
+                                        </div>
+                                    </fieldset>
                                     <div class="form-group">
                                         <label for="date-format">Date Format</label>
                                         <select id="date-format" name="date_format" class="form-select">
@@ -321,10 +370,10 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
                                         </button>
                                     </div>
                                 </form>
-                                <!-- Invoice Template Preferences -->
+                                <!-- Document Template Preferences -->
                                 <form id="template-form" class="setup-form" style="margin-top:32px;">
                                     <div class="form-group">
-                                        <label class="form-label">Choose your invoice template:</label>
+                                        <label class="form-label">Choose your document template:</label>
                                         <div class="template-options" style="display: flex; gap: 32px; flex-wrap: wrap;">
                                             <label style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
                                                 <input type="radio" name="template" value="modern-blue">

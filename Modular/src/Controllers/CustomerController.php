@@ -53,6 +53,7 @@ class CustomerController
             if (!$customer) {
                 return [
                     'success' => false,
+                    'message' => "Customer not found with ID: $id",
                     'error' => "Customer not found with ID: $id"
                 ];
             }
@@ -64,6 +65,7 @@ class CustomerController
             error_log("Error in CustomerController->getCustomerDetails: " . $e->getMessage());
             return [
                 'success' => false,
+                'message' => $e->getMessage(),
                 'error' => $e->getMessage()
             ];
         }
@@ -111,6 +113,7 @@ class CustomerController
             // Return error response
             return [
                 'success' => false,
+                'message' => $e->getMessage(),
                 'error' => $e->getMessage()
             ];
         }
@@ -180,6 +183,7 @@ class CustomerController
             error_log("CustomerController->getCustomerModules error: " . $e->getMessage());
             return [
                 'success' => false,
+                'message' => $e->getMessage(),
                 'error' => $e->getMessage()
             ];
         }
@@ -313,6 +317,7 @@ class CustomerController
             // Return error response
             return [
                 'success' => false,
+                'message' => $e->getMessage(),
                 'error' => $e->getMessage()
             ];
         }
@@ -400,7 +405,8 @@ class CustomerController
             error_log('Add user error: ' . $e->getMessage());
             return [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
+                'error' => $e->getMessage()
             ];
         }
     }
@@ -464,6 +470,7 @@ class CustomerController
             error_log('updateCustomerModules error: ' . $e->getMessage());
             return [
                 'success' => false,
+                'message' => $e->getMessage(),
                 'error' => $e->getMessage()
             ];
         }

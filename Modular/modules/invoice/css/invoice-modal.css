@@ -149,7 +149,6 @@
 .modal-document-table-container,
 .vehicle-section,
 .vehicle-extras-section {
-  overflow-x: auto;
   margin-top: var(--spacing-medium);
   background: var(--color-background-light);
   border-radius: var(--radius-medium);
@@ -341,3 +340,88 @@
   background: var(--color-danger);
   box-shadow: 0 6px 24px var(--shadow-dark);
 }
+
+/* --- End Credit Reasons List & Row Styling --- */
+
+/* --- Product Search Dropdown Styling (Document Modal) --- */
+.search-container {
+  position: relative;
+  /* Ensure dropdown is positioned relative to input */
+}
+.search-dropdown1, .search-dropdown2 {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: var(--color-background, #fff);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-top: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  z-index: 10010; /* Higher than modal and table */
+  max-height: 220px;
+  overflow-y: auto;
+  display: none;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  border-radius: var(--radius-small, 6px);
+}
+.search-dropdown1.active, .search-dropdown2.active {
+  display: block;
+}
+.search-result-product {
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 1rem;
+  background: var(--color-background, #fff);
+  border-bottom: 1px solid var(--border-color, #f0f0f0);
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s, font-weight 0.15s;
+  list-style: none;
+  outline: none;
+  border-left: 3px solid transparent;
+}
+.search-result-product:last-child {
+  border-bottom: none;
+}
+.search-result-product:hover,
+.search-result-product.highlight {
+  background: var(--color-primary-fade, #e3eafc);
+  color: var(--color-primary, #1a73e8);
+  font-weight: 600;
+  border-left: 3px solid var(--color-primary, #1a73e8);
+  box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+/* Prevent input field from moving when dropdown appears */
+.search-container input {
+  position: relative;
+  z-index: 1;
+}
+
+/* Fix for table cell overflow: ensure dropdown is not clipped */
+.modal-document-table td {
+  position: relative;
+  overflow: visible !important;
+}
+
+/* Remove default ul/li styles if any are present */
+.search-dropdown1 ul, .search-dropdown2 ul,
+.search-dropdown1 li, .search-dropdown2 li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.search-dropdown1 li:hover,
+.search-dropdown2 li:hover {
+  background: var(--color-primary-fade, #e3eafc);
+  color: var(--color-primary, #1a73e8);
+  font-weight: 600;
+  border-left: 3px solid var(--color-primary, #1a73e8);
+  box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+.search-result-product.highlight {
+  background-color:var(--color-primary-fade);
+}
+
+

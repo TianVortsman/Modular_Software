@@ -1,10 +1,12 @@
 console.log('Loading product-modals.js');
 import { ProductAPI } from './product-api.js';
+import { makeModalDraggable } from '../../../public/assets/js/helpers.js';
 window.ProductAPI = ProductAPI;
 
 // --- ProductModalUI: Handles modal open/close, tab switching, and modal-specific UI logic ---
 class ProductModalUI {
     constructor(modalElement) {
+        console.log('[ProductModalUI] Initializing with modal:', modalElement);
         this.modal = modalElement;
         this.formManager = new window.ProductModalForm(modalElement);
         this.mode = 'add';
@@ -20,13 +22,14 @@ class ProductModalUI {
         this.lastSuppliersForStock = [];
     }
     initEventListeners() {
+        console.log('[ProductModalUI] Running initEventListeners');
         const closeButton = this.modal?.querySelector('.universal-product-modal-close');
         if (closeButton) closeButton.addEventListener('click', () => this.closeModal());
         const cancelBtn = document.getElementById('universalProductCancelBtn');
         if (cancelBtn) cancelBtn.addEventListener('click', () => this.closeModal());
-            this.modal.addEventListener('mousedown', (e) => {
+        this.modal.addEventListener('mousedown', (e) => {
             if (e.target === this.modal) this.closeModal();
-            });
+        });
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.modal.classList.contains('active')) this.closeModal();
         });
@@ -53,7 +56,10 @@ class ProductModalUI {
         }
         // Form submit
         if (this.formManager.form) {
+            console.log('[ProductModalUI] Attaching submit event to form:', this.formManager.form);
             this.formManager.form.addEventListener('submit', (e) => this.handleSubmit(e));
+        } else {
+            console.warn('[ProductModalUI] No form found to attach submit event');
         }
         // Stock Adjustment Modal logic
         const openAdjustBtn = document.getElementById('openAdjustStockModalBtn');
@@ -97,6 +103,13 @@ class ProductModalUI {
             const pidFields = this.formManager.form.querySelectorAll('input[name="product_id"]');
             pidFields.forEach(f => f.remove());
         }
+        // --- Clear suppliers and stock history tabs in add mode ---
+        if (mode === 'add') {
+            const suppliersTab = this.modal.querySelector('#product-suppliers-list');
+            if (suppliersTab) suppliersTab.innerHTML = '';
+            const stockHistoryTab = this.modal.querySelector('#product-stock-history-list');
+            if (stockHistoryTab) stockHistoryTab.innerHTML = '';
+        }
         // Always populate type, suppliers, and categories before showing modal
         await this.formManager.populateTypeDropdown(typeId);
         if (mode === 'add' && typeId) {
@@ -127,11 +140,11 @@ class ProductModalUI {
                     // --- Populate Stock History tab ---
                     this.populateStockHistoryTab(productId);
                 } else {
-                    showResponseModal(result.message || 'Failed to fetch product details', 'error');
+                    window.handleApiResponse({ success: false, message: result.message || 'Failed to fetch product details' });
                     console.error('Failed to fetch product details:', result);
                 }
             }).catch(error => {
-                showResponseModal('Error fetching product details: ' + error.message, 'error');
+                window.handleApiResponse({ success: false, message: error.message || 'Error fetching product details' });
                 console.error('Error fetching product details:', error);
             });
         }
@@ -153,9 +166,11 @@ class ProductModalUI {
         if (selectedPane) selectedPane.classList.add('upm-active');
     }
     async handleSubmit(e) {
+        console.log('[ProductModalUI] handleSubmit called', e);
         e.preventDefault();
         e.stopPropagation();
         if (!this.formManager.validateForm()) {
+            console.log('[ProductModalUI] Form validation failed');
             showResponseModal('Please fill in all required fields.', 'error');
             return;
         }
@@ -235,6 +250,7 @@ class ProductModalUI {
             ? ProductAPI.editProduct(this.productId, formData)
             : ProductAPI.addProduct(formData);
         apiCall.then(async data => {
+            console.log('[ProductModalUI] API call result:', data);
             hideLoadingModal();
             if (data.success) {
                 // If image is selected, upload it (already handled above)
@@ -244,9 +260,11 @@ class ProductModalUI {
                     window.productScreenManager.refreshProductList();
                 }
             } else {
-                showResponseModal(data.message || 'Failed to save product', 'error', true);
+                const errorMsg = data.error || data.message || 'Failed to save product';
+                showResponseModal(errorMsg, 'error', true);
             }
         }).catch(error => {
+            console.log('[ProductModalUI] API call error:', error);
             hideLoadingModal();
             showResponseModal(error.message || 'Failed to save product', 'error', true);
             console.error('Error saving product:', error);
@@ -367,20 +385,24 @@ class ProductModalUI {
                 container.innerHTML = '<div class="empty-state">No stock history for this product.</div>';
                 return;
             }
-            const template = document.getElementById('product-stock-history-row-template');
             // Header row
             const header = document.createElement('div');
             header.className = 'product-stock-history-row product-stock-history-header';
             header.innerHTML = '<span>Supplier</span><span>Qty</span><span>Rem</span><span>Cost</span><span>Date</span><span>Notes</span>';
             container.appendChild(header);
-            allEntries.forEach(entry => {
-                const row = template.content.cloneNode(true);
-                row.querySelector('.stock-supplier-name').textContent = entry.supplier_name;
-                row.querySelector('.stock-quantity').textContent = entry.quantity;
-                row.querySelector('.stock-remaining').textContent = entry.remaining_quantity;
-                row.querySelector('.stock-cost').textContent = `R${entry.cost_per_unit}`;
-                row.querySelector('.stock-date').textContent = entry.received_at;
-                row.querySelector('.stock-notes').textContent = entry.notes;
+            allEntries.forEach((entry, idx) => {
+                const row = document.createElement('div');
+                row.className = 'product-stock-history-row';
+                // Alternate row styling for readability
+                if (idx % 2 === 1) row.classList.add('alt-row');
+                row.innerHTML = `
+                    <span class="stock-supplier-name">${entry.supplier_name}</span>
+                    <span class="stock-quantity">${entry.quantity}</span>
+                    <span class="stock-remaining">${entry.remaining_quantity}</span>
+                    <span class="stock-cost">R${entry.cost_per_unit}</span>
+                    <span class="stock-date">${entry.received_at}</span>
+                    <span class="stock-notes">${entry.notes}</span>
+                `;
                 container.appendChild(row);
             });
         } catch (e) {
@@ -412,7 +434,7 @@ class ProductModalUI {
         } catch (e) {
             supplierSelect.innerHTML = '<option value="">Error loading suppliers</option>';
         }
-        adjustModal.style.display = 'block';
+        adjustModal.style.display = 'flex';
     }
     async handleAdjustStockSubmit(e) {
         e.preventDefault();
@@ -431,16 +453,14 @@ class ProductModalUI {
         let product_supplier_id = null;
         if (this.lastSuppliersForStock && Array.isArray(this.lastSuppliersForStock)) {
             const found = this.lastSuppliersForStock.find(s => String(s.supplier_id) === String(supplier_id));
-            if (found && found.fifo_entries && found.fifo_entries[0] && found.fifo_entries[0].product_supplier_id) {
-                product_supplier_id = found.fifo_entries[0].product_supplier_id;
+            if (found && found.product_supplier_id) {
+                product_supplier_id = found.product_supplier_id;
             }
         }
-        // If not found, fallback to API (to be implemented)
         if (!product_supplier_id) {
             showResponseModal('Could not resolve product-supplier link.', 'error');
             return;
         }
-        // Send adjustment to API (endpoint to be implemented)
         try {
             const res = await fetch('/modules/invoice/api/products.php?action=adjust_stock', {
                 method: 'POST',
@@ -455,11 +475,12 @@ class ProductModalUI {
             });
             const result = await res.json();
             if (result.success) {
-                showResponseModal('Stock adjustment successful.', 'success');
+                showResponseModal(result.message || 'Stock adjustment successful.', 'success');
                 adjustModal.style.display = 'none';
+                // Refresh stock history tab
                 this.populateStockHistoryTab(this.productId);
-                this.populateSuppliersTab(this.productId);
             } else {
+                // Use AI-friendly error message from backend
                 showResponseModal(result.message || 'Failed to adjust stock.', 'error');
             }
         } catch (err) {
@@ -525,6 +546,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modal) {
         window.productModalUI = new ProductModalUI(modal);
     }
+    // Make only the modal content boxes draggable
+    makeModalDraggable('.universal-product-modal-content', '.universal-product-modal-title');
+    makeModalDraggable('.adjust-stock-modal-content', '.adjust-stock-modal-content h4');
 });
 
 // Export for use in other files

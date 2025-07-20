@@ -11,7 +11,8 @@ export async function openClientModal(clientId, type = null) {
     const { fetchClientDetails } = await import('./client-api.js');
     const res = await fetchClientDetails(clientId);
     if (!res.success || !res.data) {
-        window.ResponseModal && window.ResponseModal.error(res.message || 'Failed to load client details');
+        const errorMsg = res.error || res.message || 'Failed to load client details';
+        window.ResponseModal && window.ResponseModal.error(errorMsg);
         return;
     }
     // Infer type if not provided

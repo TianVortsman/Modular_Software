@@ -45,3 +45,86 @@ export function buildQueryParams(base = {}, filters = {}, search = '', paginatio
     return params;
 }
 
+/**
+ * Centralized API response handler for fetch/AJAX calls
+ * Usage: .then(handleApiResponse)
+ * Shows errors in ResponseModal if present, returns data on success
+ */
+function handleApiResponse(data) {
+    window.lastApiRawResponse = data;
+    if (data && (data.success === false || data.status >= 400)) {
+        // Always prefer AI-friendly message
+        const msg = data.message || data.error || 'An unknown error occurred.';
+        showResponseModal(msg, 'error');
+        throw new Error(msg);
+    }
+    return data;
+}
+
+window.handleApiResponse = handleApiResponse;
+
+window.onerror = async function(message, source, lineno, colno, error) {
+    const errorCode = Math.random().toString(36).substring(2, 8).toUpperCase(); // e.g. 7H2G3T
+    try {
+        const res = await fetch('/public/php/log-js-error.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                message, source, lineno, colno, stack: error?.stack, code: errorCode
+            })
+        });
+        const data = await res.json();
+        if (data && data.error) {
+            showResponseModal(data.error, 'error');
+        } else {
+            showResponseModal('Oops! Something went wrong. Please contact Modular Software Support. Error Code: ' + errorCode, 'error');
+        }
+    } catch (e) {
+        showResponseModal('Oops! Something went wrong. Please contact Modular Software Support. Error Code: ' + errorCode, 'error');
+    }
+};
+
+export function makeModalDraggable(modalSelector, dragHandleSelector) {
+    const modal = document.querySelector(modalSelector);
+    if (!modal) return console.warn(`Modal not found: ${modalSelector}`);
+  
+    const dragHandle = modal.querySelector(dragHandleSelector);
+    if (!dragHandle) return console.warn(`Drag handle not found: ${dragHandleSelector}`);
+  
+    let isDragging = false;
+    let startX, startY;
+    let initialLeft, initialTop;
+  
+    dragHandle.style.cursor = 'move';
+  
+    dragHandle.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+  
+      const rect = modal.getBoundingClientRect();
+      initialLeft = rect.left;
+      initialTop = rect.top;
+  
+      document.body.style.userSelect = 'none';
+    });
+  
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+  
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+  
+      modal.style.position = 'fixed';
+      modal.style.left = initialLeft + dx + 'px';
+      modal.style.top = initialTop + dy + 'px';
+    });
+  
+    document.addEventListener('mouseup', () => {
+      if (isDragging) {
+        isDragging = false;
+        document.body.style.userSelect = '';
+      }
+    });
+}
+  

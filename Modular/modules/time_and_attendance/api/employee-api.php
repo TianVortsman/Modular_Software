@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../../src/Utils/errorHandler.php';
 ob_start();
 // Ensure we start a session first (if not already started)
 if (session_status() === PHP_SESSION_NONE) {

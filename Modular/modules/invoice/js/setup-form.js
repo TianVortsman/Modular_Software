@@ -1,4 +1,4 @@
-import { closeSupplierModal, closeSalesTargetModal } from './setup-modals.js';
+import { closeSupplierModal, closeSalesTargetModal, closeCreditReasonModal } from './setup-modals.js';
 import * as SetupAPI from './setup-api.js';
 
 // --- Supplier Form Submit ---
@@ -19,7 +19,8 @@ if (supplierForm) {
                     window.invoiceSetup.loadSuppliers();
                 }
             } else {
-                showResponseModal('Error', data.message, 'error');
+                const errorMsg = data.error || data.message || 'Failed to save supplier';
+                showResponseModal('Error', errorMsg, 'error');
             }
         } catch (error) {
             hideLoadingModal();
@@ -46,7 +47,8 @@ if (salesTargetForm) {
                     window.invoiceSetup.loadSalesTargets();
                 }
             } else {
-                showResponseModal('Error', data.message, 'error');
+                const errorMsg = data.error || data.message || 'Failed to save sales target';
+                showResponseModal('Error', errorMsg, 'error');
             }
         } catch (error) {
             hideLoadingModal();
@@ -54,3 +56,137 @@ if (salesTargetForm) {
         }
     });
 }
+
+// --- Credit Policy Form Submit ---
+const creditPolicyForm = document.getElementById('credit-policy-form');
+if (creditPolicyForm) {
+    creditPolicyForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        try {
+            showLoadingModal('Saving credit policy...');
+            const formData = new FormData(creditPolicyForm);
+            const data = await SetupAPI.saveCreditPolicy(formData);
+            hideLoadingModal();
+            if (data.success) {
+                showResponseModal('Success', 'Credit policy saved', 'success');
+                loadCreditPolicyForm();
+            } else {
+                const errorMsg = data.error || data.message || 'Failed to save credit policy';
+                showResponseModal('Error', errorMsg, 'error');
+            }
+        } catch (error) {
+            hideLoadingModal();
+            showResponseModal('Error', 'Failed to save credit policy', 'error');
+        }
+    });
+}
+
+// --- Load and Autofill Credit Policy Form ---
+export async function loadCreditPolicyForm() {
+    const creditPolicyForm = document.getElementById('credit-policy-form');
+    if (!creditPolicyForm) return;
+    showLoadingModal('Loading credit policy...');
+    const res = await SetupAPI.getCreditPolicy();
+    hideLoadingModal();
+    if (res.success && res.data) {
+        creditPolicyForm.querySelector('[name="allow_credit_notes"]').checked = !!res.data.allow_credit_notes;
+        creditPolicyForm.querySelector('[name="require_approval"]').checked = !!res.data.require_approval;
+    }
+}
+
+// --- Document Numbering Form Submit ---
+const documentNumberingForm = document.getElementById('document-numbering-form');
+if (documentNumberingForm) {
+    documentNumberingForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        try {
+            showLoadingModal('Saving document numbering...');
+            const formData = new FormData(documentNumberingForm);
+            const data = await SetupAPI.saveDocumentNumbering(formData);
+            if (data.success) {
+                await loadDocumentNumberingForm(true); // reload and show modal after
+            } else {
+                hideLoadingModal();
+                const errorMsg = data.error || data.message || 'Failed to save document numbering';
+                showResponseModal('Error', errorMsg, 'error');
+            }
+        } catch (error) {
+            hideLoadingModal();
+            showResponseModal('Error', 'Failed to save document numbering', 'error');
+        }
+    });
+}
+
+// --- Load and Autofill Document Numbering Form ---
+export async function loadDocumentNumberingForm(showSuccess = false) {
+    const form = document.getElementById('document-numbering-form');
+    if (!form) return;
+    showLoadingModal('Loading document numbering...');
+    const res = await SetupAPI.getDocumentNumbering();
+    hideLoadingModal();
+    if (res.success && res.data) {
+        for (const [key, value] of Object.entries(res.data)) {
+            const input = form.querySelector(`[name="${key}"]`);
+            if (input) {
+                if (input.tagName === 'SELECT') {
+                    input.value = value ?? '';
+                    // If value is not found, select the first option
+                    if (![...input.options].some(opt => opt.value == value)) {
+                        input.selectedIndex = 0;
+                    }
+                } else if (input.type === 'number') {
+                    // Accept 0 as valid value
+                    input.value = (value !== null && value !== undefined) ? value : '';
+                } else {
+                    input.value = value ?? '';
+                }
+            }
+        }
+        if (showSuccess) showResponseModal('Success', 'Document numbering saved', 'success');
+        console.log('Loaded document numbering values:', res.data);
+    } else if (showSuccess) {
+        showResponseModal('Error', res.message || 'Failed to load document numbering', 'error');
+    }
+}
+
+function attachCreditReasonFormHandler() {
+    const creditReasonForm = document.getElementById('creditReasonForm');
+    if (creditReasonForm && !creditReasonForm._handlerAttached) {
+        creditReasonForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            try {
+                showLoadingModal('Saving credit reason...');
+                const formData = new FormData(creditReasonForm);
+                const id = formData.get('credit_reason_id');
+                let data;
+                if (id) {
+                    data = await SetupAPI.updateCreditReason(formData);
+                } else {
+                    data = await SetupAPI.addCreditReason(formData);
+                }
+                hideLoadingModal();
+                if (data.success) {
+                    showResponseModal('Success', 'Credit reason saved successfully', 'success');
+                    closeCreditReasonModal();
+                    if (window.invoiceSetup && window.invoiceSetup.loadCreditReasons) {
+                        window.invoiceSetup.loadCreditReasons();
+                    }
+                } else {
+                    const errorMsg = data.error || data.message || 'Failed to save credit reason';
+                    showResponseModal('Error', errorMsg, 'error');
+                }
+                console.log('Credit reason API response:', data);
+            } catch (error) {
+                hideLoadingModal();
+                showResponseModal('Error', 'Failed to save credit reason', 'error');
+            }
+        });
+        creditReasonForm._handlerAttached = true;
+        console.log('CreditReasonForm submit handler attached');
+    }
+}
+
+// Attach immediately (for module load)
+attachCreditReasonFormHandler();
+// Attach on DOMContentLoaded (for safety)
+document.addEventListener('DOMContentLoaded', attachCreditReasonFormHandler);

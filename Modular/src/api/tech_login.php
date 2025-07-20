@@ -53,5 +53,10 @@ $result = $techAuthManager->loginToCustomerAccount($technicianId, $accountNumber
 
 // Return the result
 header('Content-Type: application/json');
+if (isset($result['success']) && !$result['success'] && !empty($result['error'])) {
+    require_once __DIR__ . '/../Utils/errorHandler.php';
+    $aiMessage = getFriendlyMessageFromAI($result['error']);
+    if ($aiMessage) $result['error'] = $aiMessage;
+}
 echo json_encode($result);
 exit; 

@@ -1,6 +1,6 @@
 // Client Screen Logic: Handles main screen rendering, event binding, and table updates
 // Usage: import { initClientScreen, renderClientTable, bindEvents, handleSearch, handleFilter, handlePagination, handleRowClick, refreshClientTable } from './client-screen.js';
-import { openClientModal, closeModal, } from './client-modal.js';
+import { openClientModal, closeModal } from './client-modal.js';
 import { fetchClients } from './client-api.js';
 
 let isLoading = false;
@@ -284,13 +284,22 @@ export async function refreshClientTable() {
     if (!tableBody) return;
     isLoading = true;
     renderLoading(tableBody);
-    const response = await fetchClients({ page: currentPage, limit: getCurrentLimit(), type: currentType, search: getCurrentSearch() });
-    isLoading = false;
-    if (response.success) {
-        // Pass total count for pagination
-        renderClientTable(response.data, response.total || 0);
-    } else {
-        renderError(tableBody, response.message);
+    try {
+        const response = await fetchClients({ page: currentPage, limit: getCurrentLimit(), type: currentType, search: getCurrentSearch() });
+        isLoading = false;
+        if (response.success) {
+            // Pass total count for pagination
+            renderClientTable(response.data, response.total || 0);
+        } else {
+            const errorMsg = response.error || response.message || 'Failed to load clients.';
+            // Do NOT showResponseModal here; only update the table UI
+            renderError(tableBody, errorMsg);
+            renderPagination(0, 0, 0);
+        }
+    } catch (err) {
+        isLoading = false;
+        // Do NOT showResponseModal here; only update the table UI
+        renderError(tableBody, err.message);
         renderPagination(0, 0, 0);
     }
 }

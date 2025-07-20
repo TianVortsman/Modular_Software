@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../../src/Utils/errorHandler.php';
 // Start session before any output
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -10,8 +11,6 @@ require_once __DIR__ . '/../controllers/SupplierController.php';
 require_once __DIR__ . '/../../../src/Helpers/helpers.php';
 
 header('Content-Type: application/json');
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? null;

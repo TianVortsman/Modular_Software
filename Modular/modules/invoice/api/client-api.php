@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../../src/Utils/errorHandler.php';
 // Start session before any output
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -15,8 +16,6 @@ use function App\modules\invoice\controllers\delete_client;
 require_once __DIR__ . '/../controllers/ClientController.php';
 
 header('Content-Type: application/json');
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
 function clean_numeric($value) {
     return is_null($value) ? 0 : floatval(preg_replace('/[^\d.\-]/', '', $value));
@@ -77,6 +76,11 @@ try {
                 exit;
             }
             $result = create_client($data);
+            if (!$result['success'] && !empty($result['error'])) {
+                require_once __DIR__ . '/../../../src/Utils/errorHandler.php';
+                $aiMessage = getFriendlyMessageFromAI($result['error']);
+                if ($aiMessage) $result['error'] = $aiMessage;
+            }
             echo json_encode($result);
             exit;
         case 'update_client':
@@ -96,6 +100,11 @@ try {
                 exit;
             }
             $result = update_client($client_id, $data);
+            if (!$result['success'] && !empty($result['error'])) {
+                require_once __DIR__ . '/../../../src/Utils/errorHandler.php';
+                $aiMessage = getFriendlyMessageFromAI($result['error']);
+                if ($aiMessage) $result['error'] = $aiMessage;
+            }
             echo json_encode($result);
             exit;
         case 'delete_client':
@@ -111,6 +120,11 @@ try {
                 exit;
             }
             $result = delete_client($client_id, $deleted_by);
+            if (!$result['success'] && !empty($result['error'])) {
+                require_once __DIR__ . '/../../../src/Utils/errorHandler.php';
+                $aiMessage = getFriendlyMessageFromAI($result['error']);
+                if ($aiMessage) $result['error'] = $aiMessage;
+            }
             echo json_encode($result);
             exit;
         case 'search':
@@ -129,9 +143,12 @@ try {
             exit;
     }
 } catch (Exception $e) {
+    require_once __DIR__ . '/../../../src/Utils/errorHandler.php';
+    $aiMessage = getFriendlyMessageFromAI($e->getMessage());
     echo json_encode([
         'success' => false,
-        'message' => $e->getMessage(),
+        'message' => $aiMessage ?: 'Please contact Modular Software Support.',
+        'error' => $e->getMessage(),
         'data' => null,
         'error_code' => 'API_ERROR'
     ]);
