@@ -89,6 +89,7 @@ export async function getSupplierContacts(supplierId) {
     const res = await fetch(`../api/setup-api.php?action=getSupplierContacts&supplier_id=${encodeURIComponent(supplierId)}`);
     const data = await res.json();
     window.handleApiResponse(data);
+    return data;
 }
 
 export async function addSupplierContact(formData) {
@@ -98,6 +99,7 @@ export async function addSupplierContact(formData) {
     });
     const data = await res.json();
     window.handleApiResponse(data);
+    return data;
 }
 
 export async function updateSupplierContact(formData) {
@@ -107,6 +109,7 @@ export async function updateSupplierContact(formData) {
     });
     const data = await res.json();
     window.handleApiResponse(data);
+    return data;
 }
 
 export async function deleteSupplierContact(formData) {
@@ -116,6 +119,7 @@ export async function deleteSupplierContact(formData) {
     });
     const data = await res.json();
     window.handleApiResponse(data);
+    return data;
 }
 
 // --- Credit Reason API ---
