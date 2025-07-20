@@ -105,10 +105,10 @@ CREATE TABLE IF NOT EXISTS inventory.supplier_contact_person (
 );
 
 CREATE TABLE IF NOT EXISTS inventory.product_supplier_price_history (
-    product_supplier_price_history_id SERIAL PRIMARY KEY,
+    product_supplier_price_history_id SERIAL PRIMARY KEY,     
 
     product_supplier_id INTEGER NOT NULL
-        REFERENCES inventory.product_supplier(product_id, supplier_id)
+        REFERENCES inventory.product_supplier(product_supplier_id)
         ON DELETE CASCADE,
 
     purchase_price NUMERIC(12,2) NOT NULL,

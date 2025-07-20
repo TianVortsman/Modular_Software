@@ -55,8 +55,8 @@ document.addEventListener('DOMContentLoaded', function () {
         ],
         "invoice-clients": [
             { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
-            { href: "#", icon: "person_add", text: "Add Customer", onclick: "callIfExists('showAddCustomerModal')" },
-            { href: "#", icon: "person_add", text: "Add Company", onclick: "callIfExists('showAddCompanyModal')" },
+            { href: "#", icon: "person_add", text: "Add Private Client", onclick: "callIfExists('showAddCustomerModal')" },
+            { href: "#", icon: "person_add", text: "Add Business Client", onclick: "callIfExists('showAddCompanyModal')" },
             { href: "/modules/invoice/views/invoice-payments.php", icon: "payment", text: "Payment Reminder" }
         ],
         "invoice-products": [

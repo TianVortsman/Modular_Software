@@ -590,7 +590,7 @@
   font-size: 0.98em;
 }
 .supplier-last-restock-date, .supplier-last-price {
-  color: var(--color-text-dark, #888);
+  color: var(--color-text-light, #888);
   font-size: 0.97em;
 }
 .supplier-price-trend {
