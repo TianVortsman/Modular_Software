@@ -1,0 +1,41 @@
+
+2025-07-20T18:03:05+00:00 | Code: DPQVCR | Uncaught Error: No clients found | http://localhost/public/assets/js/helpers.js | line 59 | col 9 | stack: Error: No clients found
+    at handleApiResponse (http://localhost/public/assets/js/helpers.js:59:15)
+    at http://localhost/modules/invoice/js/document-form.js:40:20
+    at xhr.onreadystatechange (http://localhost/modules/invoice/js/document-api.js:14:13)
+2025-07-20T18:03:05+00:00 | Code: USTB59 | Uncaught Error: No clients found | http://localhost/public/assets/js/helpers.js | line 59 | col 9 | stack: Error: No clients found
+    at handleApiResponse (http://localhost/public/assets/js/helpers.js:59:15)
+    at http://localhost/modules/invoice/js/document-form.js:40:20
+    at xhr.onreadystatechange (http://localhost/modules/invoice/js/document-api.js:14:13)
+2025-07-20T18:03:05+00:00 | Code: I51KTG | Uncaught Error: No clients found | http://localhost/public/assets/js/helpers.js | line 59 | col 9 | stack: Error: No clients found
+    at handleApiResponse (http://localhost/public/assets/js/helpers.js:59:15)
+    at http://localhost/modules/invoice/js/document-form.js:40:20
+    at xhr.onreadystatechange (http://localhost/modules/invoice/js/document-api.js:14:13)
+2025-07-20T18:03:05+00:00 | Code: U4RLY1 | Uncaught Error: No clients found | http://localhost/public/assets/js/helpers.js | line 59 | col 9 | stack: Error: No clients found
+    at handleApiResponse (http://localhost/public/assets/js/helpers.js:59:15)
+    at http://localhost/modules/invoice/js/document-form.js:40:20
+    at xhr.onreadystatechange (http://localhost/modules/invoice/js/document-api.js:14:13)
+2025-07-20T18:03:05+00:00 | Code: 9F3GHC | Uncaught Error: No clients found | http://localhost/public/assets/js/helpers.js | line 59 | col 9 | stack: Error: No clients found
+    at handleApiResponse (http://localhost/public/assets/js/helpers.js:59:15)
+    at http://localhost/modules/invoice/js/document-form.js:40:20
+    at xhr.onreadystatechange (http://localhost/modules/invoice/js/document-api.js:14:13)
+2025-07-20T18:03:05+00:00 | Code: 3B477V | Uncaught Error: No clients found | http://localhost/public/assets/js/helpers.js | line 59 | col 9 | stack: Error: No clients found
+    at handleApiResponse (http://localhost/public/assets/js/helpers.js:59:15)
+    at http://localhost/modules/invoice/js/document-form.js:40:20
+    at xhr.onreadystatechange (http://localhost/modules/invoice/js/document-api.js:14:13)
+2025-07-20T18:03:12+00:00 | Code: N4BJ0I | Uncaught Error: No clients found | http://localhost/public/assets/js/helpers.js | line 59 | col 9 | stack: Error: No clients found
+    at handleApiResponse (http://localhost/public/assets/js/helpers.js:59:15)
+    at http://localhost/modules/invoice/js/document-form.js:40:20
+    at xhr.onreadystatechange (http://localhost/modules/invoice/js/document-api.js:14:13)
+2025-07-20T18:03:12+00:00 | Code: IZ090F | Uncaught Error: No clients found | http://localhost/public/assets/js/helpers.js | line 59 | col 9 | stack: Error: No clients found
+    at handleApiResponse (http://localhost/public/assets/js/helpers.js:59:15)
+    at http://localhost/modules/invoice/js/document-form.js:40:20
+    at xhr.onreadystatechange (http://localhost/modules/invoice/js/document-api.js:14:13)
+2025-07-21T11:48:38+00:00 | Code: TOWWQ0 | Uncaught Error: No clients found | http://localhost/public/assets/js/helpers.js | line 79 | col 9 | stack: Error: No clients found
+    at handleApiResponse (http://localhost/public/assets/js/helpers.js:79:15)
+    at http://localhost/modules/invoice/js/document-form.js:40:20
+    at xhr.onreadystatechange (http://localhost/modules/invoice/js/document-api.js:14:13)
+2025-07-21T11:48:38+00:00 | Code: KT36R8 | Uncaught Error: No clients found | http://localhost/public/assets/js/helpers.js | line 79 | col 9 | stack: Error: No clients found
+    at handleApiResponse (http://localhost/public/assets/js/helpers.js:79:15)
+    at http://localhost/modules/invoice/js/document-form.js:40:20
+    at xhr.onreadystatechange (http://localhost/modules/invoice/js/document-api.js:14:13)
