@@ -212,6 +212,7 @@ CREATE TABLE invoicing.document_items (
     item_id SERIAL PRIMARY KEY,
     document_id INTEGER REFERENCES invoicing.documents(document_id) ON DELETE CASCADE,
     product_id INTEGER REFERENCES core.products(product_id),
+    sku VARCHAR(50),
     product_description TEXT,
     quantity NUMERIC(10,2) NOT NULL,
     unit_price NUMERIC(12,2) NOT NULL,

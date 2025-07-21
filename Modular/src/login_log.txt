@@ -331,3 +331,18 @@
 [2025-07-16 17:55:34] Login attempt for email: tianryno01@gmail.com
 [2025-07-16 17:55:34] Technician check query executed successfully.
 [2025-07-16 17:55:34] Technician login successful: tianryno01@gmail.com
+[2025-07-21 17:51:15] Login attempt for email: tianryno01@gmail.com
+[2025-07-21 17:51:15] Technician check query executed successfully.
+[2025-07-21 17:51:15] Technician login successful: tianryno01@gmail.com
+[2025-07-21 18:17:02] Login attempt for email: leonie.vortsman@gmail.com
+[2025-07-21 18:17:02] Technician check query executed successfully.
+[2025-07-21 18:17:02] Technician login successful: leonie.vortsman@gmail.com
+[2025-07-21 18:33:02] Login attempt for email: leonie.vortsman@gmail.com
+[2025-07-21 18:33:02] Technician check query executed successfully.
+[2025-07-21 18:33:02] Technician login successful: leonie.vortsman@gmail.com
+[2025-07-21 18:36:38] Login attempt for email: leonie.vortsman@gmail.com
+[2025-07-21 18:36:38] Technician check query executed successfully.
+[2025-07-21 18:36:38] Technician login successful: leonie.vortsman@gmail.com
+[2025-07-21 18:44:48] Login attempt for email: tianryno01@gmail.com
+[2025-07-21 18:44:48] Technician check query executed successfully.
+[2025-07-21 18:44:48] Technician login successful: tianryno01@gmail.com

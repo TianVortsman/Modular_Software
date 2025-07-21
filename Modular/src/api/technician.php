@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-require_once __DIR__ . '/../../Core/Database/MainDatabase.php';
+require_once __DIR__ . '/../Core/Database/MainDatabase.php';
 use App\Core\Database\MainDatabase;
 
 // Only allow POST
@@ -56,4 +56,4 @@ try {
     }
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);
-}
+} 

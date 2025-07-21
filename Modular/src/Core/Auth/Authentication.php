@@ -234,10 +234,10 @@ class Authentication
                     $_SESSION['tech_email'] = $techUser['email'];
                     $_SESSION['tech_name'] = $techUser['name'];
                     $_SESSION['tech_id'] = $techUser['id'];
-                    
-                    // Add new format session variables for compatibility with newer code
+                    // Always set user_id to 9999 for techs to avoid confusion in core.users
                     $_SESSION['user_type'] = 'technician';
-                    $_SESSION['user_id'] = $techUser['id'];
+                    $_SESSION['user_id'] = 9999;
+                    error_log("Technician login: user_id={$_SESSION['user_id']}, tech_id={$_SESSION['tech_id']}");
                     
                     // Clear any old session data
                     if (isset($_SESSION['account_number'])) {

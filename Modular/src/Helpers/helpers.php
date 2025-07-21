@@ -93,10 +93,14 @@ function send_notification($user_id, $message, $title = 'Notification', $module 
  */
 function log_user_action($user_id, $action, $related_id = null, $details = null, $module = 'invoicing', $related_type = 'invoice', $old_data = null, $new_data = null) {
     global $conn;
+    // Ensure user_id is set from session if not provided
+    if (empty($user_id) && isset($_SESSION['user_id'])) {$user_id = $_SESSION['user_id']; }
+    $tech_id = isset($_SESSION['tech_id']) ? $_SESSION['tech_id'] : null;
     try {
-        $sql = "INSERT INTO audit.user_actions (user_id, module, action, related_type, related_id, old_data, new_data, details, ip_address, user_agent, session_id) VALUES (:user_id, :module, :action, :related_type, :related_id, :old_data, :new_data, :details, :ip_address, :user_agent, :session_id)";
+        $sql = "INSERT INTO audit.user_actions (user_id, tech_id, module, action, related_type, related_id, old_data, new_data, details, ip_address, user_agent, session_id) VALUES (:user_id, :tech_id, :module, :action, :related_type, :related_id, :old_data, :new_data, :details, :ip_address, :user_agent, :session_id)";
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindValue(':tech_id', $tech_id, PDO::PARAM_INT);
         $stmt->bindValue(':module', $module);
         $stmt->bindValue(':action', $action);
         $stmt->bindValue(':related_type', $related_type);
@@ -104,7 +108,6 @@ function log_user_action($user_id, $action, $related_id = null, $details = null,
         $stmt->bindValue(':old_data', $old_data ? json_encode($old_data) : null);
         $stmt->bindValue(':new_data', $new_data ? json_encode($new_data) : null);
         $stmt->bindValue(':details', is_array($details) ? json_encode($details) : $details);
-        // Optionally get IP, user agent, session from $_SERVER
         $stmt->bindValue(':ip_address', $_SERVER['REMOTE_ADDR'] ?? null);
         $stmt->bindValue(':user_agent', $_SERVER['HTTP_USER_AGENT'] ?? null);
         $stmt->bindValue(':session_id', session_id() ?: null);

@@ -4,6 +4,7 @@ CREATE TABLE audit.user_actions (
     action_id SERIAL PRIMARY KEY,
 
     user_id INT NOT NULL REFERENCES core.users(user_id) ON DELETE CASCADE,
+    tech_id INTEGER,
 
     module VARCHAR(50) NOT NULL,        -- e.g. 'invoicing'
     action VARCHAR(100) NOT NULL,       -- e.g. 'update_invoice'

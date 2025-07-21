@@ -254,6 +254,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['acc
                     <i class="material-icons">person_add</i>
                     Add Customer
                 </button>
+                <button onclick="addTechnician()" class="button primary">
+                <i class="material-icons">person_add</i>
+                Add Technician
+                </button>
             </div>
         </header>
 
@@ -493,7 +497,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['acc
                     <div id="general-info" class="tab-content active">
                         <div class="form-group">
                             <label for="company_name">Company Name</label>
-                            <input type="text" id="company_name" name="company_name" required>
+                            <input type="text" id="modal_company_name" name="company_name" required>
                         </div>
 
                         <div class="form-group">
@@ -830,6 +834,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['acc
         </div>
     </div>
     <!-- End Add User Modal -->
+
+    <!-- Add Technician Modal -->
+    <div id="add-technician-modal" class="modal" data-mode="add" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>
+                    <i class="material-icons">engineering</i>
+                    Add Technician
+                </h2>
+                <button class="close-button" onclick="closeAddTechnicianModal()">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="add-technician-form">
+                    <div class="form-group">
+                        <label for="add-technician-name">Name</label>
+                        <input type="text" id="add-technician-name" name="name" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="add-technician-email">Email</label>
+                        <input type="email" id="add-technician-email" name="email" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="add-technician-password">Password</label>
+                        <input type="password" id="add-technician-password" name="password" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="add-technician-role">Role</label>
+                        <select id="add-technician-role" name="role" required>
+                            <option value="1">Technician</option>
+                            <option value="2">Senior Technician</option>
+                            <option value="3">Admin</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="button secondary" onclick="closeAddTechnicianModal()">Cancel</button>
+                        <button type="submit" class="button primary">Add Technician</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- End Add Technician Modal -->
 
     <!-- Debug Link -->
     <div style="position: fixed; bottom: 10px; right: 10px; font-size: 12px; opacity: 0.5;">

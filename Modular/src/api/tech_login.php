@@ -45,7 +45,7 @@ if (!isset($_POST['account_number']) || empty($_POST['account_number'])) {
 }
 
 // Get the technician ID and account number
-$technicianId = $_SESSION['user_id'] ?? $_SESSION['tech_id']; // Support both formats
+$technicianId = $_SESSION['tech_id']; // Support both formats
 $accountNumber = $_POST['account_number'];
 
 // Attempt to login

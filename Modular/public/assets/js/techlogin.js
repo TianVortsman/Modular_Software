@@ -3,6 +3,8 @@ import './helpers.js';
 const clientDevicesModal = document.getElementById('client-devices-modal');
 const addCustomerModal = document.getElementById('add-customer-modal');
 const customerModal = document.getElementById('customerModal');
+const addTechnicianModal = document.getElementById('add-technician-modal');
+const addTechnicianForm = document.getElementById('add-technician-form');
 
 let currentCustomerId = null;
 let currentCustomerData = null;
@@ -15,6 +17,26 @@ let searchTimeout = null; // Add debounce timeout variable
 
 // Global variables at the top of the file
 const SEARCH_DEBOUNCE_DELAY = 300; // 300ms debounce for search
+
+function addTechnician(){
+    openAddTechnicianModal();
+}
+
+function openAddTechnicianModal() {
+    if (addTechnicianModal) {
+        addTechnicianModal.style.display = 'flex';
+        addTechnicianForm.reset();
+    }
+}
+window.openAddTechnicianModal = openAddTechnicianModal;
+
+function closeAddTechnicianModal() {
+    if (addTechnicianModal) {
+        addTechnicianModal.style.display = 'none';
+        addTechnicianForm.reset();
+    }
+}
+window.closeAddTechnicianModal = closeAddTechnicianModal;
 
 // Modal Functions
 function openAddCustomerModal() {
@@ -259,6 +281,50 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch (err) {
                 hideLoadingModal();
                 showResponseModal('Error adding user: ' + err.message, 'error');
+            }
+        });
+    }
+
+    // Add Technician modal form submit
+    if (addTechnicianForm) {
+        addTechnicianForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('add-technician-name').value.trim();
+            const email = document.getElementById('add-technician-email').value.trim();
+            const password = document.getElementById('add-technician-password').value;
+            const role = document.getElementById('add-technician-role').value;
+            if (!name || !email || !password || !role) {
+                showResponseModal('All fields are required.', 'error');
+                return;
+            }
+            if (!validateEmail(email)) {
+                showResponseModal('Invalid email address.', 'error');
+                return;
+            }
+            showLoadingModal('Adding technician...');
+            try {
+                const res = await fetch('../../src/api/technician.php?action=add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password,
+                        role
+                    })
+                });
+                const data = await res.json();
+                hideLoadingModal();
+                window.handleApiResponse(data);
+                if (data.success) {
+                    showResponseModal('Technician added successfully!', 'success');
+                    closeAddTechnicianModal();
+                } else {
+                    showResponseModal(data.error || data.message || 'Failed to add technician.', 'error');
+                }
+            } catch (err) {
+                hideLoadingModal();
+                showResponseModal('Error adding technician: ' + err.message, 'error');
             }
         });
     }
@@ -1193,3 +1259,4 @@ window.startDeviceDiscovery = startDeviceDiscovery;
 window.exportCustomerData = exportCustomerData;
 window.searchCustomers = searchCustomers;
 window.closeCustomerModal = closeCustomerModal;
+window.addTechnician = addTechnician;
