@@ -235,7 +235,18 @@ try {
             if ($method !== 'GET') {
                 throw new Exception('GET method required for list action');
             }
-            $result = \App\modules\invoice\controllers\list_products([]); // Use snake_case to match function definition
+            // Build options from query params, using helper if available
+            $options = [];
+            $options['type'] = isset($_GET['type']) && is_numeric($_GET['type']) ? (int)$_GET['type'] : null;
+            $options['limit'] = isset($_GET['limit']) && is_numeric($_GET['limit']) ? (int)$_GET['limit'] : 50;
+            $options['page'] = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+            $options['search'] = $_GET['search'] ?? null;
+            $options['category'] = isset($_GET['category']) && is_numeric($_GET['category']) ? (int)$_GET['category'] : null;
+            $options['subcategory'] = isset($_GET['subcategory']) && is_numeric($_GET['subcategory']) ? (int)$_GET['subcategory'] : null;
+            $options['supplier_id'] = isset($_GET['supplier_id']) && is_numeric($_GET['supplier_id']) ? (int)$_GET['supplier_id'] : null;
+            $options['sort_by'] = $_GET['sort_by'] ?? null;
+            $options['sort_dir'] = $_GET['sort_dir'] ?? null;
+            $result = \App\modules\invoice\controllers\list_products($options);
             break;
 
         case 'get':
@@ -247,34 +258,6 @@ try {
                 $_GET['product_id'] = $_GET['id'];
             }
             $result = \App\modules\invoice\controllers\get_product_details($_GET['product_id']);
-            break;
-
-        case 'search':
-            if ($method !== 'GET') {
-                throw new Exception('GET method required for search action');
-            }
-            $query = $_GET['query'] ?? '';
-            $field = $_GET['field'] ?? '';
-            if (strlen($query) < 2) throw new Exception('Query too short');
-            $sql = "SELECT 
-                        p.product_id, 
-                        p.product_name, 
-                        p.sku, 
-                        p.barcode, 
-                        p.product_description, 
-                        p.product_price, 
-                        p.tax_rate_id, 
-                        tr.rate AS tax_rate, 
-                        pi.product_stock_quantity
-                    FROM core.products p
-                    LEFT JOIN inventory.product_inventory pi ON p.product_id = pi.product_id
-                    LEFT JOIN core.tax_rates tr ON p.tax_rate_id = tr.tax_rate_id
-                    WHERE (p.product_name ILIKE :q OR p.sku ILIKE :q OR p.barcode ILIKE :q OR p.product_description ILIKE :q)
-                    LIMIT 20";
-            $stmt = $conn->prepare($sql);
-            $stmt->execute([':q' => "%$query%"]);
-            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            echo json_encode($results);
             break;
 
         case 'update_status':

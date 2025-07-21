@@ -5,7 +5,14 @@ export class ProductAPI {
     // Fetch all products, optionally with filters
     static fetchProducts(filters = {}) {
         // Use the shared buildQueryParams helper for consistency
-        const params = buildQueryParams({ action: 'list' }, filters);
+        // Accepts: { type, limit, page, search, category, subcategory, supplier_id, sort_by, sort_dir }
+        const params = buildQueryParams(
+            { action: 'list' },
+            filters,
+            filters.search || '',
+            { page: filters.page, limit: filters.limit },
+            { sortBy: filters.sort_by, sortDir: filters.sort_dir }
+        );
         const url = '/modules/invoice/api/products.php?' + params.toString();
         return fetch(url, {
             credentials: 'include'

@@ -18,6 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
             sections.forEach(sec => {
                 if (sec.id === this.dataset.section) {
                     sec.style.display = '';
+                    // Re-apply filter values for this section
+                    applySectionFilters(sec.id);
                 } else {
                     sec.style.display = 'none';
                 }
@@ -28,7 +30,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const subtabs = section.querySelectorAll('.subtab-button');
                 subtabs.forEach((st, i) => st.classList.toggle('active', i === 0));
                 const status = subtabs.length > 0 ? subtabs[0].dataset.status : undefined;
-                fetchAndRenderDocuments(this.dataset.section, status);
+                // Always restore filters before fetching
+                applySectionFilters(this.dataset.section);
+                fetchAndRenderDocuments(this.dataset.section, status, filterState[this.dataset.section]);
             }
         });
     });
@@ -102,6 +106,25 @@ const sectionClientIds = {
     }
 };
 
+function applySectionFilters(sectionId) {
+    const ids = sectionClientIds[sectionId];
+    const state = filterState[sectionId] || {};
+    // Date filters
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    const dateFrom = section.querySelector('input[type="date"][id$="date-from"]');
+    const dateTo = section.querySelector('input[type="date"][id$="date-to"]');
+    if (dateFrom && state.date_from !== undefined) dateFrom.value = state.date_from;
+    if (dateTo && state.date_to !== undefined) dateTo.value = state.date_to;
+    // Client filter
+    if (ids) {
+        const clientInput = document.getElementById(ids.input);
+        const clientIdInput = document.getElementById(ids.hidden);
+        if (clientInput && state.client_name !== undefined) clientInput.value = state.client_name;
+        if (clientIdInput && state.client_id !== undefined) clientIdInput.value = state.client_id;
+    }
+}
+
 function setupFilters() {
     document.querySelectorAll('.document-section').forEach(section => {
         const sectionId = section.id;
@@ -111,12 +134,14 @@ function setupFilters() {
         if (dateFrom) {
             dateFrom.addEventListener('change', function() {
                 filterState[sectionId].date_from = this.value;
+                dateFrom.value = this.value;
                 triggerSectionFetch(sectionId);
             });
         }
         if (dateTo) {
             dateTo.addEventListener('change', function() {
                 filterState[sectionId].date_to = this.value;
+                dateTo.value = this.value;
                 triggerSectionFetch(sectionId);
             });
         }
@@ -130,12 +155,29 @@ function setupFilters() {
                 clientInput.addEventListener('input', function() {
                     customSectionClientSearch(sectionId, clientInput, clientIdInput, dropdown);
                 });
-                // Listen for client selection (when client-id is set)
                 clientIdInput.addEventListener('change', function() {
                     filterState[sectionId].client_id = this.value;
+                    clientIdInput.value = this.value;
                     triggerSectionFetch(sectionId);
                 });
             }
+        }
+        // Add Clear Filters button
+        let clearBtn = section.querySelector('.clear-filters-btn');
+        if (!clearBtn) {
+            clearBtn = document.createElement('button');
+            clearBtn.textContent = 'Clear Filters';
+            clearBtn.className = 'clear-filters-btn';
+            clearBtn.type = 'button';
+            clearBtn.style.marginLeft = 'auto';
+            clearBtn.onclick = function() {
+                // Reset filter state and inputs
+                filterState[sectionId] = {};
+                applySectionFilters(sectionId);
+                triggerSectionFetch(sectionId);
+            };
+            const filterBar = section.querySelector('.invoice-filter');
+            if (filterBar) filterBar.appendChild(clearBtn);
         }
     });
 }
@@ -147,6 +189,8 @@ function customSectionClientSearch(sectionId, input, hidden, dropdown) {
         dropdown.innerHTML = '';
         hidden.value = '';
         filterState[sectionId].client_id = '';
+        // Do NOT clear input.value here, so user can type
+        // Do NOT clear client_name here, so it persists
         triggerSectionFetch(sectionId);
         return;
     }
@@ -161,8 +205,9 @@ function customSectionClientSearch(sectionId, input, hidden, dropdown) {
                 div.onclick = function () {
                     hidden.value = item.client_id;
                     input.value = item.client_name;
-                    dropdown.style.display = 'none';
                     filterState[sectionId].client_id = item.client_id;
+                    filterState[sectionId].client_name = item.client_name;
+                    dropdown.style.display = 'none';
                     triggerSectionFetch(sectionId);
                 };
                 if (idx === 0) div.classList.add('highlight');

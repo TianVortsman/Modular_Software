@@ -57,10 +57,14 @@ function getFriendlyMessageFromAI($error, $formData = null) {
 
 function handleError($errno, $errstr, $errfile, $errline) {
     $config = require __DIR__ . '/../Config/app.php';
-    $env = $config['APP_ENV'] ?? 'production';
+    $env = $config['APP_ENV'] ?? 'development';
 
     $fullError = "[PHP] $errstr in $errfile on line $errline";
     $errorCode = generateErrorCode();
+
+    // Always log the original error first
+    $log = date('c') . " | Code: $errorCode | $fullError\n";
+    file_put_contents(__DIR__ . '/../../storage/logs/php_errors.log', $log, FILE_APPEND);
 
     if ($env === 'development') {
         // DEV: show full error

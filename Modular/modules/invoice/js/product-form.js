@@ -11,12 +11,6 @@ import { ProductAPI } from './product-api.js';
             this.categoryDropdown = document.getElementById('universalItemCategory');
             this.subcategoryDropdown = document.getElementById('universalItemSubcategory');
             this.supplierDropdown = document.getElementById('universalItemSupplier');
-            // Add event listener for category change to update subcategories
-            if (this.categoryDropdown && this.subcategoryDropdown) {
-                this.categoryDropdown.addEventListener('change', (e) => {
-                    this.populateSubcategoryDropdown(e.target.value);
-                });
-            }
         }
         populateForm(data) {
             if (!this.form) return;
@@ -156,6 +150,15 @@ import { ProductAPI } from './product-api.js';
             if (selectedId) typeDropdown.value = selectedId;
             // Always trigger category filtering when type changes
             typeDropdown.onchange = () => {
+                // Reset category and subcategory dropdowns
+                if (this.categoryDropdown) {
+                    this.categoryDropdown.value = '';
+                    this.categoryDropdown.innerHTML = '<option value="">Select Category</option>';
+                }
+                if (this.subcategoryDropdown) {
+                    this.subcategoryDropdown.value = '';
+                    this.subcategoryDropdown.innerHTML = '<option value="">Select Subcategory</option>';
+                }
                 this.populateCategoryDropdown(typeDropdown.value);
                 this.populateSubcategoryDropdown();
             };

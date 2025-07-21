@@ -130,15 +130,15 @@ class ProductScreenManager {
             }
             if (sectionType === 'product') {
                 if (product.product_status !== 'active') return false;
-                if ((product.product_type_name || '').toLowerCase() !== 'product') return false;
+                if ((product.product_type_name || '') !== 'Product') return false;
             } else if (sectionType === 'part') {
-                if ((product.product_type_name || '').toLowerCase() !== 'part') return false;
+                if ((product.product_type_name || '') !== 'Part') return false;
                 if (product.product_status !== 'active') return false;
             } else if (sectionType === 'service') {
-                if ((product.product_type_name || '').toLowerCase() !== 'service') return false;
+                if ((product.product_type_name || '') !== 'Service') return false;
                 if (product.product_status !== 'active') return false;
             } else if (sectionType === 'extra') {
-                if ((product.product_type_name || '').toLowerCase() !== 'extra') return false;
+                if ((product.product_type_name || '') !== 'Extra') return false;
                 if (product.product_status !== 'active') return false;
             } else if (sectionType === 'discontinued') {
                 if (product.product_status !== 'discontinued') return false;
@@ -168,8 +168,13 @@ class ProductScreenManager {
         }
     }
     async refreshProductList() {
-        // Use ProductModalAPI for fetching products
-        ProductAPI.fetchProducts().then(data => {
+        // Always fetch products for the current section type
+        const sectionType = this.getCurrentSectionType();
+        if (!sectionTypeToTypeId['Product']) await updateSectionTypeToTypeIdMap();
+        const properCaseType = sectionType.charAt(0).toUpperCase() + sectionType.slice(1).toLowerCase();
+        const typeId = sectionTypeToTypeId[properCaseType];
+        const filters = typeId ? { type: typeId } : {};
+        ProductAPI.fetchProducts(filters).then(data => {
             if (data.success && Array.isArray(data.data)) {
                 this.allProducts = data.data;
                 this.applyFilters();
@@ -246,7 +251,7 @@ class ProductScreenManager {
                     const file = files[0];
                     const ext = file.name.split('.').pop().toLowerCase();
                     // Determine type/category for upload
-                    let uploadType = (product.product_type_name || type || 'product').toLowerCase();
+                    let uploadType = (product.product_type_name || type || 'Product');
                     ProductAPI.uploadImage(file, productId, uploadType).then(res => {
                         if (res.success && res.url) {
                             overlay.textContent = 'Image uploaded!';
@@ -330,7 +335,7 @@ class ProductScreenManager {
         const sectionId = activeSection.id;
         return sectionTypeMap[sectionId] || 'product';
     }
-    setupSectionTabSwitching() {
+    async setupSectionTabSwitching() {
         const tabsContent = document.querySelector('.tabs-content');
         if (!tabsContent) return;
         let lastSectionId = this.getCurrentSectionType();
@@ -338,7 +343,9 @@ class ProductScreenManager {
             const sectionType = this.getCurrentSectionType();
             if (sectionType !== lastSectionId) {
                 lastSectionId = sectionType;
+                console.log('[setupSectionTabSwitching] Tab switched. New sectionType:', sectionType, 'sectionTypeToTypeId:', sectionTypeToTypeId);
                 this.populateFilterDropdownsForSection(sectionType);
+                this.refreshProductList();
                 this.applyFilters();
             }
         });
@@ -347,25 +354,28 @@ class ProductScreenManager {
         });
         document.addEventListener('DOMContentLoaded', () => {
             const sectionType = this.getCurrentSectionType();
+            console.log('[setupSectionTabSwitching] DOMContentLoaded. sectionType:', sectionType, 'sectionTypeToTypeId:', sectionTypeToTypeId);
             this.populateFilterDropdownsForSection(sectionType);
+            this.refreshProductList();
             this.applyFilters();
         });
     }
     async populateFilterDropdownsForSection(sectionType) {
-        if (!sectionTypeToTypeId['product']) await updateSectionTypeToTypeIdMap();
-        const typeId = sectionTypeToTypeId[sectionType] || sectionTypeToTypeId['product'];
+        if (!sectionTypeToTypeId['Product']) await updateSectionTypeToTypeIdMap();
+        // Always use Proper Case for lookup
+        const properCaseType = sectionType.charAt(0).toUpperCase() + sectionType.slice(1).toLowerCase();
+        const typeId = sectionTypeToTypeId[properCaseType] || sectionTypeToTypeId['Product'];
+        console.log('[populateFilterDropdownsForSection] sectionType:', sectionType, 'properCaseType:', properCaseType, 'typeId:', typeId, 'sectionTypeToTypeId:', sectionTypeToTypeId);
         await this.populateCategoryDropdown(typeId);
         const subcategoryFilter = document.getElementById('subcategory-filter');
         if (subcategoryFilter) {
             subcategoryFilter.innerHTML = '<option value="">All Subcategories</option>';
         }
     }
-    async populateFilterDropdowns() {
-        // Use ProductModalAPI for fetching dropdowns if needed
-    }
     async populateCategoryDropdown(typeId) {
         const categoryFilter = document.getElementById('category-filter');
         if (!categoryFilter) return;
+        console.log('[populateCategoryDropdown] typeId:', typeId);
         const res = await ProductAPI.fetchProductCategories(typeId);
         categoryFilter.innerHTML = '<option value="">All Categories</option>';
         if (res.success && Array.isArray(res.data)) {
@@ -438,13 +448,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         });
     }
-    // Wire up category filter to populate subcategories
-    const categoryFilter = document.getElementById('category-filter');
-    if (categoryFilter) {
-        categoryFilter.addEventListener('change', (e) => {
-            window.productScreenManager.populateSubcategoryDropdown(e.target.value);
-        });
-    }
     // Wait for product cards to be rendered
     setTimeout(() => {
         document.querySelectorAll('.product-card').forEach(card => {
@@ -487,7 +490,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const file = files[0];
                         const ext = file.name.split('.').pop().toLowerCase();
                         // Determine type/category for upload
-                        let uploadType = (product.product_type_name || type || 'product').toLowerCase();
+                        let uploadType = (product.product_type_name || type || 'Product');
                         ProductAPI.uploadImage(file, productId, uploadType).then(res => {
                             if (res.success && res.url) {
                                 overlay.textContent = 'Image uploaded!';
@@ -677,9 +680,9 @@ let sectionTypeToTypeId = {};
 async function updateSectionTypeToTypeIdMap() {
     const typeRes = await ProductAPI.fetchProductTypes();
     if (typeRes.success && Array.isArray(typeRes.data)) {
-        // Lowercase type names for mapping
+        // Proper case type names for mapping
         typeRes.data.forEach(type => {
-            sectionTypeToTypeId[type.product_type_name.toLowerCase()] = type.product_type_id;
+            sectionTypeToTypeId[type.product_type_name] = type.product_type_id;
         });
     }
 }

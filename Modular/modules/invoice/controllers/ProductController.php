@@ -138,7 +138,7 @@ function list_products(array $options = []): array {
         $extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
         foreach ($products as &$product) {
-            $type = strtolower($product['product_type_name'] ?? 'product');
+            $type = $product['product_type_name'] ?? 'Product';
             $imagePath = null;
 
             foreach ($extensions as $ext) {
@@ -161,6 +161,10 @@ function list_products(array $options = []): array {
     } catch (PDOException $e) {
         require_once __DIR__ . '/../../../src/Helpers/helpers.php';
         $msg = get_friendly_error($e->getMessage());
+        // Log original error to php_errors.log
+        $fullError = '[listProducts] DB Error: ' . $e->getMessage();
+        $log = date('c') . " | $fullError\n";
+        file_put_contents(__DIR__ . '/../../../storage/logs/php_errors.log', $log, FILE_APPEND);
         error_log('[listProducts] DB Error: ' . $e->getMessage());
         log_user_action($_SESSION['user_id'] ?? null, 'listProducts', null, $e->getMessage());
         return [
@@ -172,6 +176,10 @@ function list_products(array $options = []): array {
     } catch (Throwable $e) {
         require_once __DIR__ . '/../../../src/Helpers/helpers.php';
         $msg = get_friendly_error($e->getMessage());
+        // Log original error to php_errors.log
+        $fullError = '[listProducts] General Error: ' . $e->getMessage();
+        $log = date('c') . " | $fullError\n";
+        file_put_contents(__DIR__ . '/../../../storage/logs/php_errors.log', $log, FILE_APPEND);
         error_log('[listProducts] General Error: ' . $e->getMessage());
         log_user_action($_SESSION['user_id'] ?? null, 'listProducts', null, $e->getMessage());
         return [
@@ -253,6 +261,27 @@ function update_product(array $data, int $user_id): array {
         if (!$conn->inTransaction()) {
             $conn->beginTransaction();
         }
+        // --- Validate category/subcategory for new type ---
+        $newTypeId = is_numeric($data['product_type_id'] ?? null) ? (int)$data['product_type_id'] : null;
+        $categoryId = is_numeric($data['category_id'] ?? null) ? (int)$data['category_id'] : null;
+        $subcategoryId = is_numeric($data['subcategory_id'] ?? null) ? (int)$data['subcategory_id'] : null;
+        // Validate category for new type
+        if ($categoryId && $newTypeId) {
+            $stmt = $conn->prepare('SELECT COUNT(*) FROM core.product_categories WHERE category_id = :cat AND product_type_id = :type');
+            $stmt->execute(['cat' => $categoryId, 'type' => $newTypeId]);
+            if ($stmt->fetchColumn() == 0) {
+                $categoryId = null;
+                $subcategoryId = null;
+            }
+        }
+        // Validate subcategory for new category
+        if ($subcategoryId && $categoryId) {
+            $stmt = $conn->prepare('SELECT COUNT(*) FROM core.product_subcategories WHERE subcategory_id = :sub AND category_id = :cat');
+            $stmt->execute(['sub' => $subcategoryId, 'cat' => $categoryId]);
+            if ($stmt->fetchColumn() == 0) {
+                $subcategoryId = null;
+            }
+        }
         // For now, just update the core product table
         $sql = "UPDATE core.products SET
             product_name = :product_name,
@@ -277,12 +306,12 @@ function update_product(array $data, int $user_id): array {
             'product_price'      => $data['product_price'] !== '' ? $data['product_price'] : 0,
             'product_status'     => $data['product_status'] ?? 'active',
             'sku'                => $data['sku'] ?? null,
-            'barcode'            => $data['barcode'] ?? null,
-            'product_type_id'    => is_numeric($data['product_type_id'] ?? null) ? $data['product_type_id'] : null,
-            'category_id'        => is_numeric($data['category_id'] ?? null) ? $data['category_id'] : null,
-            'subcategory_id'     => is_numeric($data['subcategory_id'] ?? null) ? $data['subcategory_id'] : null,
-            'tax_rate_id'        => $data['tax_rate_id'] ?? null,
-            'discount'           => $data['discount'] !== '' ? $data['discount'] : 0,
+            'barcode'            => (isset($data['barcode']) && $data['barcode'] !== '') ? $data['barcode'] : null,
+            'product_type_id'    => is_numeric($newTypeId) ? (int)$newTypeId : null,
+            'category_id'        => is_numeric($categoryId) ? (int)$categoryId : null,
+            'subcategory_id'     => is_numeric($subcategoryId) ? (int)$subcategoryId : null,
+            'tax_rate_id'        => (isset($data['tax_rate_id']) && is_numeric($data['tax_rate_id'])) ? (int)$data['tax_rate_id'] : null,
+            'discount'           => (isset($data['discount']) && $data['discount'] !== '' && is_numeric($data['discount'])) ? $data['discount'] : 0,
             'notes'              => $data['notes'] ?? null
         ]);
         // Update inventory if any inventory field is present
@@ -338,6 +367,10 @@ function update_product(array $data, int $user_id): array {
         }
         require_once __DIR__ . '/../../../src/Helpers/helpers.php';
         $msg = get_friendly_error($e->getMessage());
+        // Log original error to php_errors.log
+        $fullError = '[update_product] ' . $e->getMessage();
+        $log = date('c') . " | $fullError\n";
+        file_put_contents(__DIR__ . '/../../../storage/logs/php_errors.log', $log, FILE_APPEND);
         error_log('[update_product] ' . $msg);
         log_user_action($user_id, 'update_product', $data['product_id'] ?? null, $msg);
         return [
@@ -413,6 +446,10 @@ function add_product(array $data, int $user_id): array {
         }
         require_once __DIR__ . '/../../../src/Helpers/helpers.php';
         $msg = get_friendly_error($e->getMessage());
+        // Log original error to php_errors.log
+        $fullError = '[add_product] ' . $e->getMessage();
+        $log = date('c') . " | $fullError\n";
+        file_put_contents(__DIR__ . '/../../../storage/logs/php_errors.log', $log, FILE_APPEND);
         error_log('[add_product] ' . $msg);
         log_user_action($user_id, 'add_product', null, $msg);
         return [
@@ -479,7 +516,7 @@ function get_product_details(int $productId): array {
 
         // Image URL lookup
         $accountNumber = $_SESSION['account_number'] ?? 'ACC002';
-        $type          = strtolower($product['product_type_name'] ?? 'product');
+        $type          = $product['product_type_name'] ?? 'Product';
         $docRoot       = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
         $imagePath     = null;
         $extensions    = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
@@ -529,6 +566,10 @@ function get_product_types(): array {
         ];
     } catch (PDOException $e) {
         error_log('[getProductTypes] DB Error: ' . $e->getMessage());
+        // Log original error to php_errors.log
+        $fullError = '[getProductTypes] DB Error: ' . $e->getMessage();
+        $log = date('c') . " | $fullError\n";
+        file_put_contents(__DIR__ . '/../../../storage/logs/php_errors.log', $log, FILE_APPEND);
         return [
             'success' => false,
             'message' => 'Failed to fetch product types',
@@ -560,6 +601,10 @@ function get_product_categories(?int $productTypeId = null): array {
         ];
     } catch (PDOException $e) {
         error_log('[getProductCategories] DB Error: ' . $e->getMessage());
+        // Log original error to php_errors.log
+        $fullError = '[getProductCategories] DB Error: ' . $e->getMessage();
+        $log = date('c') . " | $fullError\n";
+        file_put_contents(__DIR__ . '/../../../storage/logs/php_errors.log', $log, FILE_APPEND);
         return [
             'success' => false,
             'message' => 'Failed to fetch product categories',
@@ -591,6 +636,10 @@ function get_product_subcategories(?int $categoryId = null): array {
         ];
     } catch (PDOException $e) {
         error_log('[getProductSubcategories] DB Error: ' . $e->getMessage());
+        // Log original error to php_errors.log
+        $fullError = '[getProductSubcategories] DB Error: ' . $e->getMessage();
+        $log = date('c') . " | $fullError\n";
+        file_put_contents(__DIR__ . '/../../../storage/logs/php_errors.log', $log, FILE_APPEND);
         return [
             'success' => false,
             'message' => 'Failed to fetch product subcategories',
@@ -624,7 +673,7 @@ function insert_product(array $data): ?int {
             'product_price'      => $data['product_price'] !== '' ? $data['product_price'] : 0,
             'product_status'     => $data['product_status'] ?? 'active',
             'sku'                => !empty($data['sku']) ? $data['sku'] : null,
-            'barcode'            => !empty($data['barcode']) ? $data['barcode'] : null,
+            'barcode'            => (isset($data['barcode']) && $data['barcode'] !== '') ? $data['barcode'] : null,
             'product_type_id'    => is_numeric($data['product_type_id'] ?? null) ? $data['product_type_id'] : null,
             'category_id'        => is_numeric($data['category_id'] ?? null) ? $data['category_id'] : null,
             'subcategory_id'     => is_numeric($data['subcategory_id'] ?? null) ? $data['subcategory_id'] : null,
@@ -644,9 +693,17 @@ function insert_product(array $data): ?int {
 
     } catch (PDOException $e) {
         error_log('[insert_product] DB Error: ' . $e->getMessage());
+        // Log original error to php_errors.log
+        $fullError = '[insert_product] DB Error: ' . $e->getMessage();
+        $log = date('c') . " | $fullError\n";
+        file_put_contents(__DIR__ . '/../../../storage/logs/php_errors.log', $log, FILE_APPEND);
         return null;
     } catch (Throwable $e) {
         error_log('[insert_product] General Error: ' . $e->getMessage());
+        // Log original error to php_errors.log
+        $fullError = '[insert_product] General Error: ' . $e->getMessage();
+        $log = date('c') . " | $fullError\n";
+        file_put_contents(__DIR__ . '/../../../storage/logs/php_errors.log', $log, FILE_APPEND);
         return null;
     }
 }

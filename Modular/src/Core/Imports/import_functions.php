@@ -753,7 +753,7 @@ function importProducts($spreadsheet, $conn) {
         $sku = strtoupper($get('sku'));
         $barcode = $get('barcode');
         if ($barcode === '') $barcode = null;
-        $product_type_name = strtolower(trim($get('product_type_name')));
+        $product_type_name = ucfirst(strtolower(trim($get('product_type_name'))));
         $category_name = ucwords($get('category_name'));
         $subcategory_name = ucwords($get('subcategory_name'));
         $tax_rate = floatval($get('tax_rate') ?: 0);

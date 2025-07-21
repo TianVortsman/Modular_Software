@@ -154,6 +154,9 @@ class ProductModalUI {
     closeModal() {
             this.modal.classList.remove('active');
         this.formManager.resetForm();
+        if (window.productScreenManager && typeof window.productScreenManager.refreshProductList === 'function') {
+            window.productScreenManager.refreshProductList();
+        }
     }
     showRelevantTabs(tabId = 'basic') {
         const tabButtons = this.modal?.querySelectorAll('.upm-tab-btn');

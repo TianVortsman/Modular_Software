@@ -8,8 +8,8 @@ use Exception;
 function moveProductImageToNewTypeFolder(int $productId, string $oldTypeName, string $newTypeName): void {
     $accountNumber = $_SESSION['account_number'] ?? 'ACC002';
     $docRoot = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
-    $oldFolder = "$docRoot/Uploads/$accountNumber/products/" . strtolower($oldTypeName);
-    $newFolder = "$docRoot/Uploads/$accountNumber/products/" . strtolower($newTypeName);
+    $oldFolder = "$docRoot/Uploads/$accountNumber/products/" . ($oldTypeName ?: 'Product');
+    $newFolder = "$docRoot/Uploads/$accountNumber/products/" . ($newTypeName ?: 'Product');
     $extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
     foreach ($extensions as $ext) {
@@ -43,7 +43,7 @@ function handleImageUpload(): array {
         }
 
         $accountNumber = $_SESSION['account_number'] ?? 'ACC002';
-        $category = strtolower(trim($_POST['category'] ?? 'product')) ?: 'product';
+        $category = $_POST['category'] ?? 'Product';
 
         $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         $allowedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
