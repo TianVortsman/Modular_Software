@@ -33,6 +33,16 @@ try {
         echo json_encode($result);
         exit;
     }
+    if ($action === 'fetch_document' && $method === 'GET') {
+        $document_id = isset($_GET['document_id']) ? (int)$_GET['document_id'] : null;
+        if (!$document_id) {
+            echo json_encode(['success' => false, 'message' => 'Missing document_id', 'data' => null]);
+            exit;
+        }
+        $result = App\modules\invoice\controllers\get_document_details($document_id);
+        echo json_encode($result);
+        exit;
+    }
     echo json_encode(['success' => false, 'message' => 'Invalid action or method', 'data' => null]);
 } catch (Exception $e) {
     error_log('[DOCUMENT_MODAL_API] ' . $e->getMessage());

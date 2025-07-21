@@ -30,9 +30,24 @@ function list_documents(array $options = []): array {
         $sortDir = 'desc';
     }
     $offset = ($page - 1) * $limit;
-    $sql = "SELECT d.document_id, d.client_id, d.document_number, d.document_status, d.document_type, d.issue_date, d.due_date, d.total_amount, d.salesperson_id, c.client_id, c.client_name, e.employee_id FROM invoicing.documents d JOIN invoicing.clients c ON d.client_id = c.client_id JOIN core.employees e ON d.salesperson_id = e.employee_id WHERE 1=1";
+    // Special logic for recurring invoices
+    $isRecurringTab = ($type === 'recurring-invoice' || $type === 'recurring_invoice');
+    if ($isRecurringTab) {
+        $sql = "SELECT d.document_id, d.client_id, d.document_number, d.document_status, d.document_type, d.issue_date, d.due_date, d.total_amount, d.salesperson_id, c.client_id, c.client_name, e.employee_id, r.frequency, r.start_date, r.end_date, r.status as recurring_status
+                FROM invoicing.documents d
+                JOIN invoicing.clients c ON d.client_id = c.client_id
+                JOIN core.employees e ON d.salesperson_id = e.employee_id
+                LEFT JOIN invoicing.recurring_invoices r ON d.recurring_template_id = r.recurring_id
+                WHERE d.is_recurring = TRUE AND d.document_type = 'recurring_invoice'";
+    } else {
+        $sql = "SELECT d.document_id, d.client_id, d.document_number, d.document_status, d.document_type, d.issue_date, d.due_date, d.total_amount, d.salesperson_id, c.client_id, c.client_name, e.employee_id
+                FROM invoicing.documents d
+                JOIN invoicing.clients c ON d.client_id = c.client_id
+                JOIN core.employees e ON d.salesperson_id = e.employee_id
+                WHERE 1=1";
+    }
     $params = [];
-    if (!empty($type)) {
+    if (!empty($type) && !$isRecurringTab) {
         $sql .= " AND d.document_type = :type";
         $params[':type'] = $type;
     }
@@ -67,8 +82,10 @@ function list_documents(array $options = []): array {
         $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         // Get total count for pagination
-        $countSql = "SELECT COUNT(*) FROM invoicing.documents d WHERE 1=1";
-        if (!empty($type)) $countSql .= " AND d.document_type = :type";
+        $countSql = $isRecurringTab
+            ? "SELECT COUNT(*) FROM invoicing.documents d WHERE d.is_recurring = TRUE AND d.document_type = 'recurring_invoice'"
+            : "SELECT COUNT(*) FROM invoicing.documents d WHERE 1=1";
+        if (!empty($type) && !$isRecurringTab) $countSql .= " AND d.document_type = :type";
         if (!empty($status)) $countSql .= " AND d.document_status = :status";
         if (!empty($dateFrom)) $countSql .= " AND d.issue_date >= :date_from";
         if (!empty($dateTo)) $countSql .= " AND d.issue_date <= :date_to";
@@ -103,7 +120,7 @@ function list_documents(array $options = []): array {
 
 function get_document_details(int $document_id): array {
     global $conn;
-    $sql = "SELECT d.document_number, d.document_status, d.document_type, d.issue_date, d.due_date, d.salesperson_id, d.subtotal, d.discount_amount, d.tax_amount, d.total_amount, d.client_purchase_order_number, d.notes, d.terms_conditions, d.is_recurring, d.recurring_template_id, d.requires_approval, d.approved_by, d.approved_at, d.salesperson_id, c.client_id, c.client_type, c.client_name, c.client_email, c.client_cell, c.client_tell, c.first_name, c.last_name, c.registration_number, c.vat_number, e.employee_id, e.employee_first_name, e.employee_last_name FROM invoicing.documents d JOIN invoicing.clients c ON d.client_id = c.client_id JOIN core.employees e ON d.salesperson_id = e.employee_id WHERE d.document_id = :document_id LIMIT 1";
+    $sql = "SELECT d.document_number, d.document_status, d.document_type, d.issue_date, d.due_date, d.salesperson_id, d.subtotal, d.discount_amount, d.tax_amount, d.total_amount, d.client_purchase_order_number, d.notes, d.terms_conditions, d.is_recurring, d.recurring_template_id, d.requires_approval, d.approved_by, d.approved_at, d.salesperson_id, c.client_id, c.client_type, c.client_name, c.client_email, c.client_cell, c.client_tell, c.first_name, c.last_name, c.registration_number, c.vat_number, e.employee_id, e.employee_first_name, e.employee_last_name, a.address_line1, a.address_line2, a.city, a.suburb, a.province, a.country, a.postal_code FROM invoicing.documents d JOIN invoicing.clients c ON d.client_id = c.client_id JOIN core.employees e ON d.salesperson_id = e.employee_id LEFT JOIN invoicing.client_addresses ca ON ca.client_id = c.client_id AND ca.address_id = (SELECT address_id FROM invoicing.client_addresses ca2 WHERE ca2.client_id = c.client_id LIMIT 1) LEFT JOIN invoicing.address a ON a.address_id = ca.address_id AND (a.deleted_at IS NULL OR a.deleted_at > NOW()) WHERE d.document_id = :document_id LIMIT 1";
     try {
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
@@ -148,7 +165,7 @@ function get_document_details(int $document_id): array {
 
 function get_document_items(int $document_id): array {
     global $conn;
-    $sql = "SELECT i.item_id, i.document_id, i.product_id, i.product_description, i.product_quantity, i.unit_price, i.discount_percentage, i.tax_rate_id, i.line_total, tr.rate FROM invoicing.document_items i JOIN core.tax_rates tr ON i.tax_rate_id = tr.tax_rate_id WHERE i.document_id = :document_id LIMIT 100";
+    $sql = "SELECT i.item_id, i.document_id, i.product_id, i.product_description, i.quantity, i.unit_price, i.discount_percentage, i.tax_rate_id, i.line_total, tr.rate FROM invoicing.document_items i LEFT JOIN core.tax_rates tr ON i.tax_rate_id = tr.tax_rate_id WHERE i.document_id = :document_id LIMIT 100";
     try {
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
@@ -175,6 +192,14 @@ function get_document_items(int $document_id): array {
 function create_document(array $options): array {
     global $conn;
     $documentData = $options['documentData'] ?? $options;
+    // Map 'standard-invoice' to 'invoice' and 'recurring-invoice' to 'recurring_invoice' for DB compatibility
+    if (isset($documentData['document_type'])) {
+        if ($documentData['document_type'] === 'standard-invoice') {
+            $documentData['document_type'] = 'invoice';
+        } else if ($documentData['document_type'] === 'recurring-invoice') {
+            $documentData['document_type'] = 'recurring_invoice';
+        }
+    }
     $items = $options['items'] ?? [];
     $mode = $options['mode'] ?? 'draft';
     // Always get user_id from payload or session
@@ -192,7 +217,7 @@ function create_document(array $options): array {
         ];
     }
     // Validate required fields
-    $requiredFields = ['client_id', 'document_type', 'issue_date', 'salesperson_id', 'subtotal', 'tax_amount', 'total_amount']; // removed 'created_by'
+    $requiredFields = ['client_id', 'document_type', 'issue_date', 'subtotal', 'tax_amount', 'total_amount']; // salesperson_id is now optional
     foreach ($requiredFields as $field) {
         if (!isset($documentData[$field])) {
             $msg = "Missing required field: $field";
@@ -275,6 +300,34 @@ function create_document(array $options): array {
             throw new Exception("Invalid mode for create_document: $mode");
         }
 
+        // Recurring logic: insert recurring_invoices first if needed
+        $recurring_id = null;
+        if (!empty($documentData['is_recurring'])) {
+            $frequency = $documentData['frequency'] ?? null;
+            $start_date = $documentData['start_date'] ?? null;
+            $end_date = $documentData['end_date'] ?? null;
+            if (empty($frequency) || empty($start_date)) {
+                throw new Exception("Missing required recurring invoice fields: frequency and start_date are required.");
+            }
+            $recurringSql = "INSERT INTO invoicing.recurring_invoices (
+                client_id, frequency, start_date, end_date, status, created_at, updated_at
+            ) VALUES (
+                :client_id, :frequency, :start_date, :end_date, 'active', NOW(), NOW()
+            ) RETURNING recurring_id";
+            $recurringStmt = $conn->prepare($recurringSql);
+            $recurringStmt->bindValue(':client_id', $documentData['client_id'], PDO::PARAM_INT);
+            $recurringStmt->bindValue(':frequency', $frequency);
+            $recurringStmt->bindValue(':start_date', $start_date);
+            $recurringStmt->bindValue(':end_date', $end_date);
+            $recurringStmt->execute();
+            $recurring_id = $recurringStmt->fetchColumn();
+            $documentData['is_recurring'] = true;
+            $documentData['recurring_template_id'] = $recurring_id;
+        } else {
+            $documentData['is_recurring'] = false;
+            $documentData['recurring_template_id'] = null;
+        }
+
         // Prepare insert for documents table
         $sql = "INSERT INTO invoicing.documents (
                     client_id, document_type, document_number, related_document_id, issue_date, due_date, document_status, 
@@ -296,7 +349,7 @@ function create_document(array $options): array {
         $stmt->bindValue(':issue_date', $documentData['issue_date']);
         $stmt->bindValue(':due_date', $documentData['due_date'] ?? null);
         $stmt->bindValue(':document_status', $document_status);
-        $stmt->bindValue(':salesperson_id', $documentData['salesperson_id'], PDO::PARAM_INT);
+        $stmt->bindValue(':salesperson_id', isset($documentData['salesperson_id']) && is_numeric($documentData['salesperson_id']) ? $documentData['salesperson_id'] : null, PDO::PARAM_INT);
         $stmt->bindValue(':subtotal', $documentData['subtotal']);
         $stmt->bindValue(':discount_amount', $documentData['discount_amount']);
         $stmt->bindValue(':tax_amount', $documentData['tax_amount']);
@@ -305,8 +358,8 @@ function create_document(array $options): array {
         $stmt->bindValue(':client_purchase_order_number', $documentData['client_purchase_order_number'] ?? null);
         $stmt->bindValue(':notes', $documentData['notes'] ?? null);
         $stmt->bindValue(':terms_conditions', $documentData['terms_conditions'] ?? null);
-        $stmt->bindValue(':is_recurring', !empty($documentData['is_recurring']) ? 1 : 0, PDO::PARAM_INT);
-        $stmt->bindValue(':recurring_template_id', $documentData['recurring_template_id'] ?? null, PDO::PARAM_INT);
+        $stmt->bindValue(':is_recurring', $documentData['is_recurring'] ? 1 : 0, PDO::PARAM_INT);
+        $stmt->bindValue(':recurring_template_id', $documentData['recurring_template_id'], is_null($documentData['recurring_template_id']) ? PDO::PARAM_NULL : PDO::PARAM_INT);
         $stmt->bindValue(':requires_approval', !empty($documentData['requires_approval']) ? 1 : 0, PDO::PARAM_INT);
         $stmt->bindValue(':created_by', $documentData['created_by'], PDO::PARAM_INT);
 
@@ -352,30 +405,6 @@ function create_document(array $options): array {
             $itemStmt->bindValue(':tax_rate_id', $item['tax_rate_id'], is_null($item['tax_rate_id']) ? PDO::PARAM_NULL : PDO::PARAM_INT);
             $itemStmt->bindValue(':line_total', $item['line_total']);
             $itemStmt->execute();
-        }
-
-        // Insert into recurring_invoices if is_recurring is true (before commit)
-        if (!empty($documentData['is_recurring'])) {
-            // Required fields for recurring
-            $frequency = $documentData['frequency'] ?? null;
-            $start_date = $documentData['start_date'] ?? null;
-            $end_date = $documentData['end_date'] ?? null;
-
-            if (empty($frequency) || empty($start_date)) {
-                throw new Exception("Missing required recurring invoice fields: frequency and start_date are required.");
-            }
-
-            $recurringSql = "INSERT INTO invoicing.recurring_invoices (
-                client_id, frequency, start_date, end_date, status, created_at, updated_at
-            ) VALUES (
-                :client_id, :frequency, :start_date, :end_date, 'active', NOW(), NOW()
-            )";
-            $recurringStmt = $conn->prepare($recurringSql);
-            $recurringStmt->bindValue(':client_id', $documentData['client_id'], PDO::PARAM_INT);
-            $recurringStmt->bindValue(':frequency', $frequency);
-            $recurringStmt->bindValue(':start_date', $start_date);
-            $recurringStmt->bindValue(':end_date', $end_date);
-            $recurringStmt->execute();
         }
 
         $conn->commit();
@@ -479,6 +508,14 @@ function create_document(array $options): array {
 function update_document(int $document_id, array $options): array {
     global $conn;
     $documentData = $options['documentData'] ?? [];
+    // Map 'standard-invoice' to 'invoice' and 'recurring-invoice' to 'recurring_invoice' for DB compatibility
+    if (isset($documentData['document_type'])) {
+        if ($documentData['document_type'] === 'standard-invoice') {
+            $documentData['document_type'] = 'invoice';
+        } else if ($documentData['document_type'] === 'recurring-invoice') {
+            $documentData['document_type'] = 'recurring_invoice';
+        }
+    }
     $items = $options['items'] ?? [];
     $mode = $options['mode'] ?? 'draft';
     // Always get updated_by from payload or session
@@ -564,6 +601,34 @@ function update_document(int $document_id, array $options): array {
             throw new Exception("Invalid mode for update_document: $mode");
         }
 
+        // Recurring update logic
+        $recurring_id = null;
+        if (!empty($documentData['is_recurring'])) {
+            $frequency = $documentData['frequency'] ?? null;
+            $start_date = $documentData['start_date'] ?? null;
+            $end_date = $documentData['end_date'] ?? null;
+            if (empty($frequency) || empty($start_date)) {
+                throw new Exception("Missing required recurring invoice fields: frequency and start_date are required.");
+            }
+            // Upsert recurring invoice
+            $recurringSql = "INSERT INTO invoicing.recurring_invoices (client_id, frequency, start_date, end_date, status, created_at, updated_at)
+                VALUES (:client_id, :frequency, :start_date, :end_date, 'active', NOW(), NOW())
+                ON CONFLICT (client_id, start_date) DO UPDATE SET frequency = EXCLUDED.frequency, end_date = EXCLUDED.end_date, updated_at = NOW()
+                RETURNING recurring_id";
+            $recurringStmt = $conn->prepare($recurringSql);
+            $recurringStmt->bindValue(':client_id', $documentData['client_id'], PDO::PARAM_INT);
+            $recurringStmt->bindValue(':frequency', $frequency);
+            $recurringStmt->bindValue(':start_date', $start_date);
+            $recurringStmt->bindValue(':end_date', $end_date);
+            $recurringStmt->execute();
+            $recurring_id = $recurringStmt->fetchColumn();
+            $documentData['is_recurring'] = true;
+            $documentData['recurring_template_id'] = $recurring_id;
+        } else {
+            $documentData['is_recurring'] = false;
+            $documentData['recurring_template_id'] = null;
+        }
+
         // Prepare update for documents table (partial update support)
         $fields = [
             'client_id' => [':client_id', PDO::PARAM_INT],
@@ -572,7 +637,7 @@ function update_document(int $document_id, array $options): array {
             'issue_date' => [':issue_date', PDO::PARAM_STR],
             'due_date' => [':due_date', PDO::PARAM_STR],
             'document_status' => [':document_status', PDO::PARAM_STR],
-            'salesperson_id' => [':salesperson_id', PDO::PARAM_INT],
+            'salesperson_id' => [':salesperson_id', PDO::PARAM_INT], // will bind as null if not set
             'subtotal' => [':subtotal', PDO::PARAM_STR],
             'discount_amount' => [':discount_amount', PDO::PARAM_STR],
             'tax_amount' => [':tax_amount', PDO::PARAM_STR],
@@ -599,7 +664,9 @@ function update_document(int $document_id, array $options): array {
         $sql = "UPDATE invoicing.documents SET " . implode(", ", $setParts) . " WHERE document_id = :document_id";
         $stmt = $conn->prepare($sql);
         foreach ($fields as $key => [$param, $type]) {
-            if (isset($documentData[$key])) {
+            if ($key === 'salesperson_id') {
+                $stmt->bindValue($param, (isset($documentData['salesperson_id']) && is_numeric($documentData['salesperson_id'])) ? $documentData['salesperson_id'] : null, $type);
+            } else if (isset($documentData[$key])) {
                 $stmt->bindValue($param, $documentData[$key], $type);
             }
         }
@@ -674,25 +741,6 @@ function update_document(int $document_id, array $options): array {
             }
         }
 
-        // Recurring update logic
-        if (!empty($documentData['is_recurring'])) {
-            $frequency = $documentData['frequency'] ?? null;
-            $start_date = $documentData['start_date'] ?? null;
-            $end_date = $documentData['end_date'] ?? null;
-            if (empty($frequency) || empty($start_date)) {
-                throw new Exception("Missing required recurring invoice fields: frequency and start_date are required.");
-            }
-            // Upsert recurring invoice
-            $recurringSql = "INSERT INTO invoicing.recurring_invoices (client_id, frequency, start_date, end_date, status, created_at, updated_at)
-                VALUES (:client_id, :frequency, :start_date, :end_date, 'active', NOW(), NOW())
-                ON CONFLICT (client_id, start_date) DO UPDATE SET frequency = EXCLUDED.frequency, end_date = EXCLUDED.end_date, updated_at = NOW()";
-            $recurringStmt = $conn->prepare($recurringSql);
-            $recurringStmt->bindValue(':client_id', $documentData['client_id'], PDO::PARAM_INT);
-            $recurringStmt->bindValue(':frequency', $frequency);
-            $recurringStmt->bindValue(':start_date', $start_date);
-            $recurringStmt->bindValue(':end_date', $end_date);
-            $recurringStmt->execute();
-        }
         $conn->commit();
 
         // After commit, generate PDF for finalized documents
