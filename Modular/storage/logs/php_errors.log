@@ -1,3 +1,4 @@
+
 [20-Jul-2025 16:51:38 UTC] API Session contents: Array
 (
     [user_logged_in] => 
@@ -30889,7 +30890,7 @@ Content-Disposition: form-data; name="product_id"
 Content-Disposition: form-data; name="item_image"; filename="White bag with black shin overlay.png"
 Content-Type: image/png
 
-‰PNG
+ï¿½PNG
 
 
 [21-Jul-2025 12:20:32 UTC] Parsed PUT data: Array
@@ -31650,7 +31651,7 @@ Content-Disposition: form-data; name="product_id"
 Content-Disposition: form-data; name="item_image"; filename="White bag with black shin overlay.png"
 Content-Type: image/png
 
-‰PNG
+ï¿½PNG
 
 
 [21-Jul-2025 12:21:32 UTC] Parsed PUT data: Array

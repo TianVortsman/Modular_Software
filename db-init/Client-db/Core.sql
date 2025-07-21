@@ -255,6 +255,8 @@ CREATE TABLE IF NOT EXISTS core.product_types (
     product_type_name VARCHAR(50) NOT NULL UNIQUE,
     product_type_description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
 );
 
 INSERT INTO core.product_types (product_type_name, product_type_description, created_at)
@@ -272,7 +274,9 @@ CREATE TABLE IF NOT EXISTS core.product_categories (
     category_name VARCHAR(50) NOT NULL UNIQUE,
     product_type_id INTEGER REFERENCES core.product_types(product_type_id),
     category_description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
 );
 
 -- Product Subcategories
@@ -281,7 +285,9 @@ CREATE TABLE IF NOT EXISTS core.product_subcategories (
     subcategory_name VARCHAR(50) NOT NULL UNIQUE,
     category_id INTEGER REFERENCES core.product_categories(category_id),
     subcategory_description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
 );
 
 -- Product Table (references above)

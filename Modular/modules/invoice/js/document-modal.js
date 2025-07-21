@@ -49,9 +49,10 @@ function setModalMode(mode) {
     const isEdit = mode === 'edit';
     const isCreate = mode === 'create';
     const fields = modal.querySelectorAll('input, select, textarea');
-    // Only treat as finalized if NOT in create mode and status is not draft
+    // Only treat as finalized if NOT in create mode and status is not draft (case-insensitive)
     const statusInput = document.getElementById('document-status');
-    const isFinalized = !isCreate && statusInput && statusInput.value && statusInput.value.toLowerCase() !== 'draft';
+    const statusVal = statusInput && statusInput.value ? statusInput.value.toLowerCase() : '';
+    const isFinalized = !isCreate && statusInput && statusVal && statusVal !== 'draft';
     fields.forEach(field => {
         if (isView || isFinalized) {
             field.setAttribute('disabled', 'disabled');
@@ -86,6 +87,13 @@ function setModalMode(mode) {
         if (createBtn) createBtn.style.display = '';
         const msg = document.getElementById('finalized-msg');
         if (msg) msg.remove();
+    }
+    // Update modal header
+    const header = modal.querySelector('.modal-document-title');
+    if (header) {
+        if (isCreate) header.textContent = 'New Document';
+        else if (isEdit) header.textContent = 'Edit Document';
+        else if (isView) header.textContent = 'View Document';
     }
 }
 
@@ -725,6 +733,7 @@ async function saveDocumentDraft() {
         formData.document_type = document.getElementById('document-type') ? document.getElementById('document-type').value : 'quotation';
         const result = await saveDocumentApi(formData, {});
         hideLoadingModal();
+        console.log('[saveDocumentDraft] API result:', result);
         if (typeof window.handleApiResponse === 'function') {
             window.handleApiResponse(result);
             if (result.success) {
@@ -732,7 +741,14 @@ async function saveDocumentDraft() {
                 if (result.data && result.data.document_number) {
                     msg += ` (Number: ${result.data.document_number})`;
                 }
+                console.log('[saveDocumentDraft] Calling showResponseModal:', msg, 'success');
                 showResponseModal(msg, 'success');
+                const modalElem = document.getElementById('response-modal');
+                if (modalElem) {
+                    console.log('[saveDocumentDraft] response-modal present, display:', modalElem.style.display, 'class:', modalElem.className);
+                } else {
+                    console.warn('[saveDocumentDraft] response-modal NOT present in DOM');
+                }
             }
         } else {
             if (result.success) {
@@ -740,7 +756,14 @@ async function saveDocumentDraft() {
                 if (result.data && result.data.document_number) {
                     msg += ` (Number: ${result.data.document_number})`;
                 }
+                console.log('[saveDocumentDraft] Calling showResponseModal:', msg, 'success');
                 showResponseModal(msg, 'success');
+                const modalElem = document.getElementById('response-modal');
+                if (modalElem) {
+                    console.log('[saveDocumentDraft] response-modal present, display:', modalElem.style.display, 'class:', modalElem.className);
+                } else {
+                    console.warn('[saveDocumentDraft] response-modal NOT present in DOM');
+                }
             } else {
                 showResponseModal(result.message || 'Failed to save draft', 'error');
             }
@@ -763,6 +786,7 @@ async function saveDocumentFinal() {
         formData.document_type = document.getElementById('document-type') ? document.getElementById('document-type').value : 'invoice';
         const result = await saveDocumentApi(formData, {});
         hideLoadingModal();
+        console.log('[saveDocumentFinal] API result:', result);
         if (typeof window.handleApiResponse === 'function') {
             window.handleApiResponse(result);
             if (result.success) {
@@ -770,7 +794,14 @@ async function saveDocumentFinal() {
                 if (result.data && result.data.document_number) {
                     msg += ` (Number: ${result.data.document_number})`;
                 }
+                console.log('[saveDocumentFinal] Calling showResponseModal:', msg, 'success');
                 showResponseModal(msg, 'success');
+                const modalElem = document.getElementById('response-modal');
+                if (modalElem) {
+                    console.log('[saveDocumentFinal] response-modal present, display:', modalElem.style.display, 'class:', modalElem.className);
+                } else {
+                    console.warn('[saveDocumentFinal] response-modal NOT present in DOM');
+                }
             }
         } else {
             if (result.success) {
@@ -778,7 +809,14 @@ async function saveDocumentFinal() {
                 if (result.data && result.data.document_number) {
                     msg += ` (Number: ${result.data.document_number})`;
                 }
+                console.log('[saveDocumentFinal] Calling showResponseModal:', msg, 'success');
                 showResponseModal(msg, 'success');
+                const modalElem = document.getElementById('response-modal');
+                if (modalElem) {
+                    console.log('[saveDocumentFinal] response-modal present, display:', modalElem.style.display, 'class:', modalElem.className);
+                } else {
+                    console.warn('[saveDocumentFinal] response-modal NOT present in DOM');
+                }
             } else {
                 showResponseModal(result.message || 'Failed to save document', 'error');
             }

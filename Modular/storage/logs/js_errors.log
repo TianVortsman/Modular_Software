@@ -1,3 +1,4 @@
+
 2025-07-20T18:03:05+00:00 | Code: DPQVCR | Uncaught Error: No clients found | http://localhost/public/assets/js/helpers.js | line 59 | col 9 | stack: Error: No clients found
     at handleApiResponse (http://localhost/public/assets/js/helpers.js:59:15)
     at http://localhost/modules/invoice/js/document-form.js:40:20

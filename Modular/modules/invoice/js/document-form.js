@@ -179,21 +179,48 @@ function setDocumentFormData(documentData) {
     // Client fields
     document.getElementById('client-name').value = documentData.client_name || '';
     document.getElementById('client-email').value = documentData.client_email || '';
-    document.getElementById('client-phone').value = documentData.client_phone || '';
+    // Prefer client_cell, fallback to client_tell, fallback to client_phone
+    document.getElementById('client-phone').value = documentData.client_cell || documentData.client_tell || documentData.client_phone || '';
     document.getElementById('client-vat-number').value = documentData.vat_number || '';
     document.getElementById('client-reg-number').value = documentData.registration_number || '';
-    document.getElementById('client-address-1').value = documentData.address_line1 || '';
-    document.getElementById('client-address-2').value = documentData.address_line2 || '';
+    // Address fields (try both address_line1/2 and address1/2 for compatibility)
+    document.getElementById('client-address-1').value = documentData.address_line1 || documentData.address1 || '';
+    document.getElementById('client-address-2').value = documentData.address_line2 || documentData.address2 || '';
+    // Optionally fill city, suburb, province, country, postal code if present
+    if (document.getElementById('client-city')) document.getElementById('client-city').value = documentData.city || '';
+    if (document.getElementById('client-suburb')) document.getElementById('client-suburb').value = documentData.suburb || '';
+    if (document.getElementById('client-province')) document.getElementById('client-province').value = documentData.province || '';
+    if (document.getElementById('client-country')) document.getElementById('client-country').value = documentData.country || '';
+    if (document.getElementById('client-postal-code')) document.getElementById('client-postal-code').value = documentData.postal_code || '';
     // Document fields
-    document.getElementById('document-type').value = documentData.document_type || 'quotation';
+    const docTypeSelect = document.getElementById('document-type');
+    if (docTypeSelect && documentData.document_type) {
+        let found = false;
+        for (let i = 0; i < docTypeSelect.options.length; i++) {
+            if (docTypeSelect.options[i].value === documentData.document_type) {
+                docTypeSelect.selectedIndex = i;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            // Try lowercase match
+            for (let i = 0; i < docTypeSelect.options.length; i++) {
+                if (docTypeSelect.options[i].value.toLowerCase() === documentData.document_type.toLowerCase()) {
+                    docTypeSelect.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+    }
     document.getElementById('document-number').value = documentData.document_number || '';
     document.getElementById('current-date').value = documentData.issue_date || '';
     document.getElementById('document-status').value = documentData.document_status || 'Unpaid';
     document.getElementById('pay-in-days').value = documentData.pay_in_days || '30';
     document.getElementById('purchase-order-number').value = documentData.client_purchase_order_number || '';
     // Salesperson
-    document.getElementById('salesperson').value = documentData.salesperson_name || '';
-    document.getElementById('salesperson').setAttribute('data-employee-id', documentData.salesperson_id || '');
+    document.getElementById('salesperson').value = documentData.salesperson_name || documentData.employee_first_name && documentData.employee_last_name ? `${documentData.employee_first_name} ${documentData.employee_last_name}` : '';
+    document.getElementById('salesperson').setAttribute('data-employee-id', documentData.salesperson_id || documentData.employee_id || '');
     // Notes
     document.getElementById('public-note').value = documentData.public_note || '';
     document.getElementById('private-note').value = documentData.private_note || '';
@@ -201,7 +228,7 @@ function setDocumentFormData(documentData) {
     // Line items
     const tableBody = document.getElementById('document-rows');
     tableBody.innerHTML = '';
-    if (Array.isArray(documentData.items)) {
+    if (Array.isArray(documentData.items) && documentData.items.length > 0) {
         documentData.items.forEach(item => {
             const row = document.createElement('tr');
             row.classList.add('document-item-row');
@@ -235,11 +262,44 @@ function setDocumentFormData(documentData) {
             `;
             tableBody.appendChild(row);
         });
+    } else {
+        // Add a default empty row if no items
+        const row = document.createElement('tr');
+        row.classList.add('document-item-row');
+        row.innerHTML = `
+            <td><input type="number" value="1" class="quantity"></td>
+            <td style="display:none;"><input type="hidden" class="product-id"></td>
+            <td>
+                <div class="search-container" style="position: relative;">
+                    <input type="text" placeholder="Search Item Code" class="item-code" autocomplete="off">
+                    <div class="search-dropdown1"></div>
+                </div>
+            </td>
+            <td>
+                <div class="search-container" style="position: relative;">
+                    <input type="text" placeholder="Search Description" class="description" autocomplete="off">
+                    <div class="search-dropdown2"></div>
+                </div>
+            </td>
+            <td><input type="text" value="R0.00" class="unit-price"></td>
+            <td>
+                <select class="tax">
+                    <option value="0">[None]</option>
+                    <option value="10">10%</option>
+                    <option value="15">15%</option>
+                    <option value="20">20%</option>
+                    <option value="25">25%</option>
+                </select>
+            </td>
+            <td><span class="total">0.00</span></td>
+            <td class="stock" style="display:none;">0</td>
+        `;
+        tableBody.appendChild(row);
     }
     // Totals
-    document.getElementById('subtotal').textContent = documentData.subtotal || '0.00';
-    document.getElementById('tax-total').textContent = documentData.tax_amount || '0.00';
-    document.getElementById('final-total').textContent = documentData.total_amount || '0.00';
+    if (document.getElementById('subtotal')) document.getElementById('subtotal').textContent = documentData.subtotal || '0.00';
+    if (document.getElementById('tax-total')) document.getElementById('tax-total').textContent = documentData.tax_amount || '0.00';
+    if (document.getElementById('final-total')) document.getElementById('final-total').textContent = documentData.total_amount || '0.00';
 }
 
 // --- Extract Data from Modal ---
@@ -284,13 +344,21 @@ function getDocumentFormData() {
     const subtotal = document.getElementById('subtotal')?.textContent || '';
     const tax_amount = document.getElementById('tax-total')?.textContent || '';
     const total_amount = document.getElementById('final-total')?.textContent || '';
+    // Recurring fields
+    let is_recurring = false, frequency = '', start_date = '', end_date = '';
+    if (document_type === 'recurring-invoice') {
+        is_recurring = true;
+        frequency = document.getElementById('recurring-frequency')?.value || 'monthly';
+        start_date = document.getElementById('recurring-start-date')?.value || (issue_date || new Date().toISOString().split('T')[0]);
+        end_date = document.getElementById('recurring-end-date')?.value || '';
+    }
     // Only include document_number for drafts, and never the preview (with '(Preview)')
     const isDraft = (document_status && document_status.toLowerCase() === 'draft');
     let draftNumber = document_number;
     if (isDraft && draftNumber && draftNumber.includes('(Preview)')) {
         draftNumber = '';
     }
-    return {
+    const payload = {
         document_id,
         client_id,
         client_name,
@@ -314,8 +382,14 @@ function getDocumentFormData() {
         items,
         subtotal,
         tax_amount,
-        total_amount
+        total_amount,
+        is_recurring,
+        frequency,
+        start_date,
+        end_date
     };
+    console.log('[getDocumentFormData] Payload:', payload);
+    return payload;
 }
 
 function searchItem(inputElement) {

@@ -53,32 +53,10 @@ function searchProducts(query, callback) {
 async function saveDocumentApi(formData, recurringDetails = {}) {
     // Remove document_number for finalized documents (let backend assign)
     const isDraft = (formData.document_status && formData.document_status.toLowerCase() === 'draft');
+    // Use all fields from formData, including recurring fields
     const data = {
-        document_id: formData.document_id,
-        client_id: formData.client_id,
-        client_name: formData.client_name,
-        client_email: formData.client_email,
-        client_phone: formData.client_phone,
-        vat_number: formData.vat_number,
-        registration_number: formData.registration_number,
-        address1: formData.address1,
-        address2: formData.address2,
-        document_type: formData.document_type,
-        // Only send document_number if draft
+        ...formData,
         ...(isDraft ? { document_number: formData.document_number } : {}),
-        issue_date: formData.issue_date,
-        document_status: formData.document_status,
-        pay_in_days: formData.pay_in_days,
-        client_purchase_order_number: formData.client_purchase_order_number,
-        salesperson_name: formData.salesperson_name,
-        salesperson_id: formData.salesperson_id,
-        public_note: formData.public_note,
-        private_note: formData.private_note,
-        foot_note: formData.foot_note,
-        items: formData.items,
-        subtotal: formData.subtotal,
-        tax_amount: formData.tax_amount,
-        total_amount: formData.total_amount,
         ...recurringDetails
     };
     try {

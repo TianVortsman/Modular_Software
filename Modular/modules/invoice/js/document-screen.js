@@ -2,6 +2,8 @@
 import { buildQueryParams } from '../../../public/assets/js/helpers.js';
 import { searchClients } from './document-api.js';
 import { searchClient } from './document-form.js';
+import { fetchAndSetDocument } from './document-api.js';
+import { setDocumentFormData } from './document-form.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     const mainTabButtons = document.querySelectorAll('.tab-button');
@@ -340,6 +342,10 @@ function renderDocumentRows(sectionId, documents) {
                 <td>${doc.total_amount || ''}</td>
             `;
         }
+        // Add double-click event to open modal and autofill
+        tr.addEventListener('dblclick', function() {
+            openDocumentForEdit(doc.document_id);
+        });
         // Add context menu event
         tr.addEventListener('contextmenu', function(e) {
             e.preventDefault();
@@ -347,6 +353,23 @@ function renderDocumentRows(sectionId, documents) {
         });
         tbody.appendChild(tr);
     });
+}
+
+// Helper to fetch and open document in modal
+async function openDocumentForEdit(documentId) {
+    try {
+        // Fetch document details from backend
+        const response = await fetch(`../api/document_modal.php?action=fetch_document&document_id=${encodeURIComponent(documentId)}`);
+        const result = await response.json();
+        if (result.success && result.data) {
+            setDocumentFormData(result.data);
+            window.openDocumentModal('edit');
+        } else {
+            window.showResponseModal(result.message || 'Failed to load document', 'error');
+        }
+    } catch (err) {
+        window.showResponseModal('Error loading document: ' + (err.message || err), 'error');
+    }
 }
 
 function showDocumentContextMenu(e, doc, sectionId) {
@@ -358,15 +381,15 @@ function showDocumentContextMenu(e, doc, sectionId) {
     const isDraft = (doc.document_status && doc.document_status.toLowerCase() === 'draft');
     let options = [];
     if (sectionId === 'quotations-section') {
-        options.push({ label: 'View', action: () => viewDocument(doc) });
-        if (isDraft) options.push({ label: 'Edit', action: () => editDocument(doc) });
+        options.push({ label: 'View', action: () => openDocumentForEdit(doc.document_id) });
+        if (isDraft) options.push({ label: 'Edit', action: () => openDocumentForEdit(doc.document_id) });
         options.push({ label: 'Convert to Invoice', action: () => convertToInvoice(doc) });
         options.push({ label: 'View Client', action: () => viewClient(doc) });
         if (isDraft) options.push({ label: 'Delete', action: () => deleteDocument(doc) });
         options.push({ label: 'Request Approval', action: () => requestApproval(doc) });
     } else if (sectionId === 'invoices-section' || sectionId === 'vehicle-invoices-section') {
-        options.push({ label: 'View', action: () => viewDocument(doc) });
-        if (isDraft) options.push({ label: 'Edit', action: () => editDocument(doc) });
+        options.push({ label: 'View', action: () => openDocumentForEdit(doc.document_id) });
+        if (isDraft) options.push({ label: 'Edit', action: () => openDocumentForEdit(doc.document_id) });
         options.push({ label: 'Load Payment', action: () => loadPayment(doc) });
         options.push({ label: 'Create Credit Note', action: () => createCreditNote(doc) });
         options.push({ label: 'Refund Invoice', action: () => refundInvoice(doc) });
@@ -374,8 +397,8 @@ function showDocumentContextMenu(e, doc, sectionId) {
         options.push({ label: 'Send Payment Reminder', action: () => sendPaymentReminder(doc) });
         options.push({ label: 'View Client', action: () => viewClient(doc) });
     } else {
-        options.push({ label: 'View', action: () => viewDocument(doc) });
-        if (isDraft) options.push({ label: 'Edit', action: () => editDocument(doc) });
+        options.push({ label: 'View', action: () => openDocumentForEdit(doc.document_id) });
+        if (isDraft) options.push({ label: 'Edit', action: () => openDocumentForEdit(doc.document_id) });
         options.push({ label: 'View Client', action: () => viewClient(doc) });
     }
 
