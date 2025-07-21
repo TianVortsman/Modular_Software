@@ -157,7 +157,7 @@
         <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header">
-                <h2>Edit Customer</h2>
+                <h2>Edit Client</h2>
                 <span class="close" id="closeCustomerModal">&times;</span>
             </div>
             
@@ -194,11 +194,11 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="customerName">Customer Name:</label>
+                                <label for="customerName">Client Name:</label>
                                 <input type="text" id="customerName" name="customerName" required>
                             </div>
                             <div class="form-group">
-                                <label for="customerSurname">Customer Surname:</label>
+                                <label for="customerSurname">Client Surname:</label>
                                 <input type="text" id="customerSurname" name="customerSurname" required>
                             </div>
                         </fieldset>

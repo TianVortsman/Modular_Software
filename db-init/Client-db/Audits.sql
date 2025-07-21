@@ -20,4 +20,3 @@ CREATE TABLE audit.user_actions (
     session_id VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-

@@ -1,3 +1,4 @@
+console.log('Loading product-modals.js');
 import { ProductAPI } from './product-api.js';
 import { makeModalDraggable } from '../../../public/assets/js/helpers.js';
 window.ProductAPI = ProductAPI;
@@ -86,7 +87,7 @@ class ProductModalUI {
         }
     }
     async openModal(mode = 'add', productId = null, typeId = null) {
-        console.log('opening product modal');
+        console.log ('Opening product modal');
         this.mode = mode;
         this.productId = productId;
         this.modal.dataset.mode = mode;

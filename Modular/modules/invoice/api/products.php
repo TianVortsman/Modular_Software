@@ -13,6 +13,7 @@ require_once __DIR__ . '/../controllers/ProductController.php';
 require_once __DIR__ . '/../controllers/ImageController.php';
 
 use App\Core\Database\ClientDatabase;
+use function App\modules\product\controllers\handleImageUpload;
 
 // Set CORS headers
 header('Access-Control-Allow-Origin: http://localhost:8080');

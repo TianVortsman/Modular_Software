@@ -1,3 +1,4 @@
+-- Active: 1752321420346@@127.0.0.1@5432@ACC002
 CREATE SCHEMA IF NOT EXISTS permissions;
 
 CREATE TABLE Permissions.invoicing (
