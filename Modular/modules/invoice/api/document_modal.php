@@ -33,6 +33,17 @@ try {
         echo json_encode($result);
         exit;
     }
+    if ($action === 'update_document' && $method === 'POST') {
+        $document_id = isset($_GET['document_id']) ? (int)$_GET['document_id'] : null;
+        if (!$document_id) {
+            echo json_encode(['success' => false, 'message' => 'Missing document_id', 'data' => null]);
+            exit;
+        }
+        $data = json_decode(file_get_contents('php://input'), true);
+        $result = App\modules\invoice\controllers\update_document($document_id, $data);
+        echo json_encode($result);
+        exit;
+    }
     if ($action === 'fetch_document' && $method === 'GET') {
         $document_id = isset($_GET['document_id']) ? (int)$_GET['document_id'] : null;
         if (!$document_id) {

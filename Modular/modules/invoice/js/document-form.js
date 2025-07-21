@@ -194,10 +194,23 @@ function setDocumentFormData(documentData) {
     if (document.getElementById('client-postal-code')) document.getElementById('client-postal-code').value = documentData.postal_code || '';
     // Document fields
     const docTypeSelect = document.getElementById('document-type');
-    if (docTypeSelect && documentData.document_type) {
+    // Map backend type to select value
+    const backendToSelectType = {
+        'invoice': 'standard-invoice',
+        'standard-invoice': 'standard-invoice',
+        'quotation': 'quotation',
+        'vehicle-quotation': 'vehicle-quotation',
+        'vehicle-invoice': 'vehicle-invoice',
+        'recurring-invoice': 'recurring-invoice',
+        'credit-note': 'credit-note',
+        'refund': 'refund',
+        'pro-forma': 'pro-forma'
+    };
+    const selectType = backendToSelectType[documentData.document_type] || documentData.document_type;
+    if (docTypeSelect && selectType) {
         let found = false;
         for (let i = 0; i < docTypeSelect.options.length; i++) {
-            if (docTypeSelect.options[i].value === documentData.document_type) {
+            if (docTypeSelect.options[i].value === selectType) {
                 docTypeSelect.selectedIndex = i;
                 found = true;
                 break;
@@ -206,7 +219,7 @@ function setDocumentFormData(documentData) {
         if (!found) {
             // Try lowercase match
             for (let i = 0; i < docTypeSelect.options.length; i++) {
-                if (docTypeSelect.options[i].value.toLowerCase() === documentData.document_type.toLowerCase()) {
+                if (docTypeSelect.options[i].value.toLowerCase() === selectType.toLowerCase()) {
                     docTypeSelect.selectedIndex = i;
                     break;
                 }

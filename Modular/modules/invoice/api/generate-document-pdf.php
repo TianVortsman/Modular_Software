@@ -51,28 +51,6 @@ try {
         throw new Exception('Invalid JSON data received');
     }
 
-    // If preview mode, use sample data
-    if (!empty($data['preview'])) {
-        $data = [
-            'client' => [
-                'name' => 'Sample Client',
-                'email' => 'client@example.com',
-                'phone' => '+1 555-1234'
-            ],
-            'items' => [
-                [ 'qty' => 2, 'item_code' => 'PRD-001', 'description' => 'Sample Product A', 'unit_price' => 'R500.00', 'tax' => '15%', 'total' => 'R1150.00' ],
-                [ 'qty' => 1, 'item_code' => 'PRD-002', 'description' => 'Sample Product B', 'unit_price' => 'R300.00', 'tax' => '15%', 'total' => 'R345.00' ]
-            ],
-            'totals' => [
-                'subtotal' => 'R800.00',
-                'tax' => 'R120.00',
-                'total' => 'R920.00'
-            ],
-            'notes' => ['This is a sample invoice preview.'],
-            'invoice_number' => 'PREVIEW-0001'
-        ];
-    }
-
     // Validate required fields (client, items, totals, etc.)
     if (empty($data['client']) || empty($data['items']) || empty($data['totals'])) {
         throw new Exception('Missing required invoice data');

@@ -165,7 +165,7 @@ function get_document_details(int $document_id): array {
 
 function get_document_items(int $document_id): array {
     global $conn;
-    $sql = "SELECT i.item_id, i.document_id, i.product_id, i.product_description, i.quantity, i.unit_price, i.discount_percentage, i.tax_rate_id, i.line_total, tr.rate FROM invoicing.document_items i LEFT JOIN core.tax_rates tr ON i.tax_rate_id = tr.tax_rate_id WHERE i.document_id = :document_id LIMIT 100";
+    $sql = "SELECT i.item_id, i.document_id, i.product_id, i.product_description, i.quantity, i.unit_price, i.discount_percentage, i.tax_rate_id, i.line_total, i.sku AS item_code, tr.rate FROM invoicing.document_items i LEFT JOIN core.tax_rates tr ON i.tax_rate_id = tr.tax_rate_id WHERE i.document_id = :document_id LIMIT 100";
     try {
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
@@ -330,12 +330,12 @@ function create_document(array $options): array {
 
         // Prepare insert for documents table
         $sql = "INSERT INTO invoicing.documents (
-                    client_id, document_type, document_number, related_document_id, issue_date, due_date, document_status, 
+                    client_id, document_type, document_number, issue_date, due_date, document_status, 
                     salesperson_id, subtotal, discount_amount, tax_amount, total_amount, balance_due, 
                     client_purchase_order_number, notes, terms_conditions, is_recurring, recurring_template_id, 
                     requires_approval, created_by, created_at, updated_at
                 ) VALUES (
-                    :client_id, :document_type, :document_number, :related_document_id, :issue_date, :due_date, :document_status, 
+                    :client_id, :document_type, :document_number, :issue_date, :due_date, :document_status, 
                     :salesperson_id, :subtotal, :discount_amount, :tax_amount, :total_amount, :balance_due, 
                     :client_purchase_order_number, :notes, :terms_conditions, :is_recurring, :recurring_template_id, 
                     :requires_approval, :created_by, NOW(), NOW()
@@ -345,7 +345,6 @@ function create_document(array $options): array {
         $stmt->bindValue(':client_id', $documentData['client_id'], PDO::PARAM_INT);
         $stmt->bindValue(':document_type', $documentData['document_type']);
         $stmt->bindValue(':document_number', $document_number);
-        $stmt->bindValue(':related_document_id', $documentData['related_document_id'] ?? null, PDO::PARAM_INT);
         $stmt->bindValue(':issue_date', $documentData['issue_date']);
         $stmt->bindValue(':due_date', $documentData['due_date'] ?? null);
         $stmt->bindValue(':document_status', $document_status);
@@ -368,9 +367,9 @@ function create_document(array $options): array {
 
         // Insert document items
         $itemSql = "INSERT INTO invoicing.document_items (
-                        document_id, product_id, product_description, quantity, unit_price, discount_percentage, tax_rate_id, line_total
+                        document_id, product_id, product_description, quantity, unit_price, discount_percentage, tax_rate_id, line_total, sku
                     ) VALUES (
-                        :document_id, :product_id, :product_description, :quantity, :unit_price, :discount_percentage, :tax_rate_id, :line_total
+                        :document_id, :product_id, :product_description, :quantity, :unit_price, :discount_percentage, :tax_rate_id, :line_total, :sku
                     )";
         $itemStmt = $conn->prepare($itemSql);
 
@@ -404,6 +403,7 @@ function create_document(array $options): array {
             $itemStmt->bindValue(':discount_percentage', $item['discount_percentage']);
             $itemStmt->bindValue(':tax_rate_id', $item['tax_rate_id'], is_null($item['tax_rate_id']) ? PDO::PARAM_NULL : PDO::PARAM_INT);
             $itemStmt->bindValue(':line_total', $item['line_total']);
+            $itemStmt->bindValue(':sku', $item['item_code'] ?? '', PDO::PARAM_STR);
             $itemStmt->execute();
         }
 
@@ -633,7 +633,6 @@ function update_document(int $document_id, array $options): array {
         $fields = [
             'client_id' => [':client_id', PDO::PARAM_INT],
             'document_type' => [':document_type', PDO::PARAM_STR],
-            'related_document_id' => [':related_document_id', PDO::PARAM_INT],
             'issue_date' => [':issue_date', PDO::PARAM_STR],
             'due_date' => [':due_date', PDO::PARAM_STR],
             'document_status' => [':document_status', PDO::PARAM_STR],

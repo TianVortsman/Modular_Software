@@ -227,7 +227,7 @@
                 </div>
                 <div class="modal-document-actions">
                     <button type="button" onclick="clearDocument()">Clear</button>
-                    <button type="button" onclick="previewDocument()">Preview</button>
+                    <button type="button" id="preview-pdf-btn">Preview</button>
                     <button type="button" onclick="createOrUpdateDocument()">Create</button>
                     <button type="button" id="save-document">Save</button>
                 </div>

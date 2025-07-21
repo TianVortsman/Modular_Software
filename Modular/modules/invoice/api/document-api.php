@@ -519,13 +519,6 @@ try {
             $result = \App\modules\invoice\controllers\list_documents($options);
             echo json_encode($result);
             break;
-        default:
-            echo json_encode([
-                'success' => false,
-                'message' => function_exists('get_friendly_error') ? get_friendly_error('Invalid action') : 'Invalid action',
-                'data' => null
-            ]);
-            break;
     }
 } catch (PDOException $e) {
     http_response_code(500);

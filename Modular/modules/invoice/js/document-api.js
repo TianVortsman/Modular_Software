@@ -51,23 +51,32 @@ function searchProducts(query, callback) {
 
 // API: Save document (create/update)
 async function saveDocumentApi(formData, recurringDetails = {}) {
-    // Remove document_number for finalized documents (let backend assign)
     const isDraft = (formData.document_status && formData.document_status.toLowerCase() === 'draft');
-    // Use all fields from formData, including recurring fields
     const data = {
         ...formData,
         ...(isDraft ? { document_number: formData.document_number } : {}),
         ...recurringDetails
     };
     try {
-        const response = await fetch('../api/document_modal.php?action=save_document', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify(data)
-        });
+        let response;
+        if (formData.document_id) {
+            // Update existing document
+            response = await fetch(`../api/document_modal.php?action=update_document&document_id=${encodeURIComponent(formData.document_id)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(data)
+            });
+        } else {
+            // Create new document
+            response = await fetch('../api/document_modal.php?action=save_document', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(data)
+            });
+        }
         const result = await response.json();
-        // If document_number is returned, update the UI
         if (result.success && result.data && result.data.document_number) {
             const docNumInput = document.getElementById('document-number');
             if (docNumInput) docNumInput.value = result.data.document_number;
@@ -170,12 +179,18 @@ async function fetchInvoiceChartData(range) {
     return await res.json();
 }
 
-function generateInvoicePDF() {
-    if (typeof showResponseModal === 'function') {
-        showResponseModal('PDF generation not yet implemented.', 'error');
-    } else {
-        alert('PDF generation not yet implemented.');
-    }
+// --- PDF Preview ---
+export async function previewDocumentPDF(formData) {
+    const payload = {
+        ...formData,
+        preview: true
+    };
+    const response = await fetch('../api/generate-document-pdf.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+    return await response.json();
 }
 
 export {
@@ -188,7 +203,6 @@ export {
     fetchInvoices,
     fetchRecurringInvoices,
     fetchInvoiceChartData,
-    generateInvoicePDF
 };
 
 

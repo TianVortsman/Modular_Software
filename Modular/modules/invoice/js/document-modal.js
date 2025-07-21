@@ -2,7 +2,7 @@
 // All modal logic, event handlers, and line item management now use new IDs/classes from document-modal.php
 // All logic is mapped to the unified invoicing.clients and invoicing.documents schema
 
-import { searchClients, searchSalespeople, searchProducts, saveDocumentApi, generateInvoicePDF } from './document-api.js';
+import { searchClients, searchSalespeople, searchProducts, saveDocumentApi, previewDocumentPDF } from './document-api.js';
 import { searchClient, searchSalesperson, getDocumentFormData, setDocumentFormData } from './document-form.js';
 
 // --- Utility Functions ---
@@ -721,6 +721,25 @@ document.addEventListener('DOMContentLoaded', function () {
     if (addDiscountBtn && !addDiscountBtn.hasListener) {
         addDiscountBtn.addEventListener('click', addDocumentDiscount);
         addDiscountBtn.hasListener = true;
+    }
+    const previewPdfBtn = document.getElementById('preview-pdf-btn');
+    if (previewPdfBtn) {
+        previewPdfBtn.addEventListener('click', async function() {
+            try {
+                showLoadingModal('Generating PDF preview...');
+                const formData = getDocumentFormData();
+                const result = await previewDocumentPDF(formData);
+                hideLoadingModal();
+                if (result.success && result.url) {
+                    window.open(result.url, '_blank');
+                } else {
+                    showResponseModal(result.message || 'Failed to generate PDF preview', 'error');
+                }
+            } catch (err) {
+                hideLoadingModal();
+                showResponseModal('Error generating PDF preview: ' + (err.message || err), 'error');
+            }
+        });
     }
 });
 
