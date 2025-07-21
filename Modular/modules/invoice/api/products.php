@@ -219,6 +219,34 @@ try {
             $result = \App\modules\product\controllers\handleImageUpload();
             break;
 
+        case 'search':
+            if ($method !== 'GET') {
+                throw new Exception('GET method required for search action');
+            }
+            $query = $_GET['query'] ?? '';
+            $field = $_GET['field'] ?? '';
+            if (strlen($query) < 2) throw new Exception('Query too short');
+            $sql = "SELECT 
+                        p.product_id, 
+                        p.product_name, 
+                        p.sku, 
+                        p.barcode, 
+                        p.product_description, 
+                        p.product_price, 
+                        p.tax_rate_id, 
+                        tr.rate AS tax_rate, 
+                        pi.product_stock_quantity
+                    FROM core.products p
+                    LEFT JOIN inventory.product_inventory pi ON p.product_id = pi.product_id
+                    LEFT JOIN core.tax_rates tr ON p.tax_rate_id = tr.tax_rate_id
+                    WHERE (p.product_name ILIKE :q OR p.sku ILIKE :q OR p.barcode ILIKE :q OR p.product_description ILIKE :q)
+                    LIMIT 20";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([':q' => "%$query%"]);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($results);
+            break;
+
         case 'delete':
             if ($method !== 'DELETE') {
                 throw new Exception('DELETE method required for delete action');

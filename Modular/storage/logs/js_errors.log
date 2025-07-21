@@ -30,3 +30,11 @@
     at handleApiResponse (http://localhost/public/assets/js/helpers.js:59:15)
     at http://localhost/modules/invoice/js/document-form.js:40:20
     at xhr.onreadystatechange (http://localhost/modules/invoice/js/document-api.js:14:13)
+2025-07-21T11:48:38+00:00 | Code: TOWWQ0 | Uncaught Error: No clients found | http://localhost/public/assets/js/helpers.js | line 79 | col 9 | stack: Error: No clients found
+    at handleApiResponse (http://localhost/public/assets/js/helpers.js:79:15)
+    at http://localhost/modules/invoice/js/document-form.js:40:20
+    at xhr.onreadystatechange (http://localhost/modules/invoice/js/document-api.js:14:13)
+2025-07-21T11:48:38+00:00 | Code: KT36R8 | Uncaught Error: No clients found | http://localhost/public/assets/js/helpers.js | line 79 | col 9 | stack: Error: No clients found
+    at handleApiResponse (http://localhost/public/assets/js/helpers.js:79:15)
+    at http://localhost/modules/invoice/js/document-form.js:40:20
+    at xhr.onreadystatechange (http://localhost/modules/invoice/js/document-api.js:14:13)
