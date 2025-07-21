@@ -20,7 +20,7 @@ function searchClients(query, callback) {
 // API function: search salespeople from the backend
 function searchSalespeople(query, callback) {
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', '../api/invoice_modal.php?action=search_salesperson&query=' + encodeURIComponent(query), true);
+    xhr.open('GET', '../api/document-api.php?action=search_salesperson&query=' + encodeURIComponent(query), true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             let results = [];
@@ -51,6 +51,8 @@ function searchProducts(query, callback) {
 
 // API: Save document (create/update)
 async function saveDocumentApi(formData, recurringDetails = {}) {
+    // Remove document_number for finalized documents (let backend assign)
+    const isDraft = (formData.document_status && formData.document_status.toLowerCase() === 'draft');
     const data = {
         document_id: formData.document_id,
         client_id: formData.client_id,
@@ -62,7 +64,8 @@ async function saveDocumentApi(formData, recurringDetails = {}) {
         address1: formData.address1,
         address2: formData.address2,
         document_type: formData.document_type,
-        document_number: formData.document_number,
+        // Only send document_number if draft
+        ...(isDraft ? { document_number: formData.document_number } : {}),
         issue_date: formData.issue_date,
         document_status: formData.document_status,
         pay_in_days: formData.pay_in_days,
@@ -86,6 +89,11 @@ async function saveDocumentApi(formData, recurringDetails = {}) {
             body: JSON.stringify(data)
         });
         const result = await response.json();
+        // If document_number is returned, update the UI
+        if (result.success && result.data && result.data.document_number) {
+            const docNumInput = document.getElementById('document-number');
+            if (docNumInput) docNumInput.value = result.data.document_number;
+        }
         return result;
     } catch (err) {
         return { success: false, message: 'Error saving document: ' + (err.message || err) };

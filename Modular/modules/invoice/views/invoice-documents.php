@@ -41,7 +41,7 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
     <script src="../../../public/assets/js/toggle-theme.js" type="module"></script>
     <script src="../../../public/assets/js/sidebar.js"></script>
 </head>
-<body id="invoices">
+<body id="documents">
   <?php include('../../../src/UI/sidebar.php'); ?>
 <div class="screen-container">
     <div class="invoices-screen">
@@ -57,27 +57,23 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
         <div class="document-section" id="invoices-section">
             <h3>Invoices</h3>
             <div class="actions-container">
-                <!-- Removed action buttons -->
                 <div class="filter-container">
                     <div class="invoice-filter">
                         <label for="date-from">From:</label>
                         <input type="date" id="date-from">
                         <label for="date-to">To:</label>
                         <input type="date" id="date-to">
-                        <label for="client">Client:</label>
-                        <input type="text" id="client-filter" placeholder="Filter by client...">
+                        <label for="client-name-invoices">Client:</label>
+                        <input type="text" id="client-name-invoices" placeholder="Filter by client...">
+                        <input type="hidden" id="client-id-invoices">
+                        <div id="search-results-client-invoices" class="search-results-client"></div>
                     </div>
                     <div class="tabs-container">
-                        <div class="invoice-tabs">
-                            <button class="tab-button active" data-tab="all">All</button>
-                            <button class="tab-button" data-tab="paid">Paid</button>
-                            <button class="tab-button" data-tab="unpaid">Unpaid</button>
-                            <button class="tab-button" data-tab="overdue">Overdue</button>
-                            <button class="tab-button" data-tab="recurring">Recurring</button>
-                            <div class="search-container">
-                                <span class="material-icons search-icon">search</span>
-                                <input type="text" id="invoice-search" placeholder="Search by Invoice Number or Client...">
-                            </div>
+                        <div class="subtab-row">
+                            <button class="subtab-button active" data-status="all">All</button>
+                            <button class="subtab-button" data-status="paid">Paid</button>
+                            <button class="subtab-button" data-status="unpaid">Unpaid</button>
+                            <button class="subtab-button" data-status="overdue">Overdue</button>
                         </div>
                     </div>
                     <div class="table-container">
@@ -92,7 +88,6 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
                                         <th>Status</th>
                                         <th>Total</th>
                                         <th>Due Date</th>
-                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="invoice-body">
@@ -109,15 +104,24 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
         <div class="document-section" id="recurring-invoices-section" style="display:none;">
             <h3>Recurring Invoices</h3>
             <div class="actions-container">
-                <!-- Removed action buttons -->
                 <div class="filter-container">
                     <div class="invoice-filter">
                         <label for="recurring-date-from">From:</label>
                         <input type="date" id="recurring-date-from">
                         <label for="recurring-date-to">To:</label>
                         <input type="date" id="recurring-date-to">
-                        <label for="recurring-client">Client:</label>
-                        <input type="text" id="recurring-client-filter" placeholder="Filter by client...">
+                        <label for="client-name-recurring">Client:</label>
+                        <input type="text" id="client-name-recurring" placeholder="Filter by client...">
+                        <input type="hidden" id="client-id-recurring">
+                        <div id="search-results-client-recurring" class="search-results-client"></div>
+                    </div>
+                    <div class="tabs-container">
+                        <div class="subtab-row">
+                            <button class="subtab-button active" data-status="all">All</button>
+                            <button class="subtab-button" data-status="active">Active</button>
+                            <button class="subtab-button" data-status="paused">Paused</button>
+                            <button class="subtab-button" data-status="cancelled">Cancelled</button>
+                        </div>
                     </div>
                     <div class="table-container">
                         <div class="invoice-table-container">
@@ -130,7 +134,6 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
                                         <th>Next Generation</th>
                                         <th>Frequency</th>
                                         <th>Status</th>
-                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="recurring-invoice-body">
@@ -147,15 +150,24 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
         <div class="document-section" id="quotations-section" style="display:none;">
             <h3>Quotations</h3>
             <div class="actions-container">
-                <!-- Removed action buttons -->
                 <div class="filter-container">
                     <div class="invoice-filter">
                         <label for="quotation-date-from">From:</label>
                         <input type="date" id="quotation-date-from">
                         <label for="quotation-date-to">To:</label>
                         <input type="date" id="quotation-date-to">
-                        <label for="quotation-client">Client:</label>
-                        <input type="text" id="quotation-client-filter" placeholder="Filter by client...">
+                        <label for="client-name-quotations">Client:</label>
+                        <input type="text" id="client-name-quotations" placeholder="Filter by client...">
+                        <input type="hidden" id="client-id-quotations">
+                        <div id="search-results-client-quotations" class="search-results-client"></div>
+                    </div>
+                    <div class="tabs-container">
+                        <div class="subtab-row">
+                            <button class="subtab-button active" data-status="all">All</button>
+                            <button class="subtab-button" data-status="approved">Approved</button>
+                            <button class="subtab-button" data-status="pending">Pending</button>
+                            <button class="subtab-button" data-status="rejected">Rejected</button>
+                        </div>
                     </div>
                     <div class="table-container">
                         <div class="invoice-table-container">
@@ -167,7 +179,6 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
                                         <th>Date Created</th>
                                         <th>Status</th>
                                         <th>Total</th>
-                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="quotation-body">
@@ -184,15 +195,24 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
         <div class="document-section" id="vehicle-quotations-section" style="display:none;">
             <h3>Vehicle Quotations</h3>
             <div class="actions-container">
-                <!-- Removed action buttons -->
                 <div class="filter-container">
                     <div class="invoice-filter">
                         <label for="vehicle-quotation-date-from">From:</label>
                         <input type="date" id="vehicle-quotation-date-from">
                         <label for="vehicle-quotation-date-to">To:</label>
                         <input type="date" id="vehicle-quotation-date-to">
-                        <label for="vehicle-quotation-client">Client:</label>
-                        <input type="text" id="vehicle-quotation-client-filter" placeholder="Filter by client...">
+                        <label for="client-name-vehicle-quotations">Client:</label>
+                        <input type="text" id="client-name-vehicle-quotations" placeholder="Filter by client...">
+                        <input type="hidden" id="client-id-vehicle-quotations">
+                        <div id="search-results-client-vehicle-quotations" class="search-results-client"></div>
+                    </div>
+                    <div class="tabs-container">
+                        <div class="subtab-row">
+                            <button class="subtab-button active" data-status="all">All</button>
+                            <button class="subtab-button" data-status="approved">Approved</button>
+                            <button class="subtab-button" data-status="pending">Pending</button>
+                            <button class="subtab-button" data-status="rejected">Rejected</button>
+                        </div>
                     </div>
                     <div class="table-container">
                         <div class="invoice-table-container">
@@ -205,7 +225,6 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
                                         <th>Date Created</th>
                                         <th>Status</th>
                                         <th>Total</th>
-                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="vehicle-quotation-body">
@@ -222,15 +241,24 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
         <div class="document-section" id="vehicle-invoices-section" style="display:none;">
             <h3>Vehicle Invoices</h3>
             <div class="actions-container">
-                <!-- Removed action buttons -->
                 <div class="filter-container">
                     <div class="invoice-filter">
                         <label for="vehicle-invoice-date-from">From:</label>
                         <input type="date" id="vehicle-invoice-date-from">
                         <label for="vehicle-invoice-date-to">To:</label>
                         <input type="date" id="vehicle-invoice-date-to">
-                        <label for="vehicle-invoice-client">Client:</label>
-                        <input type="text" id="vehicle-invoice-client-filter" placeholder="Filter by client...">
+                        <label for="client-name-vehicle-invoices">Client:</label>
+                        <input type="text" id="client-name-vehicle-invoices" placeholder="Filter by client...">
+                        <input type="hidden" id="client-id-vehicle-invoices">
+                        <div id="search-results-client-vehicle-invoices" class="search-results-client"></div>
+                    </div>
+                    <div class="tabs-container">
+                        <div class="subtab-row">
+                            <button class="subtab-button active" data-status="all">All</button>
+                            <button class="subtab-button" data-status="paid">Paid</button>
+                            <button class="subtab-button" data-status="unpaid">Unpaid</button>
+                            <button class="subtab-button" data-status="overdue">Overdue</button>
+                        </div>
                     </div>
                     <div class="table-container">
                         <div class="invoice-table-container">
@@ -243,7 +271,6 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
                                         <th>Date Created</th>
                                         <th>Status</th>
                                         <th>Total</th>
-                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="vehicle-invoice-body">
@@ -256,8 +283,12 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
             </div>
         </div>
     </div>
-<script src="../js/invoice-screen.js"></script>
-<script src="../js/invoice-modal.js"></script>
-<?php include('../modals/invoice-modal.php')?>
+    
+<script type="module" src="../js/document-api.js"></script>
+<script type="module" src="../js/document-screen.js"></script>
+<script type="module" src="../js/document-modal.js"></script>
+<?php include('../modals/document-modal.php')?>
+<?php include('../../../src/UI/response-modal.php'); ?>
+<?php include('../../../src/UI/loading-modal.php'); ?>
 </body>
 </html>

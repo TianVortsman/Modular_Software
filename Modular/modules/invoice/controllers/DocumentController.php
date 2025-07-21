@@ -15,6 +15,7 @@ function list_documents(array $options = []): array {
     $status   = $options['status']    ?? null;
     $dateFrom = $options['date_from'] ?? null;
     $dateTo   = $options['date_to']   ?? null;
+    $clientId = $options['client_id'] ?? null;
     $page     = (int)($options['page'] ?? 1);
     $limit    = (int)($options['limit'] ?? 20);
     $sortBy   = $options['sort_by']   ?? 'document_id';
@@ -47,6 +48,10 @@ function list_documents(array $options = []): array {
         $sql .= " AND d.issue_date <= :date_to";
         $params[':date_to'] = $dateTo;
     }
+    if (!empty($clientId)) {
+        $sql .= " AND d.client_id = :client_id";
+        $params[':client_id'] = $clientId;
+    }
     if (!empty($search)) {
         $sql .= " AND (c.client_name ILIKE :search OR d.document_number ILIKE :search)";
         $params[':search'] = '%' . $search . '%';
@@ -67,6 +72,7 @@ function list_documents(array $options = []): array {
         if (!empty($status)) $countSql .= " AND d.document_status = :status";
         if (!empty($dateFrom)) $countSql .= " AND d.issue_date >= :date_from";
         if (!empty($dateTo)) $countSql .= " AND d.issue_date <= :date_to";
+        if (!empty($clientId)) $countSql .= " AND d.client_id = :client_id";
         if (!empty($search)) $countSql .= " AND (d.document_number ILIKE :search)";
         $countStmt = $conn->prepare($countSql);
         foreach ($params as $key => $value) {
@@ -168,10 +174,11 @@ function get_document_items(int $document_id): array {
 
 function create_document(array $options): array {
     global $conn;
-    $documentData = $options['documentData'] ?? [];
+    $documentData = $options['documentData'] ?? $options;
     $items = $options['items'] ?? [];
     $mode = $options['mode'] ?? 'draft';
-    $user_id = $documentData['created_by'] ?? null;
+    // Always get user_id from payload or session
+    $user_id = $documentData['created_by'] ?? ($_SESSION['user_id'] ?? null);
     // Permission check
     if (!check_user_permission($user_id, 'create_document')) {
         $msg = "Permission denied for user $user_id to create document";
@@ -185,7 +192,7 @@ function create_document(array $options): array {
         ];
     }
     // Validate required fields
-    $requiredFields = ['client_id', 'document_type', 'issue_date', 'salesperson_id', 'subtotal', 'discount_amount', 'tax_amount', 'total_amount', 'balance_due', 'created_by'];
+    $requiredFields = ['client_id', 'document_type', 'issue_date', 'salesperson_id', 'subtotal', 'tax_amount', 'total_amount']; // removed 'created_by'
     foreach ($requiredFields as $field) {
         if (!isset($documentData[$field])) {
             $msg = "Missing required field: $field";
@@ -199,6 +206,18 @@ function create_document(array $options): array {
             ];
         }
     }
+    // Always set created_by from session if not set
+    if (!isset($documentData['created_by']) && isset($_SESSION['user_id'])) {
+        $documentData['created_by'] = $_SESSION['user_id'];
+    }
+    // Default discount_amount to 0 if not set
+    if (!isset($documentData['discount_amount'])) {
+        $documentData['discount_amount'] = 0;
+    }
+    // For drafts, set balance_due to total_amount if not set
+    if ($mode === 'draft' && (!isset($documentData['balance_due']) || $documentData['balance_due'] === '')) {
+        $documentData['balance_due'] = $documentData['total_amount'] ?? 0;
+    }
 
     try {
         $conn->beginTransaction();
@@ -210,8 +229,47 @@ function create_document(array $options): array {
             $document_number = $draftNumber;
             $document_status = 'draft';
         } elseif ($mode === 'finalize') {
-            // Use provided document_number and status, or generate if not set
-            $document_number = !empty($options['document_number']) ? $options['document_number'] : ('DOC-' . date('Ymd-His'));
+            // Fetch and increment document number from settings.invoice_settings
+            $type = strtolower($documentData['document_type']);
+            $numberField = '';
+            $prefixField = '';
+            switch ($type) {
+                case 'quotation':
+                case 'vehicle-quotation':
+                    $numberField = 'quotation_current_number';
+                    $prefixField = 'quotation_prefix';
+                    break;
+                case 'invoice':
+                case 'standard-invoice':
+                case 'vehicle-invoice':
+                case 'recurring-invoice':
+                    $numberField = 'invoice_current_number';
+                    $prefixField = 'invoice_prefix';
+                    break;
+                case 'credit-note':
+                    $numberField = 'credit_note_current_number';
+                    $prefixField = 'credit_note_prefix';
+                    break;
+                case 'pro-forma':
+                    $numberField = 'proforma_current_number';
+                    $prefixField = 'proforma_prefix';
+                    break;
+                default:
+                    $numberField = 'invoice_current_number';
+                    $prefixField = 'invoice_prefix';
+            }
+            // Lock row for update
+            $stmt = $conn->prepare("SELECT $prefixField, $numberField FROM settings.invoice_settings WHERE id = 1 FOR UPDATE");
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $prefix = $row[$prefixField] ?? '';
+            $current = $row[$numberField] ?? 0;
+            $next = ($current > 0) ? $current + 1 : 1;
+            $document_number = $prefix . $next;
+            // Increment the number in settings
+            $update = $conn->prepare("UPDATE settings.invoice_settings SET $numberField = :next WHERE id = 1");
+            $update->bindValue(':next', $next, PDO::PARAM_INT);
+            $update->execute();
             $document_status = !empty($options['status']) ? $options['status'] : 'pending';
         } else {
             throw new Exception("Invalid mode for create_document: $mode");
@@ -264,13 +322,34 @@ function create_document(array $options): array {
         $itemStmt = $conn->prepare($itemSql);
 
         foreach ($items as $item) {
+            // Validate and default all required item fields
+            $item['product_id'] = isset($item['product_id']) && is_numeric($item['product_id']) ? $item['product_id'] : null;
+            $item['product_description'] = $item['product_description'] ?? '';
+            $item['quantity'] = isset($item['quantity']) && is_numeric($item['quantity']) ? $item['quantity'] : 1;
+            $item['unit_price'] = isset($item['unit_price']) && is_numeric($item['unit_price']) ? $item['unit_price'] : 0;
+            $item['discount_percentage'] = (isset($item['discount_percentage']) && $item['discount_percentage'] !== '' && is_numeric($item['discount_percentage'])) ? $item['discount_percentage'] : 0;
+            // If tax_rate_id is 0 or blank, set to null
+            $item['tax_rate_id'] = (isset($item['tax_rate_id']) && is_numeric($item['tax_rate_id']) && $item['tax_rate_id'] > 0) ? $item['tax_rate_id'] : null;
+            $item['line_total'] = isset($item['line_total']) && is_numeric($item['line_total']) ? $item['line_total'] : 0;
+            // Check for truly missing required fields
+            if ($item['product_id'] === null) {
+                $msg = "Missing or invalid product_id in one or more items.";
+                error_log($msg);
+                return [ 'success' => false, 'message' => $msg, 'data' => null, 'error_code' => 'INVALID_PRODUCT_ID' ];
+            }
+            if ($item['product_description'] === '') {
+                $msg = "Missing product_description in one or more items.";
+                error_log($msg);
+                return [ 'success' => false, 'message' => $msg, 'data' => null, 'error_code' => 'INVALID_PRODUCT_DESCRIPTION' ];
+            }
+            // All other fields are defaulted above
             $itemStmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
             $itemStmt->bindValue(':product_id', $item['product_id'], PDO::PARAM_INT);
             $itemStmt->bindValue(':product_description', $item['product_description']);
             $itemStmt->bindValue(':quantity', $item['quantity']);
             $itemStmt->bindValue(':unit_price', $item['unit_price']);
             $itemStmt->bindValue(':discount_percentage', $item['discount_percentage']);
-            $itemStmt->bindValue(':tax_rate_id', $item['tax_rate_id'], PDO::PARAM_INT);
+            $itemStmt->bindValue(':tax_rate_id', $item['tax_rate_id'], is_null($item['tax_rate_id']) ? PDO::PARAM_NULL : PDO::PARAM_INT);
             $itemStmt->bindValue(':line_total', $item['line_total']);
             $itemStmt->execute();
         }
@@ -301,24 +380,96 @@ function create_document(array $options): array {
 
         $conn->commit();
 
+        // After commit, generate PDF for finalized documents
+        $pdf_url = null;
+        if ($mode === 'finalize') {
+            // Prepare data for PDF
+            $pdfData = [
+                'client' => [
+                    'name' => $documentData['client_name'] ?? '',
+                    'email' => $documentData['client_email'] ?? '',
+                    'phone' => $documentData['client_phone'] ?? '',
+                    'address1' => $documentData['address1'] ?? '',
+                    'address2' => $documentData['address2'] ?? '',
+                    'vat_number' => $documentData['vat_number'] ?? '',
+                    'registration_number' => $documentData['registration_number'] ?? ''
+                ],
+                'items' => array_map(function($item) {
+                    return [
+                        'qty' => $item['quantity'] ?? 1,
+                        'item_code' => $item['item_code'] ?? '',
+                        'description' => $item['product_description'] ?? '',
+                        'unit_price' => $item['unit_price'] ?? '',
+                        'tax' => $item['tax_percentage'] ?? '',
+                        'total' => $item['line_total'] ?? ''
+                    ];
+                }, $items),
+                'totals' => [
+                    'subtotal' => $documentData['subtotal'] ?? '',
+                    'tax' => $documentData['tax_amount'] ?? '',
+                    'total' => $documentData['total_amount'] ?? ''
+                ],
+                'notes' => array_filter([
+                    $documentData['public_note'] ?? '',
+                    $documentData['private_note'] ?? '',
+                    $documentData['foot_note'] ?? ''
+                ]),
+                'invoice_number' => $document_number,
+                'invoice_date' => $documentData['issue_date'] ?? '',
+                'due_date' => $documentData['due_date'] ?? '',
+                'salesperson' => [
+                    'name' => $documentData['salesperson_name'] ?? '',
+                    'email' => '' // Add if available
+                ]
+            ];
+            $pdfRes = null;
+            try {
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, __DIR__ . '/../api/generate-document-pdf.php');
+                curl_setopt($ch, CURLOPT_POST, 1);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($pdfData));
+                $pdfResRaw = curl_exec($ch);
+                curl_close($ch);
+                $pdfRes = json_decode($pdfResRaw, true);
+                if ($pdfRes && !empty($pdfRes['success']) && !empty($pdfRes['url'])) {
+                    $pdf_url = $pdfRes['url'];
+                    // Save PDF path to document
+                    $stmt = $conn->prepare('UPDATE invoicing.documents SET pdf_path = :pdf_path WHERE document_id = :document_id');
+                    $stmt->bindValue(':pdf_path', $pdf_url);
+                    $stmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
+                    $stmt->execute();
+                }
+            } catch (Exception $e) {
+                error_log('[DOCUMENT PDF GENERATION ERROR] ' . $e->getMessage());
+            }
+        }
+
         // Logging and notification
         log_user_action($user_id, 'create_document', $document_id, json_encode($documentData));
         send_notification($user_id, "Document #$document_id created successfully.");
         return [
             'success' => true,
             'message' => 'Document created successfully',
-            'data' => ['document_id' => (int)$document_id]
+            'data' => [
+                'document_id' => (int)$document_id,
+                'document_number' => $document_number,
+                'pdf_url' => $pdf_url
+            ]
         ];
     } catch (Exception $e) {
         if ($conn->inTransaction()) {
             $conn->rollBack();
         }
-        $msg = "create_document error: " . $e->getMessage();
-        error_log($msg);
+        // Always return the real error message for AI/global error handler, but rewrite with AI
+        $msg = $e->getMessage();
+        $friendly = function_exists('get_friendly_error') ? get_friendly_error($msg) : $msg;
+        error_log('create_document error: ' . $msg);
         log_user_action($user_id, 'create_document', null, $msg);
         return [
             'success' => false,
-            'message' => 'Failed to create document',
+            'message' => $friendly,
             'data' => null,
             'error_code' => 'DOCUMENT_CREATE_ERROR'
         ];
@@ -330,7 +481,8 @@ function update_document(int $document_id, array $options): array {
     $documentData = $options['documentData'] ?? [];
     $items = $options['items'] ?? [];
     $mode = $options['mode'] ?? 'draft';
-    $updated_by = $documentData['updated_by'] ?? null;
+    // Always get updated_by from payload or session
+    $updated_by = $documentData['updated_by'] ?? ($_SESSION['user_id'] ?? null);
     if (!check_user_permission($updated_by, 'update_document', $document_id)) {
         $msg = "Permission denied for user $updated_by to update document $document_id";
         error_log($msg);
@@ -351,7 +503,63 @@ function update_document(int $document_id, array $options): array {
             // Do not update document_number if it's a draft update
         } elseif ($mode === 'finalize') {
             $document_status = !empty($options['status']) ? $options['status'] : 'pending';
-            // Optionally update document_number if provided
+            // Assign a new document_number if not set or is a draft
+            $stmtCheck = $conn->prepare('SELECT document_number, document_status FROM invoicing.documents WHERE document_id = :document_id');
+            $stmtCheck->bindValue(':document_id', $document_id, PDO::PARAM_INT);
+            $stmtCheck->execute();
+            $currentDoc = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+            $currentNumber = $currentDoc['document_number'] ?? '';
+            $currentStatus = $currentDoc['document_status'] ?? '';
+            // Prevent editing if already finalized
+            if ($currentStatus !== 'draft') {
+                throw new Exception('Cannot edit a finalized document.');
+            }
+            if (empty($currentNumber) || strpos($currentNumber, 'DRAFT-') === 0) {
+                $type = strtolower($documentData['document_type']);
+                $numberField = '';
+                $prefixField = '';
+                switch ($type) {
+                    case 'quotation':
+                    case 'vehicle-quotation':
+                        $numberField = 'quotation_current_number';
+                        $prefixField = 'quotation_prefix';
+                        break;
+                    case 'invoice':
+                    case 'standard-invoice':
+                    case 'vehicle-invoice':
+                    case 'recurring-invoice':
+                        $numberField = 'invoice_current_number';
+                        $prefixField = 'invoice_prefix';
+                        break;
+                    case 'credit-note':
+                        $numberField = 'credit_note_current_number';
+                        $prefixField = 'credit_note_prefix';
+                        break;
+                    case 'pro-forma':
+                        $numberField = 'proforma_current_number';
+                        $prefixField = 'proforma_prefix';
+                        break;
+                    default:
+                        $numberField = 'invoice_current_number';
+                        $prefixField = 'invoice_prefix';
+                }
+                $stmt = $conn->prepare("SELECT $prefixField, $numberField FROM settings.invoice_settings WHERE id = 1 FOR UPDATE");
+                $stmt->execute();
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                $prefix = $row[$prefixField] ?? '';
+                $current = $row[$numberField] ?? 0;
+                $next = ($current > 0) ? $current + 1 : 1;
+                $newNumber = $prefix . $next;
+                $update = $conn->prepare("UPDATE settings.invoice_settings SET $numberField = :next WHERE id = 1");
+                $update->bindValue(':next', $next, PDO::PARAM_INT);
+                $update->execute();
+                // Update the document_number in the DB
+                $stmtNum = $conn->prepare('UPDATE invoicing.documents SET document_number = :document_number WHERE document_id = :document_id');
+                $stmtNum->bindValue(':document_number', $newNumber);
+                $stmtNum->bindValue(':document_id', $document_id, PDO::PARAM_INT);
+                $stmtNum->execute();
+                $currentNumber = $newNumber;
+            }
         } else {
             throw new Exception("Invalid mode for update_document: $mode");
         }
@@ -460,7 +668,7 @@ function update_document(int $document_id, array $options): array {
                 $itemStmt->bindValue(':quantity', $item['quantity']);
                 $itemStmt->bindValue(':unit_price', $item['unit_price']);
                 $itemStmt->bindValue(':discount_percentage', $item['discount_percentage']);
-                $itemStmt->bindValue(':tax_rate_id', $item['tax_rate_id'], PDO::PARAM_INT);
+                $itemStmt->bindValue(':tax_rate_id', $item['tax_rate_id'], is_null($item['tax_rate_id']) ? PDO::PARAM_NULL : PDO::PARAM_INT);
                 $itemStmt->bindValue(':line_total', $item['line_total']);
                 $itemStmt->execute();
             }
@@ -486,24 +694,97 @@ function update_document(int $document_id, array $options): array {
             $recurringStmt->execute();
         }
         $conn->commit();
+
+        // After commit, generate PDF for finalized documents
+        $pdf_url = null;
+        if ($mode === 'finalize') {
+            // Prepare data for PDF
+            $pdfData = [
+                'client' => [
+                    'name' => $documentData['client_name'] ?? '',
+                    'email' => $documentData['client_email'] ?? '',
+                    'phone' => $documentData['client_phone'] ?? '',
+                    'address1' => $documentData['address1'] ?? '',
+                    'address2' => $documentData['address2'] ?? '',
+                    'vat_number' => $documentData['vat_number'] ?? '',
+                    'registration_number' => $documentData['registration_number'] ?? ''
+                ],
+                'items' => array_map(function($item) {
+                    return [
+                        'qty' => $item['quantity'] ?? 1,
+                        'item_code' => $item['item_code'] ?? '',
+                        'description' => $item['product_description'] ?? '',
+                        'unit_price' => $item['unit_price'] ?? '',
+                        'tax' => $item['tax_percentage'] ?? '',
+                        'total' => $item['line_total'] ?? ''
+                    ];
+                }, $items),
+                'totals' => [
+                    'subtotal' => $documentData['subtotal'] ?? '',
+                    'tax' => $documentData['tax_amount'] ?? '',
+                    'total' => $documentData['total_amount'] ?? ''
+                ],
+                'notes' => array_filter([
+                    $documentData['public_note'] ?? '',
+                    $documentData['private_note'] ?? '',
+                    $documentData['foot_note'] ?? ''
+                ]),
+                'invoice_number' => $currentNumber,
+                'invoice_date' => $documentData['issue_date'] ?? '',
+                'due_date' => $documentData['due_date'] ?? '',
+                'salesperson' => [
+                    'name' => $documentData['salesperson_name'] ?? '',
+                    'email' => '' // Add if available
+                ]
+            ];
+            $pdfRes = null;
+            try {
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, __DIR__ . '/../api/generate-document-pdf.php');
+                curl_setopt($ch, CURLOPT_POST, 1);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($pdfData));
+                $pdfResRaw = curl_exec($ch);
+                curl_close($ch);
+                $pdfRes = json_decode($pdfResRaw, true);
+                if ($pdfRes && !empty($pdfRes['success']) && !empty($pdfRes['url'])) {
+                    $pdf_url = $pdfRes['url'];
+                    // Save PDF path to document
+                    $stmt = $conn->prepare('UPDATE invoicing.documents SET pdf_path = :pdf_path WHERE document_id = :document_id');
+                    $stmt->bindValue(':pdf_path', $pdf_url);
+                    $stmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
+                    $stmt->execute();
+                }
+            } catch (Exception $e) {
+                error_log('[DOCUMENT PDF GENERATION ERROR] ' . $e->getMessage());
+            }
+        }
+
         // Logging and notification
         log_user_action($updated_by, 'update_document', $document_id, json_encode($documentData));
         send_notification($updated_by, "Document #$document_id updated successfully.");
         return [
             'success' => true,
             'message' => 'Document updated successfully',
-            'data' => ['document_id' => $document_id]
+            'data' => [
+                'document_id' => $document_id,
+                'document_number' => $currentNumber,
+                'pdf_url' => $pdf_url
+            ]
         ];
     } catch (Exception $e) {
         if ($conn->inTransaction()) {
             $conn->rollBack();
         }
-        $msg = "update_document error: " . $e->getMessage();
-        error_log($msg);
+        // Always return the real error message for AI/global error handler, but rewrite with AI
+        $msg = $e->getMessage();
+        $friendly = function_exists('get_friendly_error') ? get_friendly_error($msg) : $msg;
+        error_log('update_document error: ' . $msg);
         log_user_action($updated_by, 'update_document', $document_id, $msg);
         return [
             'success' => false,
-            'message' => 'Failed to update document',
+            'message' => $friendly,
             'data' => null,
             'error_code' => 'DOCUMENT_UPDATE_ERROR'
         ];

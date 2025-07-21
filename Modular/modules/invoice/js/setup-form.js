@@ -9,22 +9,20 @@ if (supplierForm) {
         try {
             showLoadingModal('Saving supplier...');
             const formData = new FormData(supplierForm);
-            const data = await SetupAPI.saveSupplier(formData);
+            const data = await SetupAPI.saveSupplier(formData); // This already calls handleApiResponse
             hideLoadingModal();
-            if (data.success) {
+            if (data && data.success) {
                 showResponseModal('Success', 'Supplier saved successfully', 'success');
                 closeSupplierModal();
                 // Optionally reload supplier list
                 if (window.invoiceSetup && window.invoiceSetup.loadSuppliers) {
                     window.invoiceSetup.loadSuppliers();
                 }
-            } else {
-                const errorMsg = data.error || data.message || 'Failed to save supplier';
-                showResponseModal('Error', errorMsg, 'error');
             }
+            // No else: errors are handled by handleApiResponse
         } catch (error) {
             hideLoadingModal();
-            showResponseModal('Error', 'Failed to save supplier', 'error');
+            // No showResponseModal here: errors are handled by handleApiResponse
         }
     });
 }

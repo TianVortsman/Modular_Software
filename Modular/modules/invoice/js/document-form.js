@@ -284,6 +284,12 @@ function getDocumentFormData() {
     const subtotal = document.getElementById('subtotal')?.textContent || '';
     const tax_amount = document.getElementById('tax-total')?.textContent || '';
     const total_amount = document.getElementById('final-total')?.textContent || '';
+    // Only include document_number for drafts, and never the preview (with '(Preview)')
+    const isDraft = (document_status && document_status.toLowerCase() === 'draft');
+    let draftNumber = document_number;
+    if (isDraft && draftNumber && draftNumber.includes('(Preview)')) {
+        draftNumber = '';
+    }
     return {
         document_id,
         client_id,
@@ -295,7 +301,7 @@ function getDocumentFormData() {
         address1,
         address2,
         document_type,
-        document_number,
+        ...(isDraft && draftNumber ? { document_number: draftNumber } : {}),
         issue_date,
         document_status,
         pay_in_days,

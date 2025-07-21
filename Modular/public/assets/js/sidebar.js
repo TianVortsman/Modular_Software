@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
         ],
         "invoice-dashboard": [
             { href: "/public/views/dashboard.php", icon: "home", text: "Home" },
-            { href: "/modules/invoice/views/invoices.php", icon: "description", text: "Invoices" },
+            { href: "/modules/invoice/views/invoice-documents.php", icon: "description", text: "Documents" },
             { href: "/modules/invoice/views/invoice-products.php", icon: "inventory_2", text: "Products" },
             { href: "/modules/invoice/views/invoice-clients.php", icon: "people", text: "Clients" },
             { href: "/modules/invoice/views/invoice-payments.php", icon: "payment", text: "Payments" },
@@ -95,8 +95,9 @@ document.addEventListener('DOMContentLoaded', function () {
             { href: "/public/modules/accounting/pages/reconciliation.php", icon: "sync", text: "Reconciliation" },
             { href: "/public/modules/accounting/pages/journal-entries.php", icon: "edit", text: "Journal Entries" }
         ],
-        "invoices": [
+        "documents": [
             { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard", },
+        { href: "#", icon: "add_circle", text: "Create Document" },
         ],
         "invoice-setup": [
             { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
@@ -331,7 +332,7 @@ document.addEventListener('DOMContentLoaded', function () {
             targetId: 'sales-reps-container',
             toggleClasses: ['collapsed']
         },
-        'invoices':{
+        'documents':{
             targetId: 'screen-container',
             toggleClasses: ['collapsed']
         },

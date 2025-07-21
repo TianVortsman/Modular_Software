@@ -629,3 +629,1081 @@
 [20-Jul-2025 18:06:52 UTC] [DatabaseConfig] Client config created with dbname: ACC002
 [20-Jul-2025 18:06:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
 [20-Jul-2025 18:06:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:26:03 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:26:03 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:26:03 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:26:03 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:26:23 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 19:26:23 UTC] Received request - Method: GET, Action: search
+[20-Jul-2025 19:26:23 UTC] POST data: Array
+(
+)
+
+[20-Jul-2025 19:26:23 UTC] FILES data: Array
+(
+)
+
+[20-Jul-2025 19:26:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:26:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:26:23 UTC] Processing action: search with method: GET
+[20-Jul-2025 19:26:23 UTC] Request processed successfully for action: search
+[20-Jul-2025 19:27:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:27:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:27:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:27:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:27:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:27:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:27:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:27:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:27:20 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:27:20 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:27:20 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:27:20 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:27:23 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 19:27:23 UTC] Received request - Method: GET, Action: search
+[20-Jul-2025 19:27:23 UTC] POST data: Array
+(
+)
+
+[20-Jul-2025 19:27:23 UTC] FILES data: Array
+(
+)
+
+[20-Jul-2025 19:27:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:27:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:27:23 UTC] Processing action: search with method: GET
+[20-Jul-2025 19:27:23 UTC] Request processed successfully for action: search
+[20-Jul-2025 19:27:30 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 19:27:30 UTC] Received request - Method: GET, Action: search
+[20-Jul-2025 19:27:30 UTC] POST data: Array
+(
+)
+
+[20-Jul-2025 19:27:30 UTC] FILES data: Array
+(
+)
+
+[20-Jul-2025 19:27:30 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:27:30 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:27:30 UTC] Processing action: search with method: GET
+[20-Jul-2025 19:27:30 UTC] Request processed successfully for action: search
+[20-Jul-2025 19:27:35 UTC] [AI Error Handler] Time taken: 0.003 seconds
+2025-07-20T19:27:35+00:00 | Code: FED8A7 | [PHP] file_get_contents(http://host.docker.internal:1234/v1/chat/completions): Failed to open stream: Network is unreachable in /var/www/html/src/Utils/errorHandler.php on line 45 | AI: N/A
+[20-Jul-2025 19:27:39 UTC] [AI Error Handler] Time taken: 0.002 seconds
+2025-07-20T19:27:39+00:00 | Code: CBF9BF | [PHP] file_get_contents(http://host.docker.internal:1234/v1/chat/completions): Failed to open stream: Network is unreachable in /var/www/html/src/Utils/errorHandler.php on line 45 | AI: N/A
+[20-Jul-2025 19:28:02 UTC] [AI Error Handler] Time taken: 0.002 seconds
+2025-07-20T19:28:03+00:00 | Code: 655BA0 | [PHP] file_get_contents(http://host.docker.internal:1234/v1/chat/completions): Failed to open stream: Network is unreachable in /var/www/html/src/Utils/errorHandler.php on line 45 | AI: N/A
+[20-Jul-2025 19:29:47 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:29:47 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:29:47 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:29:47 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:29:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:29:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:29:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:29:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:29:53 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 19:29:53 UTC] Received request - Method: GET, Action: search
+[20-Jul-2025 19:29:53 UTC] POST data: Array
+(
+)
+
+[20-Jul-2025 19:29:53 UTC] FILES data: Array
+(
+)
+
+[20-Jul-2025 19:29:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:29:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:29:53 UTC] Processing action: search with method: GET
+[20-Jul-2025 19:29:53 UTC] Request processed successfully for action: search
+[20-Jul-2025 19:29:56 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 19:29:56 UTC] Received request - Method: GET, Action: search
+[20-Jul-2025 19:29:56 UTC] POST data: Array
+(
+)
+
+[20-Jul-2025 19:29:56 UTC] FILES data: Array
+(
+)
+
+[20-Jul-2025 19:29:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:29:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:29:56 UTC] Processing action: search with method: GET
+[20-Jul-2025 19:29:56 UTC] Request processed successfully for action: search
+[20-Jul-2025 19:29:58 UTC] [AI Error Handler] Time taken: 0.003 seconds
+2025-07-20T19:29:58+00:00 | Code: 4D3E75 | [PHP] file_get_contents(http://host.docker.internal:1234/v1/chat/completions): Failed to open stream: Network is unreachable in /var/www/html/src/Utils/errorHandler.php on line 45 | AI: N/A
+[20-Jul-2025 19:30:47 UTC] [AI Error Handler] Time taken: 0.425 seconds
+2025-07-20T19:30:47+00:00 | Code: 9B49EC | [PHP] Class "App\Core\Database\ClientDatabase" not found in /var/www/html/modules/invoice/api/document_modal.php on line 16 | AI: 'Something went wrong. Please contact support.'
+[20-Jul-2025 19:30:55 UTC] [AI Error Handler] Time taken: 0.691 seconds
+2025-07-20T19:30:55+00:00 | Code: 1D3057 | [PHP] Class "App\Core\Database\ClientDatabase" not found in /var/www/html/modules/invoice/api/document_modal.php on line 16 | AI: Oops, we couldn't find the 'App\Core\Database\ClientDatabase' class. Please check your code or contact support for assistance.
+[20-Jul-2025 19:34:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:34:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:34:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:34:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:34:34 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:34:34 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:34:34 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:34:34 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:34:37 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 19:34:37 UTC] Received request - Method: GET, Action: search
+[20-Jul-2025 19:34:37 UTC] POST data: Array
+(
+)
+
+[20-Jul-2025 19:34:37 UTC] FILES data: Array
+(
+)
+
+[20-Jul-2025 19:34:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:34:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:34:37 UTC] Processing action: search with method: GET
+[20-Jul-2025 19:34:37 UTC] Request processed successfully for action: search
+[20-Jul-2025 19:34:40 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 19:34:40 UTC] Received request - Method: GET, Action: search
+[20-Jul-2025 19:34:40 UTC] POST data: Array
+(
+)
+
+[20-Jul-2025 19:34:40 UTC] FILES data: Array
+(
+)
+
+[20-Jul-2025 19:34:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:34:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:34:40 UTC] Processing action: search with method: GET
+[20-Jul-2025 19:34:40 UTC] Request processed successfully for action: search
+[20-Jul-2025 19:34:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:34:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[20-Jul-2025 19:34:42 UTC] Missing required field: client_id
+[20-Jul-2025 19:34:42 UTC] log_user_action error: SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "user_id" of relation "user_actions" violates not-null constraint
+DETAIL:  Failing row contains (95, null, invoicing, create_document, invoice, null, null, null, Missing required field: client_id, 172.18.0.1, Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KH..., 9ab6cc57f7a95a0fc775370112138646, 2025-07-20 19:34:42.375349).
+[20-Jul-2025 19:41:27 UTC] Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[20-Jul-2025 19:41:27 UTC] Account number from session: ACC002
+[20-Jul-2025 19:41:27 UTC] User name: Tian
+[20-Jul-2025 19:41:27 UTC] Multiple accounts: false
+[20-Jul-2025 19:41:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[20-Jul-2025 19:41:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:35:51 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:35:51 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:35:51 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:35:51 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:35:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:35:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:35:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:35:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:35:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:35:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:35:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:35:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:35:55 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:35:55 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:35:55 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:35:55 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:36:01 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[21-Jul-2025 06:36:01 UTC] Received request - Method: GET, Action: search
+[21-Jul-2025 06:36:01 UTC] POST data: Array
+(
+)
+
+[21-Jul-2025 06:36:01 UTC] FILES data: Array
+(
+)
+
+[21-Jul-2025 06:36:01 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:36:01 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:36:01 UTC] Processing action: search with method: GET
+[21-Jul-2025 06:36:01 UTC] Request processed successfully for action: search
+[21-Jul-2025 06:36:06 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[21-Jul-2025 06:36:06 UTC] Received request - Method: GET, Action: search
+[21-Jul-2025 06:36:06 UTC] POST data: Array
+(
+)
+
+[21-Jul-2025 06:36:06 UTC] FILES data: Array
+(
+)
+
+[21-Jul-2025 06:36:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:36:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:36:06 UTC] Processing action: search with method: GET
+[21-Jul-2025 06:36:06 UTC] Request processed successfully for action: search
+[21-Jul-2025 06:36:08 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[21-Jul-2025 06:36:08 UTC] Received request - Method: GET, Action: search
+[21-Jul-2025 06:36:08 UTC] POST data: Array
+(
+)
+
+[21-Jul-2025 06:36:08 UTC] FILES data: Array
+(
+)
+
+[21-Jul-2025 06:36:08 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:36:08 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:36:08 UTC] Processing action: search with method: GET
+[21-Jul-2025 06:36:08 UTC] Request processed successfully for action: search
+[21-Jul-2025 06:36:10 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[21-Jul-2025 06:36:10 UTC] Received request - Method: GET, Action: search
+[21-Jul-2025 06:36:10 UTC] POST data: Array
+(
+)
+
+[21-Jul-2025 06:36:10 UTC] FILES data: Array
+(
+)
+
+[21-Jul-2025 06:36:10 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:36:10 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:36:10 UTC] Processing action: search with method: GET
+[21-Jul-2025 06:36:10 UTC] Request processed successfully for action: search
+[21-Jul-2025 06:36:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:36:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:36:14 UTC] Missing required field: client_id
+[21-Jul-2025 06:45:57 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:45:57 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:45:57 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:45:57 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:46:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:46:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:46:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:46:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:46:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:46:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:46:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:46:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:46:03 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[21-Jul-2025 06:46:03 UTC] Received request - Method: GET, Action: search
+[21-Jul-2025 06:46:03 UTC] POST data: Array
+(
+)
+
+[21-Jul-2025 06:46:03 UTC] FILES data: Array
+(
+)
+
+[21-Jul-2025 06:46:03 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:46:03 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:46:03 UTC] Processing action: search with method: GET
+[21-Jul-2025 06:46:03 UTC] Request processed successfully for action: search
+[21-Jul-2025 06:46:08 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[21-Jul-2025 06:46:08 UTC] Received request - Method: GET, Action: search
+[21-Jul-2025 06:46:08 UTC] POST data: Array
+(
+)
+
+[21-Jul-2025 06:46:08 UTC] FILES data: Array
+(
+)
+
+[21-Jul-2025 06:46:08 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:46:08 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:46:08 UTC] Processing action: search with method: GET
+[21-Jul-2025 06:46:08 UTC] Request processed successfully for action: search
+[21-Jul-2025 06:46:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:46:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:46:11 UTC] Missing required field: discount_amount
+[21-Jul-2025 06:47:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:47:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:47:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:47:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:47:45 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:47:45 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:47:45 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:47:45 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:47:45 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:47:45 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:47:45 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:47:45 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:47:47 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[21-Jul-2025 06:47:47 UTC] Received request - Method: GET, Action: search
+[21-Jul-2025 06:47:47 UTC] POST data: Array
+(
+)
+
+[21-Jul-2025 06:47:47 UTC] FILES data: Array
+(
+)
+
+[21-Jul-2025 06:47:47 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:47:47 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:47:47 UTC] Processing action: search with method: GET
+[21-Jul-2025 06:47:47 UTC] Request processed successfully for action: search
+[21-Jul-2025 06:47:54 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[21-Jul-2025 06:47:54 UTC] Received request - Method: GET, Action: search
+[21-Jul-2025 06:47:54 UTC] POST data: Array
+(
+)
+
+[21-Jul-2025 06:47:54 UTC] FILES data: Array
+(
+)
+
+[21-Jul-2025 06:47:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:47:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:47:54 UTC] Processing action: search with method: GET
+[21-Jul-2025 06:47:54 UTC] Request processed successfully for action: search
+[21-Jul-2025 06:47:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:47:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:47:56 UTC] Missing required field: balance_due
+[21-Jul-2025 06:49:03 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:49:03 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:49:03 UTC] Missing required field: balance_due
+[21-Jul-2025 06:49:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:49:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:49:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:49:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:49:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:49:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:49:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:49:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:49:18 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[21-Jul-2025 06:49:18 UTC] Received request - Method: GET, Action: search
+[21-Jul-2025 06:49:18 UTC] POST data: Array
+(
+)
+
+[21-Jul-2025 06:49:18 UTC] FILES data: Array
+(
+)
+
+[21-Jul-2025 06:49:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:49:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:49:18 UTC] Processing action: search with method: GET
+[21-Jul-2025 06:49:18 UTC] Request processed successfully for action: search
+[21-Jul-2025 06:49:23 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[21-Jul-2025 06:49:23 UTC] Received request - Method: GET, Action: search
+[21-Jul-2025 06:49:23 UTC] POST data: Array
+(
+)
+
+[21-Jul-2025 06:49:23 UTC] FILES data: Array
+(
+)
+
+[21-Jul-2025 06:49:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:49:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:49:23 UTC] Processing action: search with method: GET
+[21-Jul-2025 06:49:23 UTC] Request processed successfully for action: search
+[21-Jul-2025 06:49:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:49:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:49:25 UTC] Missing required field: balance_due
+[21-Jul-2025 06:50:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:50:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:50:22 UTC] Missing required field: created_by
+[21-Jul-2025 06:52:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:52:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:52:59 UTC] [AI Error Handler] Time taken: 0.647 seconds
+2025-07-21T06:52:59+00:00 | Code: 571A9E | [PHP] Undefined array key "discount_percentage" in /var/www/html/modules/invoice/controllers/DocumentController.php on line 324 | AI: Invalid input detected. Please check the 'discount_percentage' value and try again.
+[21-Jul-2025 06:53:20 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:53:20 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:53:20 UTC] [AI Error Handler] Time taken: 0.448 seconds
+2025-07-21T06:53:20+00:00 | Code: 857159 | [PHP] Undefined array key "discount_percentage" in /var/www/html/modules/invoice/controllers/DocumentController.php on line 324 | AI: Invalid input detected. Please check the 'discount_percentage' value and try again.
+[21-Jul-2025 06:56:52 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:56:52 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:56:53 UTC] [AI Error Handler] Time taken: 0.666 seconds
+2025-07-21T06:56:53+00:00 | Code: A15768 | [PHP] Undefined array key "tax_rate_id" in /var/www/html/modules/invoice/controllers/DocumentController.php on line 339 | AI: Invalid input detected. Please make sure you have provided the required 'tax_rate_id' value.
+[21-Jul-2025 06:58:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:58:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:58:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:58:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:58:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:58:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:58:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:58:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:58:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:58:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:58:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:58:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:58:56 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[21-Jul-2025 06:58:56 UTC] Received request - Method: GET, Action: search
+[21-Jul-2025 06:58:56 UTC] POST data: Array
+(
+)
+
+[21-Jul-2025 06:58:56 UTC] FILES data: Array
+(
+)
+
+[21-Jul-2025 06:58:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:58:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:58:56 UTC] Processing action: search with method: GET
+[21-Jul-2025 06:58:56 UTC] Request processed successfully for action: search
+[21-Jul-2025 06:59:02 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[21-Jul-2025 06:59:02 UTC] Received request - Method: GET, Action: search
+[21-Jul-2025 06:59:02 UTC] POST data: Array
+(
+)
+
+[21-Jul-2025 06:59:02 UTC] FILES data: Array
+(
+)
+
+[21-Jul-2025 06:59:02 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:59:02 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:59:02 UTC] Processing action: search with method: GET
+[21-Jul-2025 06:59:02 UTC] Request processed successfully for action: search
+[21-Jul-2025 06:59:04 UTC] API Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 1
+    [csrf_token] => f2dba76f99969559d0ee61f06f08e3fca33a6dd49669730e7b0a1288dfe0cd87
+    [tech_access_token] => 2679783115b7c55ff72580d2eef3b6d5cd092929a9f9e20c675644d2d6492fb1
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1752933521
+    [account_number] => ACC002
+)
+
+[21-Jul-2025 06:59:04 UTC] Received request - Method: GET, Action: search
+[21-Jul-2025 06:59:04 UTC] POST data: Array
+(
+)
+
+[21-Jul-2025 06:59:04 UTC] FILES data: Array
+(
+)
+
+[21-Jul-2025 06:59:04 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:59:04 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:59:05 UTC] Processing action: search with method: GET
+[21-Jul-2025 06:59:05 UTC] Request processed successfully for action: search
+[21-Jul-2025 06:59:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 06:59:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 06:59:11 UTC] create_document error: SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table "document_items" violates foreign key constraint "document_items_tax_rate_id_fkey"
+DETAIL:  Key (tax_rate_id)=(0) is not present in table "tax_rates".
+[21-Jul-2025 07:08:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 07:08:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 07:08:22 UTC] create_document error: SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table "document_items" violates foreign key constraint "document_items_tax_rate_id_fkey"
+DETAIL:  Key (tax_rate_id)=(0) is not present in table "tax_rates".
+[21-Jul-2025 07:09:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 07:09:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 07:09:20 UTC] [AI Error Handler] Time taken: 0.798 seconds
+[21-Jul-2025 07:09:20 UTC] create_document error: SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table "document_items" violates foreign key constraint "document_items_tax_rate_id_fkey"
+DETAIL:  Key (tax_rate_id)=(0) is not present in table "tax_rates".
+[21-Jul-2025 07:11:04 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 07:11:04 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 07:14:40 UTC] PHP Warning:  include(../modals/invoice-modal.php): Failed to open stream: No such file or directory in /var/www/html/modules/invoice/views/invoice-documents.php on line 261
+[21-Jul-2025 07:14:40 UTC] PHP Warning:  include(): Failed opening '../modals/invoice-modal.php' for inclusion (include_path='.:/usr/local/lib/php') in /var/www/html/modules/invoice/views/invoice-documents.php on line 261
+[21-Jul-2025 07:29:38 UTC] PHP Warning:  include(../modals/invoice-modal.php): Failed to open stream: No such file or directory in /var/www/html/modules/invoice/views/invoice-documents.php on line 261
+[21-Jul-2025 07:29:38 UTC] PHP Warning:  include(): Failed opening '../modals/invoice-modal.php' for inclusion (include_path='.:/usr/local/lib/php') in /var/www/html/modules/invoice/views/invoice-documents.php on line 261
+[21-Jul-2025 07:31:22 UTC] PHP Warning:  include(../modals/invoice-modal.php): Failed to open stream: No such file or directory in /var/www/html/modules/invoice/views/invoice-documents.php on line 261
+[21-Jul-2025 07:31:22 UTC] PHP Warning:  include(): Failed opening '../modals/invoice-modal.php' for inclusion (include_path='.:/usr/local/lib/php') in /var/www/html/modules/invoice/views/invoice-documents.php on line 261
+[21-Jul-2025 07:31:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 07:31:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 07:32:41 UTC] PHP Warning:  include(../modals/invoice-modal.php): Failed to open stream: No such file or directory in /var/www/html/modules/invoice/views/invoice-documents.php on line 261
+[21-Jul-2025 07:32:41 UTC] PHP Warning:  include(): Failed opening '../modals/invoice-modal.php' for inclusion (include_path='.:/usr/local/lib/php') in /var/www/html/modules/invoice/views/invoice-documents.php on line 261
+[21-Jul-2025 07:32:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 07:32:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 07:34:16 UTC] PHP Warning:  include(../modals/invoice-modal.php): Failed to open stream: No such file or directory in /var/www/html/modules/invoice/views/invoice-documents.php on line 261
+[21-Jul-2025 07:34:16 UTC] PHP Warning:  include(): Failed opening '../modals/invoice-modal.php' for inclusion (include_path='.:/usr/local/lib/php') in /var/www/html/modules/invoice/views/invoice-documents.php on line 261
+[21-Jul-2025 07:35:27 UTC] PHP Warning:  include(../modals/invoice-modal.php): Failed to open stream: No such file or directory in /var/www/html/modules/invoice/views/invoice-documents.php on line 261
+[21-Jul-2025 07:35:27 UTC] PHP Warning:  include(): Failed opening '../modals/invoice-modal.php' for inclusion (include_path='.:/usr/local/lib/php') in /var/www/html/modules/invoice/views/invoice-documents.php on line 261
+[21-Jul-2025 07:35:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 07:35:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 07:36:56 UTC] PHP Warning:  include(../modals/invoice-modal.php): Failed to open stream: No such file or directory in /var/www/html/modules/invoice/views/invoice-documents.php on line 262
+[21-Jul-2025 07:36:56 UTC] PHP Warning:  include(): Failed opening '../modals/invoice-modal.php' for inclusion (include_path='.:/usr/local/lib/php') in /var/www/html/modules/invoice/views/invoice-documents.php on line 262
+[21-Jul-2025 07:37:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 07:37:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 07:38:22 UTC] PHP Warning:  include(../modals/invoice-modal.php): Failed to open stream: No such file or directory in /var/www/html/modules/invoice/views/invoice-documents.php on line 262
+[21-Jul-2025 07:38:22 UTC] PHP Warning:  include(): Failed opening '../modals/invoice-modal.php' for inclusion (include_path='.:/usr/local/lib/php') in /var/www/html/modules/invoice/views/invoice-documents.php on line 262
+[21-Jul-2025 07:38:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 07:38:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 07:38:26 UTC] [AI Error Handler] Time taken: 0.873 seconds
+[21-Jul-2025 07:39:53 UTC] PHP Warning:  include(../modals/invoice-modal.php): Failed to open stream: No such file or directory in /var/www/html/modules/invoice/views/invoice-documents.php on line 262
+[21-Jul-2025 07:39:53 UTC] PHP Warning:  include(): Failed opening '../modals/invoice-modal.php' for inclusion (include_path='.:/usr/local/lib/php') in /var/www/html/modules/invoice/views/invoice-documents.php on line 262
+[21-Jul-2025 07:39:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 07:39:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 07:39:57 UTC] [AI Error Handler] Time taken: 0.749 seconds
+[21-Jul-2025 07:39:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 07:39:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 07:39:59 UTC] [AI Error Handler] Time taken: 0.504 seconds
+[21-Jul-2025 07:42:26 UTC] PHP Warning:  include(../modals/invoice-modal.php): Failed to open stream: No such file or directory in /var/www/html/modules/invoice/views/invoice-documents.php on line 262
+[21-Jul-2025 07:42:26 UTC] PHP Warning:  include(): Failed opening '../modals/invoice-modal.php' for inclusion (include_path='.:/usr/local/lib/php') in /var/www/html/modules/invoice/views/invoice-documents.php on line 262
+[21-Jul-2025 07:42:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 07:42:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 07:42:29 UTC] [AI Error Handler] Time taken: 0.297 seconds
+[21-Jul-2025 07:43:49 UTC] PHP Warning:  include(../modals/invoice-modal.php): Failed to open stream: No such file or directory in /var/www/html/modules/invoice/views/invoice-documents.php on line 262
+[21-Jul-2025 07:43:49 UTC] PHP Warning:  include(): Failed opening '../modals/invoice-modal.php' for inclusion (include_path='.:/usr/local/lib/php') in /var/www/html/modules/invoice/views/invoice-documents.php on line 262
+[21-Jul-2025 07:43:52 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 07:43:52 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 07:43:52 UTC] [AI Error Handler] Time taken: 0.597 seconds
+[21-Jul-2025 07:56:13 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 07:56:13 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 07:56:13 UTC] [AI Error Handler] Time taken: 0.445 seconds
+[21-Jul-2025 07:56:21 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 07:56:21 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 07:56:21 UTC] [AI Error Handler] Time taken: 0.529 seconds
+[21-Jul-2025 07:56:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 07:56:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 07:56:24 UTC] [AI Error Handler] Time taken: 0.505 seconds
+[21-Jul-2025 07:56:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 07:56:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 07:56:26 UTC] [AI Error Handler] Time taken: 0.547 seconds
+[21-Jul-2025 07:56:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 07:56:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 07:56:28 UTC] [AI Error Handler] Time taken: 0.396 seconds
+[21-Jul-2025 07:56:28 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 07:56:28 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 07:56:29 UTC] [AI Error Handler] Time taken: 0.481 seconds
+[21-Jul-2025 07:56:30 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 07:56:30 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 07:56:31 UTC] [AI Error Handler] Time taken: 0.638 seconds
+[21-Jul-2025 08:02:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:02:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:02:07 UTC] [AI Error Handler] Time taken: 0.561 seconds
+[21-Jul-2025 08:04:10 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:04:10 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:04:13 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:04:13 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:04:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:04:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:04:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:04:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:04:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:04:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:04:21 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:04:21 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:04:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:04:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:04:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:04:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:05:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:05:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:05:41 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:05:41 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:06:48 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:06:48 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:07:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:07:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:07:30 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:07:30 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:07:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:07:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:07:33 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:07:33 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:07:34 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:07:34 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:07:36 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:07:36 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:07:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:07:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:07:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:07:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:07:43 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:07:43 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:07:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:07:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:07:48 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:07:48 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:07:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:07:49 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:07:51 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:07:51 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:10:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:10:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:10:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:10:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:10:20 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:10:20 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:10:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:10:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:13:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:13:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:13:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:13:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:13:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:13:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:13:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:13:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:17:04 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:17:04 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:17:07 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:17:07 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:24:35 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:24:35 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:28:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:28:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:46:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:46:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:46:32 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:46:32 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:49:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:49:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:49:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:49:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:49:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:49:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:49:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:49:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:49:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:49:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:49:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:49:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:49:28 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:49:28 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:57:38 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:57:38 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:57:41 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:57:41 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:57:41 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:57:41 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:59:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:59:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:59:28 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:59:28 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:59:34 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:59:34 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:59:34 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:59:34 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:59:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:59:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:59:43 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:59:43 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:59:47 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:59:47 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:59:47 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:59:47 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 08:59:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 08:59:49 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:01:21 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:01:21 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:01:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:01:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:01:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:01:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:01:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:01:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:01:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:01:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:01:30 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:01:30 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:01:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:01:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:01:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:01:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:01:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:01:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:01:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:01:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:01:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:01:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:01:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:01:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:01:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:01:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:01:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:01:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:01:33 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:01:33 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:01:33 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:01:33 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:01:35 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:01:35 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:01:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:01:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:01:41 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:01:41 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:22:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:22:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:22:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:22:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:22:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:22:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:22:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:22:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:23:02 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:23:02 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:23:02 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:23:02 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:23:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:23:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:24:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:24:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:25:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:25:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:26:09 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:26:09 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:27:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:27:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:27:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:27:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:27:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:27:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:27:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:27:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:27:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:27:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:27:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:27:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:27:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:27:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:27:28 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:27:28 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:28:04 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:28:04 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:28:07 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:28:07 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:28:08 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:28:08 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:31:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:31:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:31:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:31:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:34:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:34:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:03 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:03 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:05 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:05 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:05 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:05 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:09 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:09 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:09 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:09 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:10 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:10 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:10 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:10 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[21-Jul-2025 09:36:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[21-Jul-2025 09:36:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002

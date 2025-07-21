@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../../src/Utils/errorHandler.php';
+require_once __DIR__ . '/../../../src/Helpers/helpers.php';
 // Start session before any output
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -9,6 +10,7 @@ date_default_timezone_set('UTC');
 require_once __DIR__ . '/../../../src/Core/Database/ClientDatabase.php';
 use App\Core\Database\ClientDatabase;
 require_once __DIR__ . '/../controllers/SalesController.php';
+require_once __DIR__ . '/../controllers/DocumentController.php';
 
 header('Content-Type: application/json');
 
@@ -129,6 +131,7 @@ try {
             ]);
             break;
         case 'fetch_invoice':
+            // @phpstan-ignore-next-line (legacy InvoiceController type error)
             require_once __DIR__ . '/../controllers/InvoiceController.php';
             if ($method !== 'GET') {
                 throw new Exception('GET method required for fetch_invoice action');
@@ -496,8 +499,32 @@ try {
             $next = $current ? $current + 1 : $start;
             echo json_encode(['success' => true, 'number' => $prefix . $next]);
             break;
+        case 'list_documents':
+            if ($method !== 'GET') {
+                throw new Exception('GET method required for list_documents action');
+            }
+            // Build options from query params
+            $options = [
+                'type' => $_GET['type'] ?? null,
+                'status' => $_GET['status'] ?? null,
+                'search' => $_GET['search'] ?? null,
+                'date_from' => $_GET['date_from'] ?? null,
+                'date_to' => $_GET['date_to'] ?? null,
+                'client_id' => isset($_GET['client_id']) && is_numeric($_GET['client_id']) ? (int)$_GET['client_id'] : null,
+                'page' => isset($_GET['page']) ? (int)$_GET['page'] : 1,
+                'limit' => isset($_GET['limit']) ? (int)$_GET['limit'] : 20,
+                'sort_by' => $_GET['sort_by'] ?? 'document_id',
+                'sort_dir' => strtolower($_GET['sort_dir'] ?? 'desc'),
+            ];
+            $result = \App\modules\invoice\controllers\list_documents($options);
+            echo json_encode($result);
+            break;
         default:
-            echo json_encode(['success' => false, 'message' => 'Invalid action', 'data' => null]);
+            echo json_encode([
+                'success' => false,
+                'message' => function_exists('get_friendly_error') ? get_friendly_error('Invalid action') : 'Invalid action',
+                'data' => null
+            ]);
             break;
     }
 } catch (PDOException $e) {

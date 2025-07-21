@@ -33,7 +33,9 @@ function add_supplier(array $data, int $user_id): array {
         log_user_action($user_id, 'add_supplier', $supplier_id, json_encode($data));
         return ['success' => true, 'message' => 'Supplier added', 'data' => ['supplier_id' => $supplier_id]];
     } catch (Throwable $e) {
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
         $msg = $e->getMessage();
+        $friendly = get_friendly_error($msg);
         $session_info = json_encode([
             'user_id' => $_SESSION['user_id'] ?? null,
             'tech_logged_in' => $_SESSION['tech_logged_in'] ?? null,
@@ -41,7 +43,13 @@ function add_supplier(array $data, int $user_id): array {
         ]);
         error_log('[add_supplier] ' . $msg . ' | SESSION: ' . $session_info);
         log_user_action($user_id, 'add_supplier', null, $msg . ' | SESSION: ' . $session_info);
-        return ['success' => false, 'message' => 'Failed to add supplier: ' . $msg, 'data' => null, 'error_code' => 'SUPPLIER_ADD_ERROR'];
+        return [
+            'success' => false,
+            'message' => $friendly,
+            'error' => $msg,
+            'data' => null,
+            'error_code' => 'SUPPLIER_ADD_ERROR'
+        ];
     }
 }
 
@@ -70,7 +78,9 @@ function update_supplier(int $supplier_id, array $data, int $user_id): array {
         log_user_action($user_id, 'update_supplier', $supplier_id, json_encode($data));
         return ['success' => true, 'message' => 'Supplier updated', 'data' => ['supplier_id' => $supplier_id]];
     } catch (Throwable $e) {
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
         $msg = $e->getMessage();
+        $friendly = get_friendly_error($msg);
         $session_info = json_encode([
             'user_id' => $_SESSION['user_id'] ?? null,
             'tech_logged_in' => $_SESSION['tech_logged_in'] ?? null,
@@ -78,7 +88,13 @@ function update_supplier(int $supplier_id, array $data, int $user_id): array {
         ]);
         error_log('[update_supplier] ' . $msg . ' | SESSION: ' . $session_info);
         log_user_action($user_id, 'update_supplier', $supplier_id, $msg . ' | SESSION: ' . $session_info);
-        return ['success' => false, 'message' => 'Failed to update supplier: ' . $msg, 'data' => null, 'error_code' => 'SUPPLIER_UPDATE_ERROR'];
+        return [
+            'success' => false,
+            'message' => $friendly,
+            'error' => $msg,
+            'data' => null,
+            'error_code' => 'SUPPLIER_UPDATE_ERROR'
+        ];
     }
 }
 

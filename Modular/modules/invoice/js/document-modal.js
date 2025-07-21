@@ -49,8 +49,11 @@ function setModalMode(mode) {
     const isEdit = mode === 'edit';
     const isCreate = mode === 'create';
     const fields = modal.querySelectorAll('input, select, textarea');
+    // Only treat as finalized if NOT in create mode and status is not draft
+    const statusInput = document.getElementById('document-status');
+    const isFinalized = !isCreate && statusInput && statusInput.value && statusInput.value.toLowerCase() !== 'draft';
     fields.forEach(field => {
-        if (isView) {
+        if (isView || isFinalized) {
             field.setAttribute('disabled', 'disabled');
         } else {
             field.removeAttribute('disabled');
@@ -58,11 +61,32 @@ function setModalMode(mode) {
     });
     document.getElementById('current-date')?.setAttribute('disabled', 'disabled');
     document.getElementById('document-number')?.setAttribute('disabled', 'disabled');
-    // Buttons (update as needed for your modal)
-    // Hide remove-row buttons in view mode
+    // Hide remove-row buttons in view/finalized mode
     modal.querySelectorAll('.remove-row').forEach(btn => {
-        btn.style.display = isView ? 'none' : '';
+        btn.style.display = (isView || isFinalized) ? 'none' : '';
     });
+    // Hide save/create buttons if finalized
+    const saveBtn = document.getElementById('save-document');
+    const createBtn = modal.querySelector('button[onclick="createOrUpdateDocument()"]');
+    if (isFinalized) {
+        if (saveBtn) saveBtn.style.display = 'none';
+        if (createBtn) createBtn.style.display = 'none';
+        // Show finalized message
+        let msg = document.getElementById('finalized-msg');
+        if (!msg) {
+            msg = document.createElement('div');
+            msg.id = 'finalized-msg';
+            msg.textContent = 'This document is finalized and cannot be edited.';
+            msg.style.color = 'red';
+            msg.style.margin = '12px 0';
+            modal.querySelector('.modal-document-footer')?.prepend(msg);
+        }
+    } else {
+        if (saveBtn) saveBtn.style.display = '';
+        if (createBtn) createBtn.style.display = '';
+        const msg = document.getElementById('finalized-msg');
+        if (msg) msg.remove();
+    }
 }
 
 // --- Section Show/Hide Logic ---
@@ -173,6 +197,57 @@ function openDocumentModal(mode = 'create') {
         docType.addEventListener('change', updateSectionVisibility);
     }
 }
+
+// --- Preview Next Document Number Logic ---
+async function previewNextDocumentNumber() {
+    const docType = document.getElementById('document-type')?.value || 'invoice';
+    let endpoint = '';
+    switch (docType) {
+        case 'quotation':
+        case 'vehicle-quotation':
+            endpoint = '../api/document-api.php?action=preview_quotation_number';
+            break;
+        case 'invoice':
+        case 'standard-invoice':
+        case 'vehicle-invoice':
+        case 'recurring-invoice':
+            endpoint = '../api/document-api.php?action=preview_invoice_number';
+            break;
+        case 'credit-note':
+            endpoint = '../api/document-api.php?action=preview_credit_note_number';
+            break;
+        case 'pro-forma':
+            endpoint = '../api/document-api.php?action=preview_proforma_number';
+            break;
+        default:
+            endpoint = '../api/document-api.php?action=preview_invoice_number';
+    }
+    try {
+        const res = await fetch(endpoint, { credentials: 'include' });
+        const data = await res.json();
+        if (data.success && data.number) {
+            const docNumInput = document.getElementById('document-number');
+            if (docNumInput) {
+                docNumInput.value = data.number + ' (Preview)';
+                docNumInput.setAttribute('data-preview', data.number);
+            }
+        }
+    } catch (err) {
+        // Optionally show error or fallback
+    }
+}
+
+// --- Wrapper for global usage ---
+function openDocumentModalWithPreview(mode = 'create') {
+    openDocumentModal(mode);
+    previewNextDocumentNumber();
+    const docType = document.getElementById('document-type');
+    if (docType) {
+        docType.removeEventListener('change', previewNextDocumentNumber);
+        docType.addEventListener('change', previewNextDocumentNumber);
+    }
+}
+window.openDocumentModal = openDocumentModalWithPreview;
 function closeDocumentModal() {
     document.getElementById('document-modal').style.display = 'none';
     // Optionally refresh dashboard or list
@@ -576,6 +651,37 @@ function autofillRow(row, result) {
     updateTotals();
 }
 
+function showResponseModal(message, type = 'info') {
+    const modal = document.getElementById('document-modal');
+    if (!modal) return;
+    let responseModalElem = document.getElementById('response-modal');
+    if (!responseModalElem) {
+        const responseModalHtml = `
+            <div id="response-modal" class="modal">
+                <div class="modal-content">
+                    <h2>Response</h2>
+                    <p id="response-message"></p>
+                    <button id="response-close-btn">Close</button>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', responseModalHtml);
+        document.getElementById('response-close-btn').onclick = () => {
+            document.getElementById('response-modal').style.display = 'none';
+        };
+        responseModalElem = document.getElementById('response-modal');
+    }
+    const responseMessage = document.getElementById('response-message');
+    if (responseMessage) {
+        responseMessage.textContent = message;
+    }
+    if (responseModalElem) {
+        responseModalElem.style.display = 'block';
+        responseModalElem.className = `modal modal-${type}`;
+    }
+}
+window.showResponseModal = showResponseModal;
+
 // --- DOMContentLoaded Master Event Handler ---
 document.addEventListener('DOMContentLoaded', function () {
     // Client name search
@@ -619,16 +725,75 @@ async function saveDocumentDraft() {
         formData.document_type = document.getElementById('document-type') ? document.getElementById('document-type').value : 'quotation';
         const result = await saveDocumentApi(formData, {});
         hideLoadingModal();
-        if (result.success) {
-            showResponseModal('Draft saved successfully', 'success');
+        if (typeof window.handleApiResponse === 'function') {
+            window.handleApiResponse(result);
+            if (result.success) {
+                let msg = 'Draft saved successfully';
+                if (result.data && result.data.document_number) {
+                    msg += ` (Number: ${result.data.document_number})`;
+                }
+                showResponseModal(msg, 'success');
+            }
         } else {
-            showResponseModal(result.message || 'Failed to save draft', 'error');
+            if (result.success) {
+                let msg = 'Draft saved successfully';
+                if (result.data && result.data.document_number) {
+                    msg += ` (Number: ${result.data.document_number})`;
+                }
+                showResponseModal(msg, 'success');
+            } else {
+                showResponseModal(result.message || 'Failed to save draft', 'error');
+            }
         }
     } catch (err) {
         hideLoadingModal();
-        showResponseModal('Error saving draft: ' + (err.message || err), 'error');
+        if (typeof window.handleApiResponse === 'function') {
+            window.handleApiResponse({ success: false, message: err.message || err });
+        } else {
+            showResponseModal('Error saving draft: ' + (err.message || err), 'error');
+        }
     }
 }
+
+async function saveDocumentFinal() {
+    try {
+        showLoadingModal('Saving document...');
+        const formData = getDocumentFormData();
+        formData.document_status = 'Finalized';
+        formData.document_type = document.getElementById('document-type') ? document.getElementById('document-type').value : 'invoice';
+        const result = await saveDocumentApi(formData, {});
+        hideLoadingModal();
+        if (typeof window.handleApiResponse === 'function') {
+            window.handleApiResponse(result);
+            if (result.success) {
+                let msg = 'Document saved successfully';
+                if (result.data && result.data.document_number) {
+                    msg += ` (Number: ${result.data.document_number})`;
+                }
+                showResponseModal(msg, 'success');
+            }
+        } else {
+            if (result.success) {
+                let msg = 'Document saved successfully';
+                if (result.data && result.data.document_number) {
+                    msg += ` (Number: ${result.data.document_number})`;
+                }
+                showResponseModal(msg, 'success');
+            } else {
+                showResponseModal(result.message || 'Failed to save document', 'error');
+            }
+        }
+    } catch (err) {
+        hideLoadingModal();
+        if (typeof window.handleApiResponse === 'function') {
+            window.handleApiResponse({ success: false, message: err.message || err });
+        } else {
+            showResponseModal('Error saving document: ' + (err.message || err), 'error');
+        }
+    }
+}
+
+// Add similar logic for finalized document save if needed
 
 // --- Modal Close on Escape and Close Button ---
 document.addEventListener('keydown', function(e) {
@@ -660,4 +825,7 @@ if (typeof addDocumentItem === 'function') window.addDocumentItem = addDocumentI
 if (typeof removeItem === 'function') window.removeItem = removeItem;
 if (typeof addDocumentDiscount === 'function') window.addDocumentDiscount = addDocumentDiscount;
 if (typeof searchItem === 'function') window.searchItem = searchItem;
+
+// Replace the old createOrUpdateDocument global with saveDocumentFinal
+window.createOrUpdateDocument = saveDocumentFinal;
 

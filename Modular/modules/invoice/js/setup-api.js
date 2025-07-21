@@ -20,6 +20,7 @@ export async function saveSupplier(formData) {
     });
     const data = await res.json();
     window.handleApiResponse(data);
+    return data;
 }
 
 // --- Category & Subcategory API ---
