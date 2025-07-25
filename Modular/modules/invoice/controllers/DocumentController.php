@@ -548,7 +548,8 @@ function update_document(int $document_id, array $options): array {
             $currentNumber = $currentDoc['document_number'] ?? '';
             $currentStatus = $currentDoc['document_status'] ?? '';
             // Prevent editing if already finalized
-            if ($currentStatus !== 'draft') {
+            $finalizedStatuses = ['finalized', 'approved', 'paid', 'sent'];
+            if (in_array(strtolower($currentStatus), $finalizedStatuses)) {
                 throw new Exception('Cannot edit a finalized document.');
             }
             if (empty($currentNumber) || strpos($currentNumber, 'DRAFT-') === 0) {

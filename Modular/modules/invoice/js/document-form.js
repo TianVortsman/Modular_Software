@@ -247,7 +247,10 @@ function setDocumentFormData(documentData) {
             row.classList.add('document-item-row');
             row.innerHTML = `
                 <td><input type="number" value="${item.quantity || 1}" class="quantity"></td>
-                <td style="display:none;"><input type="hidden" class="product-id" value="${item.product_id || ''}"></td>
+                <td style="display:none;">
+                    <input type="hidden" class="product-id" value="${item.product_id || ''}">
+                    <input type="hidden" class="item-id" value="${item.item_id || ''}">
+                </td>
                 <td>
                     <div class="search-container" style="position: relative;">
                         <input type="text" placeholder="Search Item Code" class="item-code" value="${item.item_code || ''}" autocomplete="off">
@@ -263,14 +266,23 @@ function setDocumentFormData(documentData) {
                 <td><input type="text" value="${item.unit_price || 'R0.00'}" class="unit-price"></td>
                 <td>
                     <select class="tax">
-                        <option value="0" ${item.tax_percentage == 0 ? 'selected' : ''}>[None]</option>
-                        <option value="10" ${item.tax_percentage == 10 ? 'selected' : ''}>10%</option>
-                        <option value="15" ${item.tax_percentage == 15 ? 'selected' : ''}>15%</option>
-                        <option value="20" ${item.tax_percentage == 20 ? 'selected' : ''}>20%</option>
-                        <option value="25" ${item.tax_percentage == 25 ? 'selected' : ''}>25%</option>
+                        <option value="0" ${(item.tax_percentage == 0 || item.rate == 0) ? 'selected' : ''}>[None]</option>
+                        <option value="10" ${(item.tax_percentage == 10 || item.rate == 10) ? 'selected' : ''}>10%</option>
+                        <option value="15" ${(item.tax_percentage == 15 || item.rate == 15) ? 'selected' : ''}>15%</option>
+                        <option value="20" ${(item.tax_percentage == 20 || item.rate == 20) ? 'selected' : ''}>20%</option>
+                        <option value="25" ${(item.tax_percentage == 25 || item.rate == 25) ? 'selected' : ''}>25%</option>
                     </select>
                 </td>
-                <td><span class="total">${item.line_total || 'R0.00'}</span></td>
+                <td>
+                    <button type="button" class="toggle-line-discount-btn" title="Add Discount">+ Discount</button>
+                    <div class="line-discount-input" style="display:none;margin-top:4px;">
+                        <input type="text" class="line-discount" placeholder="10% or R50">
+                    </div>
+                </td>
+                <td class="total-cell">
+                    <span class="total">${item.line_total || 'R0.00'}</span>
+                    <button type="button" class="remove-row-btn" title="Remove Line">&#10006;</button>
+                </td>
                 <td class="stock" style="display:none;">${item.stock || 0}</td>
             `;
             tableBody.appendChild(row);
@@ -281,7 +293,10 @@ function setDocumentFormData(documentData) {
         row.classList.add('document-item-row');
         row.innerHTML = `
             <td><input type="number" value="1" class="quantity"></td>
-            <td style="display:none;"><input type="hidden" class="product-id"></td>
+            <td style="display:none;">
+                <input type="hidden" class="product-id">
+                <input type="hidden" class="item-id">
+            </td>
             <td>
                 <div class="search-container" style="position: relative;">
                     <input type="text" placeholder="Search Item Code" class="item-code" autocomplete="off">
@@ -304,7 +319,16 @@ function setDocumentFormData(documentData) {
                     <option value="25">25%</option>
                 </select>
             </td>
-            <td><span class="total">0.00</span></td>
+            <td>
+                <button type="button" class="toggle-line-discount-btn" title="Add Discount">+ Discount</button>
+                <div class="line-discount-input" style="display:none;margin-top:4px;">
+                    <input type="text" class="line-discount" placeholder="10% or R50">
+                </div>
+            </td>
+            <td class="total-cell">
+                <span class="total">0.00</span>
+                <button type="button" class="remove-row-btn" title="Remove Line">&#10006;</button>
+            </td>
             <td class="stock" style="display:none;">0</td>
         `;
         tableBody.appendChild(row);
@@ -343,6 +367,7 @@ function getDocumentFormData() {
     rows.forEach(row => {
         const quantity = row.querySelector('.quantity')?.value || 1;
         const product_id = row.querySelector('.product-id')?.value || '';
+        const item_id = row.querySelector('.item-id')?.value || '';
         const item_code = row.querySelector('.item-code')?.value || '';
         const product_description = row.querySelector('.description')?.value || '';
         const unit_price = row.querySelector('.unit-price')?.value || '';
@@ -350,7 +375,7 @@ function getDocumentFormData() {
         const tax_percentage = taxDropdown ? taxDropdown.value : '';
         const line_total = row.querySelector('.total')?.textContent || '';
         if (item_code || product_description) {
-            items.push({ quantity, product_id, item_code, product_description, unit_price, tax_percentage, line_total });
+            items.push({ quantity, product_id, item_id, item_code, product_description, unit_price, tax_percentage, line_total });
         }
     });
     // Totals

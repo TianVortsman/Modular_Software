@@ -39,8 +39,69 @@ try {
             echo json_encode(['success' => false, 'message' => 'Missing document_id', 'data' => null]);
             exit;
         }
-        $data = json_decode(file_get_contents('php://input'), true);
-        $result = App\modules\invoice\controllers\update_document($document_id, $data);
+        
+        $rawData = json_decode(file_get_contents('php://input'), true);
+        
+        // Map frontend data to backend format
+        $items = [];
+        if (isset($rawData['items']) && is_array($rawData['items'])) {
+            foreach ($rawData['items'] as $item) {
+                $mappedItem = [
+                    'item_id' => $item['item_id'] ?? null,
+                    'product_id' => !empty($item['product_id']) ? (int)$item['product_id'] : null,
+                    'product_description' => $item['product_description'] ?? ($item['description'] ?? ''),
+                    'quantity' => (float)($item['quantity'] ?? 1),
+                    'unit_price' => (float)str_replace(['R', ','], '', $item['unit_price'] ?? '0'),
+                    'discount_percentage' => 0, // Frontend doesn't send this yet
+                    'tax_rate_id' => !empty($item['tax_percentage']) ? (int)$item['tax_percentage'] : null,
+                    'line_total' => (float)str_replace(['R', ','], '', $item['line_total'] ?? '0')
+                ];
+                $items[] = $mappedItem;
+            }
+        }
+        
+        // Map main document data
+        $mappedDocumentData = [
+            'client_id' => (int)($rawData['client_id'] ?? 0),
+            'document_type' => $rawData['document_type'] ?? 'invoice',
+            'issue_date' => $rawData['issue_date'] ?? $rawData['invoice_date'] ?? date('Y-m-d'),
+            'due_date' => $rawData['due_date'] ?? null,
+            'salesperson_id' => !empty($rawData['salesperson_id']) ? (int)$rawData['salesperson_id'] : null,
+            'subtotal' => (float)str_replace(['R', ','], '', $rawData['subtotal'] ?? '0'),
+            'discount_amount' => 0, // Not implemented in frontend yet
+            'tax_amount' => (float)str_replace(['R', ','], '', $rawData['tax_amount'] ?? '0'),
+            'total_amount' => (float)str_replace(['R', ','], '', $rawData['total_amount'] ?? '0'),
+            'balance_due' => (float)str_replace(['R', ','], '', $rawData['total_amount'] ?? '0'),
+            'client_purchase_order_number' => $rawData['client_purchase_order_number'] ?? null,
+            'notes' => $rawData['public_note'] ?? $rawData['notes'] ?? null,
+            'terms_conditions' => $rawData['private_note'] ?? null,
+            'is_recurring' => !empty($rawData['is_recurring']),
+            'recurring_template_id' => null,
+            'requires_approval' => false,
+            'updated_by' => $_SESSION['user_id'] ?? null,
+            // Additional fields for frontend compatibility
+            'client_name' => $rawData['client_name'] ?? '',
+            'client_email' => $rawData['client_email'] ?? '',
+            'client_phone' => $rawData['client_phone'] ?? '',
+            'address1' => $rawData['address1'] ?? '',
+            'address2' => $rawData['address2'] ?? '',
+            'vat_number' => $rawData['vat_number'] ?? '',
+            'registration_number' => $rawData['registration_number'] ?? '',
+            'salesperson_name' => $rawData['salesperson_name'] ?? ''
+        ];
+        
+        $documentStatus = $rawData['document_status'] ?? 'draft';
+        $mode = (strtolower($documentStatus) === 'draft') ? 'draft' : 'finalize';
+        
+        // Prepare the structured data
+        $structuredData = [
+            'documentData' => $mappedDocumentData,
+            'items' => $items,
+            'mode' => $mode,
+            'status' => $documentStatus
+        ];
+        
+        $result = App\modules\invoice\controllers\update_document($document_id, $structuredData);
         echo json_encode($result);
         exit;
     }

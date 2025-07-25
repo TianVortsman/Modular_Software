@@ -358,16 +358,54 @@ function renderDocumentRows(sectionId, documents) {
 // Helper to fetch and open document in modal
 async function openDocumentForEdit(documentId) {
     try {
+        // Show loading modal while fetching data
+        if (typeof window.showLoadingModal === 'function') {
+            window.showLoadingModal('Loading document...');
+        }
+        
         // Fetch document details from backend
         const response = await fetch(`../api/document_modal.php?action=fetch_document&document_id=${encodeURIComponent(documentId)}`);
         const result = await response.json();
+        
+        if (typeof window.hideLoadingModal === 'function') {
+            window.hideLoadingModal();
+        }
+        
         if (result.success && result.data) {
-            setDocumentFormData(result.data);
+            // First open the modal in edit mode
             window.openDocumentModal('edit');
+            
+            // Then populate it with the document data
+            setDocumentFormData(result.data);
+            
+            // Update the modal mode again to ensure proper state after data population
+            // Check if document is finalized and adjust the mode accordingly
+            const status = result.data.document_status?.toLowerCase();
+            const finalizedStatuses = ['finalized', 'approved', 'paid', 'sent'];
+            const actualMode = finalizedStatuses.includes(status) ? 'view' : 'edit';
+            
+            // Set the appropriate modal mode
+            if (typeof window.setModalMode === 'function') {
+                window.setModalMode(actualMode);
+            }
+            
+            // Re-setup row listeners after data population
+            if (typeof window.setupRowListeners === 'function') {
+                window.setupRowListeners();
+            }
+            
+            // Update totals after data is loaded
+            if (typeof window.updateTotals === 'function') {
+                window.updateTotals();
+            }
+            
         } else {
             window.showResponseModal(result.message || 'Failed to load document', 'error');
         }
     } catch (err) {
+        if (typeof window.hideLoadingModal === 'function') {
+            window.hideLoadingModal();
+        }
         window.showResponseModal('Error loading document: ' + (err.message || err), 'error');
     }
 }
@@ -379,17 +417,21 @@ function showDocumentContextMenu(e, doc, sectionId) {
 
     // Build menu options based on type and status
     const isDraft = (doc.document_status && doc.document_status.toLowerCase() === 'draft');
+    const status = doc.document_status?.toLowerCase() || '';
+    const finalizedStatuses = ['finalized', 'approved', 'paid', 'sent'];
+    const isEditable = !finalizedStatuses.includes(status);
+    
     let options = [];
     if (sectionId === 'quotations-section') {
         options.push({ label: 'View', action: () => openDocumentForEdit(doc.document_id) });
-        if (isDraft) options.push({ label: 'Edit', action: () => openDocumentForEdit(doc.document_id) });
+        if (isEditable) options.push({ label: 'Edit', action: () => openDocumentForEdit(doc.document_id) });
         options.push({ label: 'Convert to Invoice', action: () => convertToInvoice(doc) });
         options.push({ label: 'View Client', action: () => viewClient(doc) });
         if (isDraft) options.push({ label: 'Delete', action: () => deleteDocument(doc) });
         options.push({ label: 'Request Approval', action: () => requestApproval(doc) });
     } else if (sectionId === 'invoices-section' || sectionId === 'vehicle-invoices-section') {
         options.push({ label: 'View', action: () => openDocumentForEdit(doc.document_id) });
-        if (isDraft) options.push({ label: 'Edit', action: () => openDocumentForEdit(doc.document_id) });
+        if (isEditable) options.push({ label: 'Edit', action: () => openDocumentForEdit(doc.document_id) });
         options.push({ label: 'Load Payment', action: () => loadPayment(doc) });
         options.push({ label: 'Create Credit Note', action: () => createCreditNote(doc) });
         options.push({ label: 'Refund Invoice', action: () => refundInvoice(doc) });
@@ -398,7 +440,7 @@ function showDocumentContextMenu(e, doc, sectionId) {
         options.push({ label: 'View Client', action: () => viewClient(doc) });
     } else {
         options.push({ label: 'View', action: () => openDocumentForEdit(doc.document_id) });
-        if (isDraft) options.push({ label: 'Edit', action: () => openDocumentForEdit(doc.document_id) });
+        if (isEditable) options.push({ label: 'Edit', action: () => openDocumentForEdit(doc.document_id) });
         options.push({ label: 'View Client', action: () => viewClient(doc) });
     }
 
