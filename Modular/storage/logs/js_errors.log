@@ -1,0 +1,8 @@
+2025-07-26T12:25:45+00:00 | Code: TD0EPL | Uncaught Error: No clients found | http://localhost/public/assets/js/helpers.js | line 79 | col 15 | stack: Error: No clients found
+    at handleApiResponse (http://localhost/public/assets/js/helpers.js:79:15)
+    at http://localhost/modules/invoice/js/document-form.js:40:20
+    at xhr.onreadystatechange (http://localhost/modules/invoice/js/document-api.js:14:13)
+2025-07-26T12:25:45+00:00 | Code: GXJ5QQ | Uncaught Error: No clients found | http://localhost/public/assets/js/helpers.js | line 79 | col 15 | stack: Error: No clients found
+    at handleApiResponse (http://localhost/public/assets/js/helpers.js:79:15)
+    at http://localhost/modules/invoice/js/document-form.js:40:20
+    at xhr.onreadystatechange (http://localhost/modules/invoice/js/document-api.js:14:13)

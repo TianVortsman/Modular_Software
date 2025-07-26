@@ -59,7 +59,15 @@ async function saveDocumentApi(formData, recurringDetails = {}) {
     };
     try {
         let response;
-        if (formData.document_id) {
+        const hasDocumentId = formData.document_id && formData.document_id !== '' && formData.document_id !== '0';
+        
+        console.log('[saveDocumentApi] Document ID check:', {
+            document_id: formData.document_id,
+            hasDocumentId: hasDocumentId,
+            action: hasDocumentId ? 'UPDATE' : 'CREATE'
+        });
+        
+        if (hasDocumentId) {
             // Update existing document
             response = await fetch(`../api/document_modal.php?action=update_document&document_id=${encodeURIComponent(formData.document_id)}`, {
                 method: 'POST',

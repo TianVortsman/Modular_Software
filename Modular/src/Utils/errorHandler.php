@@ -13,12 +13,17 @@ function generateErrorCode() {
  * @return string|null - User-friendly message from AI
  */
 function getFriendlyMessageFromAI($error, $formData = null, $context = null) {
-    $config = require __DIR__ . '/../Config/app.php';
-    $endpoint = $config['AI_ENDPOINT'];
+    try {
+        $config = require __DIR__ . '/../Config/app.php';
+        $endpoint = $config['AI_ENDPOINT'];
 
-    // Use the model name from LM Studio or fallback
-    $model = getenv('AI_MODEL') ?: 'nous-hermes-2-mistral-7b-dpo';
+        // Use the model name from LM Studio or fallback
+        $model = getenv('AI_MODEL') ?: 'nous-hermes-2-mistral-7b-dpo';
 
+        $userContent = $error;
+        if ($formData) {
+            $userContent .= "\n\nForm data submitted: " . json_encode($formData);
+        }
     $userContent = $error;
     
     // Add context if provided
@@ -46,42 +51,54 @@ If the error is not fixable by the user (like database errors, server errors, mi
 
 Always keep responses concise (max 1-2 sentences) and actionable.";
 
-    $data = [
-        "model" => $model,
-        "messages" => [
-            ["role" => "system", "content" => $systemPrompt],
-            ["role" => "user", "content" => $userContent]
-        ],
-        "temperature" => 0.3, // Lower temperature for more consistent responses
-        "max_tokens" => 256,
-        "stream" => false
-    ];
+        $data = [
+            "model" => $model,
+            "messages" => [
+                ["role" => "system", "content" => $systemPrompt],
+                ["role" => "user", "content" => $userContent]
+            ],
+            "temperature" => 0.3, // Lower temperature for more consistent responses
+            "max_tokens" => 256,
+            "stream" => false
+        ];
 
-    $options = [
-        'http' => [
-            'header'  => "Content-type: application/json",
-            'method'  => 'POST',
-            'content' => json_encode($data),
-            'timeout' => 4 // seconds
-        ]
-    ];
+        $options = [
+            'http' => [
+                'header'  => "Content-type: application/json",
+                'method'  => 'POST',
+                'content' => json_encode($data),
+                'timeout' => 2, // Reduced timeout to fail faster
+                'ignore_errors' => true // Don't trigger warnings on HTTP errors
+            ]
+        ];
 
+        $context  = stream_context_create($options);
     $context = stream_context_create($options);
 
-    // Start timing
-    $start = microtime(true);
+        // Start timing
+        $start = microtime(true);
 
-    $result = @file_get_contents($endpoint, false, $context);
+        // Suppress errors to prevent cascading failures
+        $result = @file_get_contents($endpoint, false, $context);
 
-    // End timing
-    $end = microtime(true);
-    $duration = $end - $start;
-    error_log("[AI Error Handler] Time taken: " . round($duration, 3) . " seconds");
+        // End timing
+        $end = microtime(true);
+        $duration = $end - $start;
+        
+        // Only log successful AI calls, not failures
+        if ($result) {
+            error_log("[AI Error Handler] Success: " . round($duration, 3) . " seconds");
+        }
 
-    if (!$result) return null;
+        if (!$result) return null;
 
-    $json = json_decode($result, true);
-    return $json['choices'][0]['message']['content'] ?? null;
+        $json = json_decode($result, true);
+        return $json['choices'][0]['message']['content'] ?? null;
+        
+    } catch (Exception $e) {
+        // Silently fail - don't log AI service failures to prevent loops
+        return null;
+    }
 }
 
 /**
@@ -140,6 +157,24 @@ function sendApiErrorResponse($error, $formData = null, $context = null, $errorC
             'message' => $friendlyMessage ?: "Something went wrong. Please contact support. Error Code: $errorCode",
             'error_code' => $errorCode
         ]);
+        // PRODUCTION
+        // 1. Try to get AI-generated friendly message
+        $friendly = getFriendlyMessageFromAI($fullError);
+
+        // 2. Log full error with code and AI message (if available)
+        $aiMessage = $friendly ? $friendly : 'AI unavailable';
+        $log = date('c') . " | Code: $errorCode | $fullError | AI: $aiMessage\n";
+        file_put_contents(__DIR__ . '/../../storage/logs/php_errors.log', $log, FILE_APPEND);
+
+        // 3. Show user-friendly message
+        if ($friendly) {
+            echo json_encode(['error' => $friendly]);
+        } else {
+            echo json_encode([
+                'error' => "Something went wrong. Please contact Modular Software Support.",
+                'error_code' => $errorCode
+            ]);
+        }
     }
     exit;
 }

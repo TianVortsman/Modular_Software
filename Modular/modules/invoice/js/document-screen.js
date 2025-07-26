@@ -358,17 +358,83 @@ function renderDocumentRows(sectionId, documents) {
 // Helper to fetch and open document in modal
 async function openDocumentForEdit(documentId) {
     try {
+        // Show loading modal while fetching data
+        if (typeof window.showLoadingModal === 'function') {
+            window.showLoadingModal('Loading document...');
+        }
+        
         // Fetch document details from backend
         const response = await fetch(`../api/document_modal.php?action=fetch_document&document_id=${encodeURIComponent(documentId)}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
         const result = await response.json();
+        
+        if (typeof window.hideLoadingModal === 'function') {
+            window.hideLoadingModal();
+        }
+        
         if (result.success && result.data) {
-            setDocumentFormData(result.data);
-            window.openDocumentModal('edit');
+            // First open the modal in edit mode
+            if (typeof window.openDocumentModal === 'function') {
+                window.openDocumentModal('edit');
+            } else {
+                throw new Error('openDocumentModal function not available');
+            }
+            
+            // Wait a moment for modal to open
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Then populate it with the document data
+            if (typeof window.setDocumentFormData === 'function') {
+                window.setDocumentFormData(result.data);
+            } else if (typeof setDocumentFormData === 'function') {
+                setDocumentFormData(result.data);
+            } else {
+                throw new Error('setDocumentFormData function not available');
+            }
+            
+            // Check if document is finalized and adjust the mode accordingly
+            const status = result.data.document_status?.toLowerCase();
+            const finalizedStatuses = ['finalized', 'approved', 'paid', 'sent'];
+            const actualMode = finalizedStatuses.includes(status) ? 'view' : 'edit';
+            
+            // Set the appropriate modal mode
+            if (typeof window.setModalMode === 'function') {
+                window.setModalMode(actualMode);
+            }
+            
+            // Re-setup row listeners after data population
+            if (typeof window.setupRowListeners === 'function') {
+                window.setupRowListeners();
+            }
+            
+            // Update totals after data is loaded
+            if (typeof window.updateTotals === 'function') {
+                window.updateTotals();
+            }
+            
         } else {
-            window.showResponseModal(result.message || 'Failed to load document', 'error');
+            if (typeof window.showResponseModal === 'function') {
+                window.showResponseModal(result.message || 'Failed to load document', 'error');
+            } else {
+                alert(result.message || 'Failed to load document');
+            }
         }
     } catch (err) {
-        window.showResponseModal('Error loading document: ' + (err.message || err), 'error');
+        if (typeof window.hideLoadingModal === 'function') {
+            window.hideLoadingModal();
+        }
+        
+        const errorMsg = 'Error loading document: ' + (err.message || err);
+        if (typeof window.showResponseModal === 'function') {
+            window.showResponseModal(errorMsg, 'error');
+        } else {
+            alert(errorMsg);
+        }
+        console.error('Error loading document:', err);
     }
 }
 
@@ -379,17 +445,21 @@ function showDocumentContextMenu(e, doc, sectionId) {
 
     // Build menu options based on type and status
     const isDraft = (doc.document_status && doc.document_status.toLowerCase() === 'draft');
+    const status = doc.document_status?.toLowerCase() || '';
+    const finalizedStatuses = ['finalized', 'approved', 'paid', 'sent'];
+    const isEditable = !finalizedStatuses.includes(status);
+    
     let options = [];
     if (sectionId === 'quotations-section') {
         options.push({ label: 'View', action: () => openDocumentForEdit(doc.document_id) });
-        if (isDraft) options.push({ label: 'Edit', action: () => openDocumentForEdit(doc.document_id) });
+        if (isEditable) options.push({ label: 'Edit', action: () => openDocumentForEdit(doc.document_id) });
         options.push({ label: 'Convert to Invoice', action: () => convertToInvoice(doc) });
         options.push({ label: 'View Client', action: () => viewClient(doc) });
         if (isDraft) options.push({ label: 'Delete', action: () => deleteDocument(doc) });
         options.push({ label: 'Request Approval', action: () => requestApproval(doc) });
     } else if (sectionId === 'invoices-section' || sectionId === 'vehicle-invoices-section') {
         options.push({ label: 'View', action: () => openDocumentForEdit(doc.document_id) });
-        if (isDraft) options.push({ label: 'Edit', action: () => openDocumentForEdit(doc.document_id) });
+        if (isEditable) options.push({ label: 'Edit', action: () => openDocumentForEdit(doc.document_id) });
         options.push({ label: 'Load Payment', action: () => loadPayment(doc) });
         options.push({ label: 'Create Credit Note', action: () => createCreditNote(doc) });
         options.push({ label: 'Refund Invoice', action: () => refundInvoice(doc) });
@@ -398,7 +468,7 @@ function showDocumentContextMenu(e, doc, sectionId) {
         options.push({ label: 'View Client', action: () => viewClient(doc) });
     } else {
         options.push({ label: 'View', action: () => openDocumentForEdit(doc.document_id) });
-        if (isDraft) options.push({ label: 'Edit', action: () => openDocumentForEdit(doc.document_id) });
+        if (isEditable) options.push({ label: 'Edit', action: () => openDocumentForEdit(doc.document_id) });
         options.push({ label: 'View Client', action: () => viewClient(doc) });
     }
 
@@ -444,15 +514,86 @@ function showDocumentContextMenu(e, doc, sectionId) {
     }
 }
 
-// Placeholder action handlers
-function viewDocument(doc) { window.showResponseModal('View: ' + doc.document_number, 'info'); }
-function editDocument(doc) { window.showResponseModal('Edit: ' + doc.document_number, 'info'); }
-function convertToInvoice(doc) { window.showResponseModal('Convert to Invoice: ' + doc.document_number, 'info'); }
-function viewClient(doc) { window.showResponseModal('View Client: ' + doc.client_id, 'info'); }
-function deleteDocument(doc) { window.showResponseModal('Delete: ' + doc.document_number, 'warning'); }
-function requestApproval(doc) { window.showResponseModal('Request Approval: ' + doc.document_number, 'info'); }
-function loadPayment(doc) { window.showResponseModal('Load Payment: ' + doc.document_number, 'info'); }
-function createCreditNote(doc) { window.showResponseModal('Create Credit Note: ' + doc.document_number, 'info'); }
-function refundInvoice(doc) { window.showResponseModal('Refund Invoice: ' + doc.document_number, 'info'); }
-function sendInvoice(doc) { window.showResponseModal('Send Invoice: ' + doc.document_number, 'info'); }
-function sendPaymentReminder(doc) { window.showResponseModal('Send Payment Reminder: ' + doc.document_number, 'info'); }
+// Action handlers for context menu
+function convertToInvoice(doc) { 
+    if (confirm(`Convert quotation ${doc.document_number} to invoice?`)) {
+        // Implementation would create new invoice based on quotation
+        window.showResponseModal('Convert to Invoice functionality coming soon', 'info'); 
+    }
+}
+
+function viewClient(doc) { 
+    // Navigate to client screen with this client selected
+    window.location.href = `invoice-clients.php?client_id=${doc.client_id}`;
+}
+
+function deleteDocument(doc) { 
+    if (doc.document_status?.toLowerCase() !== 'draft') {
+        window.showResponseModal('Only draft documents can be deleted', 'error');
+        return;
+    }
+    
+    if (confirm(`Are you sure you want to delete ${doc.document_number}? This action cannot be undone.`)) {
+        // Call delete API
+        fetch(`../api/document-api.php?action=delete_document&document_id=${doc.document_id}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (result.success) {
+                window.showResponseModal('Document deleted successfully', 'success');
+                // Refresh current section
+                const activeSection = document.querySelector('.document-section:not([style*="display: none"])');
+                if (activeSection) {
+                    triggerSectionFetch(activeSection.id);
+                }
+            } else {
+                window.showResponseModal(result.message || 'Failed to delete document', 'error');
+            }
+        })
+        .catch(err => {
+            window.showResponseModal('Error deleting document: ' + err.message, 'error');
+        });
+    }
+}
+
+function requestApproval(doc) { 
+    window.showResponseModal('Approval workflow functionality coming soon', 'info'); 
+}
+
+function loadPayment(doc) { 
+    window.showResponseModal('Payment loading functionality coming soon', 'info'); 
+}
+
+function createCreditNote(doc) { 
+    // Open modal in credit note mode with invoice data
+    window.openDocumentModal('create');
+    // Set document type to credit note
+    const typeSelect = document.getElementById('document-type');
+    if (typeSelect) {
+        typeSelect.value = 'credit-note';
+    }
+    // Pre-populate with invoice client data
+    // Implementation would fetch invoice data and populate form
+    window.showResponseModal('Credit note creation functionality coming soon', 'info');
+}
+
+function refundInvoice(doc) { 
+    // Open modal in refund mode
+    window.openDocumentModal('create');
+    const typeSelect = document.getElementById('document-type');
+    if (typeSelect) {
+        typeSelect.value = 'refund';
+    }
+    window.showResponseModal('Refund functionality coming soon', 'info');
+}
+
+function sendInvoice(doc) { 
+    window.showResponseModal('Email sending functionality coming soon', 'info'); 
+}
+
+function sendPaymentReminder(doc) { 
+    window.showResponseModal('Payment reminder functionality coming soon', 'info'); 
+}

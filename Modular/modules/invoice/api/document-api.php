@@ -519,6 +519,56 @@ try {
             $result = \App\modules\invoice\controllers\list_documents($options);
             echo json_encode($result);
             break;
+            
+        case 'delete_document':
+            if ($method !== 'DELETE') {
+                throw new Exception('DELETE method required for delete_document action');
+            }
+            
+            $document_id = isset($_GET['document_id']) ? (int)$_GET['document_id'] : null;
+            if (!$document_id) {
+                throw new Exception('Missing document_id parameter');
+            }
+            
+            // Check if document exists and is in draft status
+            $stmt = $conn->prepare('SELECT document_id, document_status FROM invoicing.documents WHERE document_id = :document_id');
+            $stmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $document = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$document) {
+                throw new Exception('Document not found');
+            }
+            
+            if (strtolower($document['document_status']) !== 'draft') {
+                throw new Exception('Only draft documents can be deleted');
+            }
+            
+            // Delete the document and its items (cascade should handle items)
+            $conn->beginTransaction();
+            try {
+                // Delete document items first (in case cascade doesn't work)
+                $stmt = $conn->prepare('DELETE FROM invoicing.document_items WHERE document_id = :document_id');
+                $stmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
+                $stmt->execute();
+                
+                // Delete the document
+                $stmt = $conn->prepare('DELETE FROM invoicing.documents WHERE document_id = :document_id');
+                $stmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
+                $stmt->execute();
+                
+                $conn->commit();
+                
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Document deleted successfully',
+                    'data' => ['document_id' => $document_id]
+                ]);
+            } catch (Exception $e) {
+                $conn->rollBack();
+                throw new Exception('Failed to delete document: ' . $e->getMessage());
+            }
+            break;
     }
 } catch (PDOException $e) {
     http_response_code(500);

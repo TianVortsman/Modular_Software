@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
         ],
         "documents": [
             { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard", },
-        { href: "#", icon: "add_circle", text: "Create Document" },
+            { href: "#", icon: "add_circle", text: "Create Document", onclick: "callIfExists('openDocumentModal', 'create')" },
         ],
         "invoice-setup": [
             { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },

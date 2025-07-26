@@ -346,3 +346,19 @@
 [2025-07-21 18:44:48] Login attempt for email: tianryno01@gmail.com
 [2025-07-21 18:44:48] Technician check query executed successfully.
 [2025-07-21 18:44:48] Technician login successful: tianryno01@gmail.com
+[2025-07-25 07:47:58] Login attempt for email: tianryno01@gmail.com
+[2025-07-25 07:47:58] Technician check query executed successfully.
+[2025-07-25 07:47:58] Technician login successful: tianryno01@gmail.com
+[2025-07-26 12:04:07] Database connection failed
+[2025-07-26 12:04:07] Login attempt for email: tianryno01@gmail.com
+[2025-07-26 12:04:11] Technician check query failed: No valid PDO connection
+[2025-07-26 12:04:15] Customer check query failed: No valid PDO connection
+[2025-07-26 12:04:15] Login failed for email: tianryno01@gmail.com
+[2025-07-26 12:04:32] Database connection failed
+[2025-07-26 12:04:32] Login attempt for email: tianryno01@gmail.com
+[2025-07-26 12:04:36] Technician check query failed: No valid PDO connection
+[2025-07-26 12:04:40] Customer check query failed: No valid PDO connection
+[2025-07-26 12:04:40] Login failed for email: tianryno01@gmail.com
+[2025-07-26 12:05:26] Login attempt for email: tianryno01@gmail.com
+[2025-07-26 12:05:26] Technician check query executed successfully.
+[2025-07-26 12:05:26] Technician login successful: tianryno01@gmail.com

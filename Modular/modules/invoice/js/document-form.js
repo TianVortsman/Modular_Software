@@ -173,6 +173,13 @@ function searchSalesperson(input) {
 
 // --- Populate Modal with Document Data ---
 function setDocumentFormData(documentData) {
+    console.log('[setDocumentFormData] Setting document data:', {
+        document_id: documentData.document_id,
+        client_id: documentData.client_id,
+        document_number: documentData.document_number,
+        document_status: documentData.document_status
+    });
+    
     // IDs
     document.getElementById('document-id').value = documentData.document_id || '';
     document.getElementById('client-id').value = documentData.client_id || '';
@@ -202,6 +209,7 @@ function setDocumentFormData(documentData) {
         'vehicle-quotation': 'vehicle-quotation',
         'vehicle-invoice': 'vehicle-invoice',
         'recurring-invoice': 'recurring-invoice',
+        'recurring_invoice': 'recurring-invoice',  // Handle database underscore version
         'credit-note': 'credit-note',
         'refund': 'refund',
         'pro-forma': 'pro-forma'
@@ -247,7 +255,10 @@ function setDocumentFormData(documentData) {
             row.classList.add('document-item-row');
             row.innerHTML = `
                 <td><input type="number" value="${item.quantity || 1}" class="quantity"></td>
-                <td style="display:none;"><input type="hidden" class="product-id" value="${item.product_id || ''}"></td>
+                <td style="display:none;">
+                    <input type="hidden" class="product-id" value="${item.product_id || ''}">
+                    <input type="hidden" class="item-id" value="${item.item_id || ''}">
+                </td>
                 <td>
                     <div class="search-container" style="position: relative;">
                         <input type="text" placeholder="Search Item Code" class="item-code" value="${item.item_code || ''}" autocomplete="off">
@@ -263,14 +274,24 @@ function setDocumentFormData(documentData) {
                 <td><input type="text" value="${item.unit_price || 'R0.00'}" class="unit-price"></td>
                 <td>
                     <select class="tax">
-                        <option value="0" ${item.tax_percentage == 0 ? 'selected' : ''}>[None]</option>
-                        <option value="10" ${item.tax_percentage == 10 ? 'selected' : ''}>10%</option>
-                        <option value="15" ${item.tax_percentage == 15 ? 'selected' : ''}>15%</option>
-                        <option value="20" ${item.tax_percentage == 20 ? 'selected' : ''}>20%</option>
-                        <option value="25" ${item.tax_percentage == 25 ? 'selected' : ''}>25%</option>
+                        <option value="0" data-tax-id="1" ${(item.tax_percentage == 0 || item.rate == 0) ? 'selected' : ''}>[None]</option>
+                        <option value="10" data-tax-id="3" ${(item.tax_percentage == 10 || item.rate == 10) ? 'selected' : ''}>10%</option>
+                        <option value="15" data-tax-id="2" ${(item.tax_percentage == 15 || item.rate == 15) ? 'selected' : ''}>15%</option>
+                        <option value="20" data-tax-id="4" ${(item.tax_percentage == 20 || item.rate == 20) ? 'selected' : ''}>20%</option>
+                        <option value="25" data-tax-id="5" ${(item.tax_percentage == 25 || item.rate == 25) ? 'selected' : ''}>25%</option>
                     </select>
+                    <input type="hidden" class="tax-rate-id" value="${item.tax_rate_id || ''}">
                 </td>
-                <td><span class="total">${item.line_total || 'R0.00'}</span></td>
+                <td>
+                    <button type="button" class="toggle-line-discount-btn" title="Add Discount">+ Discount</button>
+                    <div class="line-discount-input" style="display:none;margin-top:4px;">
+                        <input type="text" class="line-discount" placeholder="10% or R50">
+                    </div>
+                </td>
+                <td class="total-cell">
+                    <span class="total">${item.line_total || 'R0.00'}</span>
+                    <button type="button" class="remove-row-btn" title="Remove Line">&#10006;</button>
+                </td>
                 <td class="stock" style="display:none;">${item.stock || 0}</td>
             `;
             tableBody.appendChild(row);
@@ -281,7 +302,10 @@ function setDocumentFormData(documentData) {
         row.classList.add('document-item-row');
         row.innerHTML = `
             <td><input type="number" value="1" class="quantity"></td>
-            <td style="display:none;"><input type="hidden" class="product-id"></td>
+            <td style="display:none;">
+                <input type="hidden" class="product-id">
+                <input type="hidden" class="item-id">
+            </td>
             <td>
                 <div class="search-container" style="position: relative;">
                     <input type="text" placeholder="Search Item Code" class="item-code" autocomplete="off">
@@ -304,7 +328,16 @@ function setDocumentFormData(documentData) {
                     <option value="25">25%</option>
                 </select>
             </td>
-            <td><span class="total">0.00</span></td>
+            <td>
+                <button type="button" class="toggle-line-discount-btn" title="Add Discount">+ Discount</button>
+                <div class="line-discount-input" style="display:none;margin-top:4px;">
+                    <input type="text" class="line-discount" placeholder="10% or R50">
+                </div>
+            </td>
+            <td class="total-cell">
+                <span class="total">0.00</span>
+                <button type="button" class="remove-row-btn" title="Remove Line">&#10006;</button>
+            </td>
             <td class="stock" style="display:none;">0</td>
         `;
         tableBody.appendChild(row);
@@ -326,6 +359,8 @@ function getDocumentFormData() {
     const address1 = document.getElementById('client-address-1').value;
     const address2 = document.getElementById('client-address-2').value;
     const document_id = document.getElementById('document-id').value;
+    
+    console.log('[getDocumentFormData] Extracted document_id:', document_id, typeof document_id);
     const document_type = document.getElementById('document-type').value;
     const document_number = document.getElementById('document-number').value;
     const issue_date = document.getElementById('current-date').value;
@@ -343,14 +378,16 @@ function getDocumentFormData() {
     rows.forEach(row => {
         const quantity = row.querySelector('.quantity')?.value || 1;
         const product_id = row.querySelector('.product-id')?.value || '';
+        const item_id = row.querySelector('.item-id')?.value || '';
         const item_code = row.querySelector('.item-code')?.value || '';
         const product_description = row.querySelector('.description')?.value || '';
         const unit_price = row.querySelector('.unit-price')?.value || '';
         const taxDropdown = row.querySelector('.tax');
         const tax_percentage = taxDropdown ? taxDropdown.value : '';
+        const tax_rate_id = row.querySelector('.tax-rate-id')?.value || '';
         const line_total = row.querySelector('.total')?.textContent || '';
         if (item_code || product_description) {
-            items.push({ quantity, product_id, item_code, product_description, unit_price, tax_percentage, line_total });
+            items.push({ quantity, product_id, item_id, item_code, product_description, unit_price, tax_percentage, tax_rate_id, line_total });
         }
     });
     // Totals
@@ -359,11 +396,26 @@ function getDocumentFormData() {
     const total_amount = document.getElementById('final-total')?.textContent || '';
     // Recurring fields
     let is_recurring = false, frequency = '', start_date = '', end_date = '';
-    if (document_type === 'recurring-invoice') {
+    // Check if this is a recurring invoice (either by document_type or existing recurring fields)
+    const recurringFrequencyField = document.getElementById('recurring-frequency');
+    const recurringStartDateField = document.getElementById('recurring-start-date');
+    const isCurrentlyRecurring = document_type === 'recurring-invoice' || 
+                                 (recurringFrequencyField && recurringFrequencyField.style.display !== 'none') ||
+                                 (recurringStartDateField && recurringStartDateField.value);
+    
+    if (isCurrentlyRecurring) {
         is_recurring = true;
         frequency = document.getElementById('recurring-frequency')?.value || 'monthly';
         start_date = document.getElementById('recurring-start-date')?.value || (issue_date || new Date().toISOString().split('T')[0]);
         end_date = document.getElementById('recurring-end-date')?.value || '';
+        
+        console.log('[getDocumentFormData] Recurring invoice detected:', {
+            document_type,
+            is_recurring,
+            frequency,
+            start_date,
+            end_date
+        });
     }
     // Only include document_number for drafts, and never the preview (with '(Preview)')
     const isDraft = (document_status && document_status.toLowerCase() === 'draft');

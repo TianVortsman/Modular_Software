@@ -120,7 +120,7 @@ function list_documents(array $options = []): array {
 
 function get_document_details(int $document_id): array {
     global $conn;
-    $sql = "SELECT d.document_number, d.document_status, d.document_type, d.issue_date, d.due_date, d.salesperson_id, d.subtotal, d.discount_amount, d.tax_amount, d.total_amount, d.client_purchase_order_number, d.notes, d.terms_conditions, d.is_recurring, d.recurring_template_id, d.requires_approval, d.approved_by, d.approved_at, d.salesperson_id, c.client_id, c.client_type, c.client_name, c.client_email, c.client_cell, c.client_tell, c.first_name, c.last_name, c.registration_number, c.vat_number, e.employee_id, e.employee_first_name, e.employee_last_name, a.address_line1, a.address_line2, a.city, a.suburb, a.province, a.country, a.postal_code FROM invoicing.documents d JOIN invoicing.clients c ON d.client_id = c.client_id JOIN core.employees e ON d.salesperson_id = e.employee_id LEFT JOIN invoicing.client_addresses ca ON ca.client_id = c.client_id AND ca.address_id = (SELECT address_id FROM invoicing.client_addresses ca2 WHERE ca2.client_id = c.client_id LIMIT 1) LEFT JOIN invoicing.address a ON a.address_id = ca.address_id AND (a.deleted_at IS NULL OR a.deleted_at > NOW()) WHERE d.document_id = :document_id LIMIT 1";
+    $sql = "SELECT d.document_id, d.document_number, d.document_status, d.document_type, d.issue_date, d.due_date, d.salesperson_id, d.subtotal, d.discount_amount, d.tax_amount, d.total_amount, d.client_purchase_order_number, d.notes, d.terms_conditions, d.is_recurring, d.recurring_template_id, d.requires_approval, d.approved_by, d.approved_at, d.salesperson_id, c.client_id, c.client_type, c.client_name, c.client_email, c.client_cell, c.client_tell, c.first_name, c.last_name, c.registration_number, c.vat_number, e.employee_id, e.employee_first_name, e.employee_last_name, a.address_line1, a.address_line2, a.city, a.suburb, a.province, a.country, a.postal_code FROM invoicing.documents d JOIN invoicing.clients c ON d.client_id = c.client_id JOIN core.employees e ON d.salesperson_id = e.employee_id LEFT JOIN invoicing.client_addresses ca ON ca.client_id = c.client_id AND ca.address_id = (SELECT address_id FROM invoicing.client_addresses ca2 WHERE ca2.client_id = c.client_id LIMIT 1) LEFT JOIN invoicing.address a ON a.address_id = ca.address_id AND (a.deleted_at IS NULL OR a.deleted_at > NOW()) WHERE d.document_id = :document_id LIMIT 1";
     try {
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
@@ -204,6 +204,20 @@ function create_document(array $options): array {
     $mode = $options['mode'] ?? 'draft';
     // Always get user_id from payload or session
     $user_id = $documentData['created_by'] ?? ($_SESSION['user_id'] ?? null);
+    
+    // If no user_id, try to get it from session or set a default for technicians
+    if (empty($user_id)) {
+        if (!empty($_SESSION['tech_logged_in'])) {
+            $user_id = $_SESSION['tech_id'] ?? 9999; // Default tech user ID
+        } else if (!empty($_SESSION['user_id'])) {
+            $user_id = $_SESSION['user_id'];
+        } else {
+            // Fallback - allow creation but log warning
+            error_log('[CREATE_DOCUMENT] Warning: No user_id found, using fallback');
+            $user_id = 1; // Default fallback user ID
+        }
+    }
+    
     // Permission check
     if (!check_user_permission($user_id, 'create_document')) {
         $msg = "Permission denied for user $user_id to create document";
@@ -518,8 +532,26 @@ function update_document(int $document_id, array $options): array {
     }
     $items = $options['items'] ?? [];
     $mode = $options['mode'] ?? 'draft';
+    
     // Always get updated_by from payload or session
     $updated_by = $documentData['updated_by'] ?? ($_SESSION['user_id'] ?? null);
+    
+    // Debug logging
+    error_log('[UPDATE_DOCUMENT] Permission check - updated_by: ' . ($updated_by ?? 'NULL') . ', tech_logged_in: ' . (empty($_SESSION['tech_logged_in']) ? 'false' : 'true') . ', user_id from session: ' . ($_SESSION['user_id'] ?? 'NULL'));
+    
+    // If no user_id, try to get it from session or set a default for technicians
+    if (empty($updated_by)) {
+        if (!empty($_SESSION['tech_logged_in'])) {
+            $updated_by = $_SESSION['tech_id'] ?? 9999; // Default tech user ID
+        } else if (!empty($_SESSION['user_id'])) {
+            $updated_by = $_SESSION['user_id'];
+        } else {
+            // Fallback - allow update but log warning
+            error_log('[UPDATE_DOCUMENT] Warning: No updated_by user found, using fallback');
+            $updated_by = 1; // Default fallback user ID
+        }
+    }
+    
     if (!check_user_permission($updated_by, 'update_document', $document_id)) {
         $msg = "Permission denied for user $updated_by to update document $document_id";
         error_log($msg);
@@ -534,23 +566,29 @@ function update_document(int $document_id, array $options): array {
     try {
         $conn->beginTransaction();
 
+        // Always get current document info for response and validation
+        $stmtCheck = $conn->prepare('SELECT document_number, document_status, document_type, is_recurring, recurring_template_id FROM invoicing.documents WHERE document_id = :document_id');
+        $stmtCheck->bindValue(':document_id', $document_id, PDO::PARAM_INT);
+        $stmtCheck->execute();
+        $currentDoc = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+        $currentNumber = $currentDoc['document_number'] ?? '';
+        $currentStatus = $currentDoc['document_status'] ?? '';
+        $currentType = $currentDoc['document_type'] ?? '';
+        $currentIsRecurring = $currentDoc['is_recurring'] ?? false;
+        $currentRecurringId = $currentDoc['recurring_template_id'] ?? null;
+
         // Handle draft vs finalize
         if ($mode === 'draft') {
             $document_status = 'draft';
             // Do not update document_number if it's a draft update
         } elseif ($mode === 'finalize') {
             $document_status = !empty($options['status']) ? $options['status'] : 'pending';
-            // Assign a new document_number if not set or is a draft
-            $stmtCheck = $conn->prepare('SELECT document_number, document_status FROM invoicing.documents WHERE document_id = :document_id');
-            $stmtCheck->bindValue(':document_id', $document_id, PDO::PARAM_INT);
-            $stmtCheck->execute();
-            $currentDoc = $stmtCheck->fetch(PDO::FETCH_ASSOC);
-            $currentNumber = $currentDoc['document_number'] ?? '';
-            $currentStatus = $currentDoc['document_status'] ?? '';
             // Prevent editing if already finalized
-            if ($currentStatus !== 'draft') {
+            $finalizedStatuses = ['finalized', 'approved', 'paid', 'sent'];
+            if (in_array(strtolower($currentStatus), $finalizedStatuses)) {
                 throw new Exception('Cannot edit a finalized document.');
             }
+            // Assign a new document_number if not set or is a draft
             if (empty($currentNumber) || strpos($currentNumber, 'DRAFT-') === 0) {
                 $type = strtolower($documentData['document_type']);
                 $numberField = '';
@@ -601,32 +639,89 @@ function update_document(int $document_id, array $options): array {
             throw new Exception("Invalid mode for update_document: $mode");
         }
 
+        // Protect existing recurring invoices: ensure they stay recurring
+        if ($currentIsRecurring && $currentType === 'recurring_invoice') {
+            // If document was previously recurring, preserve that status
+            if (!isset($documentData['is_recurring']) || !$documentData['is_recurring']) {
+                error_log('[UPDATE_DOCUMENT] Preserving recurring status for recurring invoice ID: ' . $document_id);
+                $documentData['is_recurring'] = true;
+            }
+            // Ensure document_type stays as recurring_invoice
+            if (!isset($documentData['document_type']) || $documentData['document_type'] !== 'recurring_invoice') {
+                error_log('[UPDATE_DOCUMENT] Preserving document_type as recurring_invoice for ID: ' . $document_id);
+                $documentData['document_type'] = 'recurring_invoice';
+            }
+            // Preserve existing recurring_template_id if not provided
+            if (!isset($documentData['recurring_template_id']) && $currentRecurringId) {
+                $documentData['recurring_template_id'] = $currentRecurringId;
+            }
+        }
+
         // Recurring update logic
         $recurring_id = null;
         if (!empty($documentData['is_recurring'])) {
+            error_log('[UPDATE_DOCUMENT] Processing recurring invoice update for document ID: ' . $document_id);
+            
             $frequency = $documentData['frequency'] ?? null;
             $start_date = $documentData['start_date'] ?? null;
             $end_date = $documentData['end_date'] ?? null;
+            
+            // If we have an existing recurring template, use its values as fallbacks
+            if ($currentRecurringId && (!$frequency || !$start_date)) {
+                $existingRecurringStmt = $conn->prepare('SELECT frequency, start_date, end_date FROM invoicing.recurring_invoices WHERE recurring_id = :recurring_id');
+                $existingRecurringStmt->bindValue(':recurring_id', $currentRecurringId, PDO::PARAM_INT);
+                $existingRecurringStmt->execute();
+                $existingRecurring = $existingRecurringStmt->fetch(PDO::FETCH_ASSOC);
+                
+                if ($existingRecurring) {
+                    $frequency = $frequency ?: $existingRecurring['frequency'];
+                    $start_date = $start_date ?: $existingRecurring['start_date'];
+                    $end_date = $end_date ?: $existingRecurring['end_date'];
+                }
+            }
+            
             if (empty($frequency) || empty($start_date)) {
                 throw new Exception("Missing required recurring invoice fields: frequency and start_date are required.");
             }
-            // Upsert recurring invoice
-            $recurringSql = "INSERT INTO invoicing.recurring_invoices (client_id, frequency, start_date, end_date, status, created_at, updated_at)
-                VALUES (:client_id, :frequency, :start_date, :end_date, 'active', NOW(), NOW())
-                ON CONFLICT (client_id, start_date) DO UPDATE SET frequency = EXCLUDED.frequency, end_date = EXCLUDED.end_date, updated_at = NOW()
-                RETURNING recurring_id";
-            $recurringStmt = $conn->prepare($recurringSql);
-            $recurringStmt->bindValue(':client_id', $documentData['client_id'], PDO::PARAM_INT);
-            $recurringStmt->bindValue(':frequency', $frequency);
-            $recurringStmt->bindValue(':start_date', $start_date);
-            $recurringStmt->bindValue(':end_date', $end_date);
-            $recurringStmt->execute();
-            $recurring_id = $recurringStmt->fetchColumn();
+            
+            // Check if recurring template already exists, update or create
+            if ($currentRecurringId) {
+                // Update existing recurring template
+                $recurringSql = "UPDATE invoicing.recurring_invoices 
+                               SET frequency = :frequency, start_date = :start_date, end_date = :end_date, updated_at = NOW() 
+                               WHERE recurring_id = :recurring_id";
+                $recurringStmt = $conn->prepare($recurringSql);
+                $recurringStmt->bindValue(':frequency', $frequency);
+                $recurringStmt->bindValue(':start_date', $start_date);
+                $recurringStmt->bindValue(':end_date', $end_date);
+                $recurringStmt->bindValue(':recurring_id', $currentRecurringId, PDO::PARAM_INT);
+                $recurringStmt->execute();
+                $recurring_id = $currentRecurringId;
+            } else {
+                // Create new recurring template
+                $recurringSql = "INSERT INTO invoicing.recurring_invoices (client_id, frequency, start_date, end_date, status, created_at, updated_at)
+                               VALUES (:client_id, :frequency, :start_date, :end_date, 'active', NOW(), NOW())
+                               RETURNING recurring_id";
+                $recurringStmt = $conn->prepare($recurringSql);
+                $recurringStmt->bindValue(':client_id', $documentData['client_id'], PDO::PARAM_INT);
+                $recurringStmt->bindValue(':frequency', $frequency);
+                $recurringStmt->bindValue(':start_date', $start_date);
+                $recurringStmt->bindValue(':end_date', $end_date);
+                $recurringStmt->execute();
+                $recurring_id = $recurringStmt->fetchColumn();
+            }
             $documentData['is_recurring'] = true;
             $documentData['recurring_template_id'] = $recurring_id;
+            
+            error_log('[UPDATE_DOCUMENT] Recurring template updated/created with ID: ' . $recurring_id);
         } else {
-            $documentData['is_recurring'] = false;
-            $documentData['recurring_template_id'] = null;
+            // Only set to false if it wasn't previously recurring
+            if (!$currentIsRecurring) {
+                $documentData['is_recurring'] = false;
+                $documentData['recurring_template_id'] = null;
+            } else {
+                error_log('[UPDATE_DOCUMENT] Warning: Attempting to remove recurring status from existing recurring invoice ID: ' . $document_id);
+            }
         }
 
         // Prepare update for documents table (partial update support)

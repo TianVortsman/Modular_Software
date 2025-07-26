@@ -38,6 +38,85 @@ body {
     margin-bottom: var(--spacing-medium);
 }
 
+/* Context Menu Styling */
+#document-context-menu {
+    background: var(--color-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-small) !important;
+    box-shadow: 0 8px 24px var(--shadow-dark) !important;
+    font-family: var(--font-primary) !important;
+    color: var(--color-text) !important;
+}
+
+#document-context-menu div {
+    transition: background-color var(--transition-speed) !important;
+    color: var(--color-text) !important;
+}
+
+#document-context-menu div:hover {
+    background: var(--color-primary-fade) !important;
+    color: var(--color-primary) !important;
+}
+
+/* Table Row Hover Effects */
+.invoice-table tbody tr {
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+
+.invoice-table tbody tr:hover {
+    background-color: var(--color-background-alt);
+}
+
+/* Filter Container Improvements */
+.invoice-filter {
+    display: flex;
+    gap: var(--spacing-medium);
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: var(--spacing-medium);
+}
+
+.invoice-filter label {
+    font-weight: 500;
+    color: var(--color-text);
+    white-space: nowrap;
+}
+
+.invoice-filter input,
+.invoice-filter select {
+    padding: var(--spacing-small);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small);
+    background: var(--color-background);
+    color: var(--color-text);
+    font-size: var(--font-size-base);
+    transition: all var(--transition-speed);
+}
+
+.invoice-filter input:focus,
+.invoice-filter select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-primary-fade);
+}
+
+.clear-filters-btn {
+    background: var(--color-warning);
+    color: var(--color-light);
+    border: none;
+    border-radius: var(--radius-small);
+    padding: var(--spacing-small) var(--spacing-medium);
+    cursor: pointer;
+    font-size: var(--font-size-small);
+    transition: all var(--transition-speed);
+}
+
+.clear-filters-btn:hover {
+    background: var(--color-warning-dark);
+    transform: translateY(-1px);
+}
+
 .document-tabs-container {
     display: flex;
     gap: var(--spacing-small);

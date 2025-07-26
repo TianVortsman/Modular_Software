@@ -118,8 +118,10 @@ function openDocumentModal(mode = 'create') {
     const modal = document.getElementById('document-modal');
     if (!modal) return;
     modal.style.display = 'flex';
-    setModalMode(mode);
+    
+    // Only clear data if creating a new document
     if (mode === 'create') {
+        // Clear all inputs for new document
         modal.querySelectorAll('input, textarea').forEach(input => {
             if (input.type === 'hidden') return;
             input.value = '';
@@ -127,13 +129,17 @@ function openDocumentModal(mode = 'create') {
         modal.querySelectorAll('select').forEach(select => {
             select.selectedIndex = 0;
         });
+        
         // Clear table rows and add back the default fixed line item row
         const tableBody = document.getElementById('document-rows');
         if (tableBody) {
             tableBody.innerHTML = `
                 <tr class="document-item-row">
                     <td><input type="number" value="1" class="quantity"></td>
-                    <td style="display:none;"><input type="hidden" class="product-id"></td>
+                    <td style="display:none;">
+                        <input type="hidden" class="product-id">
+                        <input type="hidden" class="item-id">
+                    </td>
                     <td>
                         <div class="search-container" style="position: relative;">
                             <input type="text" placeholder="Search Item Code" class="item-code" autocomplete="off">
@@ -170,34 +176,44 @@ function openDocumentModal(mode = 'create') {
                 </tr>
             `;
         }
+        
+        // Set current date for new documents
+        const dateInput = document.getElementById('current-date');
+        if (dateInput) {
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            dateInput.value = formattedDate;
+        }
+        
+        // Set pay-in-days to 30 by default for new documents
+        const payInDaysSelect = document.getElementById('pay-in-days');
+        if (payInDaysSelect) {
+            payInDaysSelect.value = '30';
+        }
     }
-    // Set current date
-    const dateInput = document.getElementById('current-date');
-    if (dateInput) {
-        const today = new Date();
-        const formattedDate = today.toISOString().split('T')[0];
-        dateInput.value = formattedDate;
-    }
-    // Set pay-in-days to 30 by default
-    const payInDaysSelect = document.getElementById('pay-in-days');
-    if (payInDaysSelect) {
-        payInDaysSelect.value = '30';
-    }
-    // Setup row listeners and update totals
+    
+    // Set modal mode (this will handle UI state, disable fields if finalized, etc.)
+    setModalMode(mode);
+    
+    // Always setup row listeners and update totals after data is loaded
     setupRowListeners();
     updateTotals();
+    
     // Setup client name input search
     const clientNameInput = document.getElementById('client-name');
     if (clientNameInput) {
         clientNameInput.oninput = function () { searchClient(clientNameInput); };
     }
+    
     // Setup salesperson search
     const salespersonInput = document.getElementById('salesperson');
     if (salespersonInput) {
         salespersonInput.oninput = function () { searchSalesperson(salespersonInput); };
     }
+    
     // Update section visibility
     updateSectionVisibility();
+    
     // Add event listener for document-type changes
     const docType = document.getElementById('document-type');
     if (docType) {
@@ -269,7 +285,10 @@ function addDocumentItem() {
     row.classList.add('document-item-row');
     row.innerHTML = `
         <td><input type="number" value="1" class="quantity"></td>
-        <td style="display:none;"><input type="hidden" class="product-id"></td>
+        <td style="display:none;">
+            <input type="hidden" class="product-id">
+            <input type="hidden" class="item-id">
+        </td>
         <td>
             <div class="search-container" style="position: relative;">
                 <input type="text" placeholder="Search Item Code" class="item-code" autocomplete="off">
@@ -285,12 +304,13 @@ function addDocumentItem() {
         <td><input type="text" value="R0.00" class="unit-price"></td>
         <td>
             <select class="tax">
-                <option value="0">[None]</option>
-                <option value="10">10%</option>
-                <option value="15">15%</option>
-                <option value="20">20%</option>
-                <option value="25">25%</option>
+                <option value="0" data-tax-id="1">[None]</option>
+                <option value="10" data-tax-id="3">10%</option>
+                <option value="15" data-tax-id="2">15%</option>
+                <option value="20" data-tax-id="4">20%</option>
+                <option value="25" data-tax-id="5">25%</option>
             </select>
+            <input type="hidden" class="tax-rate-id" value="">
         </td>
         <td>
             <button type="button" class="toggle-line-discount-btn" title="Add Discount">+ Discount</button>
@@ -449,7 +469,17 @@ function setupRowListeners() {
         }
         const taxInput = row.querySelector('.tax');
         if (taxInput) {
-            taxInput.onchange = function() { calculateRowTotal(row); updateTotals(); };
+            taxInput.onchange = function() { 
+                // Update hidden tax_rate_id field when tax dropdown changes
+                const selectedOption = taxInput.options[taxInput.selectedIndex];
+                const taxRateId = selectedOption.getAttribute('data-tax-id') || '';
+                const hiddenTaxRateIdField = row.querySelector('.tax-rate-id');
+                if (hiddenTaxRateIdField) {
+                    hiddenTaxRateIdField.value = taxRateId;
+                }
+                calculateRowTotal(row); 
+                updateTotals(); 
+            };
         }
         const discountInput = row.querySelector('.line-discount');
         if (discountInput) {
@@ -641,6 +671,7 @@ function autofillRow(row, result) {
     row.querySelector('.unit-price').value = result.unit_price;
     row.querySelector('.product-id').value = result.product_id;
     const taxDropdown = row.querySelector('.tax');
+    const taxRateIdField = row.querySelector('.tax-rate-id');
     if (taxDropdown) {
         let taxVal = '';
         if (typeof result.tax_percentage !== 'undefined' && result.tax_percentage !== null) {
@@ -650,10 +681,18 @@ function autofillRow(row, result) {
             for (let option of taxDropdown.options) {
                 if (option.value === taxVal || option.value === taxVal + '%') {
                     taxDropdown.value = option.value;
+                    // Also set the tax_rate_id in the hidden field
+                    if (taxRateIdField && option.getAttribute('data-tax-id')) {
+                        taxRateIdField.value = option.getAttribute('data-tax-id');
+                    }
                     break;
                 }
             }
         }
+    }
+    // Set tax_rate_id directly if available from result
+    if (taxRateIdField && result.tax_rate_id) {
+        taxRateIdField.value = result.tax_rate_id;
     }
     calculateRowTotal(row);
     updateTotals();
@@ -882,6 +921,13 @@ if (typeof addDocumentItem === 'function') window.addDocumentItem = addDocumentI
 if (typeof removeItem === 'function') window.removeItem = removeItem;
 if (typeof addDocumentDiscount === 'function') window.addDocumentDiscount = addDocumentDiscount;
 if (typeof searchItem === 'function') window.searchItem = searchItem;
+
+// Export functions needed for document editing
+window.setModalMode = setModalMode;
+window.setupRowListeners = setupRowListeners;
+window.updateTotals = updateTotals;
+window.openDocumentModal = openDocumentModal;
+window.closeDocumentModal = closeDocumentModal;
 
 // Replace the old createOrUpdateDocument global with saveDocumentFinal
 window.createOrUpdateDocument = saveDocumentFinal;
