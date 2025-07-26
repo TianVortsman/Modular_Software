@@ -188,6 +188,7 @@ function customSectionClientSearch(sectionId, input, hidden, dropdown) {
     const query = input.value.trim();
     if (query.length < 2) {
         dropdown.style.display = 'none';
+        dropdown.classList.remove('active');
         dropdown.innerHTML = '';
         hidden.value = '';
         filterState[sectionId].client_id = '';
@@ -200,16 +201,44 @@ function customSectionClientSearch(sectionId, input, hidden, dropdown) {
         dropdown.innerHTML = '';
         if (results && results.length > 0) {
             dropdown.style.display = 'block';
+            dropdown.classList.add('active');
             results.forEach((item, idx) => {
                 const div = document.createElement('div');
                 div.classList.add('search-result-client');
-                div.textContent = item.client_name + (item.client_email ? ' (' + item.client_email + ')' : '');
+                
+                // Create better display text based on client type
+                let displayText = '';
+                let subtitleText = '';
+                
+                if (item.client_type === 'business') {
+                    displayText = item.client_name;
+                    subtitleText = 'Business Client';
+                } else {
+                    // Private client
+                    displayText = item.client_name;
+                    if (item.first_name && item.last_name) {
+                        subtitleText = `${item.first_name} ${item.last_name}`;
+                    }
+                }
+                
+                // Add email if available
+                if (item.client_email) {
+                    subtitleText += subtitleText ? ` • ${item.client_email}` : item.client_email;
+                }
+                
+                // Create HTML structure
+                div.innerHTML = `
+                    <div class="client-result-name">${displayText}</div>
+                    ${subtitleText ? `<div class="client-result-details">${subtitleText}</div>` : ''}
+                `;
+                
                 div.onclick = function () {
                     hidden.value = item.client_id;
                     input.value = item.client_name;
                     filterState[sectionId].client_id = item.client_id;
                     filterState[sectionId].client_name = item.client_name;
                     dropdown.style.display = 'none';
+                    dropdown.classList.remove('active');
                     triggerSectionFetch(sectionId);
                 };
                 if (idx === 0) div.classList.add('highlight');
@@ -217,7 +246,9 @@ function customSectionClientSearch(sectionId, input, hidden, dropdown) {
             });
         } else {
             dropdown.style.display = 'block';
+            dropdown.classList.add('active');
             const noResults = document.createElement('div');
+            noResults.classList.add('search-no-results');
             noResults.textContent = 'No clients found';
             dropdown.appendChild(noResults);
         }

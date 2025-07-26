@@ -45,6 +45,7 @@ error_log("Multiple accounts: " . ($multiple_accounts ? 'true' : 'false'));
     <link rel="stylesheet" href="../../../public/assets/css/sidebar.css">
     <link rel="stylesheet" href="../css/invoice-clients.css">
     <link rel="stylesheet" href="../css/invoice-modal.css">
+    <link rel="stylesheet" href="../css/client-search-dropdown.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../../../public/assets/js/toggle-theme.js" type="module"></script>

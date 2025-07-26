@@ -15,10 +15,9 @@ header('Content-Type: application/json');
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? null;
 
-// Use the same DB connection logic as client-api.php
+// Use centralized error handling
 if (!isset($_SESSION['account_number'])) {
-    echo json_encode(['success' => false, 'message' => 'User session not found', 'data' => null, 'error_code' => 'SESSION_NOT_FOUND']);
-    exit;
+    sendApiErrorResponse('User session not found', null, 'Supplier API Authentication', 'SESSION_NOT_FOUND', 401);
 }
 // Use the same DB connection logic as client-api.php
 require_once __DIR__ . '/../../../src/Core/Database/ClientDatabase.php';

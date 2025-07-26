@@ -42,6 +42,7 @@ try {
 
     // Route actions
     switch ($action) {
+        case 'search':
         case 'list_clients':
             // GET: list clients with options from query params
             $options = [
@@ -56,6 +57,7 @@ try {
             echo json_encode($result);
             break;
 
+        case 'get_client_details':
         case 'get_client':
             if ($method !== 'GET') {
                 sendApiErrorResponse('GET method required for get_client action', $_GET, 'Client API Method Validation', 'INVALID_METHOD', 405);
@@ -129,7 +131,10 @@ try {
             break;
 
         default:
-            sendApiErrorResponse("Invalid action: $action", ['action' => $action, 'available_actions' => ['list_clients', 'get_client', 'create_client', 'update_client', 'delete_client']], 'Client API Action Validation', 'INVALID_ACTION', 400);
+            sendApiErrorResponse("Invalid action: $action", [
+                'action' => $action, 
+                'available_actions' => ['search', 'list_clients', 'get_client_details', 'get_client', 'create_client', 'update_client', 'delete_client']
+            ], 'Client API Action Validation', 'INVALID_ACTION', 400);
     }
     
 } catch (PDOException $e) {

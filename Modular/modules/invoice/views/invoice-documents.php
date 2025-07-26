@@ -35,6 +35,7 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
     <link rel="stylesheet" href="../../../public/assets/css/root.css">
     <link rel="stylesheet" href="../../../public/assets/css/sidebar.css">
     <link rel="stylesheet" href="../css/invoice-modal.css">
+    <link rel="stylesheet" href="../css/client-search-dropdown.css">
     <link rel="stylesheet" href="../css/invoices.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

@@ -22,8 +22,7 @@ header('Content-Type: application/json');
 
 // Validate session/account
 if (!isset($_SESSION['account_number'])) {
-    echo json_encode(['success' => false, 'message' => 'User session not found']);
-    exit;
+    sendApiErrorResponse('User session not found', null, 'Setup API Authentication', 'SESSION_NOT_FOUND', 401);
 }
 
 // Get database connection

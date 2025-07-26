@@ -223,27 +223,16 @@ function create_document(array $options): array {
         $msg = "Permission denied for user $user_id to create document";
         error_log($msg);
         log_user_action($user_id, 'create_document', null, $msg);
-        return [
-            'success' => false,
-            'message' => $msg,
-            'data' => null,
-            'error_code' => 'PERMISSION_DENIED'
-        ];
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
+        return build_error_response($msg, $documentData, 'Document creation permission check', 'PERMISSION_DENIED');
     }
+    
     // Validate required fields
-    $requiredFields = ['client_id', 'document_type', 'issue_date', 'subtotal', 'tax_amount', 'total_amount']; // salesperson_id is now optional
-    foreach ($requiredFields as $field) {
-        if (!isset($documentData[$field])) {
-            $msg = "Missing required field: $field";
-            error_log($msg);
-            log_user_action($user_id, 'create_document', null, $msg);
-            return [
-                'success' => false,
-                'message' => $msg,
-                'data' => null,
-                'error_code' => 'VALIDATION_ERROR'
-            ];
-        }
+    $requiredFields = ['client_id', 'document_type', 'issue_date', 'subtotal', 'tax_amount', 'total_amount'];
+    require_once __DIR__ . '/../../../src/Helpers/helpers.php';
+    $validation = validate_required_fields($documentData, $requiredFields, 'document creation');
+    if ($validation) {
+        return $validation;
     }
     // Always set created_by from session if not set
     if (!isset($documentData['created_by']) && isset($_SESSION['user_id'])) {
@@ -492,30 +481,21 @@ function create_document(array $options): array {
         // Logging and notification
         log_user_action($user_id, 'create_document', $document_id, json_encode($documentData));
         send_notification($user_id, "Document #$document_id created successfully.");
-        return [
-            'success' => true,
-            'message' => 'Document created successfully',
-            'data' => [
-                'document_id' => (int)$document_id,
-                'document_number' => $document_number,
-                'pdf_url' => $pdf_url
-            ]
-        ];
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
+        return build_success_response([
+            'document_id' => (int)$document_id,
+            'document_number' => $document_number,
+            'pdf_url' => $pdf_url
+        ], 'Document created successfully');
     } catch (Exception $e) {
         if ($conn->inTransaction()) {
             $conn->rollBack();
         }
-        // Always return the real error message for AI/global error handler, but rewrite with AI
-        $msg = $e->getMessage();
-        $friendly = function_exists('get_friendly_error') ? get_friendly_error($msg) : $msg;
-        error_log('create_document error: ' . $msg);
+        $msg = 'Error creating document: ' . $e->getMessage();
+        error_log('create_document error: ' . $e->getMessage());
         log_user_action($user_id, 'create_document', null, $msg);
-        return [
-            'success' => false,
-            'message' => $friendly,
-            'data' => null,
-            'error_code' => 'DOCUMENT_CREATE_ERROR'
-        ];
+        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
+        return build_error_response($msg, $documentData, 'Document creation failed', 'DOCUMENT_CREATE_ERROR');
     }
 }
 

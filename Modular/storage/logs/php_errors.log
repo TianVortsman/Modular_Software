@@ -1,2 +1,1689 @@
 [26-Jul-2025 13:23:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
 [26-Jul-2025 13:23:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 13:30:28 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 13:30:28 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 13:30:48 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 13:30:48 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 13:36:02 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 13:36:02 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T13:36:11+00:00 | Code: C40FE7 | Context: PHP Runtime Error | Error: [PHP] file_get_contents(http://host.docker.internal:1234/v1/chat/completions): Failed to open stream: HTTP request failed! in /var/www/html/src/Utils/errorHandler.php on line 82
+[26-Jul-2025 14:15:03 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:15:03 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:15:04 UTC] [AI Error Handler] Success: 1.392 seconds
+2025-07-26T14:15:04+00:00 | Code: VALIDATION_ERROR | Context: Validation failed for document creation | Error: Missing required fields: client_id | Form Data: {"document_id":"","client_id":"","client_name":"","client_email":"","client_phone":"","vat_number":"","registration_number":"","address1":"","address2":"","document_type":"quotation","issue_date":"2025-07-26","document_status":"Draft","pay_in_days":"30","client_purchase_order_number":"","salesperson_name":"","salesperson_id":"","public_note":"","private_note":"","foot_note":"","items":[],"subtotal":"0.00","tax_amount":"0.00","total_amount":"0.00","is_recurring":true,"frequency":"monthly","start_date":"2025-07-26","end_date":""}
+[26-Jul-2025 14:30:43 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:30:43 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:30:44 UTC] [AI Error Handler] Success: 0.849 seconds
+2025-07-26T14:30:44+00:00 | Code: VALIDATION_ERROR | Context: Validation failed for document creation | Error: Missing required fields: client_id | Form Data: {"document_id":"","client_id":"","client_name":"","client_email":"","client_phone":"","vat_number":"","registration_number":"","address1":"","address2":"","document_type":"quotation","issue_date":"2025-07-26","document_status":"Draft","pay_in_days":"30","client_purchase_order_number":"","salesperson_name":"","salesperson_id":"","public_note":"","private_note":"","foot_note":"","items":[],"subtotal":"0.00","tax_amount":"0.00","total_amount":"0.00","is_recurring":true,"frequency":"monthly","start_date":"2025-07-26","end_date":""}
+[26-Jul-2025 14:30:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:30:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:30:51 UTC] [AI Error Handler] Success: 0.681 seconds
+2025-07-26T14:30:51+00:00 | Code: VALIDATION_ERROR | Context: Validation failed for document creation | Error: Missing required fields: client_id | Form Data: {"document_id":"","client_id":"","client_name":"","client_email":"","client_phone":"","vat_number":"","registration_number":"","address1":"","address2":"","document_type":"quotation","issue_date":"2025-07-26","document_status":"Draft","pay_in_days":"30","client_purchase_order_number":"","salesperson_name":"","salesperson_id":"","public_note":"","private_note":"","foot_note":"","items":[],"subtotal":"0.00","tax_amount":"0.00","total_amount":"0.00","is_recurring":true,"frequency":"monthly","start_date":"2025-07-26","end_date":""}
+[26-Jul-2025 14:33:02 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:33:02 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:33:03 UTC] [AI Error Handler] Success: 0.728 seconds
+2025-07-26T14:33:03+00:00 | Code: VALIDATION_ERROR | Context: Validation failed for document creation | Error: Missing required fields: client_id | Form Data: {"document_id":"","client_id":"","client_name":"","client_email":"","client_phone":"","vat_number":"","registration_number":"","address1":"","address2":"","document_type":"quotation","issue_date":"2025-07-26","document_status":"Draft","pay_in_days":"30","client_purchase_order_number":"","salesperson_name":"","salesperson_id":"","public_note":"","private_note":"","foot_note":"","items":[],"subtotal":"0.00","tax_amount":"0.00","total_amount":"0.00","is_recurring":true,"frequency":"monthly","start_date":"2025-07-26","end_date":""}
+[26-Jul-2025 14:34:59 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:34:59 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:35:00 UTC] [AI Error Handler] Success: 0.702 seconds
+2025-07-26T14:35:00+00:00 | Code: VALIDATION_ERROR | Context: Validation failed for document creation | Error: Missing required fields: client_id | Form Data: {"document_id":"","client_id":"","client_name":"","client_email":"","client_phone":"","vat_number":"","registration_number":"","address1":"","address2":"","document_type":"quotation","issue_date":"2025-07-26","document_status":"Draft","pay_in_days":"30","client_purchase_order_number":"","salesperson_name":"","salesperson_id":"","public_note":"","private_note":"","foot_note":"","items":[],"subtotal":"0.00","tax_amount":"0.00","total_amount":"0.00","is_recurring":true,"frequency":"monthly","start_date":"2025-07-26","end_date":""}
+[26-Jul-2025 14:35:07 UTC] Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 9999
+    [csrf_token] => ef772266c5eeecc8209055fd4314927099de4bb6674a2acbc07310a466be8cc9
+    [tech_access_token] => 66b70b51ba52358f1094a0312ad0366c352d413a934816ab95358c8178c1419f
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1753535129
+    [account_number] => ACC002
+)
+
+[26-Jul-2025 14:35:07 UTC] Account number from session: ACC002
+[26-Jul-2025 14:35:07 UTC] User name: Tian
+[26-Jul-2025 14:35:07 UTC] Multiple accounts: false
+[26-Jul-2025 14:35:07 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:35:07 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:35:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:35:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:36:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:36:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:36:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:36:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T14:36:39+00:00 | Code: INVALID_ACTION | Context: Product API Action Validation | Error: Invalid action: list_types | Form Data: {"action":"list_types","available_actions":["list_products","get_product","create_product","update_product","delete_product","adjust_stock","get_categories","create_category"]}
+[26-Jul-2025 14:36:41 UTC] [AI Error Handler] Success: 1.446 seconds
+2025-07-26T14:36:41+00:00 | Code: INVALID_ACTION | AI Response: Error: The action "list_types" is invalid. Please choose from the available actions: list_products, get_product, create_product, update_product, delete_product, adjust_stock, get_categories, or create_category.
+[26-Jul-2025 14:36:41 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:36:41 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T14:36:41+00:00 | Code: INVALID_ACTION | Context: Product API Action Validation | Error: Invalid action: list_types | Form Data: {"action":"list_types","available_actions":["list_products","get_product","create_product","update_product","delete_product","adjust_stock","get_categories","create_category"]}
+[26-Jul-2025 14:36:42 UTC] [AI Error Handler] Success: 1.138 seconds
+2025-07-26T14:36:42+00:00 | Code: INVALID_ACTION | AI Response: Error: The action "list_types" is invalid. Please choose from the available actions: list_products, get_product, create_product, update_product, delete_product, adjust_stock, get_categories, or create_category.
+[26-Jul-2025 14:36:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:36:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T14:36:42+00:00 | Code: INVALID_ACTION | Context: Product API Action Validation | Error: Invalid action: list | Form Data: {"action":"list","available_actions":["list_products","get_product","create_product","update_product","delete_product","adjust_stock","get_categories","create_category"]}
+[26-Jul-2025 14:36:43 UTC] [AI Error Handler] Success: 1.446 seconds
+2025-07-26T14:36:43+00:00 | Code: INVALID_ACTION | AI Response: Error: Invalid action 'list'. Please choose a valid action from ['list_products', 'get_product', 'create_product', 'update_product', 'delete_product', 'adjust_stock', 'get_categories', 'create_category'].
+[26-Jul-2025 14:36:43 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:36:43 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T14:36:43+00:00 | Code: INVALID_ACTION | Context: Product API Action Validation | Error: Invalid action: list_types | Form Data: {"action":"list_types","available_actions":["list_products","get_product","create_product","update_product","delete_product","adjust_stock","get_categories","create_category"]}
+[26-Jul-2025 14:36:44 UTC] [AI Error Handler] Success: 0.901 seconds
+2025-07-26T14:36:44+00:00 | Code: INVALID_ACTION | AI Response: Error: The action 'list_types' is not valid. Please choose from the available actions provided in the form data.
+[26-Jul-2025 14:36:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:36:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T14:36:44+00:00 | Code: INVALID_ACTION | Context: Product API Action Validation | Error: Invalid action: list_categories | Form Data: {"action":"list_categories","available_actions":["list_products","get_product","create_product","update_product","delete_product","adjust_stock","get_categories","create_category"]}
+[26-Jul-2025 14:36:46 UTC] [AI Error Handler] Success: 1.421 seconds
+2025-07-26T14:36:46+00:00 | Code: INVALID_ACTION | AI Response: Error: Invalid action 'list_categories'. Please choose from available actions: list_products, get_product, create_product, update_product, delete_product, adjust_stock, get_categories, or create_category.
+[26-Jul-2025 14:36:46 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:36:46 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T14:36:46+00:00 | Code: INVALID_ACTION | Context: Product API Action Validation | Error: Invalid action: list_types | Form Data: {"action":"list_types","available_actions":["list_products","get_product","create_product","update_product","delete_product","adjust_stock","get_categories","create_category"]}
+[26-Jul-2025 14:36:47 UTC] [AI Error Handler] Success: 1.469 seconds
+2025-07-26T14:36:47+00:00 | Code: INVALID_ACTION | AI Response: Error: The action 'list_types' is not valid. Please choose from the available actions: list_products, get_product, create_product, update_product, delete_product, adjust_stock, get_categories, or create_category.
+[26-Jul-2025 14:36:47 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:36:47 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T14:36:47+00:00 | Code: INVALID_ACTION | Context: Product API Action Validation | Error: Invalid action: list_types | Form Data: {"action":"list_types","available_actions":["list_products","get_product","create_product","update_product","delete_product","adjust_stock","get_categories","create_category"]}
+[26-Jul-2025 14:36:48 UTC] [AI Error Handler] Success: 0.626 seconds
+2025-07-26T14:36:48+00:00 | Code: INVALID_ACTION | AI Response: Error: The action 'list_types' is invalid. Please choose from the available actions provided in the 'available_actions' list.
+[26-Jul-2025 14:36:48 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:36:48 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T14:36:48+00:00 | Code: INVALID_ACTION | Context: Product API Action Validation | Error: Invalid action: list_categories | Form Data: {"action":"list_categories","available_actions":["list_products","get_product","create_product","update_product","delete_product","adjust_stock","get_categories","create_category"]}
+[26-Jul-2025 14:36:49 UTC] [AI Error Handler] Success: 1.353 seconds
+2025-07-26T14:36:49+00:00 | Code: INVALID_ACTION | AI Response: Error: Invalid action 'list_categories'. Please choose from the available actions: list_products, get_product, create_product, update_product, delete_product, adjust_stock, get_categories, or create_category.
+[26-Jul-2025 14:36:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:36:49 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T14:36:49+00:00 | Code: INVALID_ACTION | Context: Product API Action Validation | Error: Invalid action: list_types | Form Data: {"action":"list_types","available_actions":["list_products","get_product","create_product","update_product","delete_product","adjust_stock","get_categories","create_category"]}
+[26-Jul-2025 14:36:51 UTC] [AI Error Handler] Success: 1.614 seconds
+2025-07-26T14:36:51+00:00 | Code: INVALID_ACTION | AI Response: Error: Invalid action 'list_types'. Please choose from the available actions: list_products, get_product, create_product, update_product, delete_product, adjust_stock, get_categories, create_category.
+[26-Jul-2025 14:36:51 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:36:51 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T14:36:51+00:00 | Code: INVALID_ACTION | Context: Product API Action Validation | Error: Invalid action: list | Form Data: {"action":"list","available_actions":["list_products","get_product","create_product","update_product","delete_product","adjust_stock","get_categories","create_category"]}
+[26-Jul-2025 14:36:52 UTC] [AI Error Handler] Success: 1.374 seconds
+2025-07-26T14:36:52+00:00 | Code: INVALID_ACTION | AI Response: Error: Invalid action 'list'. Please choose a valid action from the available options: list_products, get_product, create_product, update_product, delete_product, adjust_stock, get_categories, or create_category.
+[26-Jul-2025 14:36:52 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:36:52 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T14:36:52+00:00 | Code: INVALID_ACTION | Context: Product API Action Validation | Error: Invalid action: list_types | Form Data: {"action":"list_types","available_actions":["list_products","get_product","create_product","update_product","delete_product","adjust_stock","get_categories","create_category"]}
+[26-Jul-2025 14:36:54 UTC] [AI Error Handler] Success: 1.511 seconds
+2025-07-26T14:36:54+00:00 | Code: INVALID_ACTION | AI Response: Error: The action 'list_types' is invalid. Please choose from the available actions: list_products, get_product, create_product, update_product, delete_product, adjust_stock, get_categories, or create_category.
+[26-Jul-2025 14:36:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:36:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T14:36:54+00:00 | Code: INVALID_ACTION | Context: Product API Action Validation | Error: Invalid action: list_categories | Form Data: {"action":"list_categories","available_actions":["list_products","get_product","create_product","update_product","delete_product","adjust_stock","get_categories","create_category"]}
+[26-Jul-2025 14:36:55 UTC] [AI Error Handler] Success: 1.441 seconds
+2025-07-26T14:36:55+00:00 | Code: INVALID_ACTION | AI Response: Error: Invalid action 'list_categories'. Please choose from the available actions: list_products, get_product, create_product, update_product, delete_product, adjust_stock, get_categories, or create_category.
+[26-Jul-2025 14:36:55 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:36:55 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T14:36:55+00:00 | Code: INVALID_ACTION | Context: Product API Action Validation | Error: Invalid action: list | Form Data: {"action":"list","available_actions":["list_products","get_product","create_product","update_product","delete_product","adjust_stock","get_categories","create_category"]}
+[26-Jul-2025 14:36:57 UTC] [AI Error Handler] Success: 1.554 seconds
+2025-07-26T14:36:57+00:00 | Code: INVALID_ACTION | AI Response: Error: Invalid action: 'list'. Please choose a valid action from the available options: ['list_products', 'get_product', 'create_product', 'update_product', 'delete_product', 'adjust_stock', 'get_categories', 'create_category'].
+[26-Jul-2025 14:46:03 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:03 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:04 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:04 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:04 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:04 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:04 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:04 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:04 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:04 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:04 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:04 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:20 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:20 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:20 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:20 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:46:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:46:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:47:03 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:47:03 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:47:03 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:47:03 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:47:05 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:47:05 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:47:05 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:47:05 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:47:10 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:47:10 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:47:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:47:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T14:47:14+00:00 | Code: INVALID_ACTION | Context: Document API Action Validation | Error: Invalid action: fetch_document | Form Data: {"action":"fetch_document","available_actions":["save_document","update_document","get_document","delete_document"]}
+[26-Jul-2025 14:47:15 UTC] [AI Error Handler] Success: 1.221 seconds
+2025-07-26T14:47:15+00:00 | Code: INVALID_ACTION | AI Response: Error: Invalid action 'fetch_document'. Please choose from available actions: save_document, update_document, get_document, delete_document.
+[26-Jul-2025 14:49:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:49:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:49:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:49:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:50:52 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:50:52 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:50:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:50:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:50:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:50:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:50:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:50:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:50:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:50:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:50:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:50:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:50:55 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:50:55 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:50:55 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:50:55 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:50:55 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:50:55 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:50:55 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:50:55 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:50:55 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:50:55 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:50:55 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:50:55 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T14:50:55+00:00 | Code: PRODUCT_ID_REQUIRED | Context: Product API Parameter Validation | Error: Missing or invalid product_id parameter | Form Data: {"action":"get","id":"9"}
+[26-Jul-2025 14:50:57 UTC] [AI Error Handler] Success: 1.652 seconds
+2025-07-26T14:50:57+00:00 | Code: PRODUCT_ID_REQUIRED | AI Response: Oops! It looks like you're missing the 'product_id' parameter in your request. Please include a valid product ID, and make sure it matches the format expected by our API. For example: { "action": "get", "product_id": "9" }
+[26-Jul-2025 14:52:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:52:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:52:44 UTC] Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 9999
+    [csrf_token] => ef772266c5eeecc8209055fd4314927099de4bb6674a2acbc07310a466be8cc9
+    [tech_access_token] => 66b70b51ba52358f1094a0312ad0366c352d413a934816ab95358c8178c1419f
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1753535129
+    [account_number] => ACC002
+)
+
+[26-Jul-2025 14:52:44 UTC] Account number from session: ACC002
+[26-Jul-2025 14:52:44 UTC] User name: Tian
+[26-Jul-2025 14:52:44 UTC] Multiple accounts: false
+[26-Jul-2025 14:52:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:52:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:52:46 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:52:46 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:52:47 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:52:47 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T14:52:47+00:00 | Code: INVALID_ACTION | Context: Client API Action Validation | Error: Invalid action: get_client_details | Form Data: {"action":"get_client_details","available_actions":["list_clients","get_client","create_client","update_client","delete_client"]}
+[26-Jul-2025 14:52:49 UTC] [AI Error Handler] Success: 1.323 seconds
+2025-07-26T14:52:49+00:00 | Code: INVALID_ACTION | AI Response: Error: Invalid action 'get_client_details'. Please choose from the available actions: list_clients, get_client, create_client, update_client, delete_client.
+[26-Jul-2025 14:53:20 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:20 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:53:20 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:20 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:53:20 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:20 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:53:20 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:20 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:53:20 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:20 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:53:20 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:20 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:53:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:53:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:53:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:53:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:53:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:53:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:53:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:53:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:53:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:53:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:53:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:53:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:53:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:53:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:53:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:45 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:45 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:49 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:55 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:55 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:59 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:59 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:54:59 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:54:59 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:01 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:01 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:01 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:01 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:01 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:01 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:01 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:01 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:01 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:01 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:01 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:01 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:01 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:01 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:01 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:01 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:01 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:01 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:04 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:04 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T14:55:04+00:00 | Code: INVALID_METHOD | Context: Product API Method Validation | Error: POST method required for edit action
+[26-Jul-2025 14:55:05 UTC] [AI Error Handler] Success: 1.196 seconds
+2025-07-26T14:55:05+00:00 | Code: INVALID_METHOD | AI Response: Oops! To edit, you need to use the POST method instead of your current GET method. Please update the request type in your code or form settings and try again.
+[26-Jul-2025 14:55:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:28 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:28 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:30 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:30 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:32 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:32 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:36 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:36 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:36 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:36 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:36 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:36 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:36 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:36 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:36 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:36 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:36 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:36 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:36 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:36 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:36 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:36 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:36 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:36 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:55:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:55:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 14:56:09 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 14:56:09 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:46 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:46 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:46 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:46 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:47 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:51 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:51 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:02:59 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:02:59 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:08 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:08 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:08 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:08 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:21 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:21 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:23 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:03:33 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:03:33 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T15:03:33+00:00 | Code: INVALID_METHOD | Context: Product API Method Validation | Error: POST method required for edit action
+[26-Jul-2025 15:03:34 UTC] [AI Error Handler] Success: 0.811 seconds
+2025-07-26T15:03:34+00:00 | Code: INVALID_METHOD | AI Response: Oops! To edit the product, please use a POST method instead of your current GET method. Thanks for understanding!
+[26-Jul-2025 15:04:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:04:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:04:09 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:04:09 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:04:09 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:04:09 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:04:09 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:04:09 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:04:09 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:04:09 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:04:09 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:04:09 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:04:09 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:04:09 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:04:09 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:04:09 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:04:09 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:04:09 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:04:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:04:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:04:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:04:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:04:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:04:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:04:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:04:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:04:34 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:04:34 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:04:34 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:04:34 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:05:01 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:05:01 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:05:01 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:05:01 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:05:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:05:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:05:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:05:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:05:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:05:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:05:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:05:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:05:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:05:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:05:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:05:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:05:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:05:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:05:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:05:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:05:18 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:05:18 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:06:38 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:38 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T15:06:38+00:00 | Code: PRODUCT_ID_REQUIRED | Context: Product API Parameter Validation | Error: Missing or invalid product_id parameter | Form Data: {"action":"edit"}
+[26-Jul-2025 15:06:40 UTC] [AI Error Handler] Success: 1.132 seconds
+2025-07-26T15:06:40+00:00 | Code: PRODUCT_ID_REQUIRED | AI Response: Oops! You forgot to include the required 'product_id' parameter in your request. Please add this field and make sure it contains a valid number before submitting again.
+[26-Jul-2025 15:06:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:06:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T15:06:44+00:00 | Code: PRODUCT_ID_REQUIRED | Context: Product API Parameter Validation | Error: Missing or invalid product_id parameter | Form Data: {"action":"edit"}
+[26-Jul-2025 15:06:45 UTC] [AI Error Handler] Success: 0.678 seconds
+2025-07-26T15:06:45+00:00 | Code: PRODUCT_ID_REQUIRED | AI Response: The provided form is missing the 'product_id' parameter. Please include a valid product ID in your request to proceed with the edit action.
+[26-Jul-2025 15:09:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:09:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:09:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:09:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:09:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:09:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:09:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:09:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:09:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:09:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:09:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:09:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:09:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:09:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:09:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:09:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:09:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:09:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:09:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:09:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:09:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:09:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:09:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:09:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:09:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:09:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:09:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:09:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:09:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:09:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:09:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:09:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:09:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:09:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:09:54 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:09:54 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:09:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:09:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T15:09:56+00:00 | Code: PRODUCT_ID_REQUIRED | Context: Product API Parameter Validation | Error: Missing or invalid product_id parameter | Form Data: {"method":"PUT","content_type":"multipart\/form-data; boundary=----WebKitFormBoundarywWkpVgaem7klIofM","get_params":{"action":"edit"},"post_params":[],"parsed_form_data":{"------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition:_form-data;_name":"\"product_name\"\r\n\r\nDeluxe Office Chair\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"product_description\"\r\n\r\n\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"product_price\"\r\n\r\n1299.99\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"product_status\"\r\n\r\nactive\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"sku\"\r\n\r\nCH-1001\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"barcode\"\r\n\r\n6001234567890\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"product_type_id\"\r\n\r\n1\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"category_id\"\r\n\r\n\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"subcategory_id\"\r\n\r\n\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"tax_rate_id\"\r\n\r\n2\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"discount\"\r\n\r\n0.00\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"notes\"\r\n\r\nComfortable for long use\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"product_stock_quantity\"\r\n\r\n0\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"product_reorder_level\"\r\n\r\n0\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"product_lead_time\"\r\n\r\n0\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"product_weight\"\r\n\r\n0.00\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"product_dimensions\"\r\n\r\n\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"product_brand\"\r\n\r\n\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"product_manufacturer\"\r\n\r\n\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"warranty_period\"\r\n\r\n24 months\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"product_material\"\r\n\r\nPlastic\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"supplier_id\"\r\n\r\n7\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"compatible_vehicles\"\r\n\r\n\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"oem_part_number\"\r\n\r\n\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"estimated_time\"\r\n\r\n\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"service_frequency\"\r\n\r\n\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"bundle_items\"\r\n\r\n\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"installation_required\"\r\n\r\n\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"labor_cost\"\r\n\r\n0\r\n------WebKitFormBoundarywWkpVgaem7klIofM\r\nContent-Disposition: form-data; name=\"product_id\"\r\n\r\n1\r\n------WebKitFormBoundarywWkpVgaem7klIofM--\r\n"},"raw_input_length":3179,"found_product_id":null}
+2025-07-26T15:09:58+00:00 | Code: 1C8FCB | Context: PHP Runtime Error | Error: [PHP] file_get_contents(http://host.docker.internal:1234/v1/chat/completions): Failed to open stream: HTTP request failed! in /var/www/html/src/Utils/errorHandler.php on line 82
+[26-Jul-2025 15:09:59 UTC] [AI Error Handler] Success: 1.21 seconds
+2025-07-26T15:09:59+00:00 | Code: 1C8FCB | AI Response: Oops, we encountered a PHP runtime error while trying to fetch data from the server. Please contact our support team for assistance with this issue. Thank you for your patience.
+[26-Jul-2025 15:11:04 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:04 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:11:04 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:04 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:11:04 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:04 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:11:04 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:04 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:11:04 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:04 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:11:04 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:04 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:11:09 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:11:09 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T15:11:09+00:00 | Code: PRODUCT_ID_REQUIRED | Context: Product API Parameter Validation | Error: Missing or invalid product_id parameter
+[26-Jul-2025 15:11:10 UTC] [AI Error Handler] Success: 1.093 seconds
+2025-07-26T15:11:10+00:00 | Code: PRODUCT_ID_REQUIRED | AI Response: Oops! Please make sure you provide a valid product ID in the 'product_id' field. If you're unsure, check with the provider for the correct format and try again.
+[26-Jul-2025 15:13:10 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:10 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:10 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:10 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:10 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:10 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:10 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:10 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:10 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:10 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:10 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:10 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:16 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:21 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:21 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:21 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:21 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:13:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:14 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:14 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:17 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:17 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:24 UTC] [update_product] Successfully added supplier 4 to product 9
+[26-Jul-2025 15:17:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:25 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:35 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:35 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:35 UTC] [update_product] Successfully added supplier 9 to product 9
+[26-Jul-2025 15:17:35 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:35 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:35 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:35 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:17:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:28:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:28:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:28:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:28:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:28:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:28:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:28:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:28:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:28:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:28:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:28:15 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:28:15 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:28:30 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:28:30 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:28:33 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:28:33 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:28:38 UTC] Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 9999
+    [csrf_token] => ef772266c5eeecc8209055fd4314927099de4bb6674a2acbc07310a466be8cc9
+    [tech_access_token] => 66b70b51ba52358f1094a0312ad0366c352d413a934816ab95358c8178c1419f
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1753535129
+    [account_number] => ACC002
+)
+
+[26-Jul-2025 15:28:38 UTC] Account number from session: ACC002
+[26-Jul-2025 15:28:38 UTC] User name: Tian
+[26-Jul-2025 15:28:38 UTC] Multiple accounts: false
+[26-Jul-2025 15:28:38 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:28:38 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:30:05 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:30:05 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:30:05 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:30:05 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:30:05 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:30:05 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:30:05 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:30:05 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:30:05 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:30:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:30:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:30:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:30:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:30:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:30:06 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:30:06 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:30:07 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:30:07 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:30:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:30:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:30:21 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:30:21 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:37:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:37:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:37:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:37:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:37:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:37:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:37:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:37:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:37:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:37:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:37:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:37:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:37:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:37:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:37:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:37:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:37:52 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:37:52 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:37:55 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:37:55 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:37:57 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:37:57 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:37:57 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:37:57 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:37:57 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:37:57 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+2025-07-26T15:38:06+00:00 | Code: F76E8B | Context: PHP Runtime Error | Error: [PHP] file_get_contents(http://host.docker.internal:1234/v1/chat/completions): Failed to open stream: HTTP request failed! in /var/www/html/src/Utils/errorHandler.php on line 82
+[26-Jul-2025 15:38:07 UTC] [AI Error Handler] Success: 0.966 seconds
+2025-07-26T15:38:07+00:00 | Code: F76E8B | AI Response: Oops, we encountered a PHP runtime error. Please contact our support team with this information for assistance. Thank you for your patience.
+[26-Jul-2025 15:38:13 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:13 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:13 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:13 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:21 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:21 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:21 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:21 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:21 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:21 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:21 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:21 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:21 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:21 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:21 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:21 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:21 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:21 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:21 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:21 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:41 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:41 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:41 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:41 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:41 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:41 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:41 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:41 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:41 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:41 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:41 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:41 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:43 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:43 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:43 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:43 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:43 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:43 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:43 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:43 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:43 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:43 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:43 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:43 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:55 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:55 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:38:58 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:03 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:03 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:35 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:35 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:39:43 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:39:43 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:40:26 UTC] Session contents: Array
+(
+    [user_logged_in] => 
+    [tech_logged_in] => 1
+    [tech_email] => tianryno01@gmail.com
+    [tech_name] => Tian
+    [tech_id] => 1
+    [user_type] => technician
+    [user_id] => 9999
+    [csrf_token] => ef772266c5eeecc8209055fd4314927099de4bb6674a2acbc07310a466be8cc9
+    [tech_access_token] => 66b70b51ba52358f1094a0312ad0366c352d413a934816ab95358c8178c1419f
+    [tech_account_number] => ACC002
+    [tech_access_expiration] => 1753535129
+    [account_number] => ACC002
+)
+
+[26-Jul-2025 15:40:26 UTC] Account number from session: ACC002
+[26-Jul-2025 15:40:26 UTC] User name: Tian
+[26-Jul-2025 15:40:26 UTC] Multiple accounts: false
+[26-Jul-2025 15:40:26 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:40:26 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:40:28 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:40:28 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:40:32 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:40:32 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:00 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:00 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:02 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:04 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:04 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:30 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:30 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:34 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:34 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:40 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:40 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:46 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:46 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:41:57 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:41:57 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:01 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:01 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:08 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:08 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:10 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:10 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:10 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:10 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:10 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:10 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:11 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:12 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:12 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:20 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:20 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:21 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:21 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:42:52 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:42:52 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:19 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:19 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:22 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:42 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:42 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:56 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:56 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:57 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:57 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:57 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:57 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:57 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:57 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:44:57 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:44:57 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:03 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:03 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:24 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:24 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:27 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:27 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:28 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:28 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:29 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:29 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:31 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:31 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:33 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:33 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:33 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:33 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:33 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:33 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:33 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:33 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:34 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:34 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:34 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:34 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:34 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:34 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:34 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:34 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:36 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:36 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:36 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:36 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:37 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:37 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:38 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:38 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:39 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:39 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:44 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:44 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:50 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:50 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:51 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:51 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:52 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:52 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:52 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:52 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:52 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:52 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:52 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:52 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:52 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:52 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:45:53 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:45:53 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:56:48 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:56:48 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:56:55 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:56:55 UTC] [DatabaseConfig] Client config created with dbname: ACC002
+[26-Jul-2025 15:56:55 UTC] [DatabaseConfig] getClientConfig called with account_number: ACC002
+[26-Jul-2025 15:56:55 UTC] [DatabaseConfig] Client config created with dbname: ACC002

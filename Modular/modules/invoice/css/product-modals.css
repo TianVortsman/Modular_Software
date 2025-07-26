@@ -1,5 +1,5 @@
 /* ========================= */
-/* Universal Product Modal CSS */
+/* Universal Product Modal CSS - Restored Original Sizing */
 /* ========================= */
 
 .universal-product-modal {
@@ -10,7 +10,8 @@
     top: 0;
     width: 100vw;
     height: 100vh;
-    background-color: var(--shadow-dark, rgba(0, 0, 0, 0.4));
+    background: var(--modal-backdrop);
+    backdrop-filter: var(--modal-backdrop-blur);
     justify-content: center;
     align-items: center;
 }
@@ -19,27 +20,26 @@
     display: flex !important;
 }
 
-/* Modal Content */
+/* Modal Content - Restored Original Fixed Sizing */
 .universal-product-modal-content {
     position: relative;
-    background-color: var(--modal-bg, var(--color-background));
-    margin: 2% auto;
+    background: var(--modal-bg);
     padding: var(--modal-padding, 1.5rem);
-    border-radius: var(--radius-medium, 8px);
+    border-radius: var(--modal-border-radius);
     width: 80%;
     max-width: 1200px;
     height: 80vh;
     max-height: 800px;
-    box-shadow: 0 0 20px var(--shadow-dark, rgba(0, 0, 0, 0.7));
-    border: 1px solid var(--modal-border, var(--border-color));
+    box-shadow: var(--modal-content-shadow);
+    border: 1px solid var(--modal-border);
     color: var(--color-text-light);
-    font-family: var(--font-primary, Arial, sans-serif);
+    font-family: var(--font-primary);
     overflow: hidden;
     display: flex;
     flex-direction: column;
 }
 
-/* Close (X) */
+/* Close (X) Button - Restored Original Functionality */
 .universal-product-modal-close {
     position: absolute;
     top: 18px;
@@ -65,7 +65,7 @@
     color: var(--color-primary);
 }
 
-/* Title */
+/* Title - Restored Original Position */
 .universal-product-modal-title {
     margin-top: 0;
     margin-bottom: var(--spacing-medium, 1rem);
@@ -190,7 +190,7 @@
     gap: 0.75rem;
 }
 
-/* Tabs Section */
+/* Modern Tabs Section */
 .upm-tabs-section {
     flex: 1;
     display: flex;
@@ -198,85 +198,125 @@
     overflow: hidden;
 }
 
-/* Tab Navigation */
+/* Modern Tab Navigation */
 .upm-tab-nav {
     display: flex;
-    gap: 0.5rem;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
+    background: var(--color-background-light);
+    border-bottom: 2px solid var(--color-primary-fade);
+    overflow-x: auto;
 }
 
 .upm-tab-btn {
-    padding: 0.5rem 1rem;
+    padding: var(--spacing-medium) var(--spacing-large);
     border: none;
-    background: none;
+    background: transparent;
     color: var(--color-text-light);
+    font-weight: 500;
     cursor: pointer;
-    border-radius: var(--radius-small);
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-small);
+    white-space: nowrap;
+    opacity: 0.7;
 }
 
 .upm-tab-btn:hover {
-    background-color: var(--color-hover);
-    color: var(--color-text);
+    background: var(--color-primary-fade);
+    opacity: 1;
 }
 
 .upm-tab-btn.upm-active {
-    background-color: var(--color-primary);
-    color: var(--color-background);
+    background: var(--color-primary);
+    color: var(--color-text-dark);
+    opacity: 1;
+    position: relative;
 }
 
-/* Tab Content */
+.upm-tab-btn.upm-active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--color-primary);
+}
+
+/* Modern Tab Content */
 .upm-tab-pane {
     display: none;
-    padding: 1rem;
-    animation: fadeIn 0.3s ease;
+    animation: modern-fadeIn 0.3s ease;
 }
 
 .upm-tab-pane.upm-active {
     display: block;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/* Tab Section Layout */
+/* Modern Tab Body */
 .upm-tab-content {
-    flex: 1;
+    padding: var(--spacing-large);
     overflow-y: auto;
-    padding-right: 0.5rem;
+    flex: 1;
+    max-height: calc(90vh - var(--modal-header-height) - 100px);
 }
 
-/* Fields */
+.upm-tab-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.upm-tab-content::-webkit-scrollbar-track {
+    background: var(--color-secondary);
+    border-radius: 4px;
+}
+
+.upm-tab-content::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 4px;
+}
+
+.upm-tab-content::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-dark);
+}
+
+/* Modern Form Fields */
 .upm-field {
-    margin-bottom: 1rem;
+    margin-bottom: var(--spacing-large);
 }
 
 .upm-field label {
     display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
     color: var(--color-text-light);
+    font-weight: 500;
+    margin-bottom: var(--spacing-small);
+    font-size: var(--font-size-base);
 }
 
 .upm-field input,
 .upm-field select,
 .upm-field textarea {
-    width: 90%;
-    padding: 0.75rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-small, 4px);
-    background-color: var(--input-bg);
+    width: 100%;
+    padding: var(--spacing-medium);
+    border: 2px solid var(--color-primary-fade);
+    border-radius: var(--radius-medium);
+    background: var(--input-bg);
     color: var(--color-text-light);
-    font-family: var(--font-primary, Arial, sans-serif);
+    font-size: var(--font-size-base);
+    transition: all 0.3s ease;
+    font-family: var(--font-primary);
+}
+
+.upm-field input:focus,
+.upm-field select:focus,
+.upm-field textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-fade);
 }
 
 .upm-field textarea {
-    min-height: 100px;
     resize: vertical;
+    min-height: 80px;
 }
 
 .upm-notes-textarea {

@@ -48,7 +48,7 @@ export class ProductAPI {
     static editProduct(productId, formData) {
         formData.set('product_id', productId);
         return fetch('/modules/invoice/api/products.php?action=edit', {
-            method: 'PUT',
+            method: 'POST',
             body: formData,
             credentials: 'include'
         }).then(res => res.json());
@@ -56,8 +56,11 @@ export class ProductAPI {
 
     // Delete a product
     static deleteProduct(productId) {
-        return fetch(`/modules/invoice/api/products.php?action=delete&id=${productId}`, {
-            method: 'DELETE',
+        const formData = new FormData();
+        formData.set('product_id', productId);
+        return fetch('/modules/invoice/api/products.php?action=delete', {
+            method: 'POST',
+            body: formData,
             credentials: 'include'
         }).then(res => res.json());
     }

@@ -28,9 +28,10 @@ try {
     $method = $_SERVER['REQUEST_METHOD'];
 
     switch ($action) {
+        case 'list':
         case 'list_products':
             if ($method !== 'GET') {
-                sendApiErrorResponse('GET method required for list_products action', $_GET, 'Product API Method Validation', 'INVALID_METHOD', 405);
+                sendApiErrorResponse('GET method required for list action', $_GET, 'Product API Method Validation', 'INVALID_METHOD', 405);
             }
             
             $options = [
@@ -46,24 +47,65 @@ try {
             $result = \App\modules\invoice\controllers\list_products($options);
             echo json_encode($result);
             break;
-
-        case 'get_product':
+            
+        case 'list_categories':
             if ($method !== 'GET') {
-                sendApiErrorResponse('GET method required for get_product action', $_GET, 'Product API Method Validation', 'INVALID_METHOD', 405);
+                sendApiErrorResponse('GET method required for list_categories action', $_GET, 'Product API Method Validation', 'INVALID_METHOD', 405);
             }
             
-            if (!isset($_GET['product_id']) || !is_numeric($_GET['product_id'])) {
+            $result = \App\modules\invoice\controllers\get_product_categories();
+            echo json_encode($result);
+            break;
+            
+        case 'list_types':
+            if ($method !== 'GET') {
+                sendApiErrorResponse('GET method required for list_types action', $_GET, 'Product API Method Validation', 'INVALID_METHOD', 405);
+            }
+            
+            $result = \App\modules\invoice\controllers\get_product_types();
+            echo json_encode($result);
+            break;
+            
+        case 'list_subcategories':
+            if ($method !== 'GET') {
+                sendApiErrorResponse('GET method required for list_subcategories action', $_GET, 'Product API Method Validation', 'INVALID_METHOD', 405);
+            }
+            
+            $category_id = isset($_GET['category_id']) ? (int)$_GET['category_id'] : null;
+            $result = \App\modules\invoice\controllers\get_product_subcategories($category_id);
+            echo json_encode($result);
+            break;
+            
+        case 'list_tax_rates':
+            if ($method !== 'GET') {
+                sendApiErrorResponse('GET method required for list_tax_rates action', $_GET, 'Product API Method Validation', 'INVALID_METHOD', 405);
+            }
+            
+            $result = \App\modules\invoice\controllers\getTaxRates();
+            echo json_encode($result);
+            break;
+            
+        case 'get':
+        case 'get_product':
+        case 'search':
+            if ($method !== 'GET') {
+                sendApiErrorResponse('GET method required for get action', $_GET, 'Product API Method Validation', 'INVALID_METHOD', 405);
+            }
+            
+            $product_id = $_GET['product_id'] ?? $_GET['id'] ?? null;
+            if (!$product_id || !is_numeric($product_id)) {
                 sendApiErrorResponse('Missing or invalid product_id parameter', $_GET, 'Product API Parameter Validation', 'PRODUCT_ID_REQUIRED', 400);
             }
             
-            $product_id = (int)$_GET['product_id'];
+            $product_id = (int)$product_id;
             $result = \App\modules\invoice\controllers\get_product_details($product_id);
             echo json_encode($result);
             break;
 
+        case 'add':
         case 'create_product':
             if ($method !== 'POST') {
-                sendApiErrorResponse('POST method required for create_product action', $_POST, 'Product API Method Validation', 'INVALID_METHOD', 405);
+                sendApiErrorResponse('POST method required for add action', $_POST, 'Product API Method Validation', 'INVALID_METHOD', 405);
             }
             
             $rawData = file_get_contents('php://input');
@@ -73,49 +115,57 @@ try {
                 sendApiErrorResponse('Missing or invalid product data', ['raw_input' => $rawData], 'Product API Data Validation', 'PRODUCT_DATA_REQUIRED', 400);
             }
             
-            $result = \App\modules\invoice\controllers\create_product($data);
+            $user_id = $_SESSION['user_id'] ?? null;
+            if (!$user_id) {
+                sendApiErrorResponse('User session invalid - cannot determine user', $_SESSION, 'Product API Session Validation', 'INVALID_SESSION', 401);
+            }
+            
+            $result = \App\modules\invoice\controllers\add_product($data, $user_id);
             echo json_encode($result);
             break;
 
+        case 'edit':
         case 'update_product':
             if ($method !== 'POST') {
-                sendApiErrorResponse('POST method required for update_product action', $_POST, 'Product API Method Validation', 'INVALID_METHOD', 405);
+                sendApiErrorResponse('POST method required for edit action', $_POST, 'Product API Method Validation', 'INVALID_METHOD', 405);
             }
             
-            if (!isset($_GET['product_id']) || !is_numeric($_GET['product_id'])) {
-                sendApiErrorResponse('Missing or invalid product_id parameter', $_GET, 'Product API Parameter Validation', 'PRODUCT_ID_REQUIRED', 400);
+            $data = $_POST;
+            $product_id = $data['product_id'] ?? null;
+            if (!$product_id || !is_numeric($product_id)) {
+                sendApiErrorResponse('Missing or invalid product_id parameter', $_POST, 'Product API Parameter Validation', 'PRODUCT_ID_REQUIRED', 400);
             }
             
-            $rawData = file_get_contents('php://input');
-            $data = json_decode($rawData, true);
-            
-            if (!$data) {
-                sendApiErrorResponse('Missing or invalid product data', ['raw_input' => $rawData], 'Product API Data Validation', 'PRODUCT_DATA_REQUIRED', 400);
+            $user_id = $_SESSION['user_id'] ?? null;
+            if (!$user_id) {
+                sendApiErrorResponse('User session invalid - cannot determine user', $_SESSION, 'Product API Session Validation', 'INVALID_SESSION', 401);
             }
             
-            $product_id = (int)$_GET['product_id'];
+            $product_id = (int)$product_id;
             $data['product_id'] = $product_id;
-            $result = \App\modules\invoice\controllers\update_product($data);
+            $data['updated_by'] = $user_id;
+            $result = \App\modules\invoice\controllers\update_product($data, $user_id);
             echo json_encode($result);
             break;
 
+        case 'delete':
         case 'delete_product':
             if ($method !== 'POST') {
-                sendApiErrorResponse('POST method required for delete_product action', $_POST, 'Product API Method Validation', 'INVALID_METHOD', 405);
+                sendApiErrorResponse('POST method required for delete action', $_POST, 'Product API Method Validation', 'INVALID_METHOD', 405);
             }
             
-            if (!isset($_GET['product_id']) || !is_numeric($_GET['product_id'])) {
-                sendApiErrorResponse('Missing or invalid product_id parameter', $_GET, 'Product API Parameter Validation', 'PRODUCT_ID_REQUIRED', 400);
+            $product_id = $_POST['product_id'] ?? null;
+            if (!$product_id || !is_numeric($product_id)) {
+                sendApiErrorResponse('Missing or invalid product_id parameter', $_POST, 'Product API Parameter Validation', 'PRODUCT_ID_REQUIRED', 400);
             }
             
-            $product_id = (int)$_GET['product_id'];
-            $deleted_by = $_SESSION['user_id'] ?? null;
-            
-            if (!$deleted_by) {
-                sendApiErrorResponse('User session invalid - cannot determine deleted_by', $_SESSION, 'Product API Session Validation', 'INVALID_SESSION', 401);
+            $user_id = $_SESSION['user_id'] ?? null;
+            if (!$user_id) {
+                sendApiErrorResponse('User session invalid - cannot determine user', $_SESSION, 'Product API Session Validation', 'INVALID_SESSION', 401);
             }
             
-            $result = \App\modules\invoice\controllers\delete_product($product_id, $deleted_by);
+            $product_id = (int)$product_id;
+            $result = \App\modules\invoice\controllers\delete_product($product_id, $user_id);
             echo json_encode($result);
             break;
 
@@ -131,32 +181,58 @@ try {
                 sendApiErrorResponse('Missing or invalid stock adjustment data', ['raw_input' => $rawData], 'Product API Data Validation', 'STOCK_DATA_REQUIRED', 400);
             }
             
-            $result = \App\modules\invoice\controllers\adjust_product_stock($data);
-            echo json_encode($result);
-            break;
-
-        case 'get_categories':
-            if ($method !== 'GET') {
-                sendApiErrorResponse('GET method required for get_categories action', $_GET, 'Product API Method Validation', 'INVALID_METHOD', 405);
+            $user_id = $_SESSION['user_id'] ?? null;
+            if (!$user_id) {
+                sendApiErrorResponse('User session invalid - cannot determine user', $_SESSION, 'Product API Session Validation', 'INVALID_SESSION', 401);
             }
             
-            $result = \App\modules\invoice\controllers\get_product_categories();
+            $result = \App\modules\invoice\controllers\adjust_product_stock(
+                $data['product_supplier_id'] ?? null,
+                $data['quantity'] ?? null,
+                $data['cost_per_unit'] ?? null,
+                $data['notes'] ?? null,
+                $user_id
+            );
             echo json_encode($result);
             break;
-
-        case 'create_category':
+            
+        case 'update_status':
             if ($method !== 'POST') {
-                sendApiErrorResponse('POST method required for create_category action', $_POST, 'Product API Method Validation', 'INVALID_METHOD', 405);
+                sendApiErrorResponse('POST method required for update_status action', $_POST, 'Product API Method Validation', 'INVALID_METHOD', 405);
+            }
+            
+            $product_id = $_GET['product_id'] ?? $_GET['id'] ?? null;
+            if (!$product_id || !is_numeric($product_id)) {
+                sendApiErrorResponse('Missing or invalid product_id parameter', $_GET, 'Product API Parameter Validation', 'PRODUCT_ID_REQUIRED', 400);
             }
             
             $rawData = file_get_contents('php://input');
             $data = json_decode($rawData, true);
             
-            if (!$data) {
-                sendApiErrorResponse('Missing or invalid category data', ['raw_input' => $rawData], 'Product API Data Validation', 'CATEGORY_DATA_REQUIRED', 400);
+            if (!$data || !isset($data['status'])) {
+                sendApiErrorResponse('Missing or invalid status data', ['raw_input' => $rawData], 'Product API Data Validation', 'STATUS_DATA_REQUIRED', 400);
             }
             
-            $result = \App\modules\invoice\controllers\create_product_category($data);
+            $user_id = $_SESSION['user_id'] ?? null;
+            if (!$user_id) {
+                sendApiErrorResponse('User session invalid - cannot determine user', $_SESSION, 'Product API Session Validation', 'INVALID_SESSION', 401);
+            }
+            
+            $result = \App\modules\invoice\controllers\update_product_status((int)$product_id, $data['status'], $user_id);
+            echo json_encode($result);
+            break;
+            
+        case 'get_product_suppliers_and_stock':
+            if ($method !== 'GET') {
+                sendApiErrorResponse('GET method required for get_product_suppliers_and_stock action', $_GET, 'Product API Method Validation', 'INVALID_METHOD', 405);
+            }
+            
+            $product_id = $_GET['product_id'] ?? $_GET['id'] ?? null;
+            if (!$product_id || !is_numeric($product_id)) {
+                sendApiErrorResponse('Missing or invalid product_id parameter', $_GET, 'Product API Parameter Validation', 'PRODUCT_ID_REQUIRED', 400);
+            }
+            
+            $result = \App\modules\invoice\controllers\get_product_suppliers_and_stock((int)$product_id);
             echo json_encode($result);
             break;
 
@@ -164,8 +240,8 @@ try {
             sendApiErrorResponse("Invalid action: $action", [
                 'action' => $action, 
                 'available_actions' => [
-                    'list_products', 'get_product', 'create_product', 'update_product', 'delete_product',
-                    'adjust_stock', 'get_categories', 'create_category'
+                    'list', 'list_categories', 'list_types', 'list_subcategories', 'list_tax_rates',
+                    'get', 'search', 'add', 'edit', 'delete', 'adjust_stock', 'update_status', 'get_product_suppliers_and_stock'
                 ]
             ], 'Product API Action Validation', 'INVALID_ACTION', 400);
     }

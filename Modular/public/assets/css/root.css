@@ -35,6 +35,18 @@
     --z-index-header: 1000;                /* Header z-index */
     --z-index-modal: 2000;                 /* Modal z-index */
     --z-index-tooltip: 3000;               /* Tooltip z-index */
+    
+    /* Modern Modal Variables */
+    --modal-backdrop: rgba(0, 0, 0, 0.6);     /* Modal backdrop color */
+    --modal-backdrop-blur: blur(8px);          /* Backdrop blur effect */
+    --modal-border-radius: 16px;               /* Modern rounded corners */
+    --modal-content-shadow: 0 8px 32px rgba(0, 0, 0, 0.12); /* Subtle shadow */
+    --modal-header-height: 60px;               /* Header height */
+    --modal-animation-duration: 0.3s;          /* Animation timing */
+    --modal-max-width-sm: 400px;              /* Small modal */
+    --modal-max-width-md: 600px;              /* Medium modal */ 
+    --modal-max-width-lg: 900px;              /* Large modal */
+    --modal-max-width-xl: 1200px;             /* Extra large modal */
 
     /* Modules */
     --module-card-padding: 0.75rem;         /* Padding for module cards - reduced from 1rem */
@@ -89,6 +101,12 @@
     --shadow-dark: rgba(0, 0, 0, 0.5);  /* Dark shadow */
     --input-bg: #2C2C2E; /* Consistent dark background for inputs in light mode */
     --input-label-color: #f0f0f0; /* Light text for labels on dark inputs */
+    
+    /* Light Mode Modal Overrides */
+    --modal-bg: #ffffff;                      /* Clean white background */
+    --modal-border: #e0e0e0;                  /* Light border */
+    --modal-backdrop: rgba(0, 0, 0, 0.5);     /* Light backdrop */
+    --modal-content-shadow: 0 8px 32px rgba(0, 0, 0, 0.08); /* Subtle shadow */
 }
 
 
@@ -176,6 +194,10 @@
     --modal-shadow: rgba(0, 0, 0, 0.7); /* Deeper shadow for dark mode */  
     --fieldset-border: #444444;     /* Darker border for fieldsets */
     --input-label-color: #ffffff; /* White text for labels on dark inputs */
+    
+    /* Dark Mode Modal Overrides */
+    --modal-backdrop: rgba(0, 0, 0, 0.8);     /* Darker backdrop */
+    --modal-content-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); /* Stronger shadow */
 }
 
 

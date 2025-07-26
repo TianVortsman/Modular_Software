@@ -7,6 +7,589 @@ window.callIfExists = function(functionName, ...args) {
     }
 };
 
+/**
+ * Auto-inject response modal if not present on the page
+ * This ensures the error handling modal is available on ALL pages
+ */
+function ensureResponseModalExists() {
+    console.log('🔧 ensureResponseModalExists called');
+    const existingModal = document.getElementById('modalResponse');
+    if (existingModal) {
+        console.log('✅ Modal already exists:', existingModal);
+        return; // Modal already exists
+    }
+    console.log('⚠️ Modal does not exist, creating new one...');
+
+    const modalHTML = `
+        <div id="modalResponse" class="custom-modal hidden">
+            <div class="custom-modal-content">
+                <div class="custom-modal-header">
+                    <span id="modalResponseIcon" class="custom-modal-icon">✔</span>
+                    <h2 id="modalResponseTitle">Success</h2>
+                    <button class="custom-modal-close-x" onclick="closeResponseModal()" aria-label="Close">&times;</button>
+                </div>
+                <div class="custom-modal-body">
+                    <p id="modalResponseMessage">Your request was successful!</p>
+                    <div id="modalResponseDetails" class="custom-modal-details hidden"></div>
+                </div>
+                <div class="custom-modal-footer">
+                    <button onclick="closeResponseModal()" class="custom-modal-close-btn">OK</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Inject CSS if not present
+    if (!document.getElementById('response-modal-styles')) {
+        const styles = document.createElement('style');
+        styles.id = 'response-modal-styles';
+        styles.textContent = `
+            .custom-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.6);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2147483647;
+                pointer-events: auto;
+                backdrop-filter: blur(2px);
+                transition: opacity 0.3s ease-in-out;
+            }
+            
+            .custom-modal.hidden {
+                display: none !important;
+            }
+            
+            .custom-modal-content {
+                background: #ffffff;
+                color: #333333;
+                padding: 24px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                text-align: center;
+                width: 90%;
+                max-width: 450px;
+                min-width: 300px;
+                animation: slide-down 0.3s ease-in-out;
+                position: relative;
+                z-index: 2147483648;
+                border: 1px solid #e0e0e0;
+            }
+            
+            .custom-modal-header {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                margin-bottom: 16px;
+                position: relative;
+                padding-bottom: 8px;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            
+            .custom-modal-close-x {
+                position: absolute;
+                top: -8px;
+                right: -8px;
+                background: none;
+                border: none;
+                font-size: 24px;
+                color: #666;
+                cursor: pointer;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s ease;
+            }
+            
+            .custom-modal-close-x:hover {
+                background: #f0f0f0;
+                color: #000;
+                transform: scale(1.1);
+            }
+            
+            .custom-modal-icon {
+                font-size: 3rem;
+                font-weight: bold;
+                margin-bottom: 8px;
+                display: block;
+            }
+            
+            .custom-modal-icon.success { color: #28a745; }
+            .custom-modal-icon.error { color: #dc3545; }
+            .custom-modal-icon.warning { color: #ffc107; }
+            .custom-modal-icon.info { color: #17a2b8; }
+            
+            .custom-modal-header h2 {
+                margin: 0;
+                font-size: 1.25rem;
+                font-weight: 600;
+            }
+            
+            .custom-modal-body p {
+                font-size: 1rem;
+                line-height: 1.5;
+                margin: 8px 0;
+                text-align: left;
+                word-wrap: break-word;
+            }
+            
+            .custom-modal-details {
+                margin-top: 16px;
+                padding: 8px;
+                background: #f8f9fa;
+                border-radius: 4px;
+                border-left: 3px solid #17a2b8;
+                text-align: left;
+                font-size: 0.875rem;
+                font-family: monospace;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                max-height: 200px;
+                overflow-y: auto;
+            }
+            
+            .custom-modal-details.hidden {
+                display: none;
+            }
+            
+            .custom-modal-footer {
+                margin-top: 16px;
+                display: flex;
+                justify-content: center;
+                gap: 12px;
+                padding-top: 8px;
+                border-top: 1px solid #e0e0e0;
+            }
+            
+            .custom-modal-close-btn {
+                background: #007bff;
+                color: #ffffff;
+                border: none;
+                padding: 8px 16px;
+                font-size: 1rem;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                min-width: 80px;
+                font-weight: 500;
+            }
+            
+            .custom-modal-close-btn:hover {
+                background: #0056b3;
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            
+            .custom-modal-close-btn:active {
+                transform: translateY(0);
+            }
+            
+            @keyframes slide-down {
+                from {
+                    transform: translateY(-30px) scale(0.95);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0) scale(1);
+                    opacity: 1;
+                }
+            }
+            
+            @media (prefers-color-scheme: dark) {
+                .custom-modal-content {
+                    background: #2d3748;
+                    color: #ffffff;
+                    border-color: #4a5568;
+                }
+                
+                .custom-modal-details {
+                    background: #1a202c;
+                    color: #e2e8f0;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .custom-modal-content {
+                    width: 95%;
+                    padding: 16px;
+                }
+                
+                .custom-modal-icon {
+                    font-size: 2.5rem;
+                }
+                
+                .custom-modal-header h2 {
+                    font-size: 1rem;
+                }
+            }
+        `;
+        document.head.appendChild(styles);
+    }
+
+    // Inject HTML
+    console.log('📦 Injecting modal HTML into DOM...');
+    const modalContainer = document.createElement('div');
+    modalContainer.innerHTML = modalHTML;
+    const modalElement = modalContainer.firstElementChild;
+    console.log('📦 Created modal element:', modalElement);
+    document.body.appendChild(modalElement);
+    console.log('✅ Modal injected into DOM');
+    
+    // Verify injection
+    const verifyModal = document.getElementById('modalResponse');
+    console.log('🔍 Verification - modal found after injection:', verifyModal);
+    console.log('🔍 Verification - modal parent:', verifyModal ? verifyModal.parentNode : 'null');
+}
+
+/**
+ * Enhanced response modal function - Available globally
+ * @param {string} message - Message to display
+ * @param {string} type - Type: 'success', 'error', 'warning', 'info'
+ * @param {boolean} persistent - If true, modal won't auto-close
+ * @param {boolean} confirm - If true, shows Yes/No buttons
+ * @param {object} details - Additional technical details (for development)
+ * @returns {Promise} - For confirmation dialogs
+ */
+function showResponseModal(message, type = 'info', persistent = false, confirm = false, details = null) {
+    console.log('🚀 showResponseModal called:', { message, type, persistent, confirm, details });
+    
+    // Ensure modal exists
+    ensureResponseModalExists();
+    
+    const modal = document.getElementById('modalResponse');
+    console.log('🔍 Modal element found:', modal);
+    console.log('🔍 Modal current classes:', modal ? modal.className : 'null');
+    console.log('🔍 Modal current style.display:', modal ? modal.style.display : 'null');
+    
+    const title = document.getElementById('modalResponseTitle');
+    const msg = document.getElementById('modalResponseMessage');
+    const icon = document.getElementById('modalResponseIcon');
+    const detailsDiv = document.getElementById('modalResponseDetails');
+    const footer = modal ? modal.querySelector('.custom-modal-footer') : null;
+    
+    console.log('🔍 Modal elements found:', {
+        modal: !!modal,
+        title: !!title,
+        msg: !!msg,
+        icon: !!icon,
+        footer: !!footer
+    });
+    
+    if (!modal || !title || !msg || !icon || !footer) {
+        console.error('❌ Response modal elements not found');
+        console.log('🔍 Available modal elements in DOM:', {
+            allModals: document.querySelectorAll('[id*="modal"], [id*="Modal"]'),
+            allResponseElements: document.querySelectorAll('[id*="response"], [id*="Response"]')
+        });
+        // Fallback to alert if modal not available
+        alert(message);
+        return Promise.resolve(false);
+    }
+
+    // Clear previous state
+    while (footer.firstChild) footer.removeChild(footer.firstChild);
+    detailsDiv.classList.add('hidden');
+    icon.classList.remove('success', 'error', 'warning', 'info');
+
+    // Set content based on type
+    const typeConfig = {
+        success: { title: 'Success', icon: '✔', class: 'success' },
+        error: { title: 'Error', icon: '✖', class: 'error' },
+        warning: { title: 'Warning', icon: '⚠', class: 'warning' },
+        info: { title: 'Information', icon: 'ℹ', class: 'info' }
+    };
+
+    const config = typeConfig[type] || typeConfig.info;
+    title.textContent = config.title;
+    msg.textContent = message;
+    icon.textContent = config.icon;
+    icon.classList.add(config.class);
+
+    // Show technical details if provided (development mode)
+    if (details && typeof details === 'object') {
+        detailsDiv.textContent = JSON.stringify(details, null, 2);
+        detailsDiv.classList.remove('hidden');
+    }
+
+    // Show modal
+    console.log('🎯 About to show modal, removing hidden class...');
+    modal.classList.remove('hidden');
+    console.log('✅ Modal classes after show:', modal.className);
+    console.log('✅ Modal style.display after show:', modal.style.display);
+    console.log('✅ Modal offsetHeight after show:', modal.offsetHeight);
+    console.log('✅ Modal visibility check:', {
+        offsetWidth: modal.offsetWidth,
+        offsetHeight: modal.offsetHeight,
+        clientHeight: modal.clientHeight,
+        getBoundingClientRect: modal.getBoundingClientRect()
+    });
+
+    // Handle confirmation dialog
+    if (confirm) {
+        return new Promise((resolve) => {
+            const yesBtn = document.createElement('button');
+            yesBtn.textContent = 'Yes';
+            yesBtn.className = 'custom-modal-close-btn';
+            yesBtn.style.marginRight = '12px';
+            yesBtn.style.background = '#28a745';
+            
+            const noBtn = document.createElement('button');
+            noBtn.textContent = 'No';
+            noBtn.className = 'custom-modal-close-btn';
+            noBtn.style.background = '#dc3545';
+            
+            footer.appendChild(yesBtn);
+            footer.appendChild(noBtn);
+            
+            yesBtn.onclick = () => {
+                modal.classList.add('hidden');
+                resolve(true);
+            };
+            
+            noBtn.onclick = () => {
+                modal.classList.add('hidden');
+                resolve(false);
+            };
+            
+            // Store resolve function for potential external access
+            window._modalConfirmResolve = resolve;
+        });
+    } else {
+        // Regular OK button
+        const okBtn = document.createElement('button');
+        okBtn.textContent = 'OK';
+        okBtn.className = 'custom-modal-close-btn';
+        okBtn.onclick = () => closeResponseModal();
+        footer.appendChild(okBtn);
+        
+        // Auto-close after delay (except for errors in development)
+        if (!persistent && !(type === 'error' && details)) {
+            setTimeout(() => {
+                if (!modal.classList.contains('hidden')) {
+                    modal.classList.add('hidden');
+                }
+            }, type === 'success' ? 2000 : 3000);
+        }
+    }
+
+    // Click outside to close (except for confirmations)
+    modal.onclick = function(e) {
+        if (e.target === modal && !confirm) {
+            closeResponseModal();
+        }
+    };
+
+    // ESC key to close
+    const escHandler = function(e) {
+        if (e.key === 'Escape' && !confirm) {
+            closeResponseModal();
+        }
+    };
+    
+    document.addEventListener('keydown', escHandler);
+    modal._escHandler = escHandler; // Store reference for cleanup
+    
+    return Promise.resolve(true);
+}
+
+function closeResponseModal() {
+    const modal = document.getElementById('modalResponse');
+    if (modal) {
+        modal.classList.add('hidden');
+        
+        // Clean up ESC handler
+        if (modal._escHandler) {
+            document.removeEventListener('keydown', modal._escHandler);
+            modal._escHandler = null;
+        }
+    }
+}
+
+/**
+ * Enhanced centralized API response handler for fetch/AJAX calls
+ * Handles the new consistent error response format from the backend
+ * Usage: .then(handleApiResponse)
+ * Shows errors in ResponseModal if present, returns data on success
+ */
+function handleApiResponse(data) {
+    console.log('🔄 handleApiResponse called with:', data);
+    window.lastApiRawResponse = data;
+    
+    // Handle null/undefined responses
+    if (!data) {
+        const errorMsg = 'No response from server. Please check your connection or try again later.';
+        console.log('❌ No data received, showing error modal');
+        showResponseModal(errorMsg, 'error');
+        throw new Error(errorMsg);
+    }
+
+    // Handle network/HTTP errors (status codes)
+    if (data.status && data.status >= 400) {
+        const errorMsg = data.message || data.error || `Server error (${data.status})`;
+        showResponseModal(errorMsg, 'error');
+        throw new Error(errorMsg);
+    }
+
+    // Handle application-level errors (success: false)
+    if (data.success === false) {
+        console.log('❌ API Error detected (success: false)');
+        let errorMsg = data.message || data.error || 'An unknown error occurred.';
+        console.log('❌ Error message to show:', errorMsg);
+        
+        // In development mode, show additional technical details if available
+        if (data.technical_error && data.error_code) {
+            console.log('🔧 Development mode - showing technical details');
+            console.log('🔍 Checking if showResponseModal is available:', typeof showResponseModal);
+            console.log('🔍 Checking if window.showResponseModal is available:', typeof window.showResponseModal);
+            console.group('🔧 Development Error Details');
+            console.error('User Message:', errorMsg);
+            console.error('Technical Error:', data.technical_error);
+            console.error('Error Code:', data.error_code);
+            if (data.form_data) {
+                console.error('Form Data:', data.form_data);
+            }
+            if (data.context) {
+                console.error('Context:', data.context);
+            }
+            console.groupEnd();
+            
+            // In dev mode, append error code to user message for reference
+            errorMsg += ` (${data.error_code})`;
+            
+            // Show technical details in modal for development
+            console.log('🎯 About to call showResponseModal with technical details');
+            console.log('🔍 Available functions in window:', Object.keys(window).filter(key => key.includes('Modal') || key.includes('modal')));
+            try {
+                const modalFunc = window.showResponseModal || showResponseModal;
+                console.log('🎯 Using modal function:', modalFunc);
+                modalFunc(errorMsg, 'error', true, false, {
+                    technical_error: data.technical_error,
+                    error_code: data.error_code,
+                    form_data: data.form_data,
+                    context: data.context
+                });
+            } catch (e) {
+                console.error('❌ Error calling showResponseModal with details:', e);
+                alert(errorMsg); // Fallback
+            }
+        } else {
+            console.log('🎯 About to call showResponseModal without technical details');
+            try {
+                const modalFunc = window.showResponseModal || showResponseModal;
+                console.log('🎯 Using modal function:', modalFunc);
+                modalFunc(errorMsg, 'error');
+            } catch (e) {
+                console.error('❌ Error calling showResponseModal:', e);
+                alert(errorMsg); // Fallback
+            }
+        }
+        
+        throw new Error(errorMsg);
+    }
+
+    // Handle success responses
+    if (data.success === true) {
+        // Show success message if explicitly provided
+        if (data.message && data.message.toLowerCase() !== 'success') {
+            showResponseModal(data.message, 'success');
+        }
+        return data;
+    }
+
+    // For responses without explicit success field, assume success if no error indicators
+    if (!data.error && !data.message) {
+        return data;
+    }
+
+    // Fallback: treat as success if we reach here
+    return data;
+}
+
+/**
+ * Enhanced global error handler for JavaScript errors
+ * Sends errors to the backend AI error handler for consistent processing
+ */
+window.onerror = async function(message, source, lineno, colno, error) {
+    const errorCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+    
+    console.group('🚨 JavaScript Error Caught');
+    console.error('Message:', message);
+    console.error('Source:', source);
+    console.error('Line:Column:', `${lineno}:${colno}`);
+    if (error && error.stack) {
+        console.error('Stack:', error.stack);
+    }
+    console.error('Error Code:', errorCode);
+    console.groupEnd();
+    
+    try {
+        const response = await fetch('/public/php/log-js-error.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                message, 
+                source, 
+                lineno, 
+                colno, 
+                stack: error?.stack, 
+                code: errorCode,
+                url: window.location.href,
+                userAgent: navigator.userAgent,
+                timestamp: new Date().toISOString()
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data && data.error) {
+            showResponseModal(data.error, 'error');
+        } else if (data && data.message) {
+            showResponseModal(data.message, 'error');
+        } else {
+            showResponseModal(`Something went wrong. Please contact support. Error Code: ${errorCode}`, 'error');
+        }
+    } catch (fetchError) {
+        console.error('Failed to log error:', fetchError);
+        showResponseModal(`Something went wrong. Please contact support. Error Code: ${errorCode}`, 'error');
+    }
+};
+
+/**
+ * Handle unhandled promise rejections
+ */
+window.addEventListener('unhandledrejection', function(event) {
+    console.error('Unhandled promise rejection:', event.reason);
+    
+    // Try to extract a meaningful error message
+    let errorMsg = 'An unexpected error occurred.';
+    if (event.reason && typeof event.reason === 'string') {
+        errorMsg = event.reason;
+    } else if (event.reason && event.reason.message) {
+        errorMsg = event.reason.message;
+    }
+    
+    showResponseModal(errorMsg, 'error');
+});
+
+// Make functions globally available
+console.log('🌐 Setting global functions...');
+window.showResponseModal = showResponseModal;
+window.closeResponseModal = closeResponseModal;
+window.handleApiResponse = handleApiResponse;
+console.log('✅ Global functions set:', {
+    'window.showResponseModal': typeof window.showResponseModal,
+    'window.closeResponseModal': typeof window.closeResponseModal,
+    'window.handleApiResponse': typeof window.handleApiResponse
+});
+
 document.addEventListener('DOMContentLoaded', function () {
     const bodyId = document.body.id;
 

@@ -479,7 +479,7 @@ body {
     background-color: var(--color-warning);
 }
 
-/* Modal Overlay Styles for Setup Modals */
+/* Enhanced Modal Overlay Styles for Setup Modals */
 #categoryModal.modal {
     display: none;
     position: fixed;
@@ -487,7 +487,8 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--modal-backdrop);
+    backdrop-filter: var(--modal-backdrop-blur);
     z-index: 2000;
     justify-content: center;
     align-items: center;
@@ -498,8 +499,8 @@ body {
 }
 #categoryModal .modal-content {
     background: var(--color-background, #fff);
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    border-radius: var(--modal-border-radius);
+    box-shadow: var(--modal-content-shadow);
     max-width: 500px;
     width: 95vw;
     margin: 40px auto;
@@ -567,7 +568,8 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--modal-backdrop);
+    backdrop-filter: var(--modal-backdrop-blur);
     z-index: 2000;
     justify-content: center;
     align-items: center;
@@ -578,8 +580,8 @@ body {
 }
 #subcategoryModal .modal-content {
     background: var(--color-background, #fff);
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    border-radius: var(--modal-border-radius);
+    box-shadow: var(--modal-content-shadow);
     max-width: 500px;
     width: 95vw;
     margin: 40px auto;
@@ -643,7 +645,8 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--modal-backdrop);
+    backdrop-filter: var(--modal-backdrop-blur);
     z-index: 2000;
     justify-content: center;
     align-items: center;
@@ -654,8 +657,8 @@ body {
 }
 #supplierModal .modal-content {
     background: var(--color-background, #fff);
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    border-radius: var(--modal-border-radius);
+    box-shadow: var(--modal-content-shadow);
     max-width: 500px;
     width: 95vw;
     margin: 40px auto;
@@ -719,7 +722,8 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--modal-backdrop);
+    backdrop-filter: var(--modal-backdrop-blur);
     z-index: 2000;
     justify-content: center;
     align-items: center;
@@ -730,8 +734,8 @@ body {
 }
 #salesTargetModal .modal-content {
     background: var(--color-background, #fff);
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    border-radius: var(--modal-border-radius);
+    box-shadow: var(--modal-content-shadow);
     max-width: 500px;
     width: 95vw;
     margin: 40px auto;
@@ -795,7 +799,8 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--modal-backdrop);
+    backdrop-filter: var(--modal-backdrop-blur);
     z-index: 2000;
     justify-content: center;
     align-items: center;
@@ -806,8 +811,8 @@ body {
 }
 #creditReasonModal .modal-content {
     background: var(--color-background, #fff);
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    border-radius: var(--modal-border-radius);
+    box-shadow: var(--modal-content-shadow);
     max-width: 500px;
     width: 95vw;
     margin: 40px auto;

@@ -522,12 +522,12 @@ try {
             
         case 'delete_document':
             if ($method !== 'DELETE') {
-                throw new Exception('DELETE method required for delete_document action');
+                sendApiErrorResponse('DELETE method required for delete_document action', $_REQUEST, 'Document API Method Validation', 'INVALID_METHOD', 405);
             }
             
             $document_id = isset($_GET['document_id']) ? (int)$_GET['document_id'] : null;
             if (!$document_id) {
-                throw new Exception('Missing document_id parameter');
+                sendApiErrorResponse('Missing document_id parameter', $_GET, 'Document API Parameter Validation', 'DOCUMENT_ID_REQUIRED', 400);
             }
             
             // Check if document exists and is in draft status

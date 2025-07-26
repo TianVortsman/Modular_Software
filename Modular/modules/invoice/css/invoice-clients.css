@@ -348,7 +348,7 @@ h2 {
           background-color: var(--color-hover, rgba(0, 0, 0, 0.05));
       }
 
-/* Modern Modal Styling */
+/* Enhanced Client Modal Styling */
 .modal {
     display: none;
     position: fixed;
@@ -356,8 +356,8 @@ h2 {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
+    background: var(--modal-backdrop);
+    backdrop-filter: var(--modal-backdrop-blur);
     z-index: 1000;
     animation: modalFadeIn 0.3s ease;
 }
@@ -369,7 +369,7 @@ h2 {
     margin: 2rem auto;
     background: var(--color-background);
     border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--modal-content-shadow);
     animation: modalSlideIn 0.3s ease;
     max-height: 90vh;
     display: flex;
@@ -436,6 +436,24 @@ h2 {
     padding: 1.5rem;
     overflow-y: auto;
     flex: 1;
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: var(--color-background-alt);
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
 }
 
 .tab-content {

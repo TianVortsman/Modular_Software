@@ -1,0 +1,122 @@
+/* Enhanced Client Search Dropdown Styling */
+
+/* Make sure dropdown containers are properly styled */
+#search-results-client,
+.search-client-dropdown,
+.search-results-client {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 220px;
+  overflow-y: auto;
+  background: var(--color-background);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-medium);
+  box-shadow: 0 8px 24px var(--shadow-medium);
+  z-index: 10001;
+  display: none;
+}
+
+#search-results-client.active,
+.search-client-dropdown.active,
+.search-results-client.active {
+  display: block !important;
+}
+
+/* Enhanced client result items */
+.search-result-client {
+  padding: var(--spacing-medium);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--color-text-light);
+  position: relative;
+}
+
+.search-result-client:last-child {
+  border-bottom: none;
+}
+
+.search-result-client:hover,
+.search-result-client.highlight {
+  background: var(--color-primary-fade);
+  transform: translateX(4px);
+  border-left: 3px solid var(--color-primary);
+  padding-left: calc(var(--spacing-medium) + 3px);
+}
+
+/* Client name styling */
+.client-result-name {
+  font-weight: 600;
+  font-size: var(--font-size-base);
+  color: var(--color-text-light);
+  margin-bottom: var(--spacing-small);
+  line-height: 1.2;
+}
+
+/* Client details styling */
+.client-result-details {
+  font-size: var(--font-size-small);
+  color: var(--color-text-light);
+  opacity: 0.8;
+  line-height: 1.3;
+}
+
+/* No results message */
+.search-no-results {
+  padding: var(--spacing-large);
+  text-align: center;
+  color: var(--color-text-light);
+  opacity: 0.6;
+  font-style: italic;
+  font-size: var(--font-size-small);
+}
+
+/* Scrollbar styling for dropdown */
+#search-results-client::-webkit-scrollbar,
+.search-client-dropdown::-webkit-scrollbar,
+.search-results-client::-webkit-scrollbar {
+  width: 6px;
+}
+
+#search-results-client::-webkit-scrollbar-track,
+.search-client-dropdown::-webkit-scrollbar-track,
+.search-results-client::-webkit-scrollbar-track {
+  background: var(--color-secondary);
+  border-radius: 3px;
+}
+
+#search-results-client::-webkit-scrollbar-thumb,
+.search-client-dropdown::-webkit-scrollbar-thumb,
+.search-results-client::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 3px;
+}
+
+#search-results-client::-webkit-scrollbar-thumb:hover,
+.search-client-dropdown::-webkit-scrollbar-thumb:hover,
+.search-results-client::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-dark);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #search-results-client,
+  .search-client-dropdown,
+  .search-results-client {
+    max-height: 180px;
+  }
+  
+  .search-result-client {
+    padding: var(--spacing-small);
+  }
+  
+  .client-result-name {
+    font-size: var(--font-size-small);
+  }
+  
+  .client-result-details {
+    font-size: 12px;
+  }
+} 

@@ -4,12 +4,25 @@
 // API function: search clients from the backend (unified)
 function searchClients(query, callback) {
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', '../api/client-api.php?action=search&query=' + encodeURIComponent(query), true);
+    xhr.open('GET', '../api/client-api.php?action=search&search=' + encodeURIComponent(query), true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             let results = [];
             if (xhr.status === 200) {
-                try { results = JSON.parse(xhr.responseText); } catch (e) {}
+                try { 
+                    const response = JSON.parse(xhr.responseText);
+                    // Handle standardized API response format
+                    if (response && response.success && response.data) {
+                        results = response.data;
+                    } else if (Array.isArray(response)) {
+                        // Fallback for direct array response
+                        results = response;
+                    }
+                } catch (e) {
+                    console.error('Client search API response parse error:', e);
+                }
+            } else {
+                console.error('Client search API failed with status:', xhr.status);
             }
             callback(results);
         }

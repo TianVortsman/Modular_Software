@@ -697,38 +697,6 @@ function autofillRow(row, result) {
     calculateRowTotal(row);
     updateTotals();
 }
-
-function showResponseModal(message, type = 'info') {
-    const modal = document.getElementById('document-modal');
-    if (!modal) return;
-    let responseModalElem = document.getElementById('response-modal');
-    if (!responseModalElem) {
-        const responseModalHtml = `
-            <div id="response-modal" class="modal">
-                <div class="modal-content">
-                    <h2>Response</h2>
-                    <p id="response-message"></p>
-                    <button id="response-close-btn">Close</button>
-                </div>
-            </div>
-        `;
-        document.body.insertAdjacentHTML('beforeend', responseModalHtml);
-        document.getElementById('response-close-btn').onclick = () => {
-            document.getElementById('response-modal').style.display = 'none';
-        };
-        responseModalElem = document.getElementById('response-modal');
-    }
-    const responseMessage = document.getElementById('response-message');
-    if (responseMessage) {
-        responseMessage.textContent = message;
-    }
-    if (responseModalElem) {
-        responseModalElem.style.display = 'block';
-        responseModalElem.className = `modal modal-${type}`;
-    }
-}
-window.showResponseModal = showResponseModal;
-
 // --- DOMContentLoaded Master Event Handler ---
 document.addEventListener('DOMContentLoaded', function () {
     // Client name search
@@ -791,48 +759,26 @@ async function saveDocumentDraft() {
         formData.document_type = document.getElementById('document-type') ? document.getElementById('document-type').value : 'quotation';
         const result = await saveDocumentApi(formData, {});
         hideLoadingModal();
+        
         console.log('[saveDocumentDraft] API result:', result);
-        if (typeof window.handleApiResponse === 'function') {
+        
+        // Use the centralized error handling from sidebar.js
+        if (result.success === false) {
+            // This will be handled by handleApiResponse which shows the error modal
             window.handleApiResponse(result);
-            if (result.success) {
-                let msg = 'Draft saved successfully';
-                if (result.data && result.data.document_number) {
-                    msg += ` (Number: ${result.data.document_number})`;
-                }
-                console.log('[saveDocumentDraft] Calling showResponseModal:', msg, 'success');
-                showResponseModal(msg, 'success');
-                const modalElem = document.getElementById('response-modal');
-                if (modalElem) {
-                    console.log('[saveDocumentDraft] response-modal present, display:', modalElem.style.display, 'class:', modalElem.className);
-                } else {
-                    console.warn('[saveDocumentDraft] response-modal NOT present in DOM');
-                }
+        } else if (result.success === true) {
+            // Show success message
+            let msg = 'Draft saved successfully';
+            if (result.data && result.data.document_number) {
+                msg += ` (Number: ${result.data.document_number})`;
             }
-        } else {
-            if (result.success) {
-                let msg = 'Draft saved successfully';
-                if (result.data && result.data.document_number) {
-                    msg += ` (Number: ${result.data.document_number})`;
-                }
-                console.log('[saveDocumentDraft] Calling showResponseModal:', msg, 'success');
-                showResponseModal(msg, 'success');
-                const modalElem = document.getElementById('response-modal');
-                if (modalElem) {
-                    console.log('[saveDocumentDraft] response-modal present, display:', modalElem.style.display, 'class:', modalElem.className);
-                } else {
-                    console.warn('[saveDocumentDraft] response-modal NOT present in DOM');
-                }
-            } else {
-                showResponseModal(result.message || 'Failed to save draft', 'error');
-            }
+            showResponseModal(msg, 'success');
         }
+        
     } catch (err) {
         hideLoadingModal();
-        if (typeof window.handleApiResponse === 'function') {
-            window.handleApiResponse({ success: false, message: err.message || err });
-        } else {
-            showResponseModal('Error saving draft: ' + (err.message || err), 'error');
-        }
+        console.error('[saveDocumentDraft] Error:', err);
+        showResponseModal('Error saving draft: ' + (err.message || err), 'error');
     }
 }
 
@@ -844,48 +790,26 @@ async function saveDocumentFinal() {
         formData.document_type = document.getElementById('document-type') ? document.getElementById('document-type').value : 'invoice';
         const result = await saveDocumentApi(formData, {});
         hideLoadingModal();
+        
         console.log('[saveDocumentFinal] API result:', result);
-        if (typeof window.handleApiResponse === 'function') {
+        
+        // Use the centralized error handling from sidebar.js
+        if (result.success === false) {
+            // This will be handled by handleApiResponse which shows the error modal
             window.handleApiResponse(result);
-            if (result.success) {
-                let msg = 'Document saved successfully';
-                if (result.data && result.data.document_number) {
-                    msg += ` (Number: ${result.data.document_number})`;
-                }
-                console.log('[saveDocumentFinal] Calling showResponseModal:', msg, 'success');
-                showResponseModal(msg, 'success');
-                const modalElem = document.getElementById('response-modal');
-                if (modalElem) {
-                    console.log('[saveDocumentFinal] response-modal present, display:', modalElem.style.display, 'class:', modalElem.className);
-                } else {
-                    console.warn('[saveDocumentFinal] response-modal NOT present in DOM');
-                }
+        } else if (result.success === true) {
+            // Show success message
+            let msg = 'Document saved successfully';
+            if (result.data && result.data.document_number) {
+                msg += ` (Number: ${result.data.document_number})`;
             }
-        } else {
-            if (result.success) {
-                let msg = 'Document saved successfully';
-                if (result.data && result.data.document_number) {
-                    msg += ` (Number: ${result.data.document_number})`;
-                }
-                console.log('[saveDocumentFinal] Calling showResponseModal:', msg, 'success');
-                showResponseModal(msg, 'success');
-                const modalElem = document.getElementById('response-modal');
-                if (modalElem) {
-                    console.log('[saveDocumentFinal] response-modal present, display:', modalElem.style.display, 'class:', modalElem.className);
-                } else {
-                    console.warn('[saveDocumentFinal] response-modal NOT present in DOM');
-                }
-            } else {
-                showResponseModal(result.message || 'Failed to save document', 'error');
-            }
+            showResponseModal(msg, 'success');
         }
+        
     } catch (err) {
         hideLoadingModal();
-        if (typeof window.handleApiResponse === 'function') {
-            window.handleApiResponse({ success: false, message: err.message || err });
-        } else {
-            showResponseModal('Error saving document: ' + (err.message || err), 'error');
-        }
+        console.error('[saveDocumentFinal] Error:', err);
+        showResponseModal('Error saving document: ' + (err.message || err), 'error');
     }
 }
 

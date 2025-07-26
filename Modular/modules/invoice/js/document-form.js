@@ -11,8 +11,17 @@ function searchClient(inputElement) {
     const query = inputElement.value.trim();
     const resultsContainer = document.getElementById('search-results-client');
     const dropdown = document.getElementById('search-results-client');
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!inputElement.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+            dropdown.classList.remove('active');
+        }
+    });
     if (query.length < 2) {
         dropdown.style.display = 'none';
+        dropdown.classList.remove('active');
         resultsContainer.innerHTML = '';
         return;
     }
@@ -20,24 +29,53 @@ function searchClient(inputElement) {
         resultsContainer.innerHTML = '';
         if (results && results.length > 0) {
             dropdown.style.display = 'block';
+            dropdown.classList.add('active');
             results.forEach((item, idx) => {
                 const div = document.createElement('div');
                 div.classList.add('search-result-client');
-                div.textContent = item.client_name + (item.client_email ? ' (' + item.client_email + ')' : '');
+                
+                // Create better display text based on client type
+                let displayText = '';
+                let subtitleText = '';
+                
+                if (item.client_type === 'business') {
+                    displayText = item.client_name;
+                    subtitleText = 'Business Client';
+                } else {
+                    // Private client
+                    displayText = item.client_name;
+                    if (item.first_name && item.last_name) {
+                        subtitleText = `${item.first_name} ${item.last_name}`;
+                    }
+                }
+                
+                // Add email if available
+                if (item.client_email) {
+                    subtitleText += subtitleText ? ` • ${item.client_email}` : item.client_email;
+                }
+                
+                // Create HTML structure
+                div.innerHTML = `
+                    <div class="client-result-name">${displayText}</div>
+                    ${subtitleText ? `<div class="client-result-details">${subtitleText}</div>` : ''}
+                `;
+                
                 div.onclick = function (e) {
                     fillClientFields(item);
                     resultsContainer.innerHTML = '';
                     dropdown.style.display = 'none';
+                    dropdown.classList.remove('active');
                 };
-                if (idx === 0) div.classList.add('highlight'); // highlight top result by default
+                if (idx === 0) div.classList.add('highlight');
                 resultsContainer.appendChild(div);
             });
         } else {
             dropdown.style.display = 'block';
+            dropdown.classList.add('active');
             const noResults = document.createElement('div');
+            noResults.classList.add('search-no-results');
             noResults.textContent = 'No clients found';
             resultsContainer.appendChild(noResults);
-            window.handleApiResponse({ success: false, message: 'No clients found' });
         }
     });
 }

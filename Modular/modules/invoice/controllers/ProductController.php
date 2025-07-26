@@ -352,6 +352,23 @@ function update_product(array $data, int $user_id): array {
                 ];
             }
         }
+        
+        // Handle supplier relationship - ADD new supplier if provided (don't replace existing ones)
+        if (isset($data['supplier_id']) && is_numeric($data['supplier_id']) && $data['supplier_id'] > 0) {
+            $supplier_id = (int)$data['supplier_id'];
+            
+            // Use existing function to link product to supplier (has ON CONFLICT DO NOTHING)
+            require_once __DIR__ . '/SupplierController.php';
+            $linkResult = \App\modules\product\controllers\link_product_to_supplier($productId, $supplier_id, $user_id);
+            
+            if (!$linkResult['success']) {
+                error_log("[update_product] Failed to link supplier $supplier_id to product $productId: " . $linkResult['message']);
+                // Don't fail the whole update, just log the warning
+            } else {
+                error_log("[update_product] Successfully added supplier $supplier_id to product $productId");
+            }
+        }
+        
         $conn->commit();
         // Logging and notification
         log_user_action($user_id, 'update_product', $productId, json_encode($data));

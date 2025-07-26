@@ -6,3 +6,5 @@
     at handleApiResponse (http://localhost/public/assets/js/helpers.js:79:15)
     at http://localhost/modules/invoice/js/document-form.js:40:20
     at xhr.onreadystatechange (http://localhost/modules/invoice/js/document-api.js:14:13)
+2025-07-26T15:38:04.017Z | Code: YSCSRC | URL: http://localhost/modules/invoice/views/invoice-setup.php | Error: Uncaught ReferenceError: openSalesTargetModal is not defined | Source: http://localhost/modules/invoice/views/invoice-setup.php | Line: 499 | Column: 98 | Stack: ReferenceError: openSalesTargetModal is not defined
+    at HTMLButtonElement.onclick (http://localhost/modules/invoice/views/invoice-setup.php:499:98) | UserAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36
