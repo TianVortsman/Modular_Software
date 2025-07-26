@@ -15,8 +15,6 @@ use function App\modules\invoice\controllers\update_client;
 use function App\modules\invoice\controllers\delete_client;
 require_once __DIR__ . '/../controllers/ClientController.php';
 
-header('Content-Type: application/json');
-
 function clean_numeric($value) {
     return is_null($value) ? 0 : floatval(preg_replace('/[^\d.\-]/', '', $value));
 }
@@ -27,14 +25,17 @@ function clean_int($value) {
 
 try {
     if (!isset($_SESSION['account_number'])) {
-        throw new Exception('User session not found');
+        sendApiErrorResponse('User session not found', null, 'Client API Authentication', 'SESSION_NOT_FOUND', 401);
     }
+    
     $db = ClientDatabase::getInstance($_SESSION['account_number'], $_SESSION['user_name'] ?? 'Guest');
     $conn = $db->connect();
     global $conn;
+    
     if (!$conn) {
-        throw new Exception('Database connection failed');
+        sendApiErrorResponse('Database connection failed', null, 'Client API Database Connection', 'DB_CONN_ERROR');
     }
+    
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $action = $_GET['action'] ?? '';
     $method = $_SERVER['REQUEST_METHOD'];
@@ -48,109 +49,102 @@ try {
                 'type'     => $_GET['type'] ?? null,
                 'page'     => isset($_GET['page']) ? (int)$_GET['page'] : 1,
                 'limit'    => isset($_GET['limit']) ? (int)$_GET['limit'] : 10,
-                'sort_by'  => $_GET['sort_by'] ?? null,
-                'sort_dir' => $_GET['sort_dir'] ?? null
+                'sort_by'  => $_GET['sort_by'] ?? 'client_id',
+                'sort_dir' => $_GET['sort_dir'] ?? 'desc',
             ];
             $result = list_clients($options);
             echo json_encode($result);
-            exit;
-        case 'get_client_details':
-            // GET: get details for a single client
-            $client_id = isset($_GET['client_id']) ? (int)$_GET['client_id'] : null;
-            if (!$client_id) {
-                echo json_encode(['success' => false, 'message' => 'Missing client_id', 'data' => null, 'error_code' => 'CLIENT_ID_REQUIRED']);
-                exit;
+            break;
+
+        case 'get_client':
+            if ($method !== 'GET') {
+                sendApiErrorResponse('GET method required for get_client action', $_GET, 'Client API Method Validation', 'INVALID_METHOD', 405);
             }
+            
+            if (!isset($_GET['client_id']) || !is_numeric($_GET['client_id'])) {
+                sendApiErrorResponse('Missing or invalid client_id parameter', $_GET, 'Client API Parameter Validation', 'CLIENT_ID_REQUIRED', 400);
+            }
+            
+            $client_id = (int)$_GET['client_id'];
             $result = get_client_details($client_id);
             echo json_encode($result);
-            exit;
+            break;
+
         case 'create_client':
-            // POST: create a new client
             if ($method !== 'POST') {
-                echo json_encode(['success' => false, 'message' => 'Invalid request method', 'data' => null, 'error_code' => 'INVALID_METHOD']);
-                exit;
+                sendApiErrorResponse('POST method required for create_client action', $_POST, 'Client API Method Validation', 'INVALID_METHOD', 405);
             }
-            $data = json_decode(file_get_contents('php://input'), true);
+            
+            $rawData = file_get_contents('php://input');
+            $data = json_decode($rawData, true);
+            
             if (!$data) {
-                echo json_encode(['success' => false, 'message' => 'Missing client data', 'data' => null, 'error_code' => 'CLIENT_DATA_REQUIRED']);
-                exit;
+                sendApiErrorResponse('Missing or invalid client data', ['raw_input' => $rawData], 'Client API Data Validation', 'CLIENT_DATA_REQUIRED', 400);
             }
+            
             $result = create_client($data);
-            if (!$result['success'] && !empty($result['error'])) {
-                require_once __DIR__ . '/../../../src/Utils/errorHandler.php';
-                $aiMessage = getFriendlyMessageFromAI($result['error']);
-                if ($aiMessage) $result['error'] = $aiMessage;
-            }
             echo json_encode($result);
-            exit;
+            break;
+
         case 'update_client':
-            // POST: update an existing client
             if ($method !== 'POST') {
-                echo json_encode(['success' => false, 'message' => 'Invalid request method', 'data' => null, 'error_code' => 'INVALID_METHOD']);
-                exit;
+                sendApiErrorResponse('POST method required for update_client action', $_POST, 'Client API Method Validation', 'INVALID_METHOD', 405);
             }
-            $client_id = isset($_GET['client_id']) ? (int)$_GET['client_id'] : null;
-            if (!$client_id) {
-                echo json_encode(['success' => false, 'message' => 'Missing client_id', 'data' => null, 'error_code' => 'CLIENT_ID_REQUIRED']);
-                exit;
+            
+            if (!isset($_GET['client_id']) || !is_numeric($_GET['client_id'])) {
+                sendApiErrorResponse('Missing or invalid client_id parameter', $_GET, 'Client API Parameter Validation', 'CLIENT_ID_REQUIRED', 400);
             }
-            $data = json_decode(file_get_contents('php://input'), true);
+            
+            $rawData = file_get_contents('php://input');
+            $data = json_decode($rawData, true);
+            
             if (!$data) {
-                echo json_encode(['success' => false, 'message' => 'Missing client data', 'data' => null, 'error_code' => 'CLIENT_DATA_REQUIRED']);
-                exit;
+                sendApiErrorResponse('Missing or invalid client data', ['raw_input' => $rawData], 'Client API Data Validation', 'CLIENT_DATA_REQUIRED', 400);
             }
-            $result = update_client($client_id, $data);
-            if (!$result['success'] && !empty($result['error'])) {
-                require_once __DIR__ . '/../../../src/Utils/errorHandler.php';
-                $aiMessage = getFriendlyMessageFromAI($result['error']);
-                if ($aiMessage) $result['error'] = $aiMessage;
-            }
+            
+            $client_id = (int)$_GET['client_id'];
+            $data['client_id'] = $client_id;
+            $result = update_client($data);
             echo json_encode($result);
-            exit;
+            break;
+
         case 'delete_client':
-            // POST: delete a client
             if ($method !== 'POST') {
-                echo json_encode(['success' => false, 'message' => 'Invalid request method', 'data' => null, 'error_code' => 'INVALID_METHOD']);
-                exit;
+                sendApiErrorResponse('POST method required for delete_client action', $_POST, 'Client API Method Validation', 'INVALID_METHOD', 405);
             }
-            $client_id = isset($_GET['client_id']) ? (int)$_GET['client_id'] : null;
-            $deleted_by = isset($_GET['deleted_by']) ? (int)$_GET['deleted_by'] : null;
-            if (!$client_id || !$deleted_by) {
-                echo json_encode(['success' => false, 'message' => 'Missing client_id or deleted_by', 'data' => null, 'error_code' => 'CLIENT_ID_REQUIRED']);
-                exit;
+            
+            if (!isset($_GET['client_id']) || !is_numeric($_GET['client_id'])) {
+                sendApiErrorResponse('Missing or invalid client_id parameter', $_GET, 'Client API Parameter Validation', 'CLIENT_ID_REQUIRED', 400);
             }
+            
+            $client_id = (int)$_GET['client_id'];
+            $deleted_by = $_SESSION['user_id'] ?? null;
+            
+            if (!$deleted_by) {
+                sendApiErrorResponse('User session invalid - cannot determine deleted_by', $_SESSION, 'Client API Session Validation', 'INVALID_SESSION', 401);
+            }
+            
             $result = delete_client($client_id, $deleted_by);
-            if (!$result['success'] && !empty($result['error'])) {
-                require_once __DIR__ . '/../../../src/Utils/errorHandler.php';
-                $aiMessage = getFriendlyMessageFromAI($result['error']);
-                if ($aiMessage) $result['error'] = $aiMessage;
-            }
             echo json_encode($result);
-            exit;
-        case 'search':
-            // Use list_clients to search the real DB
-            $options = [
-                'search' => $_GET['query'] ?? '',
-                'limit' => 10,
-                'page' => 1
-            ];
-            $result = list_clients($options);
-            // Return only the data array for dropdown compatibility
-            echo json_encode($result['data'] ?? []);
-            exit;
+            break;
+
         default:
-            echo json_encode(['success' => false, 'message' => 'Invalid action', 'data' => null, 'error_code' => 'INVALID_ACTION']);
-            exit;
+            sendApiErrorResponse("Invalid action: $action", ['action' => $action, 'available_actions' => ['list_clients', 'get_client', 'create_client', 'update_client', 'delete_client']], 'Client API Action Validation', 'INVALID_ACTION', 400);
     }
+    
+} catch (PDOException $e) {
+    $formData = [
+        'action' => $action ?? 'unknown',
+        'method' => $method ?? 'unknown',
+        'session_data' => $_SESSION ?? [],
+    ];
+    sendApiErrorResponse('Database error: ' . $e->getMessage(), $formData, 'Client API Database Error');
+    
 } catch (Exception $e) {
-    require_once __DIR__ . '/../../../src/Utils/errorHandler.php';
-    $aiMessage = getFriendlyMessageFromAI($e->getMessage());
-    echo json_encode([
-        'success' => false,
-        'message' => $aiMessage ?: 'Please contact Modular Software Support.',
-        'error' => $e->getMessage(),
-        'data' => null,
-        'error_code' => 'API_ERROR'
-    ]);
-    exit;
+    $formData = [
+        'action' => $action ?? 'unknown',
+        'method' => $method ?? 'unknown',
+        'session_data' => $_SESSION ?? [],
+    ];
+    sendApiErrorResponse('Unexpected error: ' . $e->getMessage(), $formData, 'Client API General Error');
 }
