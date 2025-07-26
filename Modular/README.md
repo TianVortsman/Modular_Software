@@ -1,488 +1,532 @@
-markdown
-Copy code
 # Modular Software System
 
 ## Overview
-A modern PHP-based modular software system implementing PSR-4 standards, Docker support, and component-based architecture for managing customer data, user accounts, and business operations.
-
-// Initialize the storage system
-Storage::init();
-
-// Upload a file
-$path = "products/{$accountNumber}/{$filename}";
-$storedPath = Storage::upload($path, $_FILES['image']);
-
-// Get the public URL
-$publicUrl = Storage::getPublicUrl($storedPath);
+A modern PHP-based modular software system with PSR-4 autoloading, Docker support, and component-based architecture for managing multi-tenant business operations. Features comprehensive error handling, standardized UI components, and a scalable module-based design.
 
 ## Table of Contents
-- [Core Features](#core-features)
 - [System Architecture](#system-architecture)
-- [UI Components](#ui-components)
-- [Asset Structure](#asset-structure)
-- [Database Structure](#database-structure)
+- [Database Architecture](#database-architecture)
+- [Module Development Standards](#module-development-standards)
+- [JavaScript Modular Structure](#javascript-modular-structure)
+- [UI Component Standards](#ui-component-standards)
+- [Error Handling System](#error-handling-system)
+- [Authentication & Session Management](#authentication--session-management)
+- [Development Workflow](#development-workflow)
 - [Setup and Configuration](#setup-and-configuration)
 - [Best Practices](#best-practices)
-- [Recent Updates](#recent-updates)
-- [Troubleshooting](#troubleshooting)
-- [Getting Started](#getting-started)
-- [Testing](#testing)
 - [Contributing](#contributing)
-- [Support](#support)
-- [License](#license)
-- [Module Development](#module-development)
-
-## Core Features
-- PSR-4 compliant architecture
-- Docker containerization support
-- Standardized modal system
-- Component-based UI
-- PostgreSQL database integration
-- Secure authentication flow
-- Scalable multi-tenant architecture
-- Responsive design principles
 
 ## System Architecture
 
-### PSR-4 Directory Structure
-src/ ├── Core/ │ ├── Auth/ │ │ ├── Authentication.php │ │ └── TwoFactorAuth.php │ ├── Database/ │ │ ├── Database.php │ │ ├── MainDatabase.php │ │ └── ClientDatabase.php │ └── Exception/ │ └── DatabaseException.php ├── Controllers/ │ ├── AuthController.php │ └── UserController.php ├── Models/ │ ├── User.php │ └── Customer.php ├── Services/ │ ├── DatabaseService.php │ └── AuthService.php └── Config/ └── Database.php
+### PSR-4 Autoloading Structure
+The system uses PSR-4 compliant autoloading with two main namespaces:
 
-Copy code
-
-### Namespace Structure
-The system uses PSR-4 autoloading with the following namespace structure:
-```php
-
-
-NB!!// All classes use App\ as the root namespace
-use App\Core\Auth\Authentication;
-use App\Core\Database\MainDatabase;
-use App\Controllers\UserController;
-use App\Services\DatabaseService;
-```
-
-### Composer Autoloading Configuration
-```json
-"autoload": {
-    "psr-4": {
-        "App\\": "src/",
-        "App\\Controllers\\": "src/Controllers/",
-        "App\\Core\\": "src/Core/",
-        "App\\Services\\": "src/Services/",
-        "App\\Config\\": "src/Config/"
-    }
-}
-```
-
-### Database Service Implementation
-The system uses a centralized DatabaseService class for managing connections:
-
-```php
-// Example usage of DatabaseService
-use App\Services\DatabaseService;
-
-// Get main database connection
-$mainDb = DatabaseService::getMainDatabase();
-
-// Get client-specific database
-$clientDb = DatabaseService::getClientDatabase($accountNumber, $userName);
-
-// Get current database based on session
-$currentDb = DatabaseService::getCurrentDatabase();
-```
-
-### Authentication System
-Implements secure user authentication with:
-- Multi-factor authentication support
-- Session management with configurable timeouts
-- Password reset and recovery workflow
-- Account management across multiple tenants
-- Role-based access control (RBAC)
-- Technician/admin separate login paths and permissions
-
-## UI Components
-### Required Components - to be included and used in all pages - if incorrect or duplicated to be removed and restructured to use these below
-- Loading Modal (`unique-loading-modal`) - Displays during async operations
-- Response Modal (`modalResponse`) - Shows operation results to users
-- Error Table Modal (`errorTableModal`) - Presents detailed error information
-- Navigation Sidebar - Context-aware navigation system
-- Sidebar also includes the notifications
-- Sibar is located in src/ui.sidebar.php
-
-## Asset Structure
-Copy code
-public/
-├── assets/
-│   ├── css/
-│   │   ├── root.css - always to be include and read to use the varibles
-│   │   ├── sidebar.css
-│   │   └── module-specific.css
-│   ├── js/
-│   │   ├── toggle-theme.js
-│   │   ├── sidebar.js
-│   │   └── module-specific.js
-│   └── img/
-└── views/
-Database Structure
-### Main Tables
-- Customers: Company information and account management
-- Users: User accounts and authentication data
-- Account Numbers: Account number mapping and clock server configuration
-- Technicians: Admin/technician account management
-
-### Key Relationships
-- Users -> Customers (Many-to-One)
-- Account Numbers -> Users (Many-to-One)
-
-## Setup and Configuration
-### Docker Environment
-```yaml
-# Example docker-compose.yml configuration
-services:
-  app:
-    build: .
-    ports:
-      - "8080:80"
-    volumes:
-      - ./src:/var/www/html/src
-    environment:
-      - DB_HOST=host.docker.internal
-      - DB_PORT=5432
-      - DB_USER=Tian
-      - DB_PASSWORD=Modul@rdev@2024
-      - APP_ENV=development
-  
-  postgres:
-    image: postgres:13
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=Tian
-      - POSTGRES_PASSWORD=Modul@rdev@2024
-      - POSTGRES_DB=modular
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
-```
-
-### Composer Configuration
 ```json
 {
-    "name": "organization/modular-system",
-    "description": "Modern PHP-based modular software system",
-    "type": "project",
-    "require": {
-        "php": ">=8.1",
-        "ext-pdo": "*",
-        "monolog/monolog": "^2.8",
-        "vlucas/phpdotenv": "^5.5"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^9.5",
-        "squizlabs/php_codesniffer": "^3.7"
-    },
     "autoload": {
         "psr-4": {
             "App\\": "src/",
-            "App\\Controllers\\": "src/Controllers/",
-            "App\\Core\\": "src/Core/",
-            "App\\Services\\": "src/Services/",
-            "App\\Config\\": "src/Config/"
+            "Modules\\": "modules/"
         }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
-        }
-    },
-    "scripts": {
-        "test": "phpunit",
-        "cs": "phpcs src"
     }
 }
 ```
 
-## Best Practices
-### Code Organization
-- Follow PSR-4 autoloading standards with App\ namespace
-- Use namespaced classes
-- Implement proper error handling with custom exception classes
-- Maintain consistent directory structure
+### Core Directory Structure
+```
+src/
+├── Core/
+│   ├── Auth/           # Authentication system
+│   ├── Database/       # Database connection classes
+│   └── Exception/      # Custom exceptions
+├── Controllers/        # System-level controllers
+├── Services/          # Business logic services
+├── Utils/             # Utility functions
+├── UI/                # Global UI components
+└── Config/            # System configuration
 
-### Database Operations
-- Use DatabaseService for all database connections
-- Implement prepared statements to prevent SQL injection
-- Handle connection errors gracefully with appropriate fallbacks
-- Use appropriate PostgreSQL syntax and features
-- Implement database transaction handling for related operations
+modules/
+├── invoice/           # Example module
+│   ├── api/          # Module API endpoints
+│   ├── controllers/  # Module controllers
+│   ├── css/         # Module-specific styles
+│   ├── js/          # Module JavaScript files
+│   ├── views/       # Module views
+│   └── modals/      # Module modal components
+└── [other-modules]/
+```
 
-### UI Development
-- Use unique class names for components to prevent style collisions
-- Include required CSS/JS in correct order to ensure proper functioning
-- Follow modal implementation standards across the application
-- Maintain consistent naming conventions for all UI elements
-- Implement responsive design patterns
+### Namespace Usage Examples
+```php
+// Core system classes
+use App\Core\Auth\Authentication;
+use App\Core\Database\MainDatabase;
+use App\Services\DatabaseService;
+use App\Controllers\AuthController;
 
-### Security
-- Implement proper session management with appropriate timeouts
-- Use prepared statements for all database queries
-- Validate and sanitize all user input
-- Handle authentication securely with modern password hashing
-- Implement CSRF protection for all forms
-- Use HTTPS for all connections
+// Module classes (manual inclusion currently required)
+require_once __DIR__ . '/../controllers/InvoiceController.php';
+```
 
-## Recent Updates
-### March 2025
-- Enhanced error handling in Database classes
-- Improved authentication flow
-- Added connection testing capabilities
-- Updated Docker configuration
-- Implemented PSR-4 autoloading
-- Added PostgreSQL 13 support
+## Database Architecture
 
-### Authentication Improvements
-- Fixed prepared statement naming
-- Enhanced session handling with improved security
-- Improved password verification using argon2id
-- Updated login flow with anti-brute force measures
-- Added account lockout functionality
+### DatabaseService - Centralized Connection Management
+The `DatabaseService` class provides three main connection methods:
 
-### Docker Integration
-- Added proper configuration support with environment variables
-- Updated database connection handling for container networking
-- Improved environment variable usage
-- Enhanced container networking
-- Added volume persistence for development
+```php
+use App\Services\DatabaseService;
 
-## Troubleshooting
-### Database Connections
-- Check PostgreSQL server status and availability
-- Verify credentials match environment configuration
-- Test network access between application and database
-- Review connection configuration for proper parameters
-- Confirm database schema is properly initialized
+// 1. Main Database - System operations (users, accounts, configuration)
+$mainDb = DatabaseService::getMainDatabase();
 
-### Authentication Issues
-- Verify password hashing algorithm is consistent
-- Check prepared statement parameter binding
-- Review session management configuration
-- Test connection parameters for authentication database
-- Validate user input handling for login forms
-- Validate all paths to css/js/php-includes and href links
+// 2. Client Database - Business data specific to a customer account
+$clientDb = DatabaseService::getClientDatabase($accountNumber, $userName);
 
-## Getting Started
+// 3. Current Database - Automatically determines based on session
+$currentDb = DatabaseService::getCurrentDatabase();
+```
+
+### Usage Patterns
+
+**System Operations (Main Database):**
+```php
+// User authentication, account management, system configuration
+$mainDb = DatabaseService::getMainDatabase();
+$stmt = $mainDb->executeQuery("SELECT * FROM users WHERE username = ?", [$username]);
+```
+
+**Business Operations (Client Database):**
+```php
+// Customer-specific data (employees, invoices, inventory, etc.)
+if (isset($_SESSION['account_number'])) {
+    $clientDb = DatabaseService::getClientDatabase($_SESSION['account_number'], $_SESSION['user_name']);
+    $stmt = $clientDb->executeQuery("SELECT * FROM employees", []);
+}
+```
+
+### Session-Based Database Selection
+```php
+// In module controllers, use session information for automatic database selection
+public function __construct() {
+    if (isset($_SESSION['account_number'])) {
+        $this->db = DatabaseService::getClientDatabase($_SESSION['account_number'], $_SESSION['user_name']);
+    } else {
+        throw new \Exception("No account number in session");
+    }
+}
+```
+
+## Module Development Standards
+
+### Standard Module Structure
+Each module follows this consistent directory layout:
+
+```
+modules/your-module/
+├── api/              # API endpoints (your-module-api.php)
+├── controllers/      # Business logic controllers
+├── css/             # Module-specific stylesheets
+├── js/              # JavaScript files (see modular structure below)
+├── views/           # HTML view files
+├── modals/          # Modal component files
+└── sql/             # Database schema files (optional)
+```
+
+### Module Controller Template
+```php
+<?php
+// Manual inclusion required for module controllers
+require_once __DIR__ . '/../../src/Services/DatabaseService.php';
+
+use App\Services\DatabaseService;
+
+class YourModuleController {
+    private $db;
+    
+    public function __construct() {
+        // Start session if not already started
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        // Use client database for business data
+        if (isset($_SESSION['account_number'])) {
+            $this->db = DatabaseService::getClientDatabase($_SESSION['account_number'], $_SESSION['user_name']);
+        } else {
+            throw new \Exception("No account number in session");
+        }
+    }
+    
+    public function handleRequest() {
+        // Your controller logic here
+    }
+}
+```
+
+### Module API Endpoint Template
+```php
+<?php
+require_once __DIR__ . '/../controllers/YourModuleController.php';
+require_once __DIR__ . '/../../src/Utils/response.php';
+
+// Start session
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+try {
+    $controller = new YourModuleController();
+    $result = $controller->handleRequest();
+    
+    successResponse('Operation successful', ['data' => $result]);
+} catch (Exception $e) {
+    errorResponse($e->getMessage());
+}
+```
+
+## JavaScript Modular Structure
+
+### File Organization Pattern
+Each module's JavaScript is split into specialized files:
+
+```
+js/
+├── module-screen.js    # Main screen logic, tab switching, UI state
+├── module-form.js      # Form handling, validation, data preparation
+├── module-api.js       # API calls, data fetching, server communication
+└── module-modal.js     # Modal management, popup interactions
+```
+
+### Example: Invoice Module JS Structure
+```
+js/
+├── document-screen.js  # Document listing, filtering, pagination
+├── document-form.js    # Invoice form handling and validation
+├── document-api.js     # API calls for documents
+├── document-modal.js   # Document-related modals
+├── client-screen.js    # Client management interface
+├── client-form.js      # Client form handling
+├── client-api.js       # Client API calls
+└── client-modal.js     # Client modals
+```
+
+### JavaScript Import Pattern
+```javascript
+// Import shared utilities
+import { buildQueryParams, handleApiResponse } from '../../../public/assets/js/helpers.js';
+
+// Import from related module files
+import { searchClients } from './document-api.js';
+import { setDocumentFormData } from './document-form.js';
+```
+
+## UI Component Standards
+
+### Required Global Components
+Every page must include these standardized components:
+
+#### 1. Sidebar Navigation
+```php
+<?php include '/src/UI/sidebar.php'; ?>
+```
+- Context-aware navigation
+- User information display
+- Notification system
+- Tutorial system integration
+
+#### 2. Response Modal (Auto-injected)
+Automatically available via `helpers.js`:
+```javascript
+// Success message
+showResponseModal('Operation completed successfully!', 'success');
+
+// Error message  
+showResponseModal('Something went wrong', 'error');
+
+// Confirmation dialog
+const confirmed = await showResponseModal('Are you sure?', 'warning', false, true);
+```
+
+#### 3. Loading Modal
+```php
+<?php include '/src/UI/loading-modal.php'; ?>
+```
+```javascript
+// Show loading
+showLoadingModal('Processing...');
+
+// Hide loading
+hideLoadingModal();
+```
+
+### CSS Variables System
+All styling uses centralized CSS variables from `root.css`:
+
+```css
+/* Always include root.css first */
+@import url('/public/assets/css/root.css');
+
+/* Use variables instead of hardcoded values */
+.my-component {
+    background-color: var(--color-background);
+    color: var(--color-text-light);
+    padding: var(--spacing-medium);
+    border-radius: var(--radius-small);
+    border: 1px solid var(--color-border);
+}
+```
+
+## Error Handling System
+
+### Frontend Error Handling
+The system uses a centralized `handleApiResponse` function:
+
+```javascript
+// Standard API call pattern
+fetch('/api/your-endpoint.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+})
+.then(response => response.json())
+.then(handleApiResponse)  // Automatically handles errors and shows modals
+.then(data => {
+    // Handle successful response
+})
+.catch(error => {
+    // handleApiResponse already showed error modal
+    console.error('API Error:', error);
+});
+```
+
+### Backend Error Response Format
+```php
+// Use standardized response functions
+require_once __DIR__ . '/../../src/Utils/response.php';
+
+// Success response
+successResponse('Data saved successfully', ['id' => $newId]);
+
+// Error response  
+errorResponse('Validation failed', 400, ['errors' => $validationErrors]);
+```
+
+### JavaScript Error Logging
+Global error handler automatically logs JavaScript errors:
+```javascript
+// Errors are automatically caught and logged
+window.onerror = function(message, source, lineno, colno, error) {
+    // Automatically sends error to backend logging
+    // Shows user-friendly error modal
+};
+```
+
+## Authentication & Session Management
+
+### Session Variables
+The system maintains these key session variables:
+```php
+$_SESSION['account_number']  // Customer account identifier
+$_SESSION['user_name']       // Logged-in user name
+$_SESSION['user_id']         // Unique user ID
+$_SESSION['tech_logged_in']  // Boolean for technician access
+```
+
+### Authentication Flow
+```php
+use App\Core\Auth\Authentication;
+
+// Initialize authentication
+$auth = new Authentication();
+
+// Handle login
+$loginResult = $auth->login($username, $password);
+
+// Check if user is authenticated
+if (!$auth->isAuthenticated()) {
+    header('Location: /auth/login.php');
+    exit;
+}
+```
+
+### Database Context Based on Authentication
+```php
+// The system automatically selects the appropriate database
+// based on authentication state and session data
+
+// For system operations (login, user management)
+$mainDb = DatabaseService::getMainDatabase();
+
+// For business operations (after user login)
+$clientDb = DatabaseService::getCurrentDatabase(); // Auto-selects based on session
+```
+
+## Development Workflow
+
+### 1. Creating a New Module
+```bash
+# Create module directory structure
+mkdir -p modules/your-module/{api,controllers,css,js,views,modals}
+
+# Create basic files
+touch modules/your-module/api/your-module-api.php
+touch modules/your-module/controllers/YourModuleController.php
+touch modules/your-module/js/your-module-{screen,form,api,modal}.js
+touch modules/your-module/css/your-module.css
+touch modules/your-module/views/your-module.php
+```
+
+### 2. Standard Development Process
+Following the user's workflow rules:
+
+1. **HTML Setup** - Build the UI structure first
+2. **JavaScript Logic** - Add interactivity and form handling
+3. **PHP Controller** - Create business logic controller
+4. **API Endpoint** - Create endpoint that uses controller
+5. **Database Integration** - Ensure schema matches operations
+
+### 3. Testing Integration
+```bash
+# Test database connections
+php src/Core/Database/test-connection.php
+
+# Run through full workflow
+# 1. Create/update HTML forms
+# 2. Test JavaScript form handling
+# 3. Verify API endpoints
+# 4. Confirm database operations
+```
+
+## Setup and Configuration
+
 ### Prerequisites
 - PHP 8.1 or higher
 - Composer
 - Docker and Docker Compose
 - PostgreSQL 13+
-- Git
 
 ### Installation
-1. Clone the repository
-   ```bash
-   git clone https://github.com/yourorganization/modular-system.git
-   cd modular-system
-   ```
-
-2. Install dependencies
-   ```bash
-   composer install
-   ```
-
-3. Set up environment
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
-
-4. Start Docker environment
-   ```bash
-   docker-compose up -d
-   ```
-
-5. Initialize database
-   ```bash
-   php bin/console db:migrate
-   php bin/console db:seed
-   ```
-
-### First Login
-Access the system at http://localhost:8080 and use the default admin credentials:
-- Username: `Tian`
-- Password: `ModularAdmin2025`
-- Change this password immediately after first login
-
-## Testing
-The system uses PHPUnit for testing. Run tests with:
-
 ```bash
-composer test
+# Clone and setup
+git clone [repository]
+cd Modular
+
+# Install dependencies
+composer install
+composer dump-autoload
+
+# Start Docker environment
+docker-compose up -d
+
+# Initialize database
+# Main database setup
+psql -h localhost -U Tian -d modular_system < db-init/Main-db/modular_system.sql
+
+# Client database setup (per customer)
+# Databases are created automatically when customers are added
 ```
 
-For individual test suites:
+### Environment Configuration
 ```bash
-composer test:unit     # Unit tests only
-composer test:feature  # Feature tests only
-composer test:integration # Integration tests only
+# Docker configuration
+DB_HOST=host.docker.internal
+DB_PORT=5432
+DB_USER=Tian
+DB_PASSWORD=Modul@rdev@2024
+APP_ENV=development
+```
+
+## Best Practices
+
+### Database Operations
+```php
+// ✅ DO: Use DatabaseService for connections
+$db = DatabaseService::getCurrentDatabase();
+
+// ✅ DO: Use wrapper methods for queries
+$stmt = $db->executeQuery($query, $params);
+$results = $db->fetchAll($stmt);
+
+// ❌ DON'T: Use PDO methods directly
+$stmt = $db->prepare($query); // Avoid direct PDO access
+```
+
+### Error Handling
+```php
+// ✅ DO: Use standardized response functions
+successResponse('Operation completed', ['data' => $result]);
+errorResponse('Validation failed', 400);
+
+// ✅ DO: Use handleApiResponse on frontend
+.then(handleApiResponse)
+.then(data => { /* handle success */ })
+```
+
+### CSS Styling
+```css
+/* ✅ DO: Use CSS variables */
+.component {
+    color: var(--color-text-light);
+    background: var(--color-background);
+}
+
+/* ❌ DON'T: Use hardcoded colors */
+.component {
+    color: #ffffff;
+    background: #333333;
+}
+```
+
+### JavaScript Structure
+```javascript
+// ✅ DO: Import from helpers.js
+import { buildQueryParams, handleApiResponse } from '../../../public/assets/js/helpers.js';
+
+// ✅ DO: Split functionality across files
+// screen.js - UI state management
+// form.js - Form handling
+// api.js - Server communication  
+// modal.js - Modal interactions
 ```
 
 ## Contributing
-1. Follow the established coding standards (PSR-12)
-   ```bash
-   composer cs
-   ```
-2. Create feature branches from `develop`
-3. Add appropriate tests for new functionality
-4. Submit pull requests with comprehensive descriptions
-5. Ensure CI checks pass before requesting review
 
-## Documentation
-Additional documentation is available in the `/docs` directory:
-- [API Documentation](docs/api.md)
-- [Database Schema](docs/database.md)
-- [Development Guide](docs/development.md)
-- [Deployment Guide](docs/deployment.md)
+### Code Standards
+- Follow PSR-4 autoloading conventions
+- Use standardized error handling patterns
+- Implement responsive design with CSS variables
+- Split JavaScript into modular files
+- Include comprehensive error handling
 
+### Module Development Checklist
+- [ ] Module follows standard directory structure
+- [ ] Controllers use appropriate database connections
+- [ ] JavaScript split into screen/form/api/modal files
+- [ ] CSS uses root variables instead of hardcoded values
+- [ ] Error handling uses `handleApiResponse` pattern
+- [ ] All forms include proper validation
+- [ ] API endpoints use standardized response functions
+- [ ] Modals use global response/loading modal system
 
-This README now accurately reflects:
-1. The current DatabaseService implementation
-2. PSR-4 compliant architecture
-3. Updated directory structure
-4. Modern authentication flow
-5. Docker integration
-6. Recent improvements and best practices
+### Testing Requirements
+- [ ] Frontend form validation works
+- [ ] API endpoints return proper response format
+- [ ] Database operations use correct connection
+- [ ] Error states display user-friendly messages
+- [ ] Loading states show appropriate modals
+- [ ] Responsive design works across devices
 
-## Module Development
+---
 
-### Autoloading Module Classes
-Currently, the Composer autoloader is only configured for the `App\` namespace. When developing module-specific controllers and classes, there are two options:
+## System Evolution Notes
 
-1. **Manual Inclusion** (Quick Solution):
-   ```php
-   // Manually include the controller files in your module API
-   require_once __DIR__ . '/../Controllers/YourController.php';
-   ```
+This README reflects the current state of the codebase as of 2024. The system has evolved from basic PHP to a sophisticated modular architecture with:
 
-2. **Update Composer Configuration** (Recommended):
-   Add module namespaces to the composer.json file:
-   ```json
-   "autoload": {
-       "psr-4": {
-           "App\\": "src/",
-           "Modules\\": "modules/"
-       }
-   }
-   ```
-   Then run `composer dump-autoload` to regenerate the autoloader.
+- **PSR-4 Autoloading**: Professional namespace organization
+- **Centralized Database Management**: `DatabaseService` with main/client separation
+- **Modular JavaScript**: File-per-responsibility organization
+- **Comprehensive Error Handling**: Frontend/backend integration
+- **Standardized UI Components**: Reusable modal and sidebar systems
+- **CSS Variable System**: Maintainable theming approach
 
-### Module File Structure
-```
-
-### Database Access in Modules
-
-When working with the database in module controllers:
-
-1. **Use the Correct Database Connection**:
-   - **MainDatabase**: For system-level operations (user management, configuration)
-   - **ClientDatabase**: For customer/business data (employees, departments, etc.)
-   
-   ```php
-   // For system operations (admin/configuration)
-   $mainDb = DatabaseService::getMainDatabase();
-   
-   // For client/customer data operations
-   $clientDb = DatabaseService::getClientDatabase($accountNumber, $userName);
-   ```
-
-2. **Session-based Database Selection**:
-   When constructing controllers that access customer data:
-   ```php
-   public function __construct() {
-       if (isset($_SESSION['account_number'])) {
-           $accountNumber = $_SESSION['account_number'];
-           $userName = $_SESSION['user_name'] ?? 'Guest';
-           $this->db = DatabaseService::getClientDatabase($accountNumber, $userName);
-       } else {
-           throw new \Exception("No account number in session");
-       }
-   }
-   ```
-
-3. **Use Database Wrapper Methods**: 
-   Instead of using PDO methods directly, use the wrapper methods provided by the Database class:
-
-   ```php
-   // INCORRECT - direct PDO methods
-   $stmt = $this->db->prepare($query);
-   $stmt->bindParam(':param', $value);
-   $stmt->execute();
-   $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-   
-   // CORRECT - database wrapper methods
-   $stmt = $this->db->executeQuery($query, [':param' => $value]);
-   $results = $this->db->fetchAll($stmt);
-   ```
-
-### Session Management for Modules
-
-Modules often need access to the current user's account information. To ensure proper database access:
-
-1. **Always start a session** at the beginning of your API endpoints:
-   ```php
-   // Start a session if not already started
-   if (session_status() === PHP_SESSION_NONE) {
-       session_start();
-   }
-   ```
-
-2. **Check for required session variables**:
-   ```php
-   if (!isset($_SESSION['account_number'])) {
-       // Return an appropriate error or redirect to login
-       http_response_code(401);
-       echo json_encode([
-           'success' => false,
-           'message' => 'User not authenticated or missing account information'
-       ]);
-       exit;
-   }
-   ```
-
-3. **Store important information in session upon login**:
-   - `$_SESSION['account_number']` - Customer's account identifier
-   - `$_SESSION['user_name']` - Logged in user's name
-   - `$_SESSION['user_id']` - Unique user ID
-   - `$_SESSION['tech_logged_in']` - Boolean for technician access
-
-### Database Schema Compatibility
-
-When working with database tables in modules:
-
-1. **Verify actual database schema**: Always check the actual database schema before writing queries. 
-   The schema may differ between development and production environments.
-
-2. **Handle missing tables gracefully**: Add try/catch blocks around queries that might reference 
-   tables that don't exist yet.
-
-   ```php
-   try {
-       $result = $this->db->executeQuery("SELECT * FROM some_table");
-       // Process result
-   } catch (\Exception $e) {
-       // Handle gracefully - provide empty data or default values
-       $result = [];
-       error_log("Table might not exist: " . $e->getMessage());
-   }
-   ```
-
-3. **Database schema reference**:
-   - The main database schema is defined in `Database/database_schema.sql`
-   - Key employee tables:
-     - `employees`: Contains basic employee information
-     - `attendance_records`: Tracks time and attendance
-     - `leave_balances`, `leave_requests`: Manage employee leave
-   
-   Be sure to check column names and table existence before writing queries.
+The architecture supports multi-tenant operations with secure database isolation, modern JavaScript patterns, and professional error handling throughout the stack.
