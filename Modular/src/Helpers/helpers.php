@@ -119,11 +119,122 @@ function log_user_action($user_id, $action, $related_id = null, $details = null,
 
 /**
  * Returns a user-friendly error message using the AI error handler
- * @param string $error
+ * Enhanced to support form data and context for better guidance
+ * @param string $error - The technical error message
+ * @param array|null $formData - Form data that was submitted (optional)
+ * @param string|null $context - Additional context (optional)
  * @return string
  */
-function get_friendly_error($error) {
+function get_friendly_error($error, $formData = null, $context = null) {
     require_once __DIR__ . '/../Utils/errorHandler.php';
-    $aiMessage = getFriendlyMessageFromAI($error);
+    $aiMessage = getFriendlyMessageFromAI($error, $formData, $context);
     return $aiMessage ?: 'Please contact Modular Software Support.';
+}
+
+/**
+ * Helper function to send consistent API error responses
+ * This should be used in controllers instead of manually building error arrays
+ * @param string $error - Technical error message
+ * @param array|null $formData - Form data for context
+ * @param string|null $context - Additional context
+ * @param string|null $errorCode - Custom error code
+ * @return array - Standardized error response array
+ */
+function build_error_response($error, $formData = null, $context = null, $errorCode = null) {
+    if (!$errorCode) {
+        $errorCode = strtoupper(substr(md5(uniqid('', true)), 0, 6));
+    }
+    
+    // Get AI-friendly message
+    $friendlyMessage = get_friendly_error($error, $formData, $context);
+    
+    // Log the error
+    $logEntry = date('c') . " | Code: $errorCode | Context: " . ($context ?: 'N/A') . " | Error: $error";
+    if ($formData) {
+        $logEntry .= " | Form Data: " . json_encode($formData);
+    }
+    $logEntry .= "\n";
+    file_put_contents(__DIR__ . '/../../storage/logs/php_errors.log', $logEntry, FILE_APPEND);
+    
+    // Check environment for response format
+    $config = require __DIR__ . '/../Config/app.php';
+    $env = $config['APP_ENV'] ?? 'development';
+    
+    if ($env === 'development') {
+        return [
+            'success' => false,
+            'message' => $friendlyMessage,
+            'technical_error' => $error,
+            'error_code' => $errorCode,
+            'form_data' => $formData,
+            'context' => $context
+        ];
+    } else {
+        return [
+            'success' => false,
+            'message' => $friendlyMessage,
+            'error_code' => $errorCode
+        ];
+    }
+}
+
+/**
+ * Helper function to send consistent API success responses
+ * @param mixed $data - Data to return
+ * @param string $message - Success message
+ * @param array $additional - Additional response fields
+ * @return array - Standardized success response array
+ */
+function build_success_response($data = null, $message = 'Success', $additional = []) {
+    return array_merge([
+        'success' => true,
+        'message' => $message,
+        'data' => $data
+    ], $additional);
+}
+
+/**
+ * Validates required fields in form data
+ * @param array $data - Form data to validate
+ * @param array $requiredFields - Array of required field names
+ * @param array $context - Context for better error messages (optional)
+ * @return array|null - Returns error response array if validation fails, null if valid
+ */
+function validate_required_fields($data, $requiredFields, $context = null) {
+    $missingFields = [];
+    
+    foreach ($requiredFields as $field) {
+        if (!isset($data[$field]) || $data[$field] === '' || $data[$field] === null) {
+            $missingFields[] = $field;
+        }
+    }
+    
+    if (!empty($missingFields)) {
+        $errorMsg = "Missing required fields: " . implode(', ', $missingFields);
+        $contextMsg = $context ? "Validation failed for $context" : "Form validation failed";
+        return build_error_response($errorMsg, $data, $contextMsg, 'VALIDATION_ERROR');
+    }
+    
+    return null; // Validation passed
+}
+
+/**
+ * Validates email format
+ * @param string $email
+ * @return bool
+ */
+function validate_email($email) {
+    return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+}
+
+/**
+ * Sanitizes input data
+ * @param mixed $data
+ * @return mixed
+ */
+function sanitize_input($data) {
+    if (is_array($data)) {
+        return array_map('sanitize_input', $data);
+    }
+    return trim(htmlspecialchars($data, ENT_QUOTES, 'UTF-8'));
 }

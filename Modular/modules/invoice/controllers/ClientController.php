@@ -14,15 +14,19 @@ function list_clients(array $options = []): array {
     $limit    = (int)($options['limit'] ?? 20);
     $sortBy   = $options['sort_by']   ?? 'client_id';
     $sortDir  = strtolower($options['sort_dir'] ?? 'desc');
+    
     $allowedSortFields = ['client_id', 'client_name', 'first_name', 'last_name', 'client_type'];
     if (!in_array($sortBy, $allowedSortFields)) {
         $sortBy = 'client_id';
     }
+    
     $allowedSortDir = ['asc', 'desc'];
     if (!in_array($sortDir, $allowedSortDir)) {
         $sortDir = 'desc';
     }
+    
     $offset = ($page - 1) * $limit;
+    
     $sql = "SELECT c.client_id, c.client_type, c.client_name, c.first_name, c.last_name, c.client_email, c.client_cell, c.client_tell, c.vat_number, c.registration_number, 
         (SELECT COUNT(*) FROM invoicing.documents d2 WHERE d2.client_id = c.client_id) AS total_invoices, 
         (SELECT MAX(d3.issue_date) FROM invoicing.documents d3 WHERE d3.client_id = c.client_id) AS last_invoice_date, 
@@ -34,628 +38,406 @@ function list_clients(array $options = []): array {
         )
         LEFT JOIN invoicing.address a ON a.address_id = ca.address_id AND (a.deleted_at IS NULL OR a.deleted_at > NOW())
         WHERE 1=1";
+        
     $params = [];
+    
     if (!empty($type)) {
         $sql .= " AND c.client_type = :type";
         $params[':type'] = $type;
     }
+    
     if (!empty($search)) {
         $sql .= " AND (c.client_name ILIKE :search OR c.first_name ILIKE :search OR c.last_name ILIKE :search)";
         $params[':search'] = '%' . $search . '%';
     }
+    
     $sql .= " ORDER BY $sortBy $sortDir LIMIT :limit OFFSET :offset";
+    
     try {
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        
         foreach ($params as $key => $value) {
             $stmt->bindValue($key, $value);
         }
+        
         $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
         // Get total count for pagination
         $countSql = "SELECT COUNT(*) FROM invoicing.clients c WHERE 1=1";
         if (!empty($type)) $countSql .= " AND c.client_type = :type";
         if (!empty($search)) $countSql .= " AND (c.client_name ILIKE :search OR c.first_name ILIKE :search OR c.last_name ILIKE :search)";
+        
         $countStmt = $conn->prepare($countSql);
         foreach ($params as $key => $value) {
             $countStmt->bindValue($key, $value);
         }
         $countStmt->execute();
         $total = $countStmt->fetchColumn();
-        return [
-            'success' => true,
-            'message' => 'Clients retrieved successfully',
-            'data' => $data,
+        
+        return build_success_response($data, 'Clients retrieved successfully', [
             'total' => (int)$total,
             'page' => $page,
             'limit' => $limit
-        ];
+        ]);
+        
     } catch (\PDOException $e) {
         $msg = "Query failed: " . $e->getMessage();
         error_log($msg);
         log_user_action(null, 'list_clients', null, $msg);
-        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
-        return [
-            'success' => false,
-            'message' => get_friendly_error($e->getMessage()),
-            'error' => $e->getMessage(),
-            'data' => null,
-            'error_code' => 'CLIENT_LIST_ERROR'
-        ];
+        
+        return build_error_response($msg, $options, 'Client listing query failed', 'CLIENT_LIST_ERROR');
     }
 }
 
 function get_client_details(int $client_id): array {
     global $conn;
+    
     try {
         $sql = "SELECT * FROM invoicing.clients WHERE client_id = :client_id LIMIT 1";
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
         $stmt->execute();
         $client = $stmt->fetch(PDO::FETCH_ASSOC);
+        
         if (!$client) {
             $msg = 'Client not found';
             error_log($msg);
             log_user_action(null, 'get_client_details', $client_id, $msg);
-            require_once __DIR__ . '/../../../src/Helpers/helpers.php';
-            return [
-                'success' => false,
-                'message' => get_friendly_error($msg),
-                'data' => null,
-                'error_code' => 'CLIENT_NOT_FOUND'
-            ];
+            
+            return build_error_response($msg, ['client_id' => $client_id], 'Client retrieval failed', 'CLIENT_NOT_FOUND');
         }
+        
+        // Get addresses
         $addressSql = "SELECT a.* FROM invoicing.address a INNER JOIN invoicing.client_addresses ca ON ca.address_id = a.address_id WHERE ca.client_id = :client_id AND (a.deleted_at IS NULL OR a.deleted_at > NOW())";
         $addressStmt = $conn->prepare($addressSql);
         $addressStmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
         $addressStmt->execute();
         $addresses = $addressStmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Get contacts
         $contactSql = "SELECT cp.* FROM invoicing.contact_person cp INNER JOIN invoicing.client_contacts cc ON cc.contact_id = cp.contact_id WHERE cc.client_id = :client_id AND (cp.deleted_at IS NULL OR cp.deleted_at > NOW())";
         $contactStmt = $conn->prepare($contactSql);
         $contactStmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
         $contactStmt->execute();
         $contacts = $contactStmt->fetchAll(PDO::FETCH_ASSOC);
+        
         $client['addresses'] = $addresses;
         $client['contacts'] = $contacts;
-        return [
-            'success' => true,
-            'message' => 'Client details retrieved successfully',
-            'data' => $client
-        ];
+        
+        return build_success_response($client, 'Client details retrieved successfully');
+        
     } catch (\PDOException $e) {
-        $msg = "Error in get_client_details: " . $e->getMessage();
+        $msg = "Query failed: " . $e->getMessage();
         error_log($msg);
         log_user_action(null, 'get_client_details', $client_id, $msg);
-        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
-        return [
-            'success' => false,
-            'message' => get_friendly_error($e->getMessage()),
-            'error' => $e->getMessage(),
-            'data' => null,
-            'error_code' => 'CLIENT_DETAILS_ERROR'
-        ];
+        
+        return build_error_response($msg, ['client_id' => $client_id], 'Client details retrieval failed', 'CLIENT_DETAILS_ERROR');
     }
 }
 
 function create_client(array $data): array {
     global $conn;
-    // Permission check (assume $data['created_by'] is set)
-    $user_id = $data['created_by'] ?? ($_SESSION['tech_id'] ?? null);
-    if (!check_user_permission($user_id, 'create_client')) {
-        $msg = "Permission denied for user $user_id to create client";
-        error_log($msg);
-        log_user_action($user_id, 'create_client', null, $msg);
-        return [
-            'success' => false,
-            'message' => $msg,
-            'data' => null,
-            'error_code' => 'PERMISSION_DENIED'
-        ];
+    
+    // Validate required fields
+    $requiredFields = ['client_name', 'client_type'];
+    $validation = validate_required_fields($data, $requiredFields, 'client creation');
+    if ($validation) {
+        return $validation;
     }
-    // 1. Insert client
-    $clientFields = [
-        'client_type',
-        'client_name',
-        'client_email',
-        'client_cell',
-        'client_tell',
-        'client_status',
-        'first_name',
-        'last_name',
-        'dob',
-        'gender',
-        'loyalty_level',
-        'title',
-        'initials',
-        'registration_number',
-        'vat_number',
-        'website',
-        'industry'
-    ];
-
-    $insertFields = [];
-    $insertValues = [];
-    $params = [];
-
-    foreach ($clientFields as $field) {
-        if (array_key_exists($field, $data)) {
-            $insertFields[] = $field;
-            $insertValues[] = ':' . $field;
-            $params[':' . $field] = $data[$field];
-        }
+    
+    // Validate email if provided
+    if (!empty($data['client_email']) && !validate_email($data['client_email'])) {
+        return build_error_response('Invalid email format', $data, 'Client email validation', 'INVALID_EMAIL');
     }
-
-    if (empty($insertFields)) {
-        $msg = "create_client error: No valid fields provided.";
-        error_log($msg);
-        log_user_action($user_id, 'create_client', null, $msg);
-        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
-        return [
-            'success' => false,
-            'message' => get_friendly_error($msg),
-            'data' => null,
-            'error_code' => 'CLIENT_CREATE_ERROR'
-        ];
-    }
-
-    $sql = "INSERT INTO invoicing.clients (" . implode(', ', $insertFields) . ")
-            VALUES (" . implode(', ', $insertValues) . ")";
-
+    
+    // Sanitize input data
+    $sanitizedData = sanitize_input($data);
+    
     try {
         $conn->beginTransaction();
-
+        
+        // Insert client
+        $sql = "INSERT INTO invoicing.clients (client_type, client_name, first_name, last_name, client_email, client_cell, client_tell, vat_number, registration_number, created_by, updated_by) 
+                VALUES (:client_type, :client_name, :first_name, :last_name, :client_email, :client_cell, :client_tell, :vat_number, :registration_number, :created_by, :updated_by) 
+                RETURNING client_id";
+                
         $stmt = $conn->prepare($sql);
-        foreach ($params as $key => $value) {
-            if (is_null($value)) {
-                $stmt->bindValue($key, null, PDO::PARAM_NULL);
-            } else {
-                $stmt->bindValue($key, $value);
-            }
-        }
+        $stmt->bindValue(':client_type', $sanitizedData['client_type']);
+        $stmt->bindValue(':client_name', $sanitizedData['client_name']);
+        $stmt->bindValue(':first_name', $sanitizedData['first_name'] ?? null);
+        $stmt->bindValue(':last_name', $sanitizedData['last_name'] ?? null);
+        $stmt->bindValue(':client_email', $sanitizedData['client_email'] ?? null);
+        $stmt->bindValue(':client_cell', $sanitizedData['client_cell'] ?? null);
+        $stmt->bindValue(':client_tell', $sanitizedData['client_tell'] ?? null);
+        $stmt->bindValue(':vat_number', $sanitizedData['vat_number'] ?? null);
+        $stmt->bindValue(':registration_number', $sanitizedData['registration_number'] ?? null);
+        $stmt->bindValue(':created_by', $_SESSION['user_id'] ?? null, PDO::PARAM_INT);
+        $stmt->bindValue(':updated_by', $_SESSION['user_id'] ?? null, PDO::PARAM_INT);
+        
         $stmt->execute();
-        $client_id = $conn->lastInsertId();
-
-        // 2. Insert address if provided
-        $address_id = null;
-        if (!empty($data['address'])) {
-            $addressFields = [
-                'address_type_id',
-                'address_line1',
-                'address_line2',
-                'city',
-                'suburb',
-                'province',
-                'postal_code',
-                'country',
-                'is_primary'
-            ];
-            $addressData = $data['address'];
-            $addressInsertFields = [];
-            $addressInsertValues = [];
-            $addressParams = [];
-
-            foreach ($addressFields as $field) {
-                if (array_key_exists($field, $addressData)) {
-                    $addressInsertFields[] = $field;
-                    $addressInsertValues[] = ':' . $field;
-                    $addressParams[':' . $field] = $addressData[$field];
-                }
-            }
-
-            if (!empty($addressInsertFields)) {
-                $addressSql = "INSERT INTO invoicing.address (" . implode(', ', $addressInsertFields) . ")
-                               VALUES (" . implode(', ', $addressInsertValues) . ")";
+        $client_id = $stmt->fetchColumn();
+        
+        if (!$client_id) {
+            throw new Exception('Failed to create client - no ID returned');
+        }
+        
+        // Handle addresses if provided
+        if (!empty($data['addresses']) && is_array($data['addresses'])) {
+            foreach ($data['addresses'] as $address) {
+                if (empty($address['address_line1'])) continue;
+                
+                // Insert address
+                $addressSql = "INSERT INTO invoicing.address (address_line1, address_line2, city, suburb, province, country, postal_code, created_by, updated_by) 
+                              VALUES (:address_line1, :address_line2, :city, :suburb, :province, :country, :postal_code, :created_by, :updated_by) 
+                              RETURNING address_id";
+                              
                 $addressStmt = $conn->prepare($addressSql);
-                foreach ($addressParams as $key => $value) {
-                    if (is_null($value)) {
-                        $addressStmt->bindValue($key, null, PDO::PARAM_NULL);
-                    } else {
-                        $addressStmt->bindValue($key, $value);
-                    }
-                }
+                $addressStmt->bindValue(':address_line1', sanitize_input($address['address_line1']));
+                $addressStmt->bindValue(':address_line2', sanitize_input($address['address_line2'] ?? null));
+                $addressStmt->bindValue(':city', sanitize_input($address['city'] ?? null));
+                $addressStmt->bindValue(':suburb', sanitize_input($address['suburb'] ?? null));
+                $addressStmt->bindValue(':province', sanitize_input($address['province'] ?? null));
+                $addressStmt->bindValue(':country', sanitize_input($address['country'] ?? null));
+                $addressStmt->bindValue(':postal_code', sanitize_input($address['postal_code'] ?? null));
+                $addressStmt->bindValue(':created_by', $_SESSION['user_id'] ?? null, PDO::PARAM_INT);
+                $addressStmt->bindValue(':updated_by', $_SESSION['user_id'] ?? null, PDO::PARAM_INT);
+                
                 $addressStmt->execute();
-                $address_id = $conn->lastInsertId();
-
-                // Link client to address
-                $linkAddressSql = "INSERT INTO invoicing.client_addresses (client_id, address_id) VALUES (:client_id, :address_id)";
-                $linkAddressStmt = $conn->prepare($linkAddressSql);
-                $linkAddressStmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
-                $linkAddressStmt->bindValue(':address_id', $address_id, PDO::PARAM_INT);
-                $linkAddressStmt->execute();
+                $address_id = $addressStmt->fetchColumn();
+                
+                // Link address to client
+                $linkSql = "INSERT INTO invoicing.client_addresses (client_id, address_id) VALUES (:client_id, :address_id)";
+                $linkStmt = $conn->prepare($linkSql);
+                $linkStmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+                $linkStmt->bindValue(':address_id', $address_id, PDO::PARAM_INT);
+                $linkStmt->execute();
             }
         }
-
-        // 3. Insert contact person if provided
-        $contact_id = null;
-        if (!empty($data['contact'])) {
-            $contactFields = [
-                'contact_type_id',
-                'first_name',
-                'last_name',
-                'position',
-                'email',
-                'phone',
-                'cell',
-                'is_primary'
-            ];
-            $contactData = $data['contact'];
-            $contactInsertFields = [];
-            $contactInsertValues = [];
-            $contactParams = [];
-
-            foreach ($contactFields as $field) {
-                if (array_key_exists($field, $contactData)) {
-                    $contactInsertFields[] = $field;
-                    $contactInsertValues[] = ':' . $field;
-                    $contactParams[':' . $field] = $contactData[$field];
+        
+        // Handle contacts if provided
+        if (!empty($data['contacts']) && is_array($data['contacts'])) {
+            foreach ($data['contacts'] as $contact) {
+                if (empty($contact['contact_name'])) continue;
+                
+                // Validate contact email if provided
+                if (!empty($contact['contact_email']) && !validate_email($contact['contact_email'])) {
+                    throw new Exception('Invalid email format for contact: ' . $contact['contact_name']);
                 }
-            }
-
-            if (!empty($contactInsertFields)) {
-                $contactSql = "INSERT INTO invoicing.contact_person (" . implode(', ', $contactInsertFields) . ")
-                               VALUES (" . implode(', ', $contactInsertValues) . ")";
+                
+                // Insert contact
+                $contactSql = "INSERT INTO invoicing.contact_person (contact_name, contact_position, contact_email, contact_phone, created_by, updated_by) 
+                              VALUES (:contact_name, :contact_position, :contact_email, :contact_phone, :created_by, :updated_by) 
+                              RETURNING contact_id";
+                              
                 $contactStmt = $conn->prepare($contactSql);
-                foreach ($contactParams as $key => $value) {
-                    if (is_null($value)) {
-                        $contactStmt->bindValue($key, null, PDO::PARAM_NULL);
-                    } else {
-                        $contactStmt->bindValue($key, $value);
-                    }
-                }
+                $contactStmt->bindValue(':contact_name', sanitize_input($contact['contact_name']));
+                $contactStmt->bindValue(':contact_position', sanitize_input($contact['contact_position'] ?? null));
+                $contactStmt->bindValue(':contact_email', sanitize_input($contact['contact_email'] ?? null));
+                $contactStmt->bindValue(':contact_phone', sanitize_input($contact['contact_phone'] ?? null));
+                $contactStmt->bindValue(':created_by', $_SESSION['user_id'] ?? null, PDO::PARAM_INT);
+                $contactStmt->bindValue(':updated_by', $_SESSION['user_id'] ?? null, PDO::PARAM_INT);
+                
                 $contactStmt->execute();
-                $contact_id = $conn->lastInsertId();
-
-                // Link client to contact
-                $linkContactSql = "INSERT INTO invoicing.client_contacts (client_id, contact_id) VALUES (:client_id, :contact_id)";
-                $linkContactStmt = $conn->prepare($linkContactSql);
-                $linkContactStmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
-                $linkContactStmt->bindValue(':contact_id', $contact_id, PDO::PARAM_INT);
-                $linkContactStmt->execute();
+                $contact_id = $contactStmt->fetchColumn();
+                
+                // Link contact to client
+                $linkSql = "INSERT INTO invoicing.client_contacts (client_id, contact_id) VALUES (:client_id, :contact_id)";
+                $linkStmt = $conn->prepare($linkSql);
+                $linkStmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+                $linkStmt->bindValue(':contact_id', $contact_id, PDO::PARAM_INT);
+                $linkStmt->execute();
             }
         }
-
+        
         $conn->commit();
-        log_user_action($user_id, 'create_client', $client_id, json_encode($data));
-        send_notification($user_id, "Client #$client_id created successfully.");
-        return [
-            'success' => true,
-            'message' => 'Client created successfully',
-            'data' => ['client_id' => (int)$client_id]
-        ];
-    } catch (\PDOException $e) {
-        if ($conn->inTransaction()) {
-            $conn->rollBack();
+        
+        // Log the action
+        log_user_action($_SESSION['user_id'] ?? null, 'create_client', $client_id, 'Client created successfully', 'invoicing', 'client', null, $sanitizedData);
+        
+        // Get the created client details to return
+        $result = get_client_details($client_id);
+        if ($result['success']) {
+            return build_success_response($result['data'], 'Client created successfully', ['client_id' => $client_id]);
+        } else {
+            return build_success_response(['client_id' => $client_id], 'Client created successfully, but failed to retrieve details', ['client_id' => $client_id]);
         }
-        $msg = "Error in create_client: " . $e->getMessage();
+        
+    } catch (\PDOException $e) {
+        $conn->rollBack();
+        $msg = "Database error during client creation: " . $e->getMessage();
         error_log($msg);
-        log_user_action($user_id, 'create_client', null, $msg);
-        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
-        return [
-            'success' => false,
-            'message' => get_friendly_error($e->getMessage()),
-            'error' => $e->getMessage(),
-            'data' => null,
-            'error_code' => 'CLIENT_CREATE_ERROR'
-        ];
+        log_user_action($_SESSION['user_id'] ?? null, 'create_client_failed', null, $msg);
+        
+        return build_error_response($msg, $data, 'Client creation failed', 'CLIENT_CREATE_ERROR');
+        
+    } catch (Exception $e) {
+        $conn->rollBack();
+        $msg = "Error during client creation: " . $e->getMessage();
+        error_log($msg);
+        log_user_action($_SESSION['user_id'] ?? null, 'create_client_failed', null, $msg);
+        
+        return build_error_response($msg, $data, 'Client creation failed', 'CLIENT_CREATE_ERROR');
     }
 }
 
-function update_client(int $client_id, array $data): array {
+function update_client(array $data): array {
     global $conn;
-    $user_id = $data['updated_by'] ?? ($_SESSION['tech_id'] ?? null);
-    if (!check_user_permission($user_id, 'update_client', $client_id)) {
-        $msg = "Permission denied for user $user_id to update client $client_id";
-        error_log($msg);
-        log_user_action($user_id, 'update_client', $client_id, $msg);
-        return [
-            'success' => false,
-            'message' => $msg,
-            'data' => null,
-            'error_code' => 'PERMISSION_DENIED'
-        ];
+    
+    // Validate required fields
+    $requiredFields = ['client_id', 'client_name', 'client_type'];
+    $validation = validate_required_fields($data, $requiredFields, 'client update');
+    if ($validation) {
+        return $validation;
     }
+    
+    $client_id = (int)$data['client_id'];
+    
+    // Validate email if provided
+    if (!empty($data['client_email']) && !validate_email($data['client_email'])) {
+        return build_error_response('Invalid email format', $data, 'Client email validation', 'INVALID_EMAIL');
+    }
+    
+    // Sanitize input data
+    $sanitizedData = sanitize_input($data);
+    
     try {
         $conn->beginTransaction();
-
-        // 1. Update client fields
-        $clientFields = [
-            'client_type',
-            'client_name',
-            'client_email',
-            'client_cell',
-            'client_tell',
-            'client_status',
-            'first_name',
-            'last_name',
-            'dob',
-            'gender',
-            'loyalty_level',
-            'title',
-            'initials',
-            'registration_number',
-            'vat_number',
-            'website',
-            'industry'
-        ];
-
-        $updateFields = [];
-        $params = [];
-        foreach ($clientFields as $field) {
-            if (array_key_exists($field, $data)) {
-                $updateFields[] = "$field = :$field";
-                $params[":$field"] = $data[$field];
-            }
+        
+        // Check if client exists
+        $checkSql = "SELECT client_id FROM invoicing.clients WHERE client_id = :client_id";
+        $checkStmt = $conn->prepare($checkSql);
+        $checkStmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+        $checkStmt->execute();
+        
+        if (!$checkStmt->fetchColumn()) {
+            return build_error_response('Client not found', $data, 'Client update validation', 'CLIENT_NOT_FOUND');
         }
-        if (!empty($updateFields)) {
-            $sql = "UPDATE invoicing.clients SET " . implode(', ', $updateFields) . ", updated_at = CURRENT_TIMESTAMP WHERE client_id = :client_id";
-            $params[':client_id'] = $client_id;
-            $stmt = $conn->prepare($sql);
-            foreach ($params as $key => $value) {
-                if (is_null($value)) {
-                    $stmt->bindValue($key, null, PDO::PARAM_NULL);
-                } else {
-                    $stmt->bindValue($key, $value);
-                }
-            }
-            $stmt->execute();
-        }
-
-        // 2. Update or insert address if provided
-        if (!empty($data['address'])) {
-            $addressFields = [
-                'address_type_id',
-                'address_line1',
-                'address_line2',
-                'city',
-                'suburb',
-                'province',
-                'postal_code',
-                'country',
-                'is_primary'
-            ];
-            $addressData = $data['address'];
-
-            // Get current address_id for this client (if any)
-            $addressIdSql = "SELECT address_id FROM invoicing.client_addresses WHERE client_id = :client_id LIMIT 1";
-            $addressIdStmt = $conn->prepare($addressIdSql);
-            $addressIdStmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
-            $addressIdStmt->execute();
-            $currentAddress = $addressIdStmt->fetch(PDO::FETCH_ASSOC);
-
-            if ($currentAddress && !empty($currentAddress['address_id'])) {
-                // Update existing address
-                $address_id = $currentAddress['address_id'];
-                $updateAddressFields = [];
-                $addressParams = [];
-                foreach ($addressFields as $field) {
-                    if (array_key_exists($field, $addressData)) {
-                        $updateAddressFields[] = "$field = :$field";
-                        $addressParams[":$field"] = $addressData[$field];
-                    }
-                }
-                if (!empty($updateAddressFields)) {
-                    $addressSql = "UPDATE invoicing.address SET " . implode(', ', $updateAddressFields) . ", updated_at = CURRENT_TIMESTAMP WHERE address_id = :address_id";
-                    $addressParams[':address_id'] = $address_id;
-                    $addressStmt = $conn->prepare($addressSql);
-                    foreach ($addressParams as $key => $value) {
-                        if (is_null($value)) {
-                            $addressStmt->bindValue($key, null, PDO::PARAM_NULL);
-                        } else {
-                            $addressStmt->bindValue($key, $value);
-                        }
-                    }
-                    $addressStmt->execute();
-                }
-            } else {
-                // Insert new address and link
-                $addressInsertFields = [];
-                $addressInsertValues = [];
-                $addressParams = [];
-                foreach ($addressFields as $field) {
-                    if (array_key_exists($field, $addressData)) {
-                        $addressInsertFields[] = $field;
-                        $addressInsertValues[] = ':' . $field;
-                        $addressParams[':' . $field] = $addressData[$field];
-                    }
-                }
-                if (!empty($addressInsertFields)) {
-                    $addressSql = "INSERT INTO invoicing.address (" . implode(', ', $addressInsertFields) . ")
-                                   VALUES (" . implode(', ', $addressInsertValues) . ")";
-                    $addressStmt = $conn->prepare($addressSql);
-                    foreach ($addressParams as $key => $value) {
-                        if (is_null($value)) {
-                            $addressStmt->bindValue($key, null, PDO::PARAM_NULL);
-                        } else {
-                            $addressStmt->bindValue($key, $value);
-                        }
-                    }
-                    $addressStmt->execute();
-                    $address_id = $conn->lastInsertId();
-
-                    // Link client to address
-                    $linkAddressSql = "INSERT INTO invoicing.client_addresses (client_id, address_id) VALUES (:client_id, :address_id)";
-                    $linkAddressStmt = $conn->prepare($linkAddressSql);
-                    $linkAddressStmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
-                    $linkAddressStmt->bindValue(':address_id', $address_id, PDO::PARAM_INT);
-                    $linkAddressStmt->execute();
-                }
-            }
-        }
-
-        // 3. Update or insert contact person if provided
-        if (!empty($data['contact'])) {
-            $contactFields = [
-                'contact_type_id',
-                'first_name',
-                'last_name',
-                'position',
-                'email',
-                'phone',
-                'cell',
-                'is_primary'
-            ];
-            $contactData = $data['contact'];
-
-            // Get current contact_id for this client (if any)
-            $contactIdSql = "SELECT contact_id FROM invoicing.client_contacts WHERE client_id = :client_id LIMIT 1";
-            $contactIdStmt = $conn->prepare($contactIdSql);
-            $contactIdStmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
-            $contactIdStmt->execute();
-            $currentContact = $contactIdStmt->fetch(PDO::FETCH_ASSOC);
-
-            if ($currentContact && !empty($currentContact['contact_id'])) {
-                // Update existing contact
-                $contact_id = $currentContact['contact_id'];
-                $updateContactFields = [];
-                $contactParams = [];
-                foreach ($contactFields as $field) {
-                    if (array_key_exists($field, $contactData)) {
-                        $updateContactFields[] = "$field = :$field";
-                        $contactParams[":$field"] = $contactData[$field];
-                    }
-                }
-                if (!empty($updateContactFields)) {
-                    $contactSql = "UPDATE invoicing.contact_person SET " . implode(', ', $updateContactFields) . ", updated_at = CURRENT_TIMESTAMP WHERE contact_id = :contact_id";
-                    $contactParams[':contact_id'] = $contact_id;
-                    $contactStmt = $conn->prepare($contactSql);
-                    foreach ($contactParams as $key => $value) {
-                        if (is_null($value)) {
-                            $contactStmt->bindValue($key, null, PDO::PARAM_NULL);
-                        } else {
-                            $contactStmt->bindValue($key, $value);
-                        }
-                    }
-                    $contactStmt->execute();
-                }
-            } else {
-                // Insert new contact and link
-                $contactInsertFields = [];
-                $contactInsertValues = [];
-                $contactParams = [];
-                foreach ($contactFields as $field) {
-                    if (array_key_exists($field, $contactData)) {
-                        $contactInsertFields[] = $field;
-                        $contactInsertValues[] = ':' . $field;
-                        $contactParams[':' . $field] = $contactData[$field];
-                    }
-                }
-                if (!empty($contactInsertFields)) {
-                    $contactSql = "INSERT INTO invoicing.contact_person (" . implode(', ', $contactInsertFields) . ")
-                                   VALUES (" . implode(', ', $contactInsertValues) . ")";
-                    $contactStmt = $conn->prepare($contactSql);
-                    foreach ($contactParams as $key => $value) {
-                        if (is_null($value)) {
-                            $contactStmt->bindValue($key, null, PDO::PARAM_NULL);
-                        } else {
-                            $contactStmt->bindValue($key, $value);
-                        }
-                    }
-                    $contactStmt->execute();
-                    $contact_id = $conn->lastInsertId();
-
-                    // Link client to contact
-                    $linkContactSql = "INSERT INTO invoicing.client_contacts (client_id, contact_id) VALUES (:client_id, :contact_id)";
-                    $linkContactStmt = $conn->prepare($linkContactSql);
-                    $linkContactStmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
-                    $linkContactStmt->bindValue(':contact_id', $contact_id, PDO::PARAM_INT);
-                    $linkContactStmt->execute();
-                }
-            }
-        }
-
+        
+        // Update client
+        $sql = "UPDATE invoicing.clients SET 
+                client_type = :client_type, 
+                client_name = :client_name, 
+                first_name = :first_name, 
+                last_name = :last_name, 
+                client_email = :client_email, 
+                client_cell = :client_cell, 
+                client_tell = :client_tell, 
+                vat_number = :vat_number, 
+                registration_number = :registration_number, 
+                updated_by = :updated_by, 
+                updated_at = NOW() 
+                WHERE client_id = :client_id";
+                
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+        $stmt->bindValue(':client_type', $sanitizedData['client_type']);
+        $stmt->bindValue(':client_name', $sanitizedData['client_name']);
+        $stmt->bindValue(':first_name', $sanitizedData['first_name'] ?? null);
+        $stmt->bindValue(':last_name', $sanitizedData['last_name'] ?? null);
+        $stmt->bindValue(':client_email', $sanitizedData['client_email'] ?? null);
+        $stmt->bindValue(':client_cell', $sanitizedData['client_cell'] ?? null);
+        $stmt->bindValue(':client_tell', $sanitizedData['client_tell'] ?? null);
+        $stmt->bindValue(':vat_number', $sanitizedData['vat_number'] ?? null);
+        $stmt->bindValue(':registration_number', $sanitizedData['registration_number'] ?? null);
+        $stmt->bindValue(':updated_by', $_SESSION['user_id'] ?? null, PDO::PARAM_INT);
+        
+        $stmt->execute();
+        
         $conn->commit();
-        log_user_action($user_id, 'update_client', $client_id, json_encode($data));
-        send_notification($user_id, "Client #$client_id updated successfully.");
-        return [
-            'success' => true,
-            'message' => 'Client updated successfully',
-            'data' => ['client_id' => $client_id]
-        ];
-    } catch (\PDOException $e) {
-        if ($conn->inTransaction()) {
-            $conn->rollBack();
+        
+        // Log the action
+        log_user_action($_SESSION['user_id'] ?? null, 'update_client', $client_id, 'Client updated successfully', 'invoicing', 'client', null, $sanitizedData);
+        
+        // Get the updated client details to return
+        $result = get_client_details($client_id);
+        if ($result['success']) {
+            return build_success_response($result['data'], 'Client updated successfully');
+        } else {
+            return build_success_response(['client_id' => $client_id], 'Client updated successfully, but failed to retrieve updated details');
         }
-        $msg = "Error in update_client: " . $e->getMessage();
+        
+    } catch (\PDOException $e) {
+        $conn->rollBack();
+        $msg = "Database error during client update: " . $e->getMessage();
         error_log($msg);
-        log_user_action($user_id, 'update_client', $client_id, $msg);
-        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
-        return [
-            'success' => false,
-            'message' => get_friendly_error($e->getMessage()),
-            'error' => $e->getMessage(),
-            'data' => null,
-            'error_code' => 'CLIENT_UPDATE_ERROR'
-        ];
+        log_user_action($_SESSION['user_id'] ?? null, 'update_client_failed', $client_id, $msg);
+        
+        return build_error_response($msg, $data, 'Client update failed', 'CLIENT_UPDATE_ERROR');
+        
+    } catch (Exception $e) {
+        $conn->rollBack();
+        $msg = "Error during client update: " . $e->getMessage();
+        error_log($msg);
+        log_user_action($_SESSION['user_id'] ?? null, 'update_client_failed', $client_id, $msg);
+        
+        return build_error_response($msg, $data, 'Client update failed', 'CLIENT_UPDATE_ERROR');
     }
 }
 
 function delete_client(int $client_id, int $deleted_by): array {
-    $user_id = $deleted_by ?? ($_SESSION['tech_id'] ?? null);
-    if (!check_user_permission($user_id, 'delete_client', $client_id)) {
-        $msg = "Permission denied for user $user_id to delete client $client_id";
-        error_log($msg);
-        log_user_action($user_id, 'delete_client', $client_id, $msg);
-        return [
-            'success' => false,
-            'message' => $msg,
-            'data' => null,
-            'error_code' => 'PERMISSION_DENIED'
-        ];
-    }
     global $conn;
+    
     try {
-        $sqlCheck = "SELECT COUNT(*) FROM invoicing.documents WHERE client_id = :client_id";
-        $stmtCheck = $conn->prepare($sqlCheck);
-        $stmtCheck->bindValue(':client_id', $client_id, PDO::PARAM_INT);
-        $stmtCheck->execute();
-        $docCount = (int)$stmtCheck->fetchColumn();
-        if ($docCount > 0) {
-            $msg = 'Client has linked documents, cannot delete';
-            error_log($msg);
-            log_user_action($user_id, 'delete_client', $client_id, $msg);
-            return [
-                'success' => false,
-                'message' => $msg,
-                'data' => null,
-                'error_code' => 'CLIENT_LINKED_DOCUMENTS'
-            ];
-        }
         $conn->beginTransaction();
-        $sqlDelete = "UPDATE invoicing.clients SET deleted_at = NOW() WHERE client_id = :client_id";
-        $stmtDelete = $conn->prepare($sqlDelete);
-        $stmtDelete->bindValue(':client_id', $client_id, PDO::PARAM_INT);
-        $stmtDelete->execute();
-        $sqlDeleteClientAddresses = "DELETE FROM invoicing.client_addresses WHERE client_id = :client_id";
-        $stmtAddr = $conn->prepare($sqlDeleteClientAddresses);
-        $stmtAddr->bindValue(':client_id', $client_id, PDO::PARAM_INT);
-        $stmtAddr->execute();
-        $sqlDeleteClientContacts = "DELETE FROM invoicing.client_contacts WHERE client_id = :client_id";
-        $stmtCont = $conn->prepare($sqlDeleteClientContacts);
-        $stmtCont->bindValue(':client_id', $client_id, PDO::PARAM_INT);
-        $stmtCont->execute();
-        $conn->commit();
-        log_user_action($user_id, 'delete_client', $client_id);
-        send_notification($user_id, "Client #$client_id deleted.");
-        return [
-            'success' => true,
-            'message' => 'Client deleted successfully',
-            'data' => ['client_id' => $client_id]
-        ];
-    } catch (\PDOException $e) {
-        if ($conn->inTransaction()) {
-            $conn->rollBack();
+        
+        // Check if client exists
+        $checkSql = "SELECT client_id, client_name FROM invoicing.clients WHERE client_id = :client_id";
+        $checkStmt = $conn->prepare($checkSql);
+        $checkStmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+        $checkStmt->execute();
+        $client = $checkStmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$client) {
+            return build_error_response('Client not found', ['client_id' => $client_id], 'Client deletion validation', 'CLIENT_NOT_FOUND');
         }
-        $msg = "Error in delete_client: " . $e->getMessage();
+        
+        // Check if client has associated documents
+        $docCheckSql = "SELECT COUNT(*) FROM invoicing.documents WHERE client_id = :client_id";
+        $docCheckStmt = $conn->prepare($docCheckSql);
+        $docCheckStmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+        $docCheckStmt->execute();
+        $docCount = $docCheckStmt->fetchColumn();
+        
+        if ($docCount > 0) {
+            return build_error_response(
+                "Cannot delete client '{$client['client_name']}' because it has $docCount associated documents. Please delete or reassign the documents first.",
+                ['client_id' => $client_id, 'client_name' => $client['client_name'], 'document_count' => $docCount],
+                'Client deletion validation',
+                'CLIENT_HAS_DOCUMENTS'
+            );
+        }
+        
+        // Soft delete client
+        $sql = "UPDATE invoicing.clients SET deleted_by = :deleted_by, deleted_at = NOW() WHERE client_id = :client_id";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+        $stmt->bindValue(':deleted_by', $deleted_by, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        $conn->commit();
+        
+        // Log the action
+        log_user_action($deleted_by, 'delete_client', $client_id, "Client '{$client['client_name']}' deleted successfully", 'invoicing', 'client', $client, null);
+        
+        return build_success_response(null, "Client '{$client['client_name']}' deleted successfully");
+        
+    } catch (\PDOException $e) {
+        $conn->rollBack();
+        $msg = "Database error during client deletion: " . $e->getMessage();
         error_log($msg);
-        log_user_action($deleted_by, 'delete_client', $client_id, $msg);
-        require_once __DIR__ . '/../../../src/Helpers/helpers.php';
-        return [
-            'success' => false,
-            'message' => get_friendly_error($e->getMessage()),
-            'error' => $e->getMessage(),
-            'data' => null,
-            'error_code' => 'CLIENT_DELETE_ERROR'
-        ];
+        log_user_action($deleted_by, 'delete_client_failed', $client_id, $msg);
+        
+        return build_error_response($msg, ['client_id' => $client_id, 'deleted_by' => $deleted_by], 'Client deletion failed', 'CLIENT_DELETE_ERROR');
+        
+    } catch (Exception $e) {
+        $conn->rollBack();
+        $msg = "Error during client deletion: " . $e->getMessage();
+        error_log($msg);
+        log_user_action($deleted_by, 'delete_client_failed', $client_id, $msg);
+        
+        return build_error_response($msg, ['client_id' => $client_id, 'deleted_by' => $deleted_by], 'Client deletion failed', 'CLIENT_DELETE_ERROR');
     }
 }
