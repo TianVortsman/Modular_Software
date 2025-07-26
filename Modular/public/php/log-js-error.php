@@ -1,30 +1,46 @@
 <?php
 // Modular/public/php/log-js-error.php
+require_once __DIR__ . '/../../src/Utils/errorHandler.php';
+
 header('Content-Type: application/json');
 
 $input = json_decode(file_get_contents('php://input'), true);
 if (!$input) {
-    echo json_encode(['success' => false, 'message' => 'Invalid input']);
-    http_response_code(400);
-    exit;
+    sendApiErrorResponse('Invalid input data', null, 'JavaScript Error Logging', 'INVALID_INPUT', 400);
 }
 
-$logLine = date('c') . ' | Code: ' . ($input['code'] ?? 'NOCODE') . ' | ' .
-    ($input['message'] ?? 'No message') . ' | ' .
-    ($input['source'] ?? 'No source') . ' | line ' .
-    ($input['lineno'] ?? '??') . ' | col ' .
-    ($input['colno'] ?? '??') . ' | stack: ' .
-    ($input['stack'] ?? 'No stack') . "\n";
+$errorMessage = $input['message'] ?? 'No message';
+$source = $input['source'] ?? 'No source';
+$lineno = $input['lineno'] ?? '??';
+$colno = $input['colno'] ?? '??';
+$stack = $input['stack'] ?? 'No stack';
+$errorCode = $input['code'] ?? 'NOCODE';
+$url = $input['url'] ?? 'Unknown URL';
+$userAgent = $input['userAgent'] ?? 'Unknown User Agent';
+$timestamp = $input['timestamp'] ?? date('c');
+
+// Build comprehensive log entry
+$logLine = "$timestamp | Code: $errorCode | URL: $url | Error: $errorMessage | Source: $source | Line: $lineno | Column: $colno | Stack: $stack | UserAgent: $userAgent\n";
 
 file_put_contents(__DIR__ . '/../../storage/logs/js_errors.log', $logLine, FILE_APPEND);
 
-// Use AI to generate a friendly error message
-require_once __DIR__ . '/../../src/Utils/errorHandler.php';
-$friendly = getFriendlyMessageFromAI($input['message'] ?? 'A JavaScript error occurred.');
+// Use the centralized AI error handler with context
+$context = "JavaScript error occurred on page: $url";
+$formData = [
+    'source' => $source,
+    'line' => $lineno,
+    'column' => $colno,
+    'stack' => $stack,
+    'userAgent' => $userAgent,
+    'url' => $url
+];
 
-// Always return a friendly error message
-if ($friendly) {
-    echo json_encode(['success' => false, 'error' => $friendly]);
+// Get AI-friendly message
+$friendlyMessage = getFriendlyMessageFromAI($errorMessage, $formData, $context);
+
+// Send consistent response
+if ($friendlyMessage) {
+    sendApiSuccessResponse(null, $friendlyMessage);
 } else {
-    echo json_encode(['success' => false, 'error' => 'Oops! Something went wrong. Please contact Modular Software Support. Error Code: ' . ($input['code'] ?? 'NOCODE')]);
+    sendApiSuccessResponse(null, "Something went wrong. Please contact support. Error Code: $errorCode");
 } 

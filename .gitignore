@@ -1,0 +1,21 @@
+# Error log files
+js_errors.log
+php_errors.log
+
+# General log patterns
+*.log
+
+# Uploads folder
+Uploads/
+
+# Excel files
+*.xls
+*.xlsx
+*.xlsm
+*.xlsb
+
+# Other common files to ignore
+node_modules/
+vendor/
+.env
+.DS_Store
