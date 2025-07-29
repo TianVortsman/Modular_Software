@@ -54,18 +54,44 @@ try {
         exit;
     }
     if ($action === 'search_product') {
-        // Return mock product search results
-        $results = [
-            [ 'product_id' => 1, 'sku' => 'P1001', 'product_name' => 'Widget A', 'product_description' => 'A Widget', 'product_price' => 100, 'tax_rate' => 15 ],
-            [ 'product_id' => 2, 'sku' => 'P1002', 'product_name' => 'Widget B', 'product_description' => 'B Widget', 'product_price' => 200, 'tax_rate' => 15 ],
-            [ 'product_id' => 3, 'sku' => 'P1003', 'product_name' => 'Widget C', 'product_description' => 'C Widget', 'product_price' => 300, 'tax_rate' => 15 ]
-        ];
+        // Search real products from database
         $query = $_GET['query'] ?? '';
-        $filtered = array_filter($results, function($p) use ($query) {
-            return stripos($p['product_name'], $query) !== false || stripos($p['sku'], $query) !== false;
-        });
-        echo json_encode(array_values($filtered));
-        exit;
+        if (strlen(trim($query)) < 2) {
+            echo json_encode([]);
+            exit;
+        }
+        
+        try {
+            $searchTerm = '%' . trim($query) . '%';
+            $sql = "SELECT 
+                        p.product_id,
+                        p.sku,
+                        p.product_name,
+                        p.product_description,
+                        p.product_price,
+                        COALESCE(tr.rate, 0) as tax_rate
+                    FROM core.products p
+                    LEFT JOIN core.tax_rates tr ON p.tax_rate_id = tr.tax_rate_id
+                    WHERE p.product_status = 'active'
+                    AND (
+                        p.product_name ILIKE :search 
+                        OR p.product_description ILIKE :search
+                        OR p.sku ILIKE :search
+                    )
+                    ORDER BY p.product_name
+                    LIMIT 10";
+            
+            $stmt = $conn->prepare($sql);
+            $stmt->execute(['search' => $searchTerm]);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode($results);
+            exit;
+        } catch (Exception $e) {
+            error_log('[search_product] Error: ' . $e->getMessage());
+            echo json_encode([]);
+            exit;
+        }
     }
 
     switch ($action) {

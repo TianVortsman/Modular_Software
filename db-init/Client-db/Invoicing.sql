@@ -197,6 +197,9 @@ CREATE TABLE invoicing.documents (
     is_recurring BOOLEAN DEFAULT FALSE,
     recurring_template_id INTEGER REFERENCES invoicing.recurring_invoices(recurring_id),
     
+    -- Related document for credit notes and refunds
+    related_document_id INTEGER REFERENCES invoicing.documents(document_id),
+    
     requires_approval BOOLEAN DEFAULT FALSE,
     approved_by INTEGER REFERENCES core.employees(employee_id),
     approved_at TIMESTAMP,
@@ -206,6 +209,9 @@ CREATE TABLE invoicing.documents (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
 );
+
+-- Index for related document lookups
+CREATE INDEX idx_documents_related_document_id ON invoicing.documents(related_document_id);
 
 -- 12. Document Items
 CREATE TABLE invoicing.document_items (

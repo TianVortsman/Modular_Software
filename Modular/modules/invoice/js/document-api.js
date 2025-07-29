@@ -49,7 +49,7 @@ function searchSalespeople(query, callback) {
 // API function: search products from the backend
 function searchProducts(query, callback) {
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', '../api/products.php?action=search&query=' + encodeURIComponent(query), true);
+    xhr.open('GET', '../api/document-api.php?action=search_product&query=' + encodeURIComponent(query), true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             let results = [];

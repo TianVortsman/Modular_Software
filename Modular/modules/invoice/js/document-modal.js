@@ -574,12 +574,22 @@ function searchItem(inputElement) {
             results.forEach((result, idx) => {
                 const li = document.createElement('li');
                 li.classList.add('search-result-item');
-                li.textContent = isDescription ? result.product_description : (result.sku || result.product_name);
+                // For item code column, show SKU if available, otherwise show product name
+                if (isDescription) {
+                    li.textContent = result.product_description || 'No description';
+                } else {
+                    // Item code column - prioritize SKU, fallback to product name
+                    if (result.sku && result.sku.trim()) {
+                        li.textContent = `${result.sku} - ${result.product_name}`;
+                    } else {
+                        li.textContent = result.product_name;
+                    }
+                }
                 li.tabIndex = -1; // allow focus for accessibility
                 li.dataset.idx = idx;
                 li.addEventListener('click', () => {
                     autofillRow(row, {
-                        item_code: result.sku || '',
+                        item_code: result.sku || result.product_name || '',
                         product_description: result.product_description || '',
                         unit_price: result.product_price || '',
                         product_id: result.product_id,
@@ -628,7 +638,7 @@ function searchItem(inputElement) {
                         const idx = parseInt(selected.dataset.idx, 10);
                         const result = results[idx];
                         autofillRow(row, {
-                            item_code: result.sku || '',
+                            item_code: result.sku || result.product_name || '',
                             product_description: result.product_description || '',
                             unit_price: result.product_price || '',
                             product_id: result.product_id,
@@ -644,7 +654,7 @@ function searchItem(inputElement) {
                     event.preventDefault();
                     const result = results[0];
                     autofillRow(row, {
-                        item_code: result.sku || '',
+                        item_code: result.sku || result.product_name || '',
                         product_description: result.product_description || '',
                         unit_price: result.product_price || '',
                         product_id: result.product_id,

@@ -85,9 +85,10 @@ try {
             echo json_encode($result);
             break;
             
+
+
         case 'get':
         case 'get_product':
-        case 'search':
             if ($method !== 'GET') {
                 sendApiErrorResponse('GET method required for get action', $_GET, 'Product API Method Validation', 'INVALID_METHOD', 405);
             }
@@ -241,7 +242,7 @@ try {
                 'action' => $action, 
                 'available_actions' => [
                     'list', 'list_categories', 'list_types', 'list_subcategories', 'list_tax_rates',
-                    'get', 'search', 'add', 'edit', 'delete', 'adjust_stock', 'update_status', 'get_product_suppliers_and_stock'
+                    'get', 'add', 'edit', 'delete', 'adjust_stock', 'update_status', 'get_product_suppliers_and_stock'
                 ]
             ], 'Product API Action Validation', 'INVALID_ACTION', 400);
     }

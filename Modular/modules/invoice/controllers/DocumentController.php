@@ -234,6 +234,62 @@ function create_document(array $options): array {
     if ($validation) {
         return $validation;
     }
+    
+    // Validate related document for credit notes and refunds
+    if (in_array($documentData['document_type'], ['credit_note', 'refund'])) {
+        if (empty($documentData['related_document_id'])) {
+            return build_error_response(
+                'Related document ID is required for ' . $documentData['document_type'] . 's', 
+                $documentData, 
+                'Document creation validation', 
+                'RELATED_DOCUMENT_REQUIRED'
+            );
+        }
+        
+        // Validate that the related document exists and is an invoice type
+        $relatedDocStmt = $conn->prepare("
+            SELECT document_id, document_type, total_amount, balance_due, document_status 
+            FROM invoicing.documents 
+            WHERE document_id = :related_document_id AND deleted_at IS NULL
+        ");
+        $relatedDocStmt->bindValue(':related_document_id', $documentData['related_document_id'], PDO::PARAM_INT);
+        $relatedDocStmt->execute();
+        $relatedDoc = $relatedDocStmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$relatedDoc) {
+            return build_error_response(
+                'Related document not found', 
+                $documentData, 
+                'Document creation validation', 
+                'RELATED_DOCUMENT_NOT_FOUND'
+            );
+        }
+        
+        // Only allow credit notes and refunds for invoice types
+        $allowedTypes = ['invoice', 'vehicle_invoice', 'recurring_invoice'];
+        if (!in_array($relatedDoc['document_type'], $allowedTypes)) {
+            return build_error_response(
+                'Credit notes and refunds can only be created for invoices, vehicle invoices, or recurring invoices', 
+                $documentData, 
+                'Document creation validation', 
+                'INVALID_RELATED_DOCUMENT_TYPE'
+            );
+        }
+        
+        // Validate credit note/refund amount
+        $maxAmount = $documentData['document_type'] === 'credit_note' ? 
+            $relatedDoc['total_amount'] : // Credit note can't exceed original invoice total
+            $relatedDoc['total_amount'] - $relatedDoc['balance_due']; // Refund can't exceed paid amount
+        
+        if ($documentData['total_amount'] > $maxAmount) {
+            return build_error_response(
+                ucfirst($documentData['document_type']) . ' amount cannot exceed ' . number_format($maxAmount, 2), 
+                $documentData, 
+                'Document creation validation', 
+                'INVALID_AMOUNT'
+            );
+        }
+    }
     // Always set created_by from session if not set
     if (!isset($documentData['created_by']) && isset($_SESSION['user_id'])) {
         $documentData['created_by'] = $_SESSION['user_id'];
@@ -303,9 +359,9 @@ function create_document(array $options): array {
             throw new Exception("Invalid mode for create_document: $mode");
         }
 
-        // Recurring logic: insert recurring_invoices first if needed
+        // Recurring logic: insert recurring_invoices first if needed - only for actual recurring_invoice document types
         $recurring_id = null;
-        if (!empty($documentData['is_recurring'])) {
+        if (!empty($documentData['is_recurring']) && $documentData['document_type'] === 'recurring_invoice') {
             $frequency = $documentData['frequency'] ?? null;
             $start_date = $documentData['start_date'] ?? null;
             $end_date = $documentData['end_date'] ?? null;
@@ -320,8 +376,12 @@ function create_document(array $options): array {
             $recurringStmt = $conn->prepare($recurringSql);
             $recurringStmt->bindValue(':client_id', $documentData['client_id'], PDO::PARAM_INT);
             $recurringStmt->bindValue(':frequency', $frequency);
-            $recurringStmt->bindValue(':start_date', $start_date);
-            $recurringStmt->bindValue(':end_date', $end_date);
+            // Handle recurring date fields - convert empty strings to null
+            $start_date_clean = !empty($start_date) ? $start_date : null;
+            $end_date_clean = !empty($end_date) ? $end_date : null;
+            
+            $recurringStmt->bindValue(':start_date', $start_date_clean);
+            $recurringStmt->bindValue(':end_date', $end_date_clean);
             $recurringStmt->execute();
             $recurring_id = $recurringStmt->fetchColumn();
             $documentData['is_recurring'] = true;
@@ -336,20 +396,24 @@ function create_document(array $options): array {
                     client_id, document_type, document_number, issue_date, due_date, document_status, 
                     salesperson_id, subtotal, discount_amount, tax_amount, total_amount, balance_due, 
                     client_purchase_order_number, notes, terms_conditions, is_recurring, recurring_template_id, 
-                    requires_approval, created_by, created_at, updated_at
+                    related_document_id, requires_approval, created_by, created_at, updated_at
                 ) VALUES (
                     :client_id, :document_type, :document_number, :issue_date, :due_date, :document_status, 
                     :salesperson_id, :subtotal, :discount_amount, :tax_amount, :total_amount, :balance_due, 
                     :client_purchase_order_number, :notes, :terms_conditions, :is_recurring, :recurring_template_id, 
-                    :requires_approval, :created_by, NOW(), NOW()
+                    :related_document_id, :requires_approval, :created_by, NOW(), NOW()
                 )";
 
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(':client_id', $documentData['client_id'], PDO::PARAM_INT);
         $stmt->bindValue(':document_type', $documentData['document_type']);
         $stmt->bindValue(':document_number', $document_number);
-        $stmt->bindValue(':issue_date', $documentData['issue_date']);
-        $stmt->bindValue(':due_date', $documentData['due_date'] ?? null);
+        // Handle date fields - convert empty strings to null for database
+        $issue_date = !empty($documentData['issue_date']) ? $documentData['issue_date'] : null;
+        $due_date = !empty($documentData['due_date']) ? $documentData['due_date'] : null;
+        
+        $stmt->bindValue(':issue_date', $issue_date);
+        $stmt->bindValue(':due_date', $due_date);
         $stmt->bindValue(':document_status', $document_status);
         $stmt->bindValue(':salesperson_id', isset($documentData['salesperson_id']) && is_numeric($documentData['salesperson_id']) ? $documentData['salesperson_id'] : null, PDO::PARAM_INT);
         $stmt->bindValue(':subtotal', $documentData['subtotal']);
@@ -362,11 +426,33 @@ function create_document(array $options): array {
         $stmt->bindValue(':terms_conditions', $documentData['terms_conditions'] ?? null);
         $stmt->bindValue(':is_recurring', $documentData['is_recurring'] ? 1 : 0, PDO::PARAM_INT);
         $stmt->bindValue(':recurring_template_id', $documentData['recurring_template_id'], is_null($documentData['recurring_template_id']) ? PDO::PARAM_NULL : PDO::PARAM_INT);
+        $stmt->bindValue(':related_document_id', $documentData['related_document_id'] ?? null, is_null($documentData['related_document_id'] ?? null) ? PDO::PARAM_NULL : PDO::PARAM_INT);
         $stmt->bindValue(':requires_approval', !empty($documentData['requires_approval']) ? 1 : 0, PDO::PARAM_INT);
         $stmt->bindValue(':created_by', $documentData['created_by'], PDO::PARAM_INT);
 
         $stmt->execute();
         $document_id = $conn->lastInsertId();
+        
+        // Update balance of related document if this is a credit note or refund
+        if (in_array($documentData['document_type'], ['credit_note', 'refund']) && !empty($documentData['related_document_id'])) {
+            $balanceUpdateSql = "UPDATE invoicing.documents SET 
+                balance_due = CASE 
+                    WHEN :document_type = 'credit_note' THEN balance_due - :amount
+                    WHEN :document_type = 'refund' THEN balance_due + :amount
+                END,
+                updated_at = NOW()
+                WHERE document_id = :related_document_id";
+            
+            $balanceStmt = $conn->prepare($balanceUpdateSql);
+            $balanceStmt->bindValue(':document_type', $documentData['document_type']);
+            $balanceStmt->bindValue(':amount', $documentData['total_amount']);
+            $balanceStmt->bindValue(':related_document_id', $documentData['related_document_id'], PDO::PARAM_INT);
+            $balanceStmt->execute();
+            
+            // Log the balance update
+            log_user_action($user_id, 'update_related_document_balance', $documentData['related_document_id'], 
+                "Updated balance for " . $documentData['document_type'] . " #$document_id");
+        }
 
         // Insert document items
         $itemSql = "INSERT INTO invoicing.document_items (
@@ -620,7 +706,8 @@ function update_document(int $document_id, array $options): array {
         }
 
         // Protect existing recurring invoices: ensure they stay recurring
-        if ($currentIsRecurring && $currentType === 'recurring_invoice') {
+        // Only apply this logic to actual recurring_invoice document types, not quotations or other types
+        if ($currentIsRecurring && $currentType === 'recurring_invoice' && $documentData['document_type'] === 'recurring_invoice') {
             // If document was previously recurring, preserve that status
             if (!isset($documentData['is_recurring']) || !$documentData['is_recurring']) {
                 error_log('[UPDATE_DOCUMENT] Preserving recurring status for recurring invoice ID: ' . $document_id);
@@ -635,11 +722,16 @@ function update_document(int $document_id, array $options): array {
             if (!isset($documentData['recurring_template_id']) && $currentRecurringId) {
                 $documentData['recurring_template_id'] = $currentRecurringId;
             }
+        } else if ($currentIsRecurring && $currentType !== 'recurring_invoice') {
+            // If document was marked as recurring but is not a recurring_invoice type, clear the recurring status
+            error_log('[UPDATE_DOCUMENT] Clearing recurring status for non-recurring document type ID: ' . $document_id . ' (type: ' . $documentData['document_type'] . ')');
+            $documentData['is_recurring'] = false;
+            $documentData['recurring_template_id'] = null;
         }
 
-        // Recurring update logic
+        // Recurring update logic - only for actual recurring_invoice document types
         $recurring_id = null;
-        if (!empty($documentData['is_recurring'])) {
+        if (!empty($documentData['is_recurring']) && $documentData['document_type'] === 'recurring_invoice') {
             error_log('[UPDATE_DOCUMENT] Processing recurring invoice update for document ID: ' . $document_id);
             
             $frequency = $documentData['frequency'] ?? null;
@@ -671,9 +763,13 @@ function update_document(int $document_id, array $options): array {
                                SET frequency = :frequency, start_date = :start_date, end_date = :end_date, updated_at = NOW() 
                                WHERE recurring_id = :recurring_id";
                 $recurringStmt = $conn->prepare($recurringSql);
+                // Handle recurring date fields - convert empty strings to null
+                $start_date_clean = !empty($start_date) ? $start_date : null;
+                $end_date_clean = !empty($end_date) ? $end_date : null;
+                
                 $recurringStmt->bindValue(':frequency', $frequency);
-                $recurringStmt->bindValue(':start_date', $start_date);
-                $recurringStmt->bindValue(':end_date', $end_date);
+                $recurringStmt->bindValue(':start_date', $start_date_clean);
+                $recurringStmt->bindValue(':end_date', $end_date_clean);
                 $recurringStmt->bindValue(':recurring_id', $currentRecurringId, PDO::PARAM_INT);
                 $recurringStmt->execute();
                 $recurring_id = $currentRecurringId;
@@ -683,10 +779,14 @@ function update_document(int $document_id, array $options): array {
                                VALUES (:client_id, :frequency, :start_date, :end_date, 'active', NOW(), NOW())
                                RETURNING recurring_id";
                 $recurringStmt = $conn->prepare($recurringSql);
+                // Handle recurring date fields - convert empty strings to null
+                $start_date_clean = !empty($start_date) ? $start_date : null;
+                $end_date_clean = !empty($end_date) ? $end_date : null;
+                
                 $recurringStmt->bindValue(':client_id', $documentData['client_id'], PDO::PARAM_INT);
                 $recurringStmt->bindValue(':frequency', $frequency);
-                $recurringStmt->bindValue(':start_date', $start_date);
-                $recurringStmt->bindValue(':end_date', $end_date);
+                $recurringStmt->bindValue(':start_date', $start_date_clean);
+                $recurringStmt->bindValue(':end_date', $end_date_clean);
                 $recurringStmt->execute();
                 $recurring_id = $recurringStmt->fetchColumn();
             }
@@ -695,13 +795,9 @@ function update_document(int $document_id, array $options): array {
             
             error_log('[UPDATE_DOCUMENT] Recurring template updated/created with ID: ' . $recurring_id);
         } else {
-            // Only set to false if it wasn't previously recurring
-            if (!$currentIsRecurring) {
-                $documentData['is_recurring'] = false;
-                $documentData['recurring_template_id'] = null;
-            } else {
-                error_log('[UPDATE_DOCUMENT] Warning: Attempting to remove recurring status from existing recurring invoice ID: ' . $document_id);
-            }
+            // Set to false for non-recurring documents
+            $documentData['is_recurring'] = false;
+            $documentData['recurring_template_id'] = null;
         }
 
         // Prepare update for documents table (partial update support)
@@ -722,6 +818,7 @@ function update_document(int $document_id, array $options): array {
             'terms_conditions' => [':terms_conditions', PDO::PARAM_STR],
             'is_recurring' => [':is_recurring', PDO::PARAM_INT],
             'recurring_template_id' => [':recurring_template_id', PDO::PARAM_INT],
+            'related_document_id' => [':related_document_id', PDO::PARAM_INT],
             'requires_approval' => [':requires_approval', PDO::PARAM_INT],
         ];
         $setParts = [];
@@ -738,10 +835,17 @@ function update_document(int $document_id, array $options): array {
         $sql = "UPDATE invoicing.documents SET " . implode(", ", $setParts) . " WHERE document_id = :document_id";
         $stmt = $conn->prepare($sql);
         foreach ($fields as $key => [$param, $type]) {
-            if ($key === 'salesperson_id') {
-                $stmt->bindValue($param, (isset($documentData['salesperson_id']) && is_numeric($documentData['salesperson_id'])) ? $documentData['salesperson_id'] : null, $type);
-            } else if (isset($documentData[$key])) {
-                $stmt->bindValue($param, $documentData[$key], $type);
+            // Only bind parameters that are actually in the SET clause
+            if (in_array("$key = $param", $setParts)) {
+                if ($key === 'salesperson_id') {
+                    $stmt->bindValue($param, (isset($documentData['salesperson_id']) && is_numeric($documentData['salesperson_id'])) ? $documentData['salesperson_id'] : null, $type);
+                } else if ($key === 'issue_date' || $key === 'due_date') {
+                    // Handle date fields - convert empty strings to null for database
+                    $date_value = !empty($documentData[$key]) ? $documentData[$key] : null;
+                    $stmt->bindValue($param, $date_value);
+                } else {
+                    $stmt->bindValue($param, $documentData[$key], $type);
+                }
             }
         }
         $stmt->bindValue(':document_status', $document_status);
@@ -754,7 +858,7 @@ function update_document(int $document_id, array $options): array {
         // --- Optimized document items update ---
         // Fetch current items
         $currentItems = [];
-        $stmtItems = $conn->prepare("SELECT item_id, product_id, product_description, quantity, unit_price, discount_percentage, tax_rate_id, line_total FROM invoicing.document_items WHERE document_id = :document_id");
+        $stmtItems = $conn->prepare("SELECT item_id, product_id, product_description, quantity, unit_price, discount_percentage, tax_rate_id, line_total, sku FROM invoicing.document_items WHERE document_id = :document_id");
         $stmtItems->bindValue(':document_id', $document_id, PDO::PARAM_INT);
         $stmtItems->execute();
         foreach ($stmtItems->fetchAll(PDO::FETCH_ASSOC) as $ci) {
@@ -777,13 +881,22 @@ function update_document(int $document_id, array $options): array {
                         $fieldsToUpdate[$field] = $ni[$field];
                     }
                 }
+                // Special handling for sku field (maps to item_code from frontend)
+                if ($ci['sku'] != ($ni['item_code'] ?? '')) {
+                    $fieldsToUpdate['sku'] = $ni['item_code'] ?? '';
+                }
                 if ($fieldsToUpdate) {
                     $set = implode(', ', array_map(fn($f) => "$f = :$f", array_keys($fieldsToUpdate)));
                     $updateSql = "UPDATE invoicing.document_items SET $set WHERE item_id = :item_id";
                     $updateStmt = $conn->prepare($updateSql);
-                    foreach ($fieldsToUpdate as $f => $v) {
+                                    foreach ($fieldsToUpdate as $f => $v) {
+                    if ($f === 'sku') {
+                        // Map item_code from frontend to sku in database
+                        $updateStmt->bindValue(":$f", $ni['item_code'] ?? '', PDO::PARAM_STR);
+                    } else {
                         $updateStmt->bindValue(":$f", $v);
                     }
+                }
                     $updateStmt->bindValue(':item_id', $item_id, PDO::PARAM_INT);
                     $updateStmt->execute();
                 }
@@ -798,9 +911,9 @@ function update_document(int $document_id, array $options): array {
         foreach ($items as $item) {
             if (empty($item['item_id'])) {
                 $itemSql = "INSERT INTO invoicing.document_items (
-                    document_id, product_id, product_description, quantity, unit_price, discount_percentage, tax_rate_id, line_total
+                    document_id, product_id, product_description, quantity, unit_price, discount_percentage, tax_rate_id, line_total, sku
                 ) VALUES (
-                    :document_id, :product_id, :product_description, :quantity, :unit_price, :discount_percentage, :tax_rate_id, :line_total
+                    :document_id, :product_id, :product_description, :quantity, :unit_price, :discount_percentage, :tax_rate_id, :line_total, :sku
                 )";
                 $itemStmt = $conn->prepare($itemSql);
                 $itemStmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
@@ -811,6 +924,7 @@ function update_document(int $document_id, array $options): array {
                 $itemStmt->bindValue(':discount_percentage', $item['discount_percentage']);
                 $itemStmt->bindValue(':tax_rate_id', $item['tax_rate_id'], is_null($item['tax_rate_id']) ? PDO::PARAM_NULL : PDO::PARAM_INT);
                 $itemStmt->bindValue(':line_total', $item['line_total']);
+                $itemStmt->bindValue(':sku', $item['item_code'] ?? '', PDO::PARAM_STR);
                 $itemStmt->execute();
             }
         }
@@ -1026,6 +1140,128 @@ function get_recurring_invoice_for_document(int $document_id): array {
             'message' => 'Failed to fetch recurring invoice',
             'data' => null,
             'error_code' => 'RECURRING_INVOICE_ERROR'
+        ];
+    }
+}
+
+/**
+ * Get related documents for a given document
+ * @param int $document_id
+ * @return array
+ */
+function get_related_documents(int $document_id): array {
+    global $conn;
+    try {
+        // Get documents that reference this document (credit notes, refunds)
+        $stmt = $conn->prepare("
+            SELECT 
+                d.document_id,
+                d.document_type,
+                d.document_number,
+                d.issue_date,
+                d.total_amount,
+                d.document_status,
+                d.related_document_id
+            FROM invoicing.documents d
+            WHERE d.related_document_id = :document_id 
+            AND d.deleted_at IS NULL
+            ORDER BY d.issue_date DESC
+        ");
+        $stmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $relatedDocs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Get the document this document references (if any)
+        $stmt = $conn->prepare("
+            SELECT 
+                d.document_id,
+                d.document_type,
+                d.document_number,
+                d.issue_date,
+                d.total_amount,
+                d.document_status
+            FROM invoicing.documents d
+            WHERE d.document_id = (
+                SELECT related_document_id 
+                FROM invoicing.documents 
+                WHERE document_id = :document_id
+            )
+            AND d.deleted_at IS NULL
+        ");
+        $stmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $parentDoc = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return [
+            'success' => true,
+            'message' => 'Related documents retrieved successfully',
+            'data' => [
+                'parent_document' => $parentDoc,
+                'related_documents' => $relatedDocs
+            ]
+        ];
+    } catch (Exception $e) {
+        error_log('get_related_documents error: ' . $e->getMessage());
+        return [
+            'success' => false,
+            'message' => 'Failed to get related documents',
+            'data' => null,
+            'error_code' => 'RELATED_DOCUMENTS_FETCH_ERROR'
+        ];
+    }
+}
+
+/**
+ * Get available invoices for credit note/refund creation
+ * @param int $client_id (optional)
+ * @return array
+ */
+function get_available_invoices_for_credit_refund(int $client_id = null): array {
+    global $conn;
+    try {
+        $sql = "
+            SELECT 
+                d.document_id,
+                d.document_number,
+                d.issue_date,
+                d.total_amount,
+                d.balance_due,
+                d.document_status,
+                c.client_name
+            FROM invoicing.documents d
+            JOIN invoicing.clients c ON d.client_id = c.client_id
+            WHERE d.document_type IN ('invoice', 'vehicle_invoice', 'recurring_invoice')
+            AND d.document_status IN ('sent', 'paid', 'overdue')
+            AND d.deleted_at IS NULL
+        ";
+        
+        $params = [];
+        if ($client_id) {
+            $sql .= " AND d.client_id = :client_id";
+            $params[':client_id'] = $client_id;
+        }
+        
+        $sql .= " ORDER BY d.issue_date DESC";
+        
+        $stmt = $conn->prepare($sql);
+        foreach ($params as $param => $value) {
+            $stmt->bindValue($param, $value, PDO::PARAM_INT);
+        }
+        $stmt->execute();
+        $invoices = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        return [
+            'success' => true,
+            'message' => 'Available invoices retrieved successfully',
+            'data' => $invoices
+        ];
+    } catch (Exception $e) {
+        error_log('get_available_invoices_for_credit_refund error: ' . $e->getMessage());
+        return [
+            'success' => false,
+            'message' => 'Failed to get available invoices',
+            'data' => null,
+            'error_code' => 'AVAILABLE_INVOICES_FETCH_ERROR'
         ];
     }
 }

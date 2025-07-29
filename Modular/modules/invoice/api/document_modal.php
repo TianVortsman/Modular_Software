@@ -100,10 +100,34 @@ try {
             echo json_encode($result);
             break;
 
+        case 'get_related_documents':
+            if ($method !== 'GET') {
+                sendApiErrorResponse('GET method required for get_related_documents action', $_GET, 'Document API Method Validation', 'INVALID_METHOD', 405);
+            }
+            
+            $document_id = isset($_GET['document_id']) ? (int)$_GET['document_id'] : null;
+            if (!$document_id) {
+                sendApiErrorResponse('Missing or invalid document_id parameter', $_GET, 'Document API Parameter Validation', 'DOCUMENT_ID_REQUIRED', 400);
+            }
+            
+            $result = App\modules\invoice\controllers\get_related_documents($document_id);
+            echo json_encode($result);
+            break;
+
+        case 'get_available_invoices_for_credit_refund':
+            if ($method !== 'GET') {
+                sendApiErrorResponse('GET method required for get_available_invoices_for_credit_refund action', $_GET, 'Document API Method Validation', 'INVALID_METHOD', 405);
+            }
+            
+            $client_id = isset($_GET['client_id']) ? (int)$_GET['client_id'] : null;
+            $result = App\modules\invoice\controllers\get_available_invoices_for_credit_refund($client_id);
+            echo json_encode($result);
+            break;
+
         default:
             sendApiErrorResponse("Invalid action: $action", [
                 'action' => $action, 
-                'available_actions' => ['save_document', 'update_document', 'get_document', 'delete_document']
+                'available_actions' => ['save_document', 'update_document', 'get_document', 'delete_document', 'get_related_documents', 'get_available_invoices_for_credit_refund']
             ], 'Document API Action Validation', 'INVALID_ACTION', 400);
     }
     

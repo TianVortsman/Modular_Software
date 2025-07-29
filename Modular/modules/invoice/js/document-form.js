@@ -515,7 +515,7 @@ function searchItem(inputElement) {
         return;
     }
     resultsContainer.style.display = 'block';
-    searchProducts(searchTerm, isDescription).then(results => {
+    searchProducts(searchTerm, function(results) {
         resultsContainer.innerHTML = '';
         if (Array.isArray(results) && results.length > 0) {
             const ul = document.createElement('ul');
@@ -523,7 +523,17 @@ function searchItem(inputElement) {
             results.forEach((item, idx) => {
                 const li = document.createElement('li');
                 li.classList.add('search-result-product');
-                li.textContent = item.product_code + ' - ' + item.product_description;
+                // For item code column, show SKU if available, otherwise show product name
+                if (isDescription) {
+                    li.textContent = item.product_description || 'No description';
+                } else {
+                    // Item code column - prioritize SKU, fallback to product name
+                    if (item.sku && item.sku.trim()) {
+                        li.textContent = `${item.sku} - ${item.product_name}`;
+                    } else {
+                        li.textContent = item.product_name;
+                    }
+                }
                 li.tabIndex = -1;
                 li.dataset.idx = idx;
                 li.addEventListener('mousedown', () => {
@@ -600,7 +610,7 @@ function searchItem(inputElement) {
 
 function autofillProductRow(row, item) {
     row.querySelector('.product-id').value = item.product_id;
-    row.querySelector('.item-code').value = item.product_code;
+    row.querySelector('.item-code').value = item.sku || item.product_name || '';
     row.querySelector('.description').value = item.product_description;
     row.querySelector('.unit-price').value = item.unit_price;
     // Optionally fill other fields

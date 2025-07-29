@@ -108,9 +108,10 @@ function list_products(array $options = []): array {
 
         if (!empty($search)) {
             $sql .= " AND (
+                p.sku ILIKE :search OR
                 p.product_name ILIKE :search OR
                 p.product_description ILIKE :search OR
-                pi.brand ILIKE :search OR
+                pi.product_brand ILIKE :search OR
                 pi.manufacturer ILIKE :search
             )";
             $params[':search'] = '%' . $search . '%';

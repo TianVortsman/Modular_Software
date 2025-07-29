@@ -13,31 +13,37 @@ function generateErrorCode() {
  * @return string|null - User-friendly message from AI
  */
 function getFriendlyMessageFromAI($error, $formData = null, $context = null) {
+    // Completely disable AI error handling for now to prevent cascading failures
+    // This will be re-enabled once the AI service is properly configured
+    return null;
+    
+    /*
     try {
         $config = require __DIR__ . '/../Config/app.php';
-        $endpoint = $config['AI_ENDPOINT'];
+        $endpoint = $config['AI_ENDPOINT'] ?? null;
+        
+        // If no AI endpoint is configured, return null immediately
+        if (!$endpoint) {
+            return null;
+        }
 
         // Use the model name from LM Studio or fallback
         $model = getenv('AI_MODEL') ?: 'nous-hermes-2-mistral-7b-dpo';
 
         $userContent = $error;
-        if ($formData) {
-            $userContent .= "\n\nForm data submitted: " . json_encode($formData);
+        
+        // Add context if provided
+        if ($context) {
+            $userContent = "Context: $context\n\nError: $error";
         }
-    $userContent = $error;
-    
-    // Add context if provided
-    if ($context) {
-        $userContent = "Context: $context\n\nError: $error";
-    }
-    
-    // Add form data for better guidance
-    if ($formData && is_array($formData)) {
-        $formDataStr = json_encode($formData, JSON_PRETTY_PRINT);
-        $userContent .= "\n\nForm data submitted: " . $formDataStr;
-    }
+        
+        // Add form data for better guidance
+        if ($formData && is_array($formData)) {
+            $formDataStr = json_encode($formData, JSON_PRETTY_PRINT);
+            $userContent .= "\n\nForm data submitted: " . $formDataStr;
+        }
 
-    $systemPrompt = "You are a helpful assistant that rewrites technical errors into short, friendly messages for users. 
+        $systemPrompt = "You are a helpful assistant that rewrites technical errors into short, friendly messages for users. 
 
 If the error is something the user can fix (like invalid input, missing required fields, validation errors):
 - Explain exactly what's wrong and how to fix it
@@ -57,7 +63,7 @@ Always keep responses concise (max 1-2 sentences) and actionable.";
                 ["role" => "system", "content" => $systemPrompt],
                 ["role" => "user", "content" => $userContent]
             ],
-            "temperature" => 0.3, // Lower temperature for more consistent responses
+            "temperature" => 0.3,
             "max_tokens" => 256,
             "stream" => false
         ];
@@ -67,28 +73,15 @@ Always keep responses concise (max 1-2 sentences) and actionable.";
                 'header'  => "Content-type: application/json",
                 'method'  => 'POST',
                 'content' => json_encode($data),
-                'timeout' => 2, // Reduced timeout to fail faster
-                'ignore_errors' => true // Don't trigger warnings on HTTP errors
+                'timeout' => 1, // Very short timeout
+                'ignore_errors' => true
             ]
         ];
 
-        $context  = stream_context_create($options);
-    $context = stream_context_create($options);
+        $context = stream_context_create($options);
 
-        // Start timing
-        $start = microtime(true);
-
-        // Suppress errors to prevent cascading failures
+        // Suppress all errors to prevent cascading failures
         $result = @file_get_contents($endpoint, false, $context);
-
-        // End timing
-        $end = microtime(true);
-        $duration = $end - $start;
-        
-        // Only log successful AI calls, not failures
-        if ($result) {
-            error_log("[AI Error Handler] Success: " . round($duration, 3) . " seconds");
-        }
 
         if (!$result) return null;
 
@@ -96,9 +89,10 @@ Always keep responses concise (max 1-2 sentences) and actionable.";
         return $json['choices'][0]['message']['content'] ?? null;
         
     } catch (Exception $e) {
-        // Silently fail - don't log AI service failures to prevent loops
+        // Completely silent failure - no logging at all
         return null;
     }
+    */
 }
 
 /**
@@ -128,10 +122,10 @@ function sendApiErrorResponse($error, $formData = null, $context = null, $errorC
     
     file_put_contents(__DIR__ . '/../../storage/logs/php_errors.log', $logEntry, FILE_APPEND);
 
-    // Get AI-friendly message
+    // Get AI-friendly message (currently disabled to prevent cascading failures)
     $friendlyMessage = getFriendlyMessageFromAI($error, $formData, $context);
     
-    // Log the AI response too
+    // Log the AI response if available
     if ($friendlyMessage) {
         $aiLogEntry = date('c') . " | Code: $errorCode | AI Response: $friendlyMessage\n";
         file_put_contents(__DIR__ . '/../../storage/logs/php_errors.log', $aiLogEntry, FILE_APPEND);
@@ -151,30 +145,12 @@ function sendApiErrorResponse($error, $formData = null, $context = null, $errorC
             'context' => $context
         ]);
     } else {
-        // PRODUCTION: show only AI-friendly message
+        // PRODUCTION: show only user-friendly message
         echo json_encode([
             'success' => false,
             'message' => $friendlyMessage ?: "Something went wrong. Please contact support. Error Code: $errorCode",
             'error_code' => $errorCode
         ]);
-        // PRODUCTION
-        // 1. Try to get AI-generated friendly message
-        $friendly = getFriendlyMessageFromAI($fullError);
-
-        // 2. Log full error with code and AI message (if available)
-        $aiMessage = $friendly ? $friendly : 'AI unavailable';
-        $log = date('c') . " | Code: $errorCode | $fullError | AI: $aiMessage\n";
-        file_put_contents(__DIR__ . '/../../storage/logs/php_errors.log', $log, FILE_APPEND);
-
-        // 3. Show user-friendly message
-        if ($friendly) {
-            echo json_encode(['error' => $friendly]);
-        } else {
-            echo json_encode([
-                'error' => "Something went wrong. Please contact Modular Software Support.",
-                'error_code' => $errorCode
-            ]);
-        }
     }
     exit;
 }
