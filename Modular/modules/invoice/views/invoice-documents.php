@@ -286,8 +286,10 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
     </div>
     
 <script type="module" src="../js/document-api.js"></script>
+<script type="module" src="../js/document-form.js"></script>
 <script type="module" src="../js/document-screen.js"></script>
 <script type="module" src="../js/document-modal.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <?php include('../modals/document-modal.php')?>
 <?php include('../../../src/UI/response-modal.php'); ?>
 <?php include('../../../src/UI/loading-modal.php'); ?>

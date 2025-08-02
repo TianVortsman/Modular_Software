@@ -70,6 +70,11 @@ async function saveDocumentApi(formData, recurringDetails = {}) {
         ...(isDraft ? { document_number: formData.document_number } : {}),
         ...recurringDetails
     };
+    
+    // Add mode parameter if provided in recurringDetails
+    if (recurringDetails.mode) {
+        data.mode = recurringDetails.mode;
+    }
     try {
         let response;
         const hasDocumentId = formData.document_id && formData.document_id !== '' && formData.document_id !== '0';
@@ -98,9 +103,27 @@ async function saveDocumentApi(formData, recurringDetails = {}) {
             });
         }
         const result = await response.json();
-        if (result.success && result.data && result.data.document_number) {
-            const docNumInput = document.getElementById('document-number');
-            if (docNumInput) docNumInput.value = result.data.document_number;
+        if (result.success && result.data) {
+            // Update document number if provided
+            if (result.data.document_number) {
+                const docNumInput = document.getElementById('document-number');
+                if (docNumInput) docNumInput.value = result.data.document_number;
+            }
+            // Update document status if provided
+            if (result.data.document_status) {
+                const statusInput = document.getElementById('document-status');
+                if (statusInput) statusInput.value = result.data.document_status;
+                
+                // Update modal mode based on new status
+                if (typeof window.setModalMode === 'function') {
+                    const status = result.data.document_status.toLowerCase();
+                    if (status === 'unpaid' || status === 'approved' || status === 'paid' || status === 'sent') {
+                        window.setModalMode('view');
+                    } else if (status === 'draft') {
+                        window.setModalMode('edit');
+                    }
+                }
+            }
         }
         return result;
     } catch (err) {
@@ -212,6 +235,49 @@ export async function previewDocumentPDF(formData) {
         body: JSON.stringify(payload)
     });
     return await response.json();
+}
+
+// --- Final PDF Generation ---
+export async function generateFinalPDF(formData) {
+    const payload = {
+        ...formData,
+        preview: false
+    };
+    const response = await fetch('../api/generate-document-pdf.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+    
+    if (response.ok) {
+        // Check if response is JSON (final PDF) or blob (preview)
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            // JSON response for final PDF
+            const data = await response.json();
+            return {
+                success: true,
+                url: data.url || '',
+                filename: data.filename || '',
+                message: data.message || 'PDF generated successfully'
+            };
+        } else {
+            // Blob response for preview
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            return {
+                success: true,
+                url: url,
+                blob: blob
+            };
+        }
+    } else {
+        const errorData = await response.json();
+        return {
+            success: false,
+            message: errorData.message || 'Failed to generate PDF'
+        };
+    }
 }
 
 export {

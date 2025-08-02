@@ -1,288 +1,437 @@
 /* Root Variables */
-:root {           /* Secondary background color */
-    --color-success: #4CAF50;           /* Success color */
-    --color-error: #F44336;             /* Error color */
-    --color-warning: #FFC107;           /* Warning color */
-    --color-danger: #FF0000;            /* Danger color */
-    /* Fonts */
-    --font-primary: 'Roboto', sans-serif;   /* Primary font */
-    --font-secondary: 'Verdana', sans-serif; /* Secondary font */
-    --font-size-base: 14px;                /* Base font size - reduced from 16px */
-    --font-size-small: 12px;               /* Small text size - reduced from 14px */
-    --font-size-large: 16px;               /* Large text size - reduced from 18px */
-    --line-height: 1.4;                    /* Line height - reduced from 1.5 */
+/* 
+  Root and Theme Variables
+  - All dark themes share the same base palette for backgrounds, text, modal, etc.
+  - Each dark theme gets its own accent color (blue, gold, brown, red, etc).
+  - Light themes are visually clear, with strong contrast and visible modals.
+*/
 
-    /* Spacing */
-    --spacing-small: 0.375rem;             /* Small spacing - reduced from 0.5rem */
-    --spacing-medium: 0.75rem;             /* Medium spacing - reduced from 1rem */
-    --spacing-large: 1.5rem;               /* Large spacing - reduced from 2rem */
+/* ===== Root Variables (shared, non-theme-specific) ===== */
+:root {
+  /* Status Colors */
+  --color-success: #4CAF50;
+  --color-error: #F44336;
+  --color-warning: #FFC107;
+  --color-danger: #FF0000;
 
-    /* Border Radius */
-    --radius-small: 4px;                   /* Small rounded corners - reduced from 4px */
-    --radius-medium: 8px;                  /* Medium rounded corners - reduced from 8px */
-    --radius-large: 14px;                  /* Large rounded corners - reduced from 16px */
+  /* Fonts */
+  --font-primary: 'Roboto', sans-serif;
+  --font-secondary: 'Verdana', sans-serif;
+  --font-size-base: 14px;
+  --font-size-small: 12px;
+  --font-size-large: 16px;
+  --line-height: 1.4;
 
-    /* Transitions */
-    --transition-speed: 0.3s;              /* Transition speed - reduced from 0.5s */
+  /* Spacing */
+  --spacing-small: 0.375rem;
+  --spacing-medium: 0.75rem;
+  --spacing-large: 1.5rem;
 
-    /* Layout */
-    --max-width: 1200px;                   /* Max width for content */
-    --sidebar-width: 200px;                /* Sidebar width - reduced from 230px */
-    --header-height: 50px;                 /* Header height - reduced from 60px */
-    --footer-height: 40px;                 /* Footer height - reduced from 50px */
+  /* Border Radius */
+  --radius-small: 4px;
+  --radius-medium: 8px;
+  --radius-large: 14px;
 
-    /* Z-Index */
-    --z-index-header: 1000;                /* Header z-index */
-    --z-index-modal: 2000;                 /* Modal z-index */
-    --z-index-tooltip: 3000;               /* Tooltip z-index */
-    
-    /* Modern Modal Variables */
-    --modal-backdrop: rgba(0, 0, 0, 0.6);     /* Modal backdrop color */
-    --modal-backdrop-blur: blur(8px);          /* Backdrop blur effect */
-    --modal-border-radius: 16px;               /* Modern rounded corners */
-    --modal-content-shadow: 0 8px 32px rgba(0, 0, 0, 0.12); /* Subtle shadow */
-    --modal-header-height: 60px;               /* Header height */
-    --modal-animation-duration: 0.3s;          /* Animation timing */
-    --modal-max-width-sm: 400px;              /* Small modal */
-    --modal-max-width-md: 600px;              /* Medium modal */ 
-    --modal-max-width-lg: 900px;              /* Large modal */
-    --modal-max-width-xl: 1200px;             /* Extra large modal */
+  /* Transitions */
+  --transition-speed: 0.3s;
 
-    /* Modules */
-    --module-card-padding: 0.75rem;         /* Padding for module cards - reduced from 1rem */
-    --module-card-border-radius: 8px;       /* Border radius for module cards - reduced from 10px */
+  /* Layout */
+  --max-width: 1200px;
+  --sidebar-width: 200px;
+  --header-height: 50px;
+  --footer-height: 40px;
 
+  /* Z-Index */
+  --z-index-header: 1000;
+  --z-index-modal: 2000;
+  --z-index-tooltip: 3000;
 
-    input:-webkit-autofill,
-    input:-webkit-autofill:hover,
-    input:-webkit-autofill:focus,
-    input:-webkit-autofill:active,
-    textarea:-webkit-autofill,
-    textarea:-webkit-autofill:hover,
-    textarea:-webkit-autofill:focus,
-    textarea:-webkit-autofill:active{
-        background-color: var(--input-bg) !important;
-        color: var(--color-text-light) !important;
-        -webkit-box-shadow: 0 0 0px 1000px var(--input-bg) inset !important;
-        transition: background-color 5000s ease-in-out 0s;
-        caret-color: var(--color-text-light) !important;
-        -webkit-text-fill-color: var(--color-text-light) !important; /* Critical fix for text color */
-        -webkit-box-shadow: 0 0 0px 1000px var(--input-bg) inset !important;
-        transition: background-color 5000s ease-in-out 0s;
+  /* Modal Variables (defaults, overridden in themes) */
+  --modal-backdrop: rgba(0, 0, 0, 0.6);
+  --modal-backdrop-blur: blur(8px);
+  --modal-border-radius: 16px;
+  --modal-content-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --modal-header-height: 60px;
+  --modal-animation-duration: 0.3s;
+  --modal-max-width-sm: 400px;
+  --modal-max-width-md: 600px;
+  --modal-max-width-lg: 900px;
+  --modal-max-width-xl: 1200px;
+  --modal-bg: #ffffff;
+  --modal-border: #e0e0e0;
+  --modal-padding: 20px;
+
+  /* Document Modal Specific Variables */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --border-radius: 12px;
+  --border-radius-sm: 8px;
+  --border-radius-lg: 16px;
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow-soft: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-large: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --gradient-primary: linear-gradient(135deg, var(--primary-accent) 0%, var(--primary-accent-hover) 100%);
+
+  /* Modules */
+  --module-card-padding: 0.75rem;
+  --module-card-border-radius: 8px;
+
+  /* Autofill fix */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  textarea:-webkit-autofill:active {
+    background-color: var(--input-bg) !important;
+    color: var(--color-text-light) !important;
+    -webkit-box-shadow: 0 0 0px 1000px var(--input-bg) inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+    caret-color: var(--color-text-light) !important;
+    -webkit-text-fill-color: var(--color-text-light) !important;
+  }
 }
-    
 
+/* ===== Light Themes ===== */
 
-}
-
-/* Light Mode Variables */
+/* Light Blue (default) */
 :root.light-mode {
-    --color-background: hsl(235 5% 85%); /* Light background */
-    --color-text-light: #000000;         /* Dark text color */
-    --color-primary: #007BFF;           /* Primary accent color */
-    --color-primary-light: #4da3ff;     /* Lighter primary color */
-    --color-primary-dark: #0056b3;      /* Darker primary color */
-    --color-primary-fade:rgba(0, 123, 255, 0.3); /* Primary accent color with opacity */           
-    --color-hover: #0056b3;              /* Darker Blue */
-    --color-secondary: #f0f0f0;          /* Light grey for containers */
-    --color-chart-bg:#f0f0f0;           /* Light chart background */
-    --color-text-dark: #333333;          /* Secondary text */
-    --text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Subtle text shadow */
-    --color-h2: #000000;                 /* H2 color */
-    --chart-bar-paid: #4CAF50; /* Light mode bar color for paid */
-    --chart-bar-overdue: #F44336; /* Light mode bar color for overdue */
-    --chart-grid-color: rgba(0, 0, 0, 0.2); /* Light mode grid lines */
-    --chart-text-color: #000000; /* Light mode text */
-    --border-color:#4A4A4D;
-    --btn-bg:#007BFF;
-    --btn-hover-bg:#0056b3;
-    --shadow-light:rgba(0, 0, 0, 0.2); /* Light shadow */
-    --shadow-medium:rgba(0, 0, 0, 0.3); /* Medium shadow */
-    --shadow-dark: rgba(0, 0, 0, 0.5);  /* Dark shadow */
-    --input-bg: #2C2C2E; /* Consistent dark background for inputs in light mode */
-    --input-label-color: #f0f0f0; /* Light text for labels on dark inputs */
-    
-    /* Light Mode Modal Overrides */
-    --modal-bg: #ffffff;                      /* Clean white background */
-    --modal-border: #e0e0e0;                  /* Light border */
-    --modal-backdrop: rgba(0, 0, 0, 0.5);     /* Light backdrop */
-    --modal-content-shadow: 0 8px 32px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+  /* Background Colors */
+  --color-background: #D3D3D3;
+  --color-background-light: #ffffff;
+  --color-secondary: #f1f5f9;
+  --color-tertiary: #e2e8f0;
+  --color-elevated: #ffffff;
+  
+  /* Primary Colors */
+  --color-primary: #3b82f6;
+  --color-primary-light: #60a5fa;
+  --color-primary-dark: #2563eb;
+  --color-primary-fade: rgba(59, 130, 246, 0.1);
+  --color-hover: #2563eb;
+  
+  /* Text Colors - Consistent Naming */
+  --color-text-light: #1e293b;
+  --color-text-dark: #475569;
+  --color-text-secondary: #64748b;
+  --color-text-tertiary: #94a3b8;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-tertiary: #94a3b8;
+  
+  /* UI Elements */
+  --color-h2: #3b82f6;
+  --color-chart-bg: #f1f5f9;
+  --text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.08);
+  --input-bg: #ffffff;
+  --input-label-color: #1e293b;
+  --border-color: #e2e8f0;
+  --border-color-hover: #3b82f6;
+  --btn-bg: #3b82f6;
+  --btn-hover-bg: #2563eb;
+  
+  /* Shadows */
+  --shadow-light: rgba(0, 0, 0, 0.08);
+  --shadow-medium: rgba(0, 0, 0, 0.15);
+  --shadow-dark: rgba(0, 0, 0, 0.25);
+
+  /* Modal */
+  --modal-bg: #ffffff;
+  --modal-border: #e2e8f0;
+  --modal-backdrop: rgba(0, 0, 0, 0.15);
+  --modal-content-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+
+  /* Chart/Status */
+  --chart-bar-paid: #10b981;
+  --chart-bar-overdue: #ef4444;
+  --chart-grid-color: rgba(0, 0, 0, 0.08);
+  --chart-text-color: #1e293b;
+
+  /* Document Modal - Consistent with main theme */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --bg-elevated: #ffffff;
+  --primary-accent: #3b82f6;
+  --primary-accent-hover: #2563eb;
+  --primary-text: #ffffff;
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
 }
 
-
-
+/* Light Brown */
 :root.light-mode-brown {
-  --color-background: hsl(235 5% 85%); /* Light background */
-  --color-text-light: #000000;         /* Dark text color */
-  --color-primary: #8B4513;            /* Primary accent color (brown) */
-  --color-primary-light: #a05f2c;      /* Lighter primary color */
-  --color-primary-dark: #663010;       /* Darker primary color */
-  --color-primary-fade: rgba(139, 69, 19, 0.3); /* Primary accent color with opacity (brown) */
-  --color-hover: #A0522D;              /* Darker brown */
-  --color-secondary: #f0f0f0;          /* Light grey for containers */
-  --color-chart-bg: #f0f0f0;           /* Light chart background */
-  --color-text-dark: #333333;          /* Secondary text */
-  --text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Subtle text shadow */
-  --color-h2: #000000;                 /* H2 color */
-  --chart-bar-paid: #4CAF50;           /* Light mode bar color for paid */
-  --chart-bar-overdue: #F44336;        /* Light mode bar color for overdue */
-  --chart-grid-color: rgba(0, 0, 0, 0.2); /* Light mode grid lines */
-  --chart-text-color: #000000;         /* Light mode text */
-  --border-color: #4A4A4D;
-  --btn-bg: #8B4513;                   /* Button background (brown) */
-  --btn-hover-bg: #A0522D;             /* Button hover background (darker brown) */
-  --shadow-light: rgba(0, 0, 0, 0.2);  /* Light shadow */
-  --shadow-medium: rgba(0, 0, 0, 0.3); /* Medium shadow */
-  --shadow-dark: rgba(0, 0, 0, 0.5);   /* Dark shadow */
+  /* Background Colors */
+  --color-background: #faf7f3;
+  --color-background-light: #ffffff;
+  --color-secondary: #f5f1ed;
+  --color-tertiary: #ede8e3;
+  --color-elevated: #ffffff;
+  
+  /* Primary Colors */
+  --color-primary: #8b4513;
+  --color-primary-light: #a0522d;
+  --color-primary-dark: #654321;
+  --color-primary-fade: rgba(139, 69, 19, 0.1);
+  --color-hover: #654321;
+  
+  /* Text Colors - Consistent Naming */
+  --color-text-light: #2d1810;
+  --color-text-dark: #5d4037;
+  --color-text-secondary: #8d6e63;
+  --color-text-tertiary: #a1887f;
+  --text-primary: #2d1810;
+  --text-secondary: #8d6e63;
+  --text-tertiary: #a1887f;
+  
+  /* UI Elements */
+  --color-h2: #8b4513;
+  --color-chart-bg: #f5f1ed;
+  --text-shadow: 1px 1px 2px rgba(139, 69, 19, 0.08);
+  --input-bg: #ffffff;
+  --input-label-color: #2d1810;
+  --border-color: #d7ccc8;
+  --border-color-hover: #8b4513;
+  --btn-bg: #8b4513;
+  --btn-hover-bg: #654321;
+  
+  /* Shadows */
+  --shadow-light: rgba(139, 69, 19, 0.08);
+  --shadow-medium: rgba(139, 69, 19, 0.15);
+  --shadow-dark: rgba(139, 69, 19, 0.25);
+
+  /* Modal */
+  --modal-bg: #ffffff;
+  --modal-border: #d7ccc8;
+  --modal-backdrop: rgba(139, 69, 19, 0.15);
+  --modal-content-shadow: 0 8px 32px rgba(139, 69, 19, 0.08);
+
+  /* Chart/Status */
+  --chart-bar-paid: #4caf50;
+  --chart-bar-overdue: #f44336;
+  --chart-grid-color: rgba(139, 69, 19, 0.08);
+  --chart-text-color: #2d1810;
+
+  /* Document Modal - Consistent with main theme */
+  --bg-primary: #ffffff;
+  --bg-secondary: #faf7f3;
+  --bg-tertiary: #f5f1ed;
+  --bg-elevated: #ffffff;
+  --primary-accent: #8b4513;
+  --primary-accent-hover: #654321;
+  --primary-text: #ffffff;
+  --success-color: #4caf50;
+  --warning-color: #ff9800;
+  --error-color: #f44336;
 }
 
-
+/* Light Green */
 :root.light-mode-green {
-  --color-background: hsl(235 5% 85%); /* Light background */
-  --color-text-light: #000000;         /* Dark text color */
-  --color-primary: #28a745;            /* Primary accent color (green) */
-  --color-primary-light: #34ce57;      /* Lighter primary color */
-  --color-primary-dark: #1e7e34;       /* Darker primary color */
-  --color-primary-fade: rgba(40, 167, 69, 0.3); /* Primary accent color with opacity (green) */
-  --color-hover: #218838;              /* Darker green */
-  --color-secondary: #f0f0f0;          /* Light grey for containers */
-  --color-chart-bg: #f0f0f0;           /* Light chart background */
-  --color-text-dark: #333333;          /* Secondary text */
-  --text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Subtle text shadow */
-  --color-h2: #000000;                 /* H2 color */
-  --chart-bar-paid: #4CAF50;           /* Light mode bar color for paid */
-  --chart-bar-overdue: #F44336;        /* Light mode bar color for overdue */
-  --chart-grid-color: rgba(0, 0, 0, 0.2); /* Light mode grid lines */
-  --chart-text-color: #000000;         /* Light mode text */
-  --border-color: #4A4A4D;
-  --btn-bg: #28a745;                   /* Button background (green) */
-  --btn-hover-bg: #218838;             /* Button hover background (darker green) */
-  --shadow-light: rgba(0, 0, 0, 0.2);  /* Light shadow */
-  --shadow-medium: rgba(0, 0, 0, 0.3); /* Medium shadow */
-  --shadow-dark: rgba(0, 0, 0, 0.5);   /* Dark shadow */
+  /* Background Colors */
+  --color-background: #f0f9f4;
+  --color-background-light: #ffffff;
+  --color-secondary: #e8f5e8;
+  --color-tertiary: #d4edda;
+  --color-elevated: #ffffff;
+  
+  /* Primary Colors */
+  --color-primary: #22c55e;
+  --color-primary-light: #4ade80;
+  --color-primary-dark: #16a34a;
+  --color-primary-fade: rgba(34, 197, 94, 0.1);
+  --color-hover: #16a34a;
+  
+  /* Text Colors - Consistent Naming */
+  --color-text-light: #14532d;
+  --color-text-dark: #166534;
+  --color-text-secondary: #15803d;
+  --color-text-tertiary: #22c55e;
+  --text-primary: #14532d;
+  --text-secondary: #15803d;
+  --text-tertiary: #22c55e;
+  
+  /* UI Elements */
+  --color-h2: #22c55e;
+  --color-chart-bg: #e8f5e8;
+  --text-shadow: 1px 1px 2px rgba(34, 197, 94, 0.08);
+  --input-bg: #ffffff;
+  --input-label-color: #14532d;
+  --border-color: #bbf7d0;
+  --border-color-hover: #22c55e;
+  --btn-bg: #22c55e;
+  --btn-hover-bg: #16a34a;
+  
+  /* Shadows */
+  --shadow-light: rgba(34, 197, 94, 0.08);
+  --shadow-medium: rgba(34, 197, 94, 0.15);
+  --shadow-dark: rgba(34, 197, 94, 0.25);
+
+  /* Modal */
+  --modal-bg: #ffffff;
+  --modal-border: #bbf7d0;
+  --modal-backdrop: rgba(34, 197, 94, 0.15);
+  --modal-content-shadow: 0 8px 32px rgba(34, 197, 94, 0.08);
+
+  /* Chart/Status */
+  --chart-bar-paid: #22c55e;
+  --chart-bar-overdue: #ef4444;
+  --chart-grid-color: rgba(34, 197, 94, 0.08);
+  --chart-text-color: #14532d;
+
+  /* Document Modal - Consistent with main theme */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f0f9f4;
+  --bg-tertiary: #e8f5e8;
+  --bg-elevated: #ffffff;
+  --primary-accent: #22c55e;
+  --primary-accent-hover: #16a34a;
+  --primary-text: #ffffff;
+  --success-color: #22c55e;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
 }
 
-
-
-:root.dark-mode {
-    --color-chart-bg:rgba(255, 215, 0, 0.6);
-    --color-background: hsl(220 27% 6%); /* Dark background */
-    --color-background-light: hsl(220 27% 10%); /* Slightly lighter background */
-    --color-text-light: #ffffff;         /* Light text on dark mode */
-    --color-primary: #FFD700;            /* Primary accent color */
-    --color-primary-light: #ffe147;      /* Lighter primary color */
-    --color-primary-dark: #ccac00;       /* Darker primary color */
-    --color-hover: #FFC107;              /* Hover color for interactive elements */
-    --color-primary-fade: #333; /* Primary accent color with opacity */
-    --color-secondary: #333;             /* Dark secondary background */
-    --color-text-dark: #000000;         /* Dark text remains black */
-    --color-h2: #FFD700;                 /* H2 color */
-    --chart-bar-paid: #4CAF50; /* Dark mode bar color for paid */
-    --chart-bar-overdue: #F44336; /* Dark mode bar color for overdue */
-    --chart-grid-color: rgba(255, 255, 255, 0.2); /* Dark mode grid lines */
-    --chart-text-color: #FFFFFF; /* Dark mode text */
-    --input-bg:#2C2C2E;
-    --border-color:#000000;
-    --btn-bg:#4A4A4D;
-    --btn-hover-bg:#333;
-    --shadow-light:rgba(255, 255, 255, 0.2); /* Brighter light shadow */
-    --shadow-medium:rgba(255, 255, 255, 0.3); /* More visible medium shadow */
-    --shadow-dark: rgba(255, 255, 255, 0.5);  /* Stronger dark shadow for depth */  
-    --modal-bg: #1c1c1c;            /* Dark background for modals */
-    --modal-border: #444444;        /* Darker border for modals */
-    --modal-padding: 20px;          /* Padding remains the same */
-    --modal-shadow: rgba(0, 0, 0, 0.7); /* Deeper shadow for dark mode */  
-    --fieldset-border: #444444;     /* Darker border for fieldsets */
-    --input-label-color: #ffffff; /* White text for labels on dark inputs */
-    
-    /* Dark Mode Modal Overrides */
-    --modal-backdrop: rgba(0, 0, 0, 0.8);     /* Darker backdrop */
-    --modal-content-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); /* Stronger shadow */
-}
-
-
-
-:root.dark-mode-brown {
-  --color-chart-bg: rgba(139, 69, 19, 0.6); /* Brown chart background */
-  --color-background: hsl(220 27% 6%); /* Dark background */
-  --color-background-light: hsl(220 27% 10%); /* Slightly lighter background */
-  --color-text-light: #ffffff; /* Light text on dark mode */
-  --color-primary: #8B4513; /* Primary accent color (brown) */
-  --color-primary-light: #a05f2c; /* Lighter primary color */
-  --color-primary-dark: #663010; /* Darker primary color */
-  --color-hover: #A0522D; /* Hover color for interactive elements (sienna) */
-  --color-primary-fade: rgba(139, 69, 19, 0.3); /* Primary accent color with opacity (brown) */
-  --color-secondary: #4A4A4D; /* Dark secondary background */
-  --color-text-dark: #000000; /* Dark text remains black */
-  --color-h2: #8B4513; /* H2 color (brown) */
-  --chart-bar-paid: #A0522D; /* Dark mode bar color for paid (sienna) */
-  --chart-bar-overdue: #D2691E; /* Dark mode bar color for overdue (chocolate) */
-  --chart-grid-color: rgba(255, 255, 255, 0.2); /* Dark mode grid lines */
-  --chart-text-color: #FFFFFF; /* Dark mode text */
-  --input-bg: #2C2C2E;
-  --border-color: #000000;
-  --btn-bg: #8B4513; /* Button background (brown) */
-  --btn-hover-bg: #A0522D; /* Button hover background (sienna) */
-  --shadow-light: rgba(255, 255, 255, 0.2); /* Brighter light shadow */
-  --shadow-medium: rgba(255, 255, 255, 0.3); /* More visible medium shadow */
-  --shadow-dark: rgba(255, 255, 255, 0.5); /* Stronger dark shadow for depth */
-}
-
-:root.dark-mode-blue {
-  --color-chart-bg:rgba(0, 123, 255, 0.6);
-  --color-background: hsl(220 27% 6%); /* Dark background */
-  --color-background-light: hsl(220 27% 10%); /* Slightly lighter background */
-  --color-text-light: #ffffff;         /* Light text on dark mode */
-  --color-primary: #007BFF;            /* Primary accent color */
-  --color-primary-light: #4da3ff;      /* Lighter primary color */
-  --color-primary-dark: #0056b3;       /* Darker primary color */
-  --color-hover: #0056b3;              /* Hover color for interactive elements */
-  --color-primary-fade: rgba(0, 123, 255, 0.3); /* Primary accent color with opacity */
-  --color-secondary: #333;             /* Dark secondary background */
-  --color-text-dark: #000000;          /* Dark text remains black */
-  --color-h2: #007BFF;                 /* H2 color */
-  --chart-bar-paid: #4CAF50;           /* Dark mode bar color for paid */
-  --chart-bar-overdue: #F44336;        /* Dark mode bar color for overdue */
-  --chart-grid-color: rgba(255, 255, 255, 0.2); /* Dark mode grid lines */
-  --chart-text-color: #FFFFFF;         /* Dark mode text */
-  --input-bg: #2C2C2E;
-  --border-color: #000000;
-  --btn-bg: #4A4A4D;
-  --btn-hover-bg: #333;
-  --shadow-light: rgba(255, 255, 255, 0.2); /* Brighter light shadow */
-  --shadow-medium: rgba(255, 255, 255, 0.3); /* More visible medium shadow */
-  --shadow-dark: rgba(255, 255, 255, 0.5);  /* Stronger dark shadow for depth */
-  --modal-bg: #1c1c1c;            /* Dark background for modals */
-  --modal-border: #444444;        /* Darker border for modals */
-  --modal-padding: 20px;          /* Padding remains the same */
-  --modal-shadow: rgba(0, 0, 0, 0.7); /* Deeper shadow for dark mode */  
-  --fieldset-border: #444444;     /* Darker border for fieldsets */
-}
-
+/* ===== Unified Dark Theme Palette ===== */
+:root.dark-mode,
+:root.dark-mode-blue,
+:root.dark-mode-gold,
+:root.dark-mode-brown,
 :root.dark-mode-red {
-  --color-chart-bg:rgba(255, 0, 0, 0.6);
-  --color-background: hsl(220 27% 6%); /* Dark background */
-  --color-background-light: hsl(220 27% 10%); /* Slightly lighter background */
-  --color-text-light: #ffffff;         /* Light text on dark mode */
-  --color-primary: #FF0000;            /* Primary accent color */
-  --color-primary-light: #ff4d4d;      /* Lighter primary color */
-  --color-primary-dark: #cc0000;       /* Darker primary color */
-  --color-hover: #CC0000;              /* Hover color for interactive elements */
-  --color-primary-fade: rgba(255, 0, 0, 0.3); /* Primary accent color with opacity */
-  --color-secondary: #333;             /* Dark secondary background */
-  --color-text-dark: #000000;          /* Dark text remains black */
-  --color-h2: #FF0000;                 /* H2 color */
-  --chart-bar-paid: #4CAF50;           /* Dark mode bar color for paid */
-  --chart-bar-overdue: #F44336;        /* Dark mode bar color for overdue */
-  --chart-grid-color: rgba(255, 255, 255, 0.2); /* Dark mode grid lines */
-  --chart-text-color: #FFFFFF;         /* Dark mode text */
+  /* Shared dark palette */
+  --color-background: #0f172a;
+  --color-background-light: #1e293b;
+  --color-secondary: #1e293b;
+  --color-tertiary: #334155;
+  --color-elevated: #1e293b;
+  --color-text-light: #f8fafc;
+  --color-text-dark: #000000;
+  --color-text-secondary: #cbd5e1;
+  --color-text-tertiary: #94a3b8;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --input-label-color: #f8fafc;
   --input-bg: #2C2C2E;
-  --border-color: #000000;
-  --btn-bg: #4A4A4D;
-  --btn-hover-bg: #333;
-  --shadow-light: rgba(255, 255, 255, 0.2); /* Brighter light shadow */
-  --shadow-medium: rgba(255, 255, 255, 0.3); /* More visible medium shadow */
-  --shadow-dark: rgba(255, 255, 255, 0.5);  /* Stronger dark shadow for depth */
+  --border-color: #475569;
+  --border-color-hover: #475569;
+  --fieldset-border: #444444;
+  --shadow-light: rgba(255, 255, 255, 0.08);
+  --shadow-medium: rgba(0, 0, 0, 0.3);
+  --shadow-dark: rgba(0, 0, 0, 0.5);
+
+  /* Modal/Overlay */
+  --modal-bg: #1c1c1c;
+  --modal-border: #444444;
+  --modal-padding: 20px;
+  --modal-shadow: rgba(0, 0, 0, 0.7);
+  --modal-backdrop: rgba(0, 0, 0, 0.8);
+  --modal-content-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+  /* Chart/Status */
+  --chart-bar-paid: #10b981;
+  --chart-bar-overdue: #ef4444;
+  --chart-grid-color: rgba(255, 255, 255, 0.2);
+  --chart-text-color: #f8fafc;
+
+  /* Document Modal */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-elevated: #1e293b;
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+}
+
+/* ===== Dark Theme Variants (Accent Colors) ===== */
+
+/* Gold Accent */
+:root.dark-mode,
+:root.dark-mode-gold {
+  --accent: #FFD700;
+  --accent-light: #ffe066;
+  --accent-dark: #ccac00;
+  --accent-fade: rgba(255, 215, 0, 0.3);
+  --color-primary: var(--accent);
+  --color-primary-light: var(--accent-light);
+  --color-primary-dark: var(--accent-dark);
+  --color-primary-fade: var(--accent-fade);
+  --color-hover: #FFC107;
+  --color-h2: var(--accent);
+  --color-chart-bg: var(--accent-fade);
+  --btn-bg: var(--accent-dark);
+  --btn-hover-bg: var(--accent);
+  --primary-accent: var(--accent);
+  --primary-accent-hover: var(--accent-dark);
+  --primary-text: #f8fafc;
+}
+
+/* Blue Accent */
+:root.dark-mode-blue {
+  --accent: #007BFF;
+  --accent-light: #4da3ff;
+  --accent-dark: #0056b3;
+  --accent-fade: rgba(0, 123, 255, 0.3);
+  --color-primary: var(--accent);
+  --color-primary-light: var(--accent-light);
+  --color-primary-dark: var(--accent-dark);
+  --color-primary-fade: var(--accent-fade);
+  --color-hover: var(--accent-dark);
+  --color-h2: var(--accent);
+  --color-chart-bg: var(--accent-fade);
+  --btn-bg: var(--accent-dark);
+  --btn-hover-bg: var(--accent);
+  --primary-accent: var(--accent);
+  --primary-accent-hover: var(--accent-dark);
+  --primary-text: #f8fafc;
+}
+
+/* Brown Accent */
+:root.dark-mode-brown {
+  --accent: #8B4513;
+  --accent-light: #a05f2c;
+  --accent-dark: #663010;
+  --accent-fade: rgba(139, 69, 19, 0.3);
+  --color-primary: var(--accent);
+  --color-primary-light: var(--accent-light);
+  --color-primary-dark: var(--accent-dark);
+  --color-primary-fade: var(--accent-fade);
+  --color-hover: #A0522D;
+  --color-h2: var(--accent);
+  --color-chart-bg: var(--accent-fade);
+  --btn-bg: var(--accent-dark);
+  --btn-hover-bg: var(--accent);
+  --primary-accent: var(--accent);
+  --primary-accent-hover: var(--accent-dark);
+  --primary-text: #f8fafc;
+}
+
+/* Red Accent */
+:root.dark-mode-red {
+  --accent: #FF0000;
+  --accent-light: #ff4d4d;
+  --accent-dark: #cc0000;
+  --accent-fade: rgba(255, 0, 0, 0.3);
+  --color-primary: var(--accent);
+  --color-primary-light: var(--accent-light);
+  --color-primary-dark: var(--accent-dark);
+  --color-primary-fade: var(--accent-fade);
+  --color-hover: var(--accent-dark);
+  --color-h2: var(--accent);
+  --color-chart-bg: var(--accent-fade);
+  --btn-bg: var(--accent-dark);
+  --btn-hover-bg: var(--accent);
+  --primary-accent: var(--accent);
+  --primary-accent-hover: var(--accent-dark);
+  --primary-text: #f8fafc;
 }
 
 .hidden {

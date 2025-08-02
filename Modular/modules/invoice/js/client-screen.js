@@ -1,173 +1,207 @@
 // Client Screen Logic: Handles main screen rendering, event binding, and table updates
-// Usage: import { initClientScreen, renderClientTable, bindEvents, handleSearch, handleFilter, handlePagination, handleRowClick, refreshClientTable } from './client-screen.js';
+// Now using NOVA Table component for enhanced functionality
 import { openClientModal, closeModal } from './client-modal.js';
 import { fetchClients } from './client-api.js';
 
 let isLoading = false;
 let currentType = 'private';
-let currentPage = 1;
-let currentLimitPrivate = 10;
-let currentLimitBusiness = 10;
-let currentSearchPrivate = '';
-let currentSearchBusiness = '';
-let searchDebounceTimeout = null;
+let novaTablePrivate = null;
+let novaTableBusiness = null;
 
-function getCurrentTableBody() {
-    if (currentType === 'private') {
-        return document.getElementById('client-body-private');
-    } else {
-        return document.getElementById('client-body-business');
-    }
-}
+// NOVA Table configuration for private clients
+const privateTableConfig = {
+    columns: [
+        { key: 'client_id', label: 'Client ID', sortable: true },
+        { key: 'client_name', label: 'Client Name', sortable: true, filterable: true },
+        { key: 'client_email', label: 'Email', sortable: true, filterable: true },
+        { key: 'client_phone', label: 'Phone', sortable: true, filterable: true },
+        { key: 'last_invoice_date', label: 'Last Invoice Date', sortable: true },
+        { key: 'outstanding_amount', label: 'Outstanding Balance', sortable: true },
+        { key: 'total_invoices', label: 'Total Invoices', sortable: true }
+    ],
+    rowsPerPage: 10,
+    rowsPerPageOptions: [5, 10, 25, 50, 100],
+    searchable: true,
+    sortable: true,
+    filterable: true,
+    selectable: true,
+    exportable: true,
+    pagination: true,
+    stickyHeader: true,
+    maxHeight: null, // Let CSS handle the height
+    onDoubleClick: (row) => {
+        if (row.client_id) {
+            openClientModal(row.client_id);
+        }
+    },
+    onSelectionChange: (selectedRows) => {
+        console.log('Selected private clients:', selectedRows);
+    },
+    onDataChange: (data) => {
+        console.log('Private clients data changed:', data);
+    },
+    // Custom context menu actions
+    contextMenuActions: [
+        { action: 'edit', label: 'Edit Client', icon: '✏️' },
+        { action: 'view', label: 'View Details', icon: '👁️' },
+        { action: 'invoices', label: 'View Invoices', icon: '📄' },
+        { action: 'export', label: 'Export Client', icon: '📤' },
+        { action: 'delete', label: 'Delete Client', icon: '🗑️' }
+    ]
+};
 
-function getCurrentLimit() {
-    return currentType === 'private' ? currentLimitPrivate : currentLimitBusiness;
-}
-function setCurrentLimit(val) {
-    if (currentType === 'private') {
-        currentLimitPrivate = val;
-    } else {
-        currentLimitBusiness = val;
-    }
-}
-
-function getCurrentSearch() {
-    return currentType === 'private' ? currentSearchPrivate : currentSearchBusiness;
-}
-function setCurrentSearch(val) {
-    if (currentType === 'private') {
-        currentSearchPrivate = val;
-    } else {
-        currentSearchBusiness = val;
-    }
-}
+// NOVA Table configuration for business clients
+const businessTableConfig = {
+    columns: [
+        { key: 'client_id', label: 'Company ID', sortable: true },
+        { key: 'client_name', label: 'Company Name', sortable: true, filterable: true },
+        { key: 'client_email', label: 'Email', sortable: true, filterable: true },
+        { key: 'client_phone', label: 'Phone', sortable: true, filterable: true },
+        { key: 'last_invoice_date', label: 'Last Invoice Date', sortable: true },
+        { key: 'outstanding_amount', label: 'Outstanding Balance', sortable: true },
+        { key: 'total_invoices', label: 'Total Invoices', sortable: true }
+    ],
+    rowsPerPage: 10,
+    rowsPerPageOptions: [5, 10, 25, 50, 100],
+    searchable: true,
+    sortable: true,
+    filterable: true,
+    selectable: true,
+    exportable: true,
+    pagination: true,
+    stickyHeader: true,
+    maxHeight: null, // Let CSS handle the height
+    onDoubleClick: (row) => {
+        if (row.client_id) {
+            openClientModal(row.client_id);
+        }
+    },
+    onSelectionChange: (selectedRows) => {
+        console.log('Selected business clients:', selectedRows);
+    },
+    onDataChange: (data) => {
+        console.log('Business clients data changed:', data);
+    },
+    // Custom context menu actions
+    contextMenuActions: [
+        { action: 'edit', label: 'Edit Company', icon: '✏️' },
+        { action: 'view', label: 'View Details', icon: '👁️' },
+        { action: 'invoices', label: 'View Invoices', icon: '📄' },
+        { action: 'export', label: 'Export Company', icon: '📤' },
+        { action: 'delete', label: 'Delete Company', icon: '🗑️' }
+    ]
+};
 
 /**
  * Initialize the client screen (on page load)
  */
 export async function initClientScreen() {
-    const tableBody = getCurrentTableBody();
-    if (!tableBody) return;
+    console.log('Initializing client screen with NOVA tables...');
+    
+    // Initialize NOVA tables
+    initializeNovaTables();
+    
+    // Wait a bit for tables to initialize
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    // Bind events
     bindEvents();
+    
+    // Load initial data
     await refreshClientTable();
 }
 
-// Set a min-height for the table container to prevent height jumps
-function setTableMinHeight() {
-    const containers = document.querySelectorAll('.client-table-container');
-    containers.forEach(container => {
-        container.style.minHeight = '1200px'; // Adjust as needed for your UI
+/**
+ * Initialize NOVA table instances
+ */
+function initializeNovaTables() {
+    try {
+        // Wait for NovaTable to be available
+        if (!window.NovaTable) {
+            console.log('Waiting for NovaTable to be available...');
+            setTimeout(initializeNovaTables, 100);
+            return;
+        }
+
+        // Initialize private clients table
+        const privateContainer = document.getElementById('nova-table-private');
+        if (privateContainer && window.NovaTable) {
+            novaTablePrivate = new window.NovaTable('nova-table-private', privateTableConfig);
+            console.log('NOVA table for private clients initialized');
+        }
+
+        // Initialize business clients table
+        const businessContainer = document.getElementById('nova-table-business');
+        if (businessContainer && window.NovaTable) {
+            novaTableBusiness = new window.NovaTable('nova-table-business', businessTableConfig);
+            console.log('NOVA table for business clients initialized');
+        }
+    } catch (error) {
+        console.error('Error initializing NOVA tables:', error);
+    }
+}
+
+/**
+ * Convert API data to NOVA table format
+ * @param {Array} clients - Raw client data from API
+ * @returns {Array} - Formatted data for NOVA table
+ */
+function formatClientDataForNovaTable(clients) {
+    if (!Array.isArray(clients)) return [];
+    
+    return clients.map(client => {
+        // Combine first_name and last_name for private clients, or use client_name
+        let displayName = client.client_name || 
+                         ((client.first_name || '') + ' ' + (client.last_name || '')).trim();
+        
+        // Combine phone fields
+        let phone = client.client_cell || client.client_tell || '';
+        
+        return {
+            id: client.client_id, // Unique identifier for NOVA table
+            client_id: client.client_id,
+            client_name: displayName,
+            client_email: client.client_email || '',
+            client_phone: phone,
+            last_invoice_date: client.last_invoice_date || '-',
+            outstanding_amount: client.outstanding_amount !== undefined ? client.outstanding_amount : '-',
+            total_invoices: client.total_invoices !== undefined ? client.total_invoices : '-',
+            // Keep original data for reference
+            _originalData: client
+        };
     });
 }
 
 /**
- * Render the client table with data
+ * Get the current active NOVA table instance
+ */
+function getCurrentNovaTable() {
+    return currentType === 'private' ? novaTablePrivate : novaTableBusiness;
+}
+
+/**
+ * Render the client table with data using NOVA table
  * @param {Array} clients
+ * @param {number} total
  */
 export function renderClientTable(clients, total = 0) {
-    setTableMinHeight();
-    const tableBody = getCurrentTableBody();
-    if (!tableBody) return;
-    // Remove all existing rows (but keep tbody in DOM)
-    while (tableBody.firstChild) {
-        tableBody.removeChild(tableBody.firstChild);
-    }
-    if (!clients || clients.length === 0) {
-        const row = document.createElement('tr');
-        const cell = document.createElement('td');
-        cell.colSpan = 7;
-        cell.textContent = 'No clients found.';
-        row.appendChild(cell);
-        tableBody.appendChild(row);
-        renderPagination(0, 0, 0);
+    const novaTable = getCurrentNovaTable();
+    if (!novaTable) {
+        console.error('NOVA table not initialized for type:', currentType);
         return;
     }
-    clients.forEach(client => {
-        const row = document.createElement('tr');
-        let name = client.client_name || ((client.first_name || '') + ' ' + (client.last_name || ''));
-        row.innerHTML = `
-            <td>${client.client_id}</td>
-            <td>${name.trim()}</td>
-            <td>${client.client_email || ''}</td>
-            <td>${client.client_cell || client.client_tell || ''}</td>
-            <td>${client.last_invoice_date || '-'}</td>
-            <td>${client.outstanding_amount !== undefined ? client.outstanding_amount : '-'}</td>
-            <td>${client.total_invoices !== undefined ? client.total_invoices : '-'}</td>
-        `;
-        row.addEventListener('dblclick', () => {
-            if (typeof openClientModal === 'function') {
-                openClientModal(client.client_id);
-            } else {
-                console.warn('openClientModal(client_id) not implemented');
-            }
-        });
-        tableBody.appendChild(row);
-    });
-    renderPagination(currentPage, getCurrentLimit(), total);
-}
 
-function renderLoading(tableBody) {
-    // Remove all existing rows (but keep tbody in DOM)
-    while (tableBody.firstChild) {
-        tableBody.removeChild(tableBody.firstChild);
+    try {
+        const formattedData = formatClientDataForNovaTable(clients);
+        novaTable.loadData(formattedData);
+        console.log(`Rendered ${formattedData.length} ${currentType} clients in NOVA table`);
+    } catch (error) {
+        console.error('Error rendering client table:', error);
     }
-    const row = document.createElement('tr');
-    const cell = document.createElement('td');
-    cell.colSpan = 7;
-    cell.textContent = 'Loading...';
-    row.appendChild(cell);
-    tableBody.appendChild(row);
-}
-
-function renderError(tableBody, message) {
-    tableBody.innerHTML = '';
-    const row = document.createElement('tr');
-    const cell = document.createElement('td');
-    cell.colSpan = 7;
-    cell.textContent = message || 'Failed to load clients.';
-    row.appendChild(cell);
-    tableBody.appendChild(row);
-}
-
-function renderPagination(page, limit, total) {
-    // Find the correct container for the active tab
-    let container = null;
-    if (currentType === 'private') {
-        container = document.getElementById('pagination-container1');
-    } else {
-        container = document.getElementById('pagination-container2');
-    }
-    if (!container) return;
-    container.innerHTML = '';
-    if (total <= limit) return; // No need for pagination
-    const totalPages = Math.ceil(total / limit);
-    const prevBtn = document.createElement('button');
-    prevBtn.textContent = 'Previous';
-    prevBtn.disabled = page <= 1;
-    prevBtn.addEventListener('click', () => {
-        if (currentPage > 1) {
-            currentPage--;
-            refreshClientTable();
-        }
-    });
-    const nextBtn = document.createElement('button');
-    nextBtn.textContent = 'Next';
-    nextBtn.disabled = page >= totalPages;
-    nextBtn.addEventListener('click', () => {
-        if (currentPage < totalPages) {
-            currentPage++;
-            refreshClientTable();
-        }
-    });
-    const pageInfo = document.createElement('span');
-    pageInfo.textContent = `Page ${page} of ${totalPages}`;
-    container.appendChild(prevBtn);
-    container.appendChild(pageInfo);
-    container.appendChild(nextBtn);
 }
 
 /**
- * Bind all event listeners (search, filter, pagination, add/edit/delete)
+ * Bind all event listeners (tab switching, etc.)
  */
 export function bindEvents() {
     // Tab switching
@@ -175,136 +209,157 @@ export function bindEvents() {
     const businessBtn = document.getElementById('clientSectionButton2');
     const section1 = document.getElementById('client-section1');
     const section2 = document.getElementById('client-section2');
+    
     if (privateBtn && businessBtn && section1 && section2) {
         privateBtn.addEventListener('click', () => {
+            currentType = 'private';
             privateBtn.classList.add('active');
             businessBtn.classList.remove('active');
             section1.classList.add('active');
             section2.classList.remove('active');
-            currentType = 'private';
-            currentPage = 1;
-            // Set select value for private
-            const select = section1.querySelector('.rows-per-page');
-            if (select) select.value = currentLimitPrivate;
-            // Update search input for private
-            const searchInput = document.getElementById('client-search');
-            if (searchInput) searchInput.value = getCurrentSearch();
             refreshClientTable();
         });
+
         businessBtn.addEventListener('click', () => {
+            currentType = 'business';
             businessBtn.classList.add('active');
             privateBtn.classList.remove('active');
             section2.classList.add('active');
             section1.classList.remove('active');
-            currentType = 'business';
-            currentPage = 1;
-            // Set select value for business
-            const select = section2.querySelector('.rows-per-page');
-            if (select) select.value = currentLimitBusiness;
-            // Update search input for business
-            const searchInput = document.getElementById('client-search');
-            if (searchInput) searchInput.value = getCurrentSearch();
             refreshClientTable();
         });
     }
-    // Rows per page select (per section)
-    document.querySelectorAll('.rows-per-page').forEach(select => {
-        select.addEventListener('change', (e) => {
-            setCurrentLimit(parseInt(e.target.value, 10));
-            currentPage = 1;
-            refreshClientTable();
-        });
-    });
-    // Search input
-    const searchInput = document.getElementById('client-search');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const val = searchInput.value.trim();
-            setCurrentSearch(val);
-            currentPage = 1;
-            if (searchDebounceTimeout) clearTimeout(searchDebounceTimeout);
-            searchDebounceTimeout = setTimeout(() => {
-                if (val.length === 0 || val.length >= 2) {
-                    refreshClientTable();
-                }
-            }, 300);
-        });
-        // Optional: search icon click
-        const searchIcon = document.querySelector('.search-icon');
-        if (searchIcon) {
-            searchIcon.addEventListener('click', () => {
-                const val = searchInput.value.trim();
-                setCurrentSearch(val);
-                currentPage = 1;
-                if (val.length === 0 || val.length >= 2) {
-                    refreshClientTable();
-                }
-            });
-        }
-    }
+
+    // Add any additional event listeners here
+    console.log('Client screen events bound');
 }
 
 /**
- * Handle search input
- * @param {Event} event
+ * Handle search functionality (now handled by NOVA table)
  */
 export function handleSearch(event) {
-    // TODO: Handle search/filter logic
+    // Search is now handled internally by NOVA table
+    console.log('Search handled by NOVA table');
 }
 
 /**
- * Handle filter change (e.g., client type)
- * @param {Event} event
+ * Handle filter functionality (now handled by NOVA table)
  */
 export function handleFilter(event) {
-    // TODO: Handle filter logic
+    // Filtering is now handled internally by NOVA table
+    console.log('Filter handled by NOVA table');
 }
 
 /**
- * Handle pagination controls
- * @param {number} page
+ * Handle pagination (now handled by NOVA table)
  */
 export function handlePagination(page) {
-    // TODO: Handle pagination logic
+    // Pagination is now handled internally by NOVA table
+    console.log('Pagination handled by NOVA table');
 }
 
 /**
- * Handle row click (edit/view client)
- * @param {Event} event
+ * Handle row click (now handled by NOVA table)
  */
 export function handleRowClick(event) {
-    // TODO: Handle row click logic (open modal, fetch details)
+    // Row clicks are now handled internally by NOVA table
+    console.log('Row click handled by NOVA table');
 }
 
 /**
- * Refresh the client table (after add/edit/delete)
+ * Refresh the client table with current data
  */
 export async function refreshClientTable() {
-    const tableBody = getCurrentTableBody();
-    if (!tableBody) return;
+    if (isLoading) return;
+    
     isLoading = true;
-    renderLoading(tableBody);
+    console.log(`Refreshing ${currentType} clients table...`);
+
     try {
-        const response = await fetchClients({ page: currentPage, limit: getCurrentLimit(), type: currentType, search: getCurrentSearch() });
-        isLoading = false;
-        if (response.success) {
-            // Pass total count for pagination
-            renderClientTable(response.data, response.total || 0);
+        // Show loading state
+        const novaTable = getCurrentNovaTable();
+        if (novaTable) {
+            novaTable.loadData([]); // Clear table while loading
         } else {
-            const errorMsg = response.error || response.message || 'Failed to load clients.';
-            // Do NOT showResponseModal here; only update the table UI
-            renderError(tableBody, errorMsg);
-            renderPagination(0, 0, 0);
+            console.warn(`NOVA table not available for type: ${currentType}`);
         }
-    } catch (err) {
+
+        // Fetch data from API
+        const response = await fetchClients({
+            type: currentType,
+            page: 1,
+            limit: 1000 // Get all data, let NOVA table handle pagination
+        });
+
+        if (response.success && response.data) {
+            console.log(`Fetched ${response.data.length} ${currentType} clients from API`);
+            renderClientTable(response.data, response.total || response.data.length);
+        } else {
+            console.error('Failed to fetch clients:', response.message);
+            renderClientTable([], 0);
+        }
+    } catch (error) {
+        console.error('Error refreshing client table:', error);
+        renderClientTable([], 0);
+    } finally {
         isLoading = false;
-        // Do NOT showResponseModal here; only update the table UI
-        renderError(tableBody, err.message);
-        renderPagination(0, 0, 0);
     }
 }
 
-// Auto-init if this is the main client screen
-if (getCurrentTableBody()) {
-    window.addEventListener('DOMContentLoaded', initClientScreen);
+/**
+ * Get selected clients from the current table
+ */
+export function getSelectedClients() {
+    const novaTable = getCurrentNovaTable();
+    if (novaTable) {
+        return novaTable.getSelectedRows();
+    }
+    return [];
 }
+
+/**
+ * Export selected clients
+ */
+export function exportSelectedClients() {
+    const novaTable = getCurrentNovaTable();
+    if (novaTable) {
+        novaTable.exportSelected();
+    }
+}
+
+/**
+ * Clear selection in current table
+ */
+export function clearSelection() {
+    const novaTable = getCurrentNovaTable();
+    if (novaTable) {
+        novaTable.clearSelection();
+    }
+}
+
+/**
+ * Refresh both tables (useful after data changes)
+ */
+export async function refreshAllTables() {
+    await refreshClientTable();
+}
+
+// Initialize when DOM is ready and NovaTable is available
+function waitForNovaTableAndInit() {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', waitForNovaTableAndInit);
+        return;
+    }
+    
+    if (!window.NovaTable) {
+        console.log('Waiting for NovaTable to be available...');
+        setTimeout(waitForNovaTableAndInit, 100);
+        return;
+    }
+    
+    console.log('DOM ready and NovaTable available, initializing client screen...');
+    initClientScreen();
+}
+
+// Start the initialization process
+waitForNovaTableAndInit();

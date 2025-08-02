@@ -1,6 +1,5 @@
 // Form function: handles UI and populates fields
 import { searchClients, searchSalespeople, searchProducts, saveDocumentApi } from './document-api.js';
-import { openDocumentModal } from './document-modal.js';
 
 // Refactored for new modal structure and DB schema
 // All field selectors, data extraction, and population logic now use new IDs/classes from document-modal.php
@@ -221,6 +220,7 @@ function setDocumentFormData(documentData) {
     // IDs
     document.getElementById('document-id').value = documentData.document_id || '';
     document.getElementById('client-id').value = documentData.client_id || '';
+    document.getElementById('related-document-id').value = documentData.related_document_id || '';
     // Client fields
     document.getElementById('client-name').value = documentData.client_name || '';
     document.getElementById('client-email').value = documentData.client_email || '';
@@ -410,24 +410,47 @@ function getDocumentFormData() {
     const public_note = document.getElementById('public-note').value;
     const private_note = document.getElementById('private-note').value;
     const foot_note = document.getElementById('foot-note').value;
-    // Line items
+    // Line items - handle both regular documents and credit notes
     const items = [];
-    const rows = document.querySelectorAll('#document-rows tr');
-    rows.forEach(row => {
-        const quantity = row.querySelector('.quantity')?.value || 1;
-        const product_id = row.querySelector('.product-id')?.value || '';
-        const item_id = row.querySelector('.item-id')?.value || '';
-        const item_code = row.querySelector('.item-code')?.value || '';
-        const product_description = row.querySelector('.description')?.value || '';
-        const unit_price = row.querySelector('.unit-price')?.value || '';
-        const taxDropdown = row.querySelector('.tax');
-        const tax_percentage = taxDropdown ? taxDropdown.value : '';
-        const tax_rate_id = row.querySelector('.tax-rate-id')?.value || '';
-        const line_total = row.querySelector('.total')?.textContent || '';
-        if (item_code || product_description) {
-            items.push({ quantity, product_id, item_id, item_code, product_description, unit_price, tax_percentage, tax_rate_id, line_total });
-        }
-    });
+    const documentType = document.getElementById('document-type').value;
+    
+    if (documentType === 'credit-note') {
+        // Credit note items
+        const creditRows = document.querySelectorAll('#credit-note-rows tr');
+        creditRows.forEach(row => {
+            const credit_type = row.querySelector('.credit-type')?.value || 'reason';
+            const credit_reason = row.querySelector('.credit-reason')?.value || '';
+            const credit_amount = row.querySelector('.credit-amount')?.value || '';
+            const product_id = row.querySelector('.credit-reason')?.getAttribute('data-product-id') || '';
+            
+            if (credit_reason && credit_amount) {
+                items.push({ 
+                    credit_type, 
+                    credit_reason, 
+                    credit_amount: parseFloat(credit_amount.replace(/[^\d.-]/g, '')) || 0,
+                    product_id: product_id || null
+                });
+            }
+        });
+    } else {
+        // Regular document items
+        const rows = document.querySelectorAll('#document-rows tr');
+        rows.forEach(row => {
+            const quantity = row.querySelector('.quantity')?.value || 1;
+            const product_id = row.querySelector('.product-id')?.value || '';
+            const item_id = row.querySelector('.item-id')?.value || '';
+            const item_code = row.querySelector('.item-code')?.value || '';
+            const product_description = row.querySelector('.description')?.value || '';
+            const unit_price = row.querySelector('.unit-price')?.value || '';
+            const taxDropdown = row.querySelector('.tax');
+            const tax_percentage = taxDropdown ? taxDropdown.value : '';
+            const tax_rate_id = row.querySelector('.tax-rate-id')?.value || '';
+            const line_total = row.querySelector('.total')?.textContent || '';
+            if (item_code || product_description) {
+                items.push({ quantity, product_id, item_id, item_code, product_description, unit_price, tax_percentage, tax_rate_id, line_total });
+            }
+        });
+    }
     // Totals
     const subtotal = document.getElementById('subtotal')?.textContent || '';
     const tax_amount = document.getElementById('tax-total')?.textContent || '';
@@ -461,6 +484,9 @@ function getDocumentFormData() {
     if (isDraft && draftNumber && draftNumber.includes('(Preview)')) {
         draftNumber = '';
     }
+    // Get related document ID for credit notes and refunds
+    const related_document_id = document.getElementById('related-document-id')?.value || '';
+    
     const payload = {
         document_id,
         client_id,
@@ -489,7 +515,8 @@ function getDocumentFormData() {
         is_recurring,
         frequency,
         start_date,
-        end_date
+        end_date,
+        related_document_id
     };
     console.log('[getDocumentFormData] Payload:', payload);
     return payload;
@@ -622,3 +649,4 @@ export { searchClient, searchSalesperson, setDocumentFormData, getDocumentFormDa
 window.setDocumentFormData = setDocumentFormData;
 window.getDocumentFormData = getDocumentFormData;
 window.searchClient = searchClient;
+window.searchSalesperson = searchSalesperson;

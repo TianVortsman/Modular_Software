@@ -1,6 +1,21 @@
 <?php
 namespace App\modules\invoice\controllers;
 
+// Helper function to clean numeric values from currency formatting
+function clean_numeric($value) {
+    if (is_numeric($value)) {
+        return (float) $value;
+    }
+    
+    if (is_string($value)) {
+        // Remove currency symbols, spaces, and commas
+        $cleaned = preg_replace('/[^\d.-]/', '', $value);
+        return is_numeric($cleaned) ? (float) $cleaned : 0.0;
+    }
+    
+    return 0.0;
+}
+
 use PDO;
 use Exception;
 use PDOException;
@@ -201,7 +216,8 @@ function create_document(array $options): array {
         }
     }
     $items = $options['items'] ?? [];
-    $mode = $options['mode'] ?? 'draft';
+    // Check for mode in options first, then in documentData, then default to draft
+    $mode = $options['mode'] ?? $documentData['mode'] ?? 'draft';
     // Always get user_id from payload or session
     $user_id = $documentData['created_by'] ?? ($_SESSION['user_id'] ?? null);
     
@@ -354,7 +370,10 @@ function create_document(array $options): array {
             $update = $conn->prepare("UPDATE settings.invoice_settings SET $numberField = :next WHERE id = 1");
             $update->bindValue(':next', $next, PDO::PARAM_INT);
             $update->execute();
-            $document_status = !empty($options['status']) ? $options['status'] : 'pending';
+            // Use the document_status from form data if provided and it's 'Unpaid' (finalized), otherwise use options status or default to 'Unpaid'
+            $document_status = (!empty($documentData['document_status']) && $documentData['document_status'] === 'Unpaid') 
+                ? 'Unpaid' 
+                : (!empty($options['status']) ? $options['status'] : 'Unpaid');
         } else {
             throw new Exception("Invalid mode for create_document: $mode");
         }
@@ -374,7 +393,7 @@ function create_document(array $options): array {
                 :client_id, :frequency, :start_date, :end_date, 'active', NOW(), NOW()
             ) RETURNING recurring_id";
             $recurringStmt = $conn->prepare($recurringSql);
-            $recurringStmt->bindValue(':client_id', $documentData['client_id'], PDO::PARAM_INT);
+            $recurringStmt->bindValue(':client_id', $documentData['client_id'] ?? null, PDO::PARAM_INT);
             $recurringStmt->bindValue(':frequency', $frequency);
             // Handle recurring date fields - convert empty strings to null
             $start_date_clean = !empty($start_date) ? $start_date : null;
@@ -405,8 +424,8 @@ function create_document(array $options): array {
                 )";
 
         $stmt = $conn->prepare($sql);
-        $stmt->bindValue(':client_id', $documentData['client_id'], PDO::PARAM_INT);
-        $stmt->bindValue(':document_type', $documentData['document_type']);
+        $stmt->bindValue(':client_id', $documentData['client_id'] ?? null, PDO::PARAM_INT);
+        $stmt->bindValue(':document_type', $documentData['document_type'] ?? 'invoice');
         $stmt->bindValue(':document_number', $document_number);
         // Handle date fields - convert empty strings to null for database
         $issue_date = !empty($documentData['issue_date']) ? $documentData['issue_date'] : null;
@@ -416,19 +435,19 @@ function create_document(array $options): array {
         $stmt->bindValue(':due_date', $due_date);
         $stmt->bindValue(':document_status', $document_status);
         $stmt->bindValue(':salesperson_id', isset($documentData['salesperson_id']) && is_numeric($documentData['salesperson_id']) ? $documentData['salesperson_id'] : null, PDO::PARAM_INT);
-        $stmt->bindValue(':subtotal', $documentData['subtotal']);
-        $stmt->bindValue(':discount_amount', $documentData['discount_amount']);
-        $stmt->bindValue(':tax_amount', $documentData['tax_amount']);
-        $stmt->bindValue(':total_amount', $documentData['total_amount']);
-        $stmt->bindValue(':balance_due', $documentData['balance_due']);
+        $stmt->bindValue(':subtotal', clean_numeric($documentData['subtotal'] ?? 0));
+        $stmt->bindValue(':discount_amount', clean_numeric($documentData['discount_amount'] ?? 0));
+        $stmt->bindValue(':tax_amount', clean_numeric($documentData['tax_amount'] ?? 0));
+        $stmt->bindValue(':total_amount', clean_numeric($documentData['total_amount'] ?? 0));
+        $stmt->bindValue(':balance_due', clean_numeric($documentData['balance_due'] ?? 0));
         $stmt->bindValue(':client_purchase_order_number', $documentData['client_purchase_order_number'] ?? null);
         $stmt->bindValue(':notes', $documentData['notes'] ?? null);
         $stmt->bindValue(':terms_conditions', $documentData['terms_conditions'] ?? null);
-        $stmt->bindValue(':is_recurring', $documentData['is_recurring'] ? 1 : 0, PDO::PARAM_INT);
-        $stmt->bindValue(':recurring_template_id', $documentData['recurring_template_id'], is_null($documentData['recurring_template_id']) ? PDO::PARAM_NULL : PDO::PARAM_INT);
+        $stmt->bindValue(':is_recurring', ($documentData['is_recurring'] ?? false) ? 1 : 0, PDO::PARAM_INT);
+        $stmt->bindValue(':recurring_template_id', $documentData['recurring_template_id'] ?? null, is_null($documentData['recurring_template_id'] ?? null) ? PDO::PARAM_NULL : PDO::PARAM_INT);
         $stmt->bindValue(':related_document_id', $documentData['related_document_id'] ?? null, is_null($documentData['related_document_id'] ?? null) ? PDO::PARAM_NULL : PDO::PARAM_INT);
-        $stmt->bindValue(':requires_approval', !empty($documentData['requires_approval']) ? 1 : 0, PDO::PARAM_INT);
-        $stmt->bindValue(':created_by', $documentData['created_by'], PDO::PARAM_INT);
+        $stmt->bindValue(':requires_approval', !empty($documentData['requires_approval'] ?? false) ? 1 : 0, PDO::PARAM_INT);
+        $stmt->bindValue(':created_by', $documentData['created_by'] ?? 1, PDO::PARAM_INT);
 
         $stmt->execute();
         $document_id = $conn->lastInsertId();
@@ -445,7 +464,7 @@ function create_document(array $options): array {
             
             $balanceStmt = $conn->prepare($balanceUpdateSql);
             $balanceStmt->bindValue(':document_type', $documentData['document_type']);
-            $balanceStmt->bindValue(':amount', $documentData['total_amount']);
+            $balanceStmt->bindValue(':amount', clean_numeric($documentData['total_amount']));
             $balanceStmt->bindValue(':related_document_id', $documentData['related_document_id'], PDO::PARAM_INT);
             $balanceStmt->execute();
             
@@ -453,47 +472,96 @@ function create_document(array $options): array {
             log_user_action($user_id, 'update_related_document_balance', $documentData['related_document_id'], 
                 "Updated balance for " . $documentData['document_type'] . " #$document_id");
         }
+        
+        // Increment document number counter if document is finalized (Unpaid status)
+        if (($documentData['document_status'] ?? '') === 'Unpaid') {
+            increment_document_number_counter($documentData['document_type'] ?? 'invoice');
+        }
 
         // Insert document items
-        $itemSql = "INSERT INTO invoicing.document_items (
-                        document_id, product_id, product_description, quantity, unit_price, discount_percentage, tax_rate_id, line_total, sku
-                    ) VALUES (
-                        :document_id, :product_id, :product_description, :quantity, :unit_price, :discount_percentage, :tax_rate_id, :line_total, :sku
-                    )";
-        $itemStmt = $conn->prepare($itemSql);
+        if ($documentData['document_type'] === 'credit_note') {
+            // Insert credit note items
+            $itemSql = "INSERT INTO invoicing.document_items (
+                            document_id, product_id, product_description, quantity, unit_price, discount_percentage, tax_rate_id, line_total, sku, credit_type, credit_reason
+                        ) VALUES (
+                            :document_id, :product_id, :product_description, :quantity, :unit_price, :discount_percentage, :tax_rate_id, :line_total, :sku, :credit_type, :credit_reason
+                        )";
+            $itemStmt = $conn->prepare($itemSql);
 
-        foreach ($items as $item) {
-            // Validate and default all required item fields
-            $item['product_id'] = isset($item['product_id']) && is_numeric($item['product_id']) ? $item['product_id'] : null;
-            $item['product_description'] = $item['product_description'] ?? '';
-            $item['quantity'] = isset($item['quantity']) && is_numeric($item['quantity']) ? $item['quantity'] : 1;
-            $item['unit_price'] = isset($item['unit_price']) && is_numeric($item['unit_price']) ? $item['unit_price'] : 0;
-            $item['discount_percentage'] = (isset($item['discount_percentage']) && $item['discount_percentage'] !== '' && is_numeric($item['discount_percentage'])) ? $item['discount_percentage'] : 0;
-            // If tax_rate_id is 0 or blank, set to null
-            $item['tax_rate_id'] = (isset($item['tax_rate_id']) && is_numeric($item['tax_rate_id']) && $item['tax_rate_id'] > 0) ? $item['tax_rate_id'] : null;
-            $item['line_total'] = isset($item['line_total']) && is_numeric($item['line_total']) ? $item['line_total'] : 0;
-            // Check for truly missing required fields
-            if ($item['product_id'] === null) {
-                $msg = "Missing or invalid product_id in one or more items.";
-                error_log($msg);
-                return [ 'success' => false, 'message' => $msg, 'data' => null, 'error_code' => 'INVALID_PRODUCT_ID' ];
+            foreach ($items as $item) {
+                // For credit notes, use credit_reason as product_description
+                $item['product_id'] = isset($item['product_id']) && is_numeric($item['product_id']) ? $item['product_id'] : null;
+                $item['product_description'] = $item['credit_reason'] ?? '';
+                $item['quantity'] = 1; // Credit notes always have quantity 1
+                $item['unit_price'] = isset($item['credit_amount']) && is_numeric($item['credit_amount']) ? $item['credit_amount'] : 0;
+                $item['discount_percentage'] = 0;
+                $item['tax_rate_id'] = null; // No tax on credit notes
+                $item['line_total'] = isset($item['credit_amount']) && is_numeric($item['credit_amount']) ? $item['credit_amount'] : 0;
+                $item['credit_type'] = $item['credit_type'] ?? 'reason';
+                $item['credit_reason'] = $item['credit_reason'] ?? '';
+                
+                // Check for truly missing required fields
+                if ($item['product_description'] === '') {
+                    $msg = "Missing credit reason in one or more items.";
+                    error_log($msg);
+                    return [ 'success' => false, 'message' => $msg, 'data' => null, 'error_code' => 'INVALID_CREDIT_REASON' ];
+                }
+                
+                $itemStmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
+                $itemStmt->bindValue(':product_id', $item['product_id'], PDO::PARAM_INT);
+                $itemStmt->bindValue(':product_description', $item['product_description']);
+                $itemStmt->bindValue(':quantity', clean_numeric($item['quantity']));
+                $itemStmt->bindValue(':unit_price', clean_numeric($item['unit_price']));
+                $itemStmt->bindValue(':discount_percentage', clean_numeric($item['discount_percentage']));
+                $itemStmt->bindValue(':tax_rate_id', $item['tax_rate_id'], PDO::PARAM_NULL);
+                $itemStmt->bindValue(':line_total', clean_numeric($item['line_total']));
+                $itemStmt->bindValue(':sku', '', PDO::PARAM_STR);
+                $itemStmt->bindValue(':credit_type', $item['credit_type'], PDO::PARAM_STR);
+                $itemStmt->bindValue(':credit_reason', $item['credit_reason'], PDO::PARAM_STR);
+                $itemStmt->execute();
             }
-            if ($item['product_description'] === '') {
-                $msg = "Missing product_description in one or more items.";
-                error_log($msg);
-                return [ 'success' => false, 'message' => $msg, 'data' => null, 'error_code' => 'INVALID_PRODUCT_DESCRIPTION' ];
+        } else {
+            // Insert regular document items
+            $itemSql = "INSERT INTO invoicing.document_items (
+                            document_id, product_id, product_description, quantity, unit_price, discount_percentage, tax_rate_id, line_total, sku
+                        ) VALUES (
+                            :document_id, :product_id, :product_description, :quantity, :unit_price, :discount_percentage, :tax_rate_id, :line_total, :sku
+                        )";
+            $itemStmt = $conn->prepare($itemSql);
+
+            foreach ($items as $item) {
+                // Validate and default all required item fields
+                $item['product_id'] = isset($item['product_id']) && is_numeric($item['product_id']) ? $item['product_id'] : null;
+                $item['product_description'] = $item['product_description'] ?? '';
+                $item['quantity'] = isset($item['quantity']) && is_numeric($item['quantity']) ? $item['quantity'] : 1;
+                $item['unit_price'] = isset($item['unit_price']) && is_numeric($item['unit_price']) ? $item['unit_price'] : 0;
+                $item['discount_percentage'] = (isset($item['discount_percentage']) && $item['discount_percentage'] !== '' && is_numeric($item['discount_percentage'])) ? $item['discount_percentage'] : 0;
+                // If tax_rate_id is 0 or blank, set to null
+                $item['tax_rate_id'] = (isset($item['tax_rate_id']) && is_numeric($item['tax_rate_id']) && $item['tax_rate_id'] > 0) ? $item['tax_rate_id'] : null;
+                $item['line_total'] = isset($item['line_total']) && is_numeric($item['line_total']) ? $item['line_total'] : 0;
+                // Check for truly missing required fields
+                if ($item['product_id'] === null) {
+                    $msg = "Missing or invalid product_id in one or more items.";
+                    error_log($msg);
+                    return [ 'success' => false, 'message' => $msg, 'data' => null, 'error_code' => 'INVALID_PRODUCT_ID' ];
+                }
+                if ($item['product_description'] === '') {
+                    $msg = "Missing product_description in one or more items.";
+                    error_log($msg);
+                    return [ 'success' => false, 'message' => $msg, 'data' => null, 'error_code' => 'INVALID_PRODUCT_DESCRIPTION' ];
+                }
+                // All other fields are defaulted above
+                $itemStmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
+                $itemStmt->bindValue(':product_id', $item['product_id'], PDO::PARAM_INT);
+                $itemStmt->bindValue(':product_description', $item['product_description']);
+                $itemStmt->bindValue(':quantity', clean_numeric($item['quantity']));
+                $itemStmt->bindValue(':unit_price', clean_numeric($item['unit_price']));
+                $itemStmt->bindValue(':discount_percentage', clean_numeric($item['discount_percentage']));
+                $itemStmt->bindValue(':tax_rate_id', $item['tax_rate_id'], is_null($item['tax_rate_id']) ? PDO::PARAM_NULL : PDO::PARAM_INT);
+                $itemStmt->bindValue(':line_total', clean_numeric($item['line_total']));
+                $itemStmt->bindValue(':sku', $item['item_code'] ?? '', PDO::PARAM_STR);
+                $itemStmt->execute();
             }
-            // All other fields are defaulted above
-            $itemStmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
-            $itemStmt->bindValue(':product_id', $item['product_id'], PDO::PARAM_INT);
-            $itemStmt->bindValue(':product_description', $item['product_description']);
-            $itemStmt->bindValue(':quantity', $item['quantity']);
-            $itemStmt->bindValue(':unit_price', $item['unit_price']);
-            $itemStmt->bindValue(':discount_percentage', $item['discount_percentage']);
-            $itemStmt->bindValue(':tax_rate_id', $item['tax_rate_id'], is_null($item['tax_rate_id']) ? PDO::PARAM_NULL : PDO::PARAM_INT);
-            $itemStmt->bindValue(':line_total', $item['line_total']);
-            $itemStmt->bindValue(':sku', $item['item_code'] ?? '', PDO::PARAM_STR);
-            $itemStmt->execute();
         }
 
         $conn->commit();
@@ -571,6 +639,7 @@ function create_document(array $options): array {
         return build_success_response([
             'document_id' => (int)$document_id,
             'document_number' => $document_number,
+            'document_status' => $document_status,
             'pdf_url' => $pdf_url
         ], 'Document created successfully');
     } catch (Exception $e) {
@@ -597,7 +666,8 @@ function update_document(int $document_id, array $options): array {
         }
     }
     $items = $options['items'] ?? [];
-    $mode = $options['mode'] ?? 'draft';
+    // Check for mode in options first, then in documentData, then default to draft
+    $mode = $options['mode'] ?? $documentData['mode'] ?? 'draft';
     
     // Always get updated_by from payload or session
     $updated_by = $documentData['updated_by'] ?? ($_SESSION['user_id'] ?? null);
@@ -640,23 +710,33 @@ function update_document(int $document_id, array $options): array {
         $currentNumber = $currentDoc['document_number'] ?? '';
         $currentStatus = $currentDoc['document_status'] ?? '';
         $currentType = $currentDoc['document_type'] ?? '';
-        $currentIsRecurring = $currentDoc['is_recurring'] ?? false;
-        $currentRecurringId = $currentDoc['recurring_template_id'] ?? null;
+            $currentIsRecurring = $currentDoc['is_recurring'] ?? false;
+    $currentRecurringId = $currentDoc['recurring_template_id'] ?? null;
 
-        // Handle draft vs finalize
-        if ($mode === 'draft') {
-            $document_status = 'draft';
-            // Do not update document_number if it's a draft update
-        } elseif ($mode === 'finalize') {
-            $document_status = !empty($options['status']) ? $options['status'] : 'pending';
+    // Initialize document_status at function level
+    $document_status = 'draft'; // Default value
+
+    // Handle draft vs finalize
+    if ($mode === 'draft') {
+        $document_status = 'draft';
+        // Do not update document_number if it's a draft update
+    } elseif ($mode === 'finalize') {
+        // Use the document_status from form data if provided and it's 'Unpaid' (finalized), otherwise use options status or default to 'Unpaid'
+        $document_status = (!empty($documentData['document_status']) && $documentData['document_status'] === 'Unpaid') 
+            ? 'Unpaid' 
+            : (!empty($options['status']) ? $options['status'] : 'Unpaid');
+    } else {
+        // Default case - use document_status from documentData or keep current status
+        $document_status = $documentData['document_status'] ?? $currentStatus ?? 'draft';
+    }
             // Prevent editing if already finalized
-            $finalizedStatuses = ['finalized', 'approved', 'paid', 'sent'];
-            if (in_array(strtolower($currentStatus), $finalizedStatuses)) {
+            $finalizedStatuses = ['unpaid', 'Unpaid', 'approved', 'paid', 'sent'];
+            if (in_array($currentStatus, $finalizedStatuses)) {
                 throw new Exception('Cannot edit a finalized document.');
             }
             // Assign a new document_number if not set or is a draft
             if (empty($currentNumber) || strpos($currentNumber, 'DRAFT-') === 0) {
-                $type = strtolower($documentData['document_type']);
+                $type = strtolower($documentData['document_type'] ?? $currentType ?? 'invoice');
                 $numberField = '';
                 $prefixField = '';
                 switch ($type) {
@@ -701,13 +781,10 @@ function update_document(int $document_id, array $options): array {
                 $stmtNum->execute();
                 $currentNumber = $newNumber;
             }
-        } else {
-            throw new Exception("Invalid mode for update_document: $mode");
-        }
 
         // Protect existing recurring invoices: ensure they stay recurring
         // Only apply this logic to actual recurring_invoice document types, not quotations or other types
-        if ($currentIsRecurring && $currentType === 'recurring_invoice' && $documentData['document_type'] === 'recurring_invoice') {
+        if ($currentIsRecurring && $currentType === 'recurring_invoice' && ($documentData['document_type'] ?? $currentType) === 'recurring_invoice') {
             // If document was previously recurring, preserve that status
             if (!isset($documentData['is_recurring']) || !$documentData['is_recurring']) {
                 error_log('[UPDATE_DOCUMENT] Preserving recurring status for recurring invoice ID: ' . $document_id);
@@ -724,14 +801,14 @@ function update_document(int $document_id, array $options): array {
             }
         } else if ($currentIsRecurring && $currentType !== 'recurring_invoice') {
             // If document was marked as recurring but is not a recurring_invoice type, clear the recurring status
-            error_log('[UPDATE_DOCUMENT] Clearing recurring status for non-recurring document type ID: ' . $document_id . ' (type: ' . $documentData['document_type'] . ')');
+            error_log('[UPDATE_DOCUMENT] Clearing recurring status for non-recurring document type ID: ' . $document_id . ' (type: ' . ($documentData['document_type'] ?? $currentType) . ')');
             $documentData['is_recurring'] = false;
             $documentData['recurring_template_id'] = null;
         }
 
         // Recurring update logic - only for actual recurring_invoice document types
         $recurring_id = null;
-        if (!empty($documentData['is_recurring']) && $documentData['document_type'] === 'recurring_invoice') {
+        if (!empty($documentData['is_recurring']) && ($documentData['document_type'] ?? $currentType) === 'recurring_invoice') {
             error_log('[UPDATE_DOCUMENT] Processing recurring invoice update for document ID: ' . $document_id);
             
             $frequency = $documentData['frequency'] ?? null;
@@ -783,7 +860,7 @@ function update_document(int $document_id, array $options): array {
                 $start_date_clean = !empty($start_date) ? $start_date : null;
                 $end_date_clean = !empty($end_date) ? $end_date : null;
                 
-                $recurringStmt->bindValue(':client_id', $documentData['client_id'], PDO::PARAM_INT);
+                $recurringStmt->bindValue(':client_id', $documentData['client_id'] ?? null, PDO::PARAM_INT);
                 $recurringStmt->bindValue(':frequency', $frequency);
                 $recurringStmt->bindValue(':start_date', $start_date_clean);
                 $recurringStmt->bindValue(':end_date', $end_date_clean);
@@ -844,7 +921,12 @@ function update_document(int $document_id, array $options): array {
                     $date_value = !empty($documentData[$key]) ? $documentData[$key] : null;
                     $stmt->bindValue($param, $date_value);
                 } else {
-                    $stmt->bindValue($param, $documentData[$key], $type);
+                    // Handle monetary fields with clean_numeric
+                    if (in_array($key, ['subtotal', 'discount_amount', 'tax_amount', 'total_amount', 'balance_due'])) {
+                        $stmt->bindValue($param, clean_numeric($documentData[$key] ?? 0), $type);
+                    } else {
+                        $stmt->bindValue($param, $documentData[$key] ?? null, $type);
+                    }
                 }
             }
         }
@@ -862,12 +944,12 @@ function update_document(int $document_id, array $options): array {
         $stmtItems->bindValue(':document_id', $document_id, PDO::PARAM_INT);
         $stmtItems->execute();
         foreach ($stmtItems->fetchAll(PDO::FETCH_ASSOC) as $ci) {
-            $currentItems[$ci['item_id']] = $ci;
+            $currentItems[$ci['item_id'] ?? 0] = $ci;
         }
         $newItemsById = [];
         foreach ($items as $item) {
-            if (!empty($item['item_id'])) {
-                $newItemsById[$item['item_id']] = $item;
+            if (!empty($item['item_id'] ?? '')) {
+                $newItemsById[$item['item_id'] ?? 0] = $item;
             }
         }
         // Update existing items
@@ -877,8 +959,8 @@ function update_document(int $document_id, array $options): array {
                 // Compare fields, update if changed
                 $fieldsToUpdate = [];
                 foreach (['product_id','product_description','quantity','unit_price','discount_percentage','tax_rate_id','line_total'] as $field) {
-                    if ($ci[$field] != $ni[$field]) {
-                        $fieldsToUpdate[$field] = $ni[$field];
+                    if ($ci[$field] != ($ni[$field] ?? null)) {
+                        $fieldsToUpdate[$field] = $ni[$field] ?? null;
                     }
                 }
                 // Special handling for sku field (maps to item_code from frontend)
@@ -893,6 +975,9 @@ function update_document(int $document_id, array $options): array {
                     if ($f === 'sku') {
                         // Map item_code from frontend to sku in database
                         $updateStmt->bindValue(":$f", $ni['item_code'] ?? '', PDO::PARAM_STR);
+                    } else if (in_array($f, ['quantity', 'unit_price', 'discount_percentage', 'line_total'])) {
+                        // Handle monetary fields with clean_numeric
+                        $updateStmt->bindValue(":$f", clean_numeric($v));
                     } else {
                         $updateStmt->bindValue(":$f", $v);
                     }
@@ -917,13 +1002,13 @@ function update_document(int $document_id, array $options): array {
                 )";
                 $itemStmt = $conn->prepare($itemSql);
                 $itemStmt->bindValue(':document_id', $document_id, PDO::PARAM_INT);
-                $itemStmt->bindValue(':product_id', $item['product_id'], PDO::PARAM_INT);
-                $itemStmt->bindValue(':product_description', $item['product_description']);
-                $itemStmt->bindValue(':quantity', $item['quantity']);
-                $itemStmt->bindValue(':unit_price', $item['unit_price']);
-                $itemStmt->bindValue(':discount_percentage', $item['discount_percentage']);
-                $itemStmt->bindValue(':tax_rate_id', $item['tax_rate_id'], is_null($item['tax_rate_id']) ? PDO::PARAM_NULL : PDO::PARAM_INT);
-                $itemStmt->bindValue(':line_total', $item['line_total']);
+                $itemStmt->bindValue(':product_id', $item['product_id'] ?? null, PDO::PARAM_INT);
+                $itemStmt->bindValue(':product_description', $item['product_description'] ?? '');
+                $itemStmt->bindValue(':quantity', clean_numeric($item['quantity'] ?? 1));
+                $itemStmt->bindValue(':unit_price', clean_numeric($item['unit_price'] ?? 0));
+                $itemStmt->bindValue(':discount_percentage', clean_numeric($item['discount_percentage'] ?? 0));
+                $itemStmt->bindValue(':tax_rate_id', $item['tax_rate_id'] ?? null, is_null($item['tax_rate_id'] ?? null) ? PDO::PARAM_NULL : PDO::PARAM_INT);
+                $itemStmt->bindValue(':line_total', clean_numeric($item['line_total'] ?? 0));
                 $itemStmt->bindValue(':sku', $item['item_code'] ?? '', PDO::PARAM_STR);
                 $itemStmt->execute();
             }
@@ -1006,6 +1091,7 @@ function update_document(int $document_id, array $options): array {
             'data' => [
                 'document_id' => $document_id,
                 'document_number' => $currentNumber,
+                'document_status' => $document_status,
                 'pdf_url' => $pdf_url
             ]
         ];
@@ -1263,5 +1349,192 @@ function get_available_invoices_for_credit_refund(int $client_id = null): array 
             'data' => null,
             'error_code' => 'AVAILABLE_INVOICES_FETCH_ERROR'
         ];
+    }
+}
+
+/**
+ * Get next document number for a specific document type
+ * @param string $action The action name (e.g., 'get_next_invoice_number')
+ * @return array
+ */
+function get_next_document_number(string $action): array {
+    global $conn;
+    error_log('[GET_NEXT_DOCUMENT_NUMBER] Function called with action: ' . $action);
+    try {
+        // Map action to document type and settings fields
+        $documentTypeMap = [
+            'get_next_quotation_number' => ['type' => 'quotation', 'prefix_field' => 'quotation_prefix', 'current_field' => 'quotation_current_number'],
+            'get_next_invoice_number' => ['type' => 'invoice', 'prefix_field' => 'invoice_prefix', 'current_field' => 'invoice_current_number'],
+            'get_next_credit_note_number' => ['type' => 'credit_note', 'prefix_field' => 'credit_note_prefix', 'current_field' => 'credit_note_current_number'],
+            'get_next_refund_number' => ['type' => 'refund', 'prefix_field' => 'refund_prefix', 'current_field' => 'refund_current_number'],
+            'get_next_proforma_number' => ['type' => 'proforma', 'prefix_field' => 'proforma_prefix', 'current_field' => 'proforma_current_number']
+        ];
+        
+        if (!isset($documentTypeMap[$action])) {
+            return [
+                'success' => false,
+                'message' => 'Invalid document type',
+                'data' => null,
+                'error_code' => 'INVALID_DOCUMENT_TYPE'
+            ];
+        }
+        
+        $config = $documentTypeMap[$action];
+        
+        // Get current settings
+        error_log('[GET_NEXT_DOCUMENT_NUMBER] Action: ' . $action . ', Config: ' . json_encode($config));
+        
+        // Check if the fields exist in the table
+        try {
+            $checkFieldsStmt = $conn->prepare("SELECT column_name FROM information_schema.columns WHERE table_schema = 'settings' AND table_name = 'invoice_settings' AND column_name IN (?, ?)");
+            $checkFieldsStmt->execute([$config['prefix_field'], $config['current_field']]);
+            $existingFields = $checkFieldsStmt->fetchAll(PDO::FETCH_COLUMN);
+            error_log('[GET_NEXT_DOCUMENT_NUMBER] Existing fields: ' . json_encode($existingFields));
+        } catch (Exception $e) {
+            error_log('[GET_NEXT_DOCUMENT_NUMBER] Error checking fields: ' . $e->getMessage());
+            $existingFields = [];
+        }
+        
+        if (count($existingFields) < 2) {
+            error_log('[GET_NEXT_DOCUMENT_NUMBER] Missing fields: ' . json_encode($existingFields) . ' for config: ' . json_encode($config));
+            // Return a fallback response
+            return [
+                'success' => true,
+                'message' => 'Next document number generated successfully (using fallback)',
+                'data' => [
+                    'number' => 'DRAFT-' . time(),
+                    'next_number' => 1,
+                    'prefix' => 'DRAFT'
+                ]
+            ];
+        }
+        
+        $stmt = $conn->prepare("SELECT {$config['prefix_field']}, {$config['current_field']} FROM settings.invoice_settings WHERE id = 1");
+        $stmt->execute();
+        $settings = $stmt->fetch(PDO::FETCH_ASSOC);
+        error_log('[GET_NEXT_DOCUMENT_NUMBER] Settings result: ' . json_encode($settings));
+        
+        if (!$settings) {
+            error_log('[GET_NEXT_DOCUMENT_NUMBER] No settings found, creating default settings');
+            try {
+                // Create default settings if none exist
+                $insertStmt = $conn->prepare("INSERT INTO settings.invoice_settings (invoice_prefix, invoice_current_number, quotation_prefix, quotation_current_number, credit_note_prefix, credit_note_current_number, proforma_prefix, proforma_current_number, refund_prefix, refund_current_number) VALUES ('INV', 1, 'QUO', 1, 'CN', 1, 'PRO', 1, 'REF', 1)");
+                $insertStmt->execute();
+                error_log('[GET_NEXT_DOCUMENT_NUMBER] Default settings created successfully');
+                
+                // Try to get settings again
+                $stmt->execute();
+                $settings = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                if (!$settings) {
+                    error_log('[GET_NEXT_DOCUMENT_NUMBER] Still no settings after creation attempt');
+                    return [
+                        'success' => false,
+                        'message' => 'Invoice settings not found and could not be created',
+                        'data' => null,
+                        'error_code' => 'SETTINGS_NOT_FOUND'
+                    ];
+                }
+            } catch (Exception $e) {
+                error_log('[GET_NEXT_DOCUMENT_NUMBER] Error creating default settings: ' . $e->getMessage());
+                return [
+                    'success' => false,
+                    'message' => 'Error creating default settings: ' . $e->getMessage(),
+                    'data' => null,
+                    'error_code' => 'SETTINGS_CREATION_ERROR'
+                ];
+            }
+        }
+        
+        $prefix = $settings[$config['prefix_field']] ?? '';
+        $currentNumber = $settings[$config['current_field']] ?? 1;
+        
+        // If prefix is empty, use a default based on document type
+        if (empty($prefix)) {
+            switch ($config['type']) {
+                case 'quotation':
+                    $prefix = 'QUO';
+                    break;
+                case 'invoice':
+                    $prefix = 'INV';
+                    break;
+                case 'credit_note':
+                    $prefix = 'CN';
+                    break;
+                case 'refund':
+                    $prefix = 'REF';
+                    break;
+                case 'proforma':
+                    $prefix = 'PRO';
+                    break;
+                default:
+                    $prefix = 'DOC';
+            }
+        }
+        
+        $nextNumber = $currentNumber + 1;
+        
+        // Generate the document number
+        $documentNumber = $prefix . $nextNumber;
+        
+        error_log('[GET_NEXT_DOCUMENT_NUMBER] Generated document number: ' . $documentNumber);
+        
+        return [
+            'success' => true,
+            'message' => 'Next document number generated successfully',
+            'data' => [
+                'number' => $documentNumber,
+                'next_number' => $nextNumber,
+                'prefix' => $prefix
+            ]
+        ];
+    } catch (Exception $e) {
+        error_log('get_next_document_number error: ' . $e->getMessage());
+        error_log('get_next_document_number stack trace: ' . $e->getTraceAsString());
+        
+        // Return a fallback response instead of failing completely
+        return [
+            'success' => true,
+            'message' => 'Next document number generated successfully (using fallback)',
+            'data' => [
+                'number' => 'DOC-' . time(),
+                'next_number' => 1,
+                'prefix' => 'DOC'
+            ]
+        ];
+    }
+}
+
+/**
+ * Increment document number counter for a specific document type
+ * @param string $documentType
+ * @return bool
+ */
+function increment_document_number_counter(string $documentType): bool {
+    global $conn;
+    try {
+        // Map document type to settings field
+        $fieldMap = [
+            'quotation' => 'quotation_current_number',
+            'invoice' => 'invoice_current_number',
+            'credit_note' => 'credit_note_current_number',
+            'refund' => 'refund_current_number',
+            'proforma' => 'proforma_current_number'
+        ];
+        
+        if (!isset($fieldMap[$documentType])) {
+            error_log("Unknown document type for counter increment: $documentType");
+            return false;
+        }
+        
+        $field = $fieldMap[$documentType];
+        $sql = "UPDATE settings.invoice_settings SET $field = $field + 1 WHERE id = 1";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        
+        return true;
+    } catch (Exception $e) {
+        error_log('increment_document_number_counter error: ' . $e->getMessage());
+        return false;
     }
 }

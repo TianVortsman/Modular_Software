@@ -8,7 +8,8 @@
 }
 .clients-screen {
     min-height: 100vh; /* Make sure it covers at least 100% of the viewport height */
-    padding: var(--spacing-medium);
+    padding-left: var(--spacing-medium);
+    padding-right: var(--spacing-medium);
     background-color: var(--color-background);
     color: var(--color-text-light);
     display: flex;
@@ -17,7 +18,6 @@
     box-shadow: var(--shadow-dark);z-index: -1;
     margin-left: var(--sidebar-width);
     transition: margin-left 0.3s ease-in-out; /* Smooth transition for sidebar */
-    padding: var(--spacing-medium);
     width: auto;
 }
 
@@ -124,6 +124,48 @@ h2 {
 
 .client-section2.active { 
     display: block;
+}
+
+/* NOVA Table Integration Styles */
+.nova-table-container {
+    width: 100%;
+    height: calc(100vh - 250px); /* Use full available height minus header/actions */
+    margin-top: var(--spacing-medium);
+    overflow: hidden; /* Prevent any overflow from the container */
+    max-width: 100%; /* Ensure it doesn't exceed parent width */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ensure NOVA tables work well within the existing layout */
+.client-section1 .nova-table-container,
+.client-section2 .nova-table-container {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+/* Override NOVA table backdrop for better integration */
+.client-section1 .nova-table-search-container,
+.client-section2 .nova-table-search-container {
+    background: var(--color-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-light);
+}
+
+.client-section1 .nova-table-wrapper,
+.client-section2 .nova-table-wrapper {
+    background: var(--color-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-light);
+}
+
+/* Ensure proper spacing */
+.client-section1.active .nova-table-container,
+.client-section2.active .nova-table-container {
+    animation: fadeIn 0.3s ease-in-out;
 }
 
 .clientSectionButton1, .clientSectionButton2 { 

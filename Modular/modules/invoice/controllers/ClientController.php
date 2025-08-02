@@ -152,10 +152,10 @@ function create_client(array $data): array {
     if (!empty($data['client_email']) && !validate_email($data['client_email'])) {
         return build_error_response('Invalid email format', $data, 'Client email validation', 'INVALID_EMAIL');
     }
-    
+
     // Sanitize input data
     $sanitizedData = sanitize_input($data);
-    
+
     try {
         $conn->beginTransaction();
         
@@ -163,7 +163,7 @@ function create_client(array $data): array {
         $sql = "INSERT INTO invoicing.clients (client_type, client_name, first_name, last_name, client_email, client_cell, client_tell, vat_number, registration_number, created_by, updated_by) 
                 VALUES (:client_type, :client_name, :first_name, :last_name, :client_email, :client_cell, :client_tell, :vat_number, :registration_number, :created_by, :updated_by) 
                 RETURNING client_id";
-                
+
         $stmt = $conn->prepare($sql);
         $stmt->bindValue(':client_type', $sanitizedData['client_type']);
         $stmt->bindValue(':client_name', $sanitizedData['client_name']);
@@ -207,7 +207,7 @@ function create_client(array $data): array {
                 
                 $addressStmt->execute();
                 $address_id = $addressStmt->fetchColumn();
-                
+
                 // Link address to client
                 $linkSql = "INSERT INTO invoicing.client_addresses (client_id, address_id) VALUES (:client_id, :address_id)";
                 $linkStmt = $conn->prepare($linkSql);
@@ -216,7 +216,7 @@ function create_client(array $data): array {
                 $linkStmt->execute();
             }
         }
-        
+
         // Handle contacts if provided
         if (!empty($data['contacts']) && is_array($data['contacts'])) {
             foreach ($data['contacts'] as $contact) {
@@ -242,7 +242,7 @@ function create_client(array $data): array {
                 
                 $contactStmt->execute();
                 $contact_id = $contactStmt->fetchColumn();
-                
+
                 // Link contact to client
                 $linkSql = "INSERT INTO invoicing.client_contacts (client_id, contact_id) VALUES (:client_id, :contact_id)";
                 $linkStmt = $conn->prepare($linkSql);
@@ -251,7 +251,7 @@ function create_client(array $data): array {
                 $linkStmt->execute();
             }
         }
-        
+
         $conn->commit();
         
         // Log the action
@@ -274,7 +274,7 @@ function create_client(array $data): array {
         return build_error_response($msg, $data, 'Client creation failed', 'CLIENT_CREATE_ERROR');
         
     } catch (Exception $e) {
-        $conn->rollBack();
+            $conn->rollBack();
         $msg = "Error during client creation: " . $e->getMessage();
         error_log($msg);
         log_user_action($_SESSION['user_id'] ?? null, 'create_client_failed', null, $msg);
@@ -305,7 +305,7 @@ function update_client(array $data): array {
     
     try {
         $conn->beginTransaction();
-        
+
         // Check if client exists
         $checkSql = "SELECT client_id FROM invoicing.clients WHERE client_id = :client_id";
         $checkStmt = $conn->prepare($checkSql);
@@ -355,7 +355,7 @@ function update_client(array $data): array {
         $result = get_client_details($client_id);
         if ($result['success']) {
             return build_success_response($result['data'], 'Client updated successfully');
-        } else {
+                        } else {
             return build_success_response(['client_id' => $client_id], 'Client updated successfully, but failed to retrieve updated details');
         }
         
@@ -368,7 +368,7 @@ function update_client(array $data): array {
         return build_error_response($msg, $data, 'Client update failed', 'CLIENT_UPDATE_ERROR');
         
     } catch (Exception $e) {
-        $conn->rollBack();
+            $conn->rollBack();
         $msg = "Error during client update: " . $e->getMessage();
         error_log($msg);
         log_user_action($_SESSION['user_id'] ?? null, 'update_client_failed', $client_id, $msg);
@@ -433,7 +433,7 @@ function delete_client(int $client_id, int $deleted_by): array {
         return build_error_response($msg, ['client_id' => $client_id, 'deleted_by' => $deleted_by], 'Client deletion failed', 'CLIENT_DELETE_ERROR');
         
     } catch (Exception $e) {
-        $conn->rollBack();
+            $conn->rollBack();
         $msg = "Error during client deletion: " . $e->getMessage();
         error_log($msg);
         log_user_action($deleted_by, 'delete_client_failed', $client_id, $msg);

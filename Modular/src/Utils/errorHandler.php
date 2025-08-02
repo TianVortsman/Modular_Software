@@ -13,11 +13,6 @@ function generateErrorCode() {
  * @return string|null - User-friendly message from AI
  */
 function getFriendlyMessageFromAI($error, $formData = null, $context = null) {
-    // Completely disable AI error handling for now to prevent cascading failures
-    // This will be re-enabled once the AI service is properly configured
-    return null;
-    
-    /*
     try {
         $config = require __DIR__ . '/../Config/app.php';
         $endpoint = $config['AI_ENDPOINT'] ?? null;
@@ -73,7 +68,7 @@ Always keep responses concise (max 1-2 sentences) and actionable.";
                 'header'  => "Content-type: application/json",
                 'method'  => 'POST',
                 'content' => json_encode($data),
-                'timeout' => 1, // Very short timeout
+                'timeout' => 10, // Increased timeout for AI response
                 'ignore_errors' => true
             ]
         ];
@@ -85,14 +80,31 @@ Always keep responses concise (max 1-2 sentences) and actionable.";
 
         if (!$result) return null;
 
+        // Log the raw AI response for debugging
+        error_log('[AI_DEBUG] Raw AI response: ' . $result);
+        
         $json = json_decode($result, true);
-        return $json['choices'][0]['message']['content'] ?? null;
+        
+        // Log the parsed JSON for debugging
+        error_log('[AI_DEBUG] Parsed JSON: ' . json_encode($json));
+        
+        $content = $json['choices'][0]['message']['content'] ?? null;
+        
+        // Log the extracted content
+        error_log('[AI_DEBUG] Extracted content: ' . ($content ?: 'NULL'));
+        
+        // Only return content if it's a helpful response (not just "Sorry," or similar)
+        if ($content && strlen(trim($content)) > 5 && !preg_match('/^(Sorry|Error|Oops|Failed)$/i', trim($content))) {
+            return $content;
+        }
+        
+        error_log('[AI_DEBUG] Content too short or incomplete, returning null');
+        return null;
         
     } catch (Exception $e) {
         // Completely silent failure - no logging at all
         return null;
     }
-    */
 }
 
 /**
@@ -107,7 +119,7 @@ Always keep responses concise (max 1-2 sentences) and actionable.";
  */
 function sendApiErrorResponse($error, $formData = null, $context = null, $errorCode = null, $httpCode = 500) {
     $config = require __DIR__ . '/../Config/app.php';
-    $env = $config['APP_ENV'] ?? 'development';
+    $env = $config['APP_ENV'] ?? 'Production';
     
     if (!$errorCode) {
         $errorCode = generateErrorCode();
@@ -122,7 +134,7 @@ function sendApiErrorResponse($error, $formData = null, $context = null, $errorC
     
     file_put_contents(__DIR__ . '/../../storage/logs/php_errors.log', $logEntry, FILE_APPEND);
 
-    // Get AI-friendly message (currently disabled to prevent cascading failures)
+    // Get AI-friendly message (now enabled)
     $friendlyMessage = getFriendlyMessageFromAI($error, $formData, $context);
     
     // Log the AI response if available
@@ -176,7 +188,20 @@ function sendApiSuccessResponse($data = null, $message = 'Success', $additional 
  */
 function handleError($errno, $errstr, $errfile, $errline) {
     $fullError = "[PHP] $errstr in $errfile on line $errline";
-    sendApiErrorResponse($fullError, null, 'PHP Runtime Error');
+    
+    // Capture current request data for better error context
+    $formData = null;
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $rawData = file_get_contents('php://input');
+        if ($rawData) {
+            $formData = json_decode($rawData, true);
+        }
+        if (!$formData) {
+            $formData = $_POST;
+        }
+    }
+    
+    sendApiErrorResponse($fullError, $formData, 'PHP Runtime Error');
 }
 
 /**
@@ -184,7 +209,20 @@ function handleError($errno, $errstr, $errfile, $errline) {
  */
 function handleException($exception) {
     $fullError = "[Exception] " . $exception->getMessage() . " in " . $exception->getFile() . " on line " . $exception->getLine();
-    sendApiErrorResponse($fullError, null, 'Uncaught Exception');
+    
+    // Capture current request data for better error context
+    $formData = null;
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $rawData = file_get_contents('php://input');
+        if ($rawData) {
+            $formData = json_decode($rawData, true);
+        }
+        if (!$formData) {
+            $formData = $_POST;
+        }
+    }
+    
+    sendApiErrorResponse($fullError, $formData, 'Uncaught Exception');
 }
 
 /**

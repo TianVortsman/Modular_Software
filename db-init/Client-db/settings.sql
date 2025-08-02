@@ -27,6 +27,11 @@ CREATE TABLE IF NOT EXISTS settings.invoice_settings (
     proforma_starting_number INTEGER DEFAULT 1,
     proforma_current_number INTEGER,
 
+    -- Refund Numbering Settings
+    refund_prefix VARCHAR(50),
+    refund_starting_number INTEGER DEFAULT 1,
+    refund_current_number INTEGER,
+
     -- Delivery Note Numbering Settings
     delivery_note_prefix VARCHAR(50),
     delivery_note_starting_number INTEGER DEFAULT 1,

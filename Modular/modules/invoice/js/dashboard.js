@@ -1,7 +1,5 @@
 import { fetchDashboardCards, fetchInvoices, fetchRecurringInvoices, fetchInvoiceChartData } from './document-api.js';
-import { openDocumentModal, setModalMode, closeDocumentModal } from './document-modal.js';
 import { buildQueryParams } from '../../../public/assets/js/helpers.js';
-import { setDocumentFormData } from './document-form.js';
 import { fetchAndSetDocument } from './document-api.js';
 
 // Add custom context menu HTML to the page
@@ -220,12 +218,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     const openDocumentBtn = document.getElementById('open-invoice-modal-btn');
     if (openDocumentBtn) {
-        openDocumentBtn.addEventListener('click', () => openDocumentModal('create'));
+        openDocumentBtn.addEventListener('click', () => window.openDocumentModal('create'));
     }
 
     const closeDocumentBtn = document.getElementById('modal-invoice-close-btn');
     if (closeDocumentBtn) {
-        closeDocumentBtn.addEventListener('click', closeDocumentModal);
+        closeDocumentBtn.addEventListener('click', window.closeDocumentModal);
     }
 
     // Initial load

@@ -1,9 +1,7 @@
 // Tab switching and document fetching logic for document sections
 import { buildQueryParams } from '../../../public/assets/js/helpers.js';
 import { searchClients } from './document-api.js';
-import { searchClient } from './document-form.js';
 import { fetchAndSetDocument } from './document-api.js';
-import { setDocumentFormData } from './document-form.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     const mainTabButtons = document.querySelectorAll('.tab-button');
@@ -429,7 +427,7 @@ async function openDocumentForEdit(documentId) {
             
             // Check if document is finalized and adjust the mode accordingly
             const status = result.data.document_status?.toLowerCase();
-            const finalizedStatuses = ['finalized', 'approved', 'paid', 'sent'];
+            const finalizedStatuses = ['unpaid', 'approved', 'paid', 'sent'];
             const actualMode = finalizedStatuses.includes(status) ? 'view' : 'edit';
             
             // Set the appropriate modal mode
@@ -494,6 +492,7 @@ function showDocumentContextMenu(e, doc, sectionId) {
         options.push({ label: 'Load Payment', action: () => loadPayment(doc) });
         options.push({ label: 'Create Credit Note', action: () => createCreditNote(doc) });
         options.push({ label: 'Refund Invoice', action: () => refundInvoice(doc) });
+        options.push({ label: 'View Related Documents', action: () => viewRelatedDocuments(doc) });
         options.push({ label: 'Send Invoice', action: () => sendInvoice(doc) });
         options.push({ label: 'Send Payment Reminder', action: () => sendPaymentReminder(doc) });
         options.push({ label: 'View Client', action: () => viewClient(doc) });
@@ -601,24 +600,117 @@ function loadPayment(doc) {
 function createCreditNote(doc) { 
     // Open modal in credit note mode with invoice data
     window.openDocumentModal('create');
-    // Set document type to credit note
-    const typeSelect = document.getElementById('document-type');
-    if (typeSelect) {
-        typeSelect.value = 'credit-note';
-    }
-    // Pre-populate with invoice client data
-    // Implementation would fetch invoice data and populate form
-    window.showResponseModal('Credit note creation functionality coming soon', 'info');
+    
+    // Wait for modal to load, then set up credit note
+    setTimeout(() => {
+        // Set document type to credit note
+        const typeSelect = document.getElementById('document-type');
+        if (typeSelect) {
+            typeSelect.value = 'credit-note';
+            // Trigger change event to update form
+            typeSelect.dispatchEvent(new Event('change'));
+        }
+        
+        // Use existing client search to populate full client details
+        if (doc.client_name) {
+            const clientNameInput = document.getElementById('client-name');
+            if (clientNameInput) {
+                // Set the client name first
+                clientNameInput.value = doc.client_name;
+                
+                // Use the existing client search to populate all details
+                searchClients(doc.client_name, function(results) {
+                    if (results && results.length > 0) {
+                        // Find the exact match or first result
+                        const client = results.find(c => c.client_name === doc.client_name) || results[0];
+                        
+                        // Populate all client fields using the existing autofill logic
+                        const clientIdInput = document.getElementById('client-id');
+                        const clientEmailInput = document.getElementById('client-email');
+                        const clientPhoneInput = document.getElementById('client-phone');
+                        const clientVatInput = document.getElementById('client-vat-number');
+                        const clientRegInput = document.getElementById('client-reg-number');
+                        const clientAddress1Input = document.getElementById('client-address-1');
+                        const clientAddress2Input = document.getElementById('client-address-2');
+                        
+                        if (clientIdInput) clientIdInput.value = client.client_id || doc.client_id;
+                        if (clientEmailInput) clientEmailInput.value = client.client_email || '';
+                        if (clientPhoneInput) clientPhoneInput.value = client.client_cell || client.client_tell || '';
+                        if (clientVatInput) clientVatInput.value = client.vat_number || '';
+                        if (clientRegInput) clientRegInput.value = client.registration_number || '';
+                        if (clientAddress1Input) clientAddress1Input.value = client.address_line1 || '';
+                        if (clientAddress2Input) clientAddress2Input.value = client.address_line2 || '';
+                    }
+                });
+            }
+        }
+        
+        // Set related document ID and display number
+        const relatedDocInput = document.getElementById('related-document-id');
+        const relatedDocDisplay = document.getElementById('related-document-number-display');
+        const relatedDocNumber = document.getElementById('related-document-number');
+        
+        if (relatedDocInput) {
+            relatedDocInput.value = doc.document_id;
+        }
+        if (relatedDocDisplay) {
+            relatedDocDisplay.value = doc.document_number;
+        }
+        if (relatedDocNumber) {
+            relatedDocNumber.textContent = doc.document_number;
+        }
+        
+        // Update related document info display
+        if (typeof updateRelatedDocumentInfo === 'function') {
+            updateRelatedDocumentInfo();
+        }
+        
+        // Show success message
+        window.showResponseModal(`Credit note creation mode activated for invoice ${doc.document_number}`, 'success');
+    }, 500);
 }
 
 function refundInvoice(doc) { 
     // Open modal in refund mode
     window.openDocumentModal('create');
-    const typeSelect = document.getElementById('document-type');
-    if (typeSelect) {
-        typeSelect.value = 'refund';
-    }
-    window.showResponseModal('Refund functionality coming soon', 'info');
+    
+    // Wait for modal to load, then set up refund
+    setTimeout(() => {
+        // Set document type to refund
+        const typeSelect = document.getElementById('document-type');
+        if (typeSelect) {
+            typeSelect.value = 'refund';
+            // Trigger change event to update form
+            typeSelect.dispatchEvent(new Event('change'));
+        }
+        
+        // Pre-populate with invoice client data
+        if (doc.client_id) {
+            const clientIdInput = document.getElementById('client-id');
+            const clientNameInput = document.getElementById('client-name');
+            const clientEmailInput = document.getElementById('client-email');
+            const clientPhoneInput = document.getElementById('client-phone');
+            
+            if (clientIdInput) clientIdInput.value = doc.client_id;
+            if (clientNameInput) clientNameInput.value = doc.client_name || '';
+            if (clientEmailInput) clientEmailInput.value = doc.client_email || '';
+            if (clientPhoneInput) clientPhoneInput.value = doc.client_phone || '';
+        }
+        
+        // Set related document ID
+        const relatedDocInput = document.getElementById('related-document-id');
+        if (relatedDocInput) {
+            relatedDocInput.value = doc.document_id;
+        }
+        
+        // Update related document info display
+        if (typeof updateRelatedDocumentInfo === 'function') {
+            updateRelatedDocumentInfo();
+        }
+        
+        // Show success message
+        window.showResponseModal(`Refund creation mode activated for invoice ${doc.document_number}`, 'success');
+    }, 500);
 }
 
 function sendInvoice(doc) { 
@@ -627,4 +719,42 @@ function sendInvoice(doc) {
 
 function sendPaymentReminder(doc) { 
     window.showResponseModal('Payment reminder functionality coming soon', 'info'); 
+}
+
+function viewRelatedDocuments(doc) {
+    // Fetch related documents
+    fetch(`../api/document-api.php?action=get_related_documents&document_id=${doc.document_id}`, {
+        credentials: 'include'
+    })
+    .then(res => res.json())
+    .then(result => {
+        if (result.success) {
+            let message = `Related Documents for ${doc.document_number}:\n\n`;
+            
+            if (result.data.parent_document) {
+                message += `📄 Parent Document:\n`;
+                message += `   ${result.data.parent_document.document_type.toUpperCase()}: ${result.data.parent_document.document_number}\n`;
+                message += `   Amount: R${result.data.parent_document.total_amount}\n`;
+                message += `   Status: ${result.data.parent_document.document_status}\n\n`;
+            }
+            
+            if (result.data.related_documents && result.data.related_documents.length > 0) {
+                message += `📋 Related Documents:\n`;
+                result.data.related_documents.forEach(related => {
+                    message += `   ${related.document_type.toUpperCase()}: ${related.document_number}\n`;
+                    message += `   Amount: R${related.total_amount}\n`;
+                    message += `   Status: ${related.document_status}\n\n`;
+                });
+            } else {
+                message += `📋 No related documents found.`;
+            }
+            
+            window.showResponseModal(message, 'info');
+        } else {
+            window.showResponseModal(result.message || 'Failed to fetch related documents', 'error');
+        }
+    })
+    .catch(err => {
+        window.showResponseModal('Error fetching related documents: ' + err.message, 'error');
+    });
 }

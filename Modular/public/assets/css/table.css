@@ -1,0 +1,736 @@
+/**
+ * NOVA Table - Reusable Data Table Component Styles
+ * A premium, feature-rich data table with advanced interactions
+ * 
+ * @author Your Name
+ * @version 1.0.0
+ */
+
+/* CSS Custom Properties for Easy Theming */
+/**
+ * Table Theme Variables - Modular, Theme-Aware
+ * Uses @root.css variables for full theme compatibility
+ * No hardcoded colors, all theme switching handled by root
+ */
+
+:root {
+  /* Glass Morphism Effects (use theme background for glass) */
+  --nova-bg-primary: var(--color-secondary, rgba(255,255,255,0.08));
+  --nova-bg-secondary: color-mix(in srgb, var(--color-secondary, #fff) 80%, transparent 20%);
+  --nova-bg-tertiary: color-mix(in srgb, var(--color-secondary, #fff) 60%, transparent 40%);
+  --nova-glass-blur: blur(16px);
+  --nova-glass-border: var(--border-color, rgba(0,0,0,0.08));
+
+  /* Colors (all from root theme) */
+  --nova-text-primary: var(--color-text-light, #fff);
+  --nova-text-secondary: var(--color-text-dark, #333);
+  --nova-text-muted: var(--color-text-muted, #888888);
+  --nova-accent-blue: var(--color-primary, #007BFF);
+  --nova-accent-purple: var(--color-primary-light, #8b5cf6);
+  --nova-accent-green: var(--color-success, #4CAF50);
+  --nova-accent-orange: var(--color-warning, #FFC107);
+  --nova-accent-red: var(--color-danger, #F44336);
+
+  /* Gradients (use theme primary/secondary colors) */
+  --nova-gradient-primary: linear-gradient(135deg, var(--color-primary, #007BFF) 0%, var(--color-primary-dark, #0056b3) 100%);
+  --nova-gradient-accent: linear-gradient(135deg, var(--color-primary-light, #4da3ff) 0%, var(--color-primary, #007BFF) 100%);
+  --nova-gradient-success: linear-gradient(135deg, var(--color-success, #4CAF50) 0%, var(--color-primary, #007BFF) 100%);
+  --nova-gradient-warning: linear-gradient(135deg, var(--color-warning, #FFC107) 0%, var(--color-primary, #007BFF) 100%);
+  --nova-gradient-danger: linear-gradient(135deg, var(--color-danger, #F44336) 0%, var(--color-primary, #007BFF) 100%);
+
+  /* Shadows (use root shadow variables) */
+  --nova-shadow-sm: 0 2px 4px var(--shadow-light, rgba(0,0,0,0.1));
+  --nova-shadow-md: 0 4px 12px var(--shadow-medium, rgba(0,0,0,0.15));
+  --nova-shadow-lg: 0 8px 25px var(--shadow-dark, rgba(0,0,0,0.2));
+  --nova-shadow-xl: 0 20px 40px var(--shadow-dark, rgba(0,0,0,0.3));
+  --nova-shadow-glow: 0 0 20px var(--color-primary, #007BFF);
+
+  /* Transitions */
+  --nova-transition-fast: var(--transition-speed, 0.15s) cubic-bezier(0.4, 0, 0.2, 1);
+  --nova-transition-normal: var(--transition-speed, 0.3s) cubic-bezier(0.4, 0, 0.2, 1);
+  --nova-transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Font */
+  --nova-font-family: var(--font-primary, 'Roboto', sans-serif);
+}
+
+/* Theme overrides handled by root theme classes, not here! */
+/* Table will always match the current theme via root variables */
+  
+  /* Base Container Styles */
+  .nova-table-container {
+    width: 100%;
+    font-family: var(--nova-font-family);
+    color: var(--nova-text-primary);
+    position: relative;
+    overflow: hidden; /* Prevent any overflow */
+    max-width: 100%; /* Ensure it doesn't exceed parent width */
+  }
+  
+  /* Search and Filter Section */
+  .nova-table-search-container {
+    background: var(--nova-bg-primary);
+    backdrop-filter: var(--nova-glass-blur);
+    border: 1px solid var(--nova-glass-border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--nova-shadow-lg);
+  }
+  
+  .nova-table-search-section {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  
+  .nova-table-search-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 300px;
+  }
+  
+  .nova-table-search-input {
+    width: 98%;
+    padding: 0.75rem 3rem 0.75rem 1rem;
+    background: var(--nova-bg-secondary);
+    border: 1px solid var(--nova-glass-border);
+    border-radius: 0.75rem;
+    color: var(--nova-text-primary);
+    font-size: 1rem;
+    transition: all var(--nova-transition-normal);
+  }
+  
+  .nova-table-search-input:focus {
+    outline: none;
+    border-color: var(--nova-accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background: var(--nova-bg-primary);
+  }
+  
+  .nova-table-search-icon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--nova-text-muted);
+    font-size: 1.2rem;
+    pointer-events: none;
+  }
+  
+  .nova-table-rows-per-page {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--nova-text-secondary);
+    white-space: nowrap;
+  }
+  
+  .nova-table-rows-select {
+    padding: 0.5rem 0.75rem;
+    background: var(--nova-bg-secondary);
+    border: 1px solid var(--nova-glass-border);
+    border-radius: 0.5rem;
+    color: var(--nova-text-primary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all var(--nova-transition-normal);
+    min-width: 60px;
+  }
+  
+  .nova-table-rows-select:focus {
+    outline: none;
+    border-color: var(--nova-accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  
+  .nova-table-filter-toggle {
+    padding: 0.75rem 1.5rem;
+    background: var(--nova-gradient-primary);
+    border: none;
+    border-radius: 0.75rem;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--nova-transition-normal);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: var(--nova-shadow-md);
+  }
+  
+  .nova-table-filter-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--nova-shadow-lg);
+  }
+  
+  .nova-table-advanced-filters {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--nova-glass-border);
+    transition: all var(--nova-transition-normal);
+  }
+  
+  .nova-table-advanced-filters.hidden {
+    display: none;
+  }
+  
+  .nova-table-filter-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  
+  .nova-table-column-filter {
+    padding: 0.75rem;
+    background: var(--nova-bg-secondary);
+    border: 1px solid var(--nova-glass-border);
+    border-radius: 0.5rem;
+    color: var(--nova-text-primary);
+    font-size: 0.9rem;
+    transition: all var(--nova-transition-normal);
+    cursor: pointer;
+  }
+  
+  .nova-table-column-filter:focus {
+    outline: none;
+    border-color: var(--nova-accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  
+  /* Style dropdown arrows consistently */
+  .nova-table-column-filter,
+  .nova-table-rows-select,
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23e2e8f0' d='m2 0-2 2h4zm0 5 2-2H0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 0.65em auto;
+    padding-right: 2.5rem;
+  }
+  
+  /* Bulk Action Bar */
+  .nova-table-bulk-action-bar {
+    background: var(--nova-gradient-accent);
+    border-radius: 1rem 1rem 0 0;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--nova-shadow-lg);
+    transition: all var(--nova-transition-normal);
+    flex-wrap: wrap;
+    gap: 1rem;
+    position: relative;
+    z-index: 20;
+  }
+  
+  .nova-table-bulk-action-bar.hidden {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+  }
+  
+  .nova-table-bulk-action-bar.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+  
+  .nova-table-bulk-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: 600;
+    color: white;
+  }
+  
+  .nova-table-clear-selection {
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 0.5rem;
+    color: white;
+    cursor: pointer;
+    transition: all var(--nova-transition-fast);
+  }
+  
+  .nova-table-clear-selection:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  
+  .nova-table-bulk-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  
+  .nova-table-bulk-btn {
+    padding: 0.75rem 1.25rem;
+    border: none;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all var(--nova-transition-normal);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: var(--nova-shadow-sm);
+  }
+  
+  .nova-table-bulk-btn.export {
+    background: var(--nova-gradient-success);
+    color: white;
+  }
+  
+  .nova-table-bulk-btn.delete {
+    background: var(--nova-gradient-danger);
+    color: white;
+  }
+  
+  .nova-table-bulk-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--nova-shadow-md);
+  }
+  
+  /* Table Wrapper */
+  .nova-table-wrapper {
+    background: var(--nova-bg-primary);
+    backdrop-filter: var(--nova-glass-blur);
+    border: 1px solid var(--nova-glass-border);
+    border-radius: 1rem;
+    box-shadow: var(--nova-shadow-xl);
+    position: relative;
+    height: calc(100vh - 200px); /* Use available viewport height minus header/actions */
+    overflow-y: auto;
+    overflow-x: hidden; /* Prevent horizontal scrollbar */
+    width: 100%;
+  }
+  
+  .nova-table-bulk-action-bar.visible + .nova-table-wrapper {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+  
+  /* Table Styles */
+  .nova-table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    table-layout: fixed; /* Force equal column distribution */
+    min-width: 100%;
+  }
+  
+  .nova-table-container thead {
+    background: var(--nova-bg-secondary);
+    position: sticky;
+    top: 0;
+    z-index: 15;
+  }
+  
+  .nova-table-container th {
+    padding: 1.25rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--nova-text-secondary);
+    position: relative;
+    border-bottom: 2px solid var(--nova-glass-border);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 0; /* Force text truncation */
+  }
+  
+  .nova-table-container th.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: all var(--nova-transition-fast);
+  }
+  
+  .nova-table-container th.sortable:hover {
+    background: var(--nova-bg-tertiary);
+    color: var(--nova-text-primary);
+  }
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .sort-icon {
+    opacity: 0.4;
+    transition: all var(--nova-transition-normal);
+    font-size: 0.8rem;
+  }
+  
+  .nova-table-container th.sortable.sorted-asc .sort-icon,
+  .nova-table-container th.sortable.sorted-desc .sort-icon {
+    opacity: 1;
+    color: var(--nova-accent-blue);
+  }
+  
+  .nova-table-container th.sortable.sorted-asc .sort-icon {
+    transform: rotate(0deg);
+  }
+  
+  .nova-table-container th.sortable.sorted-desc .sort-icon {
+    transform: rotate(180deg);
+  }
+  
+  .sort-icon::before {
+    content: "▲";
+  }
+  
+  /* Table Body */
+  .nova-table-container tbody tr {
+    transition: all var(--nova-transition-fast);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+  }
+  
+  .nova-table-container tbody tr:hover {
+    background: var(--nova-bg-secondary);
+    transform: scale(1.001);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .nova-table-container tbody tr.nova-table-selected {
+    background: rgba(59, 130, 246, 0.15) !important;
+    box-shadow: inset 4px 0 0 var(--nova-accent-blue) !important;
+    border: 1px solid rgba(59, 130, 246, 0.3) !important;
+  }
+  
+  .nova-table-container tbody tr.nova-table-selected:hover {
+    background: rgba(59, 130, 246, 0.25) !important;
+  }
+  
+  /* Fallback for any selection issues */
+  .nova-table-container tbody tr[class*="selected"] {
+    background: rgba(59, 130, 246, 0.15) !important;
+    box-shadow: inset 4px 0 0 #3b82f6 !important;
+  }
+  
+  .nova-table-container td {
+    padding: 1rem;
+    color: var(--nova-text-primary);
+    font-size: 0.95rem;
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 0; /* Force text truncation */
+  }
+  
+  /* Badges */
+  .badge {
+    padding: 0.375rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+  }
+  
+  .badge.status-active {
+    background: var(--nova-gradient-success);
+    color: white;
+  }
+  
+  .badge.status-inactive {
+    background: var(--nova-gradient-danger);
+    color: white;
+  }
+  
+  .badge.status-pending {
+    background: var(--nova-gradient-warning);
+    color: white;
+  }
+  
+  .badge.department {
+    background: var(--nova-bg-secondary);
+    color: var(--nova-text-secondary);
+    border: 1px solid var(--nova-glass-border);
+  }
+  
+  /* Pagination */
+  .nova-table-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  
+  .nova-table-pagination button {
+    padding: 0.75rem 1rem;
+    background: var(--nova-bg-secondary);
+    border: 1px solid var(--nova-glass-border);
+    border-radius: 0.75rem;
+    color: var(--nova-text-secondary);
+    cursor: pointer;
+    transition: all var(--nova-transition-normal);
+    font-weight: 500;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .nova-table-pagination button:hover:not(:disabled) {
+    background: var(--nova-accent-blue);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--nova-shadow-md);
+  }
+  
+  .nova-table-pagination button.active {
+    background: var(--nova-gradient-primary);
+    color: white;
+    box-shadow: var(--nova-shadow-glow);
+  }
+  
+  .nova-table-pagination button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  
+  /* Stats */
+  .nova-table-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: var(--nova-bg-secondary);
+    border-top: 1px solid var(--nova-glass-border);
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .stats-info {
+    color: var(--nova-text-muted);
+    font-size: 0.9rem;
+  }
+  
+  .stats-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  
+  .stats-actions button {
+    padding: 0.5rem 1rem;
+    background: var(--nova-bg-tertiary);
+    border: 1px solid var(--nova-glass-border);
+    border-radius: 0.5rem;
+    color: var(--nova-text-secondary);
+    cursor: pointer;
+    transition: all var(--nova-transition-fast);
+    font-size: 0.85rem;
+  }
+  
+  .stats-actions button:hover {
+    background: var(--nova-accent-blue);
+    color: white;
+  }
+  
+  /* Scrollbar Styling */
+  .nova-table-wrapper::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .nova-table-wrapper::-webkit-scrollbar-track {
+    background: var(--nova-bg-tertiary);
+    border-radius: 4px;
+  }
+  
+  .nova-table-wrapper::-webkit-scrollbar-thumb {
+    background: var(--nova-glass-border);
+    border-radius: 4px;
+    transition: background var(--nova-transition-fast);
+  }
+  
+  .nova-table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: var(--nova-accent-blue);
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 1200px) {
+    .nova-table-wrapper {
+      max-height: 60vh;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .nova-table-search-section {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .nova-table-search-wrapper {
+      min-width: auto;
+    }
+    
+    .nova-table-filter-row {
+      grid-template-columns: 1fr;
+    }
+    
+    .nova-table-bulk-action-bar {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .nova-table-wrapper {
+      max-height: 50vh;
+      overflow-x: hidden; /* Keep horizontal scroll hidden */
+    }
+    
+    .nova-table-container table {
+      min-width: 100%; /* Use full width instead of fixed 800px */
+      table-layout: auto; /* Allow natural column sizing on mobile */
+    }
+    
+    .nova-table-container th,
+    .nova-table-container td {
+      padding: 0.75rem 0.5rem; /* Reduce padding on mobile */
+      font-size: 0.85rem; /* Smaller font on mobile */
+    }
+    
+    .nova-table-pagination {
+      padding: 1rem;
+    }
+    
+    .nova-table-stats {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .nova-table-container {
+      margin: 0.5rem;
+    }
+    
+    .nova-table-search-container {
+      padding: 1rem;
+    }
+    
+    .nova-table-bulk-actions {
+      justify-content: center;
+    }
+  }
+  
+  /* Accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+  
+  /* Focus Styles */
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible {
+    outline: 2px solid var(--nova-accent-blue);
+    outline-offset: 2px;
+  }
+  
+  /* Context Menu Styles */
+  .nova-context-menu {
+    position: fixed;
+    background: var(--nova-bg-primary);
+    backdrop-filter: var(--nova-glass-blur);
+    border: 1px solid var(--nova-glass-border);
+    border-radius: 0.75rem;
+    box-shadow: var(--nova-shadow-md);
+    padding: 0.5rem 0;
+    min-width: 180px;
+    z-index: 10000;
+    animation: contextMenuFadeIn 0.2s ease-out;
+  }
+  
+  .context-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    color: var(--nova-text-primary);
+    font-size: 0.9rem;
+    transition: all var(--nova-transition-fast);
+    user-select: none;
+  }
+  
+  .context-menu-item:hover {
+    background: var(--nova-bg-secondary);
+    color: var(--nova-accent-blue);
+  }
+  
+  .context-menu-item[data-action="delete"]:hover {
+    background: var(--nova-gradient-danger);
+    color: white;
+  }
+  
+  .context-icon {
+    font-size: 1rem;
+    width: 1.2rem;
+    text-align: center;
+  }
+  
+  .context-menu-separator {
+    height: 1px;
+    background: var(--nova-glass-border);
+    margin: 0.25rem 0;
+  }
+  
+  @keyframes contextMenuFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  
+  /* Print Styles */
+  @media print {
+    .nova-table-bulk-action-bar,
+    .nova-table-search-container,
+    .nova-table-pagination,
+    .nova-table-stats {
+      display: none !important;
+    }
+    
+    .nova-table-container {
+      background: white;
+      box-shadow: none;
+      border: 1px solid #000;
+    }
+    
+    .nova-table-wrapper {
+      background: white;
+      max-height: none;
+      overflow: visible;
+    }
+    
+    .nova-table-container th,
+    .nova-table-container td {
+      color: black;
+    }
+  }

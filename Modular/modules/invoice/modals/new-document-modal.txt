@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Document Modal</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body class="theme-dark">
+
+    <div class="modal-layout">
+        <div id="document-modal" class="modal-container" data-mode="create" style="display:block;">
+        <header class="modal-header">
+            <div class="header-left">
+                <div class="document-type-indicator" data-doc-type="invoice">
+                    <i data-lucide="file-text"></i>
+                </div>
+                <div class="document-title">
+                    <h2 id="documentTitle">New Document</h2>
+                    <span id="documentStatus" class="status-badge status-draft">Draft</span>
+                </div>
+                <div id="autosaveIndicator" class="autosave-indicator" style="display: none;">
+                    <i data-lucide="loader-circle" class="spin"></i>
+                    <span>Saving...</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-secondary btn-icon" title="View History">
+                    <i data-lucide="history"></i>
+                </button>
+                <button class="btn-icon-only" id="modal-document-close-btn" title="Close Modal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="modal-body">
+            <div class="modal-column-client">
+                <aside class="client-sidebar">
+                    <div class="card client-card">
+                        <div class="card-header">
+                            <h3>Client Details</h3>
+                            <button class="btn-icon-only" id="toggle-client-sidebar" title="Toggle Client Panel">
+                                <i data-lucide="panel-left"></i>
+                            </button>
+                        </div>
+                        <div class="client-form">
+                            <div class="form-group">
+                                <label for="client-name">Client Name</label>
+                                <div class="search-container">
+                                    <input type="text" placeholder="Search Client Name" id="client-name" oninput="searchClient(this)" autocomplete="off">
+                                    <div class="search-client-dropdown" id="search-results-client"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="client-email">Email Address</label>
+                                <input type="email" id="client-email" placeholder="client@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="client-phone">Phone Number</label>
+                                <input type="text" placeholder="Client Phone" id="client-phone" autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="client-vat-number">VAT Number</label>
+                                <input type="text" placeholder="Client VAT Number" id="client-vat-number" autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="client-reg-number">Registration Number</label>
+                                <input type="text" placeholder="Client Registration Number" id="client-reg-number" autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="client-address-1">Address Line 1</label>
+                                <input type="text" placeholder="Address Line 1" id="client-address-1">
+                            </div>
+                            <div class="form-group">
+                                <label for="client-address-2">Address Line 2</label>
+                                <input type="text" placeholder="Address Line 2" id="client-address-2">
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="modal-column-main">
+
+                <input type="hidden" id="client-id">
+                <input type="hidden" id="issuer-id">
+                <input type="hidden" id="document-id">
+                <input type="hidden" id="related-document-id">
+
+                <section class="card">
+                    <div class="form-grid-4">
+                        <div class="form-group">
+                            <label for="docType">Document Type</label>
+                            <select id="document-type">
+                                <option value="quotation">Quotation</option>
+                                <option value="vehicle-quotation">Vehicle Quotation</option>
+                                <option value="standard-invoice">Invoice</option>
+                                <option value="vehicle-invoice">Vehicle Invoice</option>
+                                <option value="recurring-invoice">Recurring Invoice</option>
+                                <option value="credit-note">Credit Note</option>
+                                <option value="refund">Refund</option>
+                                <option value="pro-forma">Pro Forma</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="document-number">Document Number</label>
+                            <input type="text" id="document-number" placeholder="INV-2025-001" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="current-date">Issue Date</label>
+                            <input type="date" id="current-date" value="2025-08-02" disabled>
+                        </div>
+                        <div class="form-group" data-show-on="standard-invoice,recurring-invoice">
+                            <label for="pay-in-days">Payment Terms (Days)</label>
+                            <select id="pay-in-days">
+                                <option value="15">15</option>
+                                <option value="30" selected>30</option>
+                                <option value="45">45</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                             <label for="purchase-order-number">Purchase Order #</label>
+                             <input type="text" placeholder="PO Number" id="purchase-order-number">
+                        </div>
+                        <div class="form-group">
+                            <label for="salesperson">Salesperson</label>
+                            <div class="search-container">
+                                <input type="text" placeholder="Search Salesperson" id="salesperson" autocomplete="off">
+                                <div class="search-salesperson-dropdown" id="search-results-salesperson"></div>
+                            </div>
+                        </div>
+                         <div class="form-group" id="related-document-info" data-show-on="credit-note,refund" style="display: none;">
+                            <label for="related-document-number-display">Related Invoice</label>
+                            <input type="text" id="related-document-number-display" placeholder="Click to select invoice" readonly>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card recurring-section" data-show-on="recurring-invoice" style="display: none;">
+                    <div class="card-header"><h4>Recurring Details</h4></div>
+                    <div class="form-grid-3">
+                        <div class="form-group">
+                            <label for="recurring-frequency">Frequency</label>
+                            <select id="recurring-frequency">
+                                <option value="monthly" selected>Monthly</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="bi-weekly">Bi-Weekly</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="recurring-start-date">Start Date</label>
+                            <input type="date" id="recurring-start-date">
+                        </div>
+                        <div class="form-group">
+                            <label for="recurring-end-date">End Date (Optional)</label>
+                            <input type="date" id="recurring-end-date">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="line-items-section" id="document-table" data-show-on="quotation,invoice,standard-invoice,recurring-invoice,pro-forma">
+                    <div class="line-items-toolbar">
+                        <h4>Line Items</h4>
+                        <div class="toolbar-actions">
+                            <button class="btn btn-secondary" id="add-item-btn"><i data-lucide="plus"></i> Add Item</button>
+                            <button class="btn btn-secondary" id="add-discount-btn"><i data-lucide="plus"></i> Add Discount</button>
+                        </div>
+                    </div>
+                    <div class="line-items-table">
+                        <div class="line-item-header">
+                            <div class="col-drag"></div>
+                            <div class="col-desc">Item / Description</div>
+                            <div class="col-qty">Qty</div>
+                            <div class="col-price">Unit Price</div>
+                            <div class="col-vat">VAT</div>
+                            <div class="col-total">Line Total</div>
+                            <div class="col-actions"></div>
+                        </div>
+                        <div id="document-rows">
+                            </div>
+                    </div>
+                </section>
+
+                <section class="line-items-section" id="credit-note-table" data-show-on="credit-note,refund" style="display: none;">
+                    <div class="line-items-toolbar"><h4>Credit Items</h4></div>
+                    <div class="line-items-table">
+                         <div class="line-item-header">
+                            <div style="flex:1;">Type</div>
+                            <div style="flex:3;">Reason / Product</div>
+                            <div style="flex:1;">Amount</div>
+                            <div class="col-actions"></div>
+                        </div>
+                        <div id="credit-note-rows">
+                             </div>
+                    </div>
+                    <div class="line-items-footer">
+                        <button class="btn btn-secondary" id="add-credit-note-item-btn"><i data-lucide="plus"></i> Add Credit Item</button>
+                    </div>
+                </section>
+
+                <div class="vehicle-section-container" data-show-on="vehicle-invoice,vehicle-quotation" style="display: none;">
+                    <section class="card vehicle-section">
+                        <div class="card-header"><h4>Vehicle Details</h4></div>
+                        <div class="line-items-table">
+                             <div class="line-item-header">
+                                <div style="flex:2;">Vehicle</div>
+                                <div style="flex:2;">VIN</div>
+                                <div style="flex:1;">Price</div>
+                                <div style="flex:1;">VAT</div>
+                                <div style="flex:1;" class="text-right">Total</div>
+                            </div>
+                            <div class="line-item-row vehicle-row">
+                                <div style="flex:2;"><input type="text" placeholder="Vehicle Model" id="vehicle-model" oninput="searchVehicle(this)"></div>
+                                <div style="flex:2;"><input type="text" placeholder="VIN" id="vehicle-vin" oninput="searchVehicle(this)"></div>
+                                <div style="flex:1;"><input type="text" placeholder="R0.00" id="vehicle-price"></div>
+                                <div style="flex:1;"><select id="vehicle-tax"><option value="0">[None]</option><option value="15">15%</option></select></div>
+                                <div style="flex:1;" class="col-total" id="vehicle-total">R0.00</div>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="line-items-section vehicle-extras-section" id="vehicle-parts-table" style="margin-top: 1.5rem;">
+                         <div class="line-items-toolbar"><h4>Extras / Parts</h4></div>
+                         <div class="line-items-table">
+                             <div class="line-item-header">
+                                <div class="col-drag"></div>
+                                <div class="col-desc">Item / Description</div>
+                                <div class="col-qty">Qty</div>
+                                <div class="col-price">Unit Price</div>
+                                <div class="col-vat">VAT</div>
+                                <div class="col-total">Line Total</div>
+                                <div class="col-actions"></div>
+                            </div>
+                            <div id="vehicle-parts-rows">
+                                </div>
+                         </div>
+                    </section>
+                </div>
+
+                
+            </div>
+
+            <div class="modal-column-sidebar">
+                <aside class="summary-card">
+                    <h4>Summary</h4>
+                    <div class="summary-row"><span>Subtotal</span><span id="subtotal">R0.00</span></div>
+                    <div class="summary-row"><span>Tax</span><span id="tax-total">R0.00</span></div>
+                    <div class="summary-row grand-total"><span>Grand Total</span><span id="final-total">R0.00</span></div>
+                </aside>
+                 <aside class="actions-card issuer-info-section" id="issuer-info-section">
+                    <h4>Issuer Details</h4>
+                    <div class="issuer-info-content">
+                        <strong><span id="issuer-name-display">Your Company</span></strong><br>
+                        <span id="issuer-address-display">123 Main Street, Alberton</span><br>
+                        <span id="issuer-email-display">contact@yourcompany.com</span><br>
+                        <span id="issuer-phone-display">011 555 1234</span><br>
+                        <span id="issuer-vat-display">VAT: 4001234567</span>
+                    </div>
+                </aside>
+                <aside class="actions-card">
+                    <h4>Actions</h4>
+                    <button class="btn btn-full" onclick="clearDocument()"><i data-lucide="trash-2"></i> Clear</button>
+                    <button class="btn btn-full" id="preview-pdf-btn"><i data-lucide="eye"></i> Preview</button>
+                    <button class="btn btn-full" onclick="saveDocument()"><i data-lucide="save"></i> Save Draft</button>
+                    <button class="btn btn-full btn-primary" onclick="createDocument()"><i data-lucide="send"></i> Create Document</button>
+                </aside>
+            </div>
+        </main>
+
+        <footer class="modal-footer">
+            <section class="card notes-footer">
+                <div class="card-header"><h4>Notes</h4></div>
+                <div class="form-grid-3">
+                    <div class="form-group"><textarea placeholder="Public Note (visible to client)" id="public-note" rows="3"></textarea></div>
+                    <div class="form-group"><textarea placeholder="Private Note (internal use only)" id="private-note" rows="3"></textarea></div>
+                    <div class="form-group"><textarea placeholder="Foot Note (e.g., banking details)" id="foot-note" rows="3"></textarea></div>
+                </div>
+            </section>
+        </footer>
+
+    </div>
+
+        <div id="live-preview-modal" class="preview-container">
+            <div class="preview-header">
+                <h3>Live Preview</h3>
+                <button class="btn-icon-only" id="toggle-preview" title="Toggle Preview">
+                    <i data-lucide="eye-off"></i>
+                </button>
+            </div>
+            <div class="preview-body">
+                <div class="a4-preview">
+                    <div class="preview-content">
+                        <div class="preview-header-section">
+                            <div class="preview-company">
+                                <strong>Your Company</strong><br>
+                                123 Main Street, Alberton<br>
+                                contact@yourcompany.com
+                            </div>
+                            <div class="preview-document-info">
+                                <h2 id="preview-title">INVOICE</h2>
+                                <div id="preview-number">INV-2025-001</div>
+                                <div id="preview-date">2025-08-02</div>
+                            </div>
+                        </div>
+                        <div class="preview-client-section">
+                            <strong>Bill To:</strong><br>
+                            <div id="preview-client-name">Client Name</div>
+                            <div id="preview-client-address">Client Address</div>
+                        </div>
+                        <div class="preview-items">
+                            <table class="preview-table">
+                                <thead>
+                                    <tr>
+                                        <th>Description</th>
+                                        <th>Qty</th>
+                                        <th>Price</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="preview-items-body">
+                                    <tr>
+                                        <td>Sample Item</td>
+                                        <td>1</td>
+                                        <td>R100.00</td>
+                                        <td>R100.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="preview-totals">
+                            <div class="total-row"><span>Subtotal:</span><span id="preview-subtotal">R0.00</span></div>
+                            <div class="total-row"><span>Tax:</span><span id="preview-tax">R0.00</span></div>
+                            <div class="total-row grand"><span>Total:</span><span id="preview-total">R0.00</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Initialize Lucide icons when available
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            } else {
+                console.warn('Lucide icons not loaded');
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+/* ==========================================================================
+   1. VARIABLES & THEMES
+   ========================================================================== */
+:root {
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-regular: 400;
+    --font-medium: 500;
+    --font-semibold: 600;
+    --font-bold: 700;
+    --border-radius: 12px;
+    --border-radius-sm: 8px;
+    --border-radius-lg: 16px;
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --shadow-soft: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    --shadow-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --shadow-large: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    --gradient-primary: linear-gradient(135deg, var(--primary-accent) 0%, var(--primary-accent-hover) 100%);
+}
+
+.theme-light {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-tertiary: #f1f5f9;
+    --bg-elevated: #ffffff;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --text-tertiary: #94a3b8;
+    --border-color: #e2e8f0;
+    --border-color-hover: #cbd5e1;
+    --primary-accent: #3b82f6;
+    --primary-accent-hover: #2563eb;
+    --primary-text: #ffffff;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --error-color: #ef4444;
+}
+
+.theme-dark {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --bg-elevated: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-tertiary: #94a3b8;
+    --border-color: #334155;
+    --border-color-hover: #475569;
+    --primary-accent: #3b82f6;
+    --primary-accent-hover: #2563eb;
+    --primary-text: #ffffff;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --error-color: #ef4444;
+}
+
+/* ==========================================================================
+   2. BASE & MODAL LAYOUT
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    margin: 0;
+    padding: 2rem;
+    color: var(--text-primary);
+    min-height: 100vh;
+    transition: all var(--transition-smooth);
+}
+
+.modal-layout {
+    display: flex;
+    gap: 1rem;
+    max-width: 100%;
+    margin: auto;
+    align-items: flex-start;
+}
+
+.modal-container {
+    background-color: var(--bg-elevated);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-large);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 4rem);
+    width: 100%;
+    max-width: 1200px;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+}
+
+.preview-container {
+    background-color: var(--bg-elevated);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-large);
+    border: 1px solid var(--border-color);
+    width: 300px;
+    max-height: calc(100vh - 4rem);
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    flex-shrink: 0;
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-elevated);
+}
+
+.preview-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: var(--font-semibold);
+}
+
+.preview-body {
+    padding: 1rem;
+    overflow-y: auto;
+    max-height: calc(100vh - 8rem);
+}
+
+.a4-preview {
+    background: white;
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-medium);
+    transform: scale(0.8);
+    transform-origin: top left;
+    width: 125%;
+    aspect-ratio: 210/297;
+    overflow: hidden;
+}
+
+.preview-content {
+    padding: 2rem;
+    font-size: 0.8rem;
+    color: #000;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.preview-header-section {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.preview-document-info {
+    text-align: right;
+}
+
+.preview-document-info h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    color: var(--primary-accent);
+}
+
+.preview-client-section {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: var(--border-radius-sm);
+}
+
+.preview-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
+}
+
+.preview-table th,
+.preview-table td {
+    padding: 0.5rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.preview-table th {
+    background: #f8f9fa;
+    font-weight: var(--font-semibold);
+}
+
+.preview-totals {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 2px solid #ddd;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.total-row.grand {
+    font-weight: var(--font-bold);
+    font-size: 1.1rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #ddd;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-elevated);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(20px);
+}
+
+.modal-body {
+    display: flex;
+    gap: 1.5rem;
+    padding: 2rem;
+    overflow-y: auto;
+    flex-grow: 1;
+    background: var(--bg-primary);
+}
+
+.modal-column-client {
+    flex: 0 0 320px;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-column-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    min-width: 0;
+}
+
+.modal-column-sidebar {
+    flex: 0 0 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    max-height: calc(100vh - 12rem);
+}
+
+/* Client Sidebar Styles */
+.client-sidebar {
+    position: sticky;
+    top: 0;
+    height: fit-content;
+    max-height: calc(100vh - 12rem);
+    overflow-y: auto;
+}
+
+.client-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-medium);
+    overflow: hidden;
+}
+
+.client-card .card-header {
+    background: var(--bg-secondary);
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.client-card .card-header h3 {
+    font-size: 1rem;
+    font-weight: var(--font-semibold);
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.client-form {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.client-form .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.client-form .form-group label {
+    font-size: 0.8rem;
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.025em;
+}
+
+.client-form input {
+    font-size: 0.875rem;
+    padding: 0.75rem;
+}
+
+.client-sidebar.collapsed {
+    flex: 0 0 60px;
+}
+
+.client-sidebar.collapsed .client-form {
+    display: none;
+}
+
+.client-sidebar.collapsed .card-header h3 {
+    display: none;
+}
+
+/* ==========================================================================
+   3. COMPONENTS
+   ========================================================================== */
+
+/* Header Components */
+.header-left, .header-right { 
+    display: flex; 
+    align-items: center; 
+    gap: 1rem; 
+}
+
+.document-type-indicator { 
+    color: var(--primary-accent);
+    padding: 0.75rem;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.document-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.document-title h2 { 
+    font-size: 1.5rem; 
+    font-weight: var(--font-bold); 
+    margin: 0;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.status-badge { 
+    font-size: 0.75rem; 
+    padding: 0.375rem 0.75rem; 
+    border-radius: 20px; 
+    font-weight: var(--font-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.status-draft { 
+    background: linear-gradient(135deg, #fbbf24, #f59e0b); 
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(251, 191, 36, 0.3);
+}
+
+.status-paid { 
+    background: linear-gradient(135deg, #10b981, #059669); 
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+}
+
+.status-pending {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+}
+
+.status-active {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.autosave-indicator { 
+    display: flex; 
+    align-items: center; 
+    gap: 0.5rem; 
+    color: var(--text-secondary); 
+    font-size: 0.875rem;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+    background: var(--bg-secondary);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.autosave-indicator .spin { 
+    animation: spin 1.5s linear infinite; 
+}
+
+@keyframes spin { 
+    from { transform: rotate(0deg); } 
+    to { transform: rotate(360deg); } 
+}
+
+/* Cards & Sections */
+.card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--shadow-medium);
+    transition: all var(--transition-fast);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-large);
+    border-color: var(--border-color-hover);
+}
+
+.card-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-header h3 { 
+    font-size: 1.125rem; 
+    font-weight: var(--font-semibold); 
+    margin: 0;
+    color: var(--text-primary);
+}
+
+/* Form Elements */
+.form-grid-4 { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    gap: 1.5rem; 
+}
+
+.form-grid-2 { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+    gap: 1.5rem; 
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label { 
+    font-size: 0.875rem; 
+    font-weight: var(--font-medium); 
+    color: var(--text-secondary); 
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.025em;
+}
+
+input[type="text"], 
+input[type="email"], 
+input[type="date"], 
+input[type="number"],
+select, 
+textarea {
+    width: 100%; 
+    padding: 0.875rem 1rem; 
+    background: var(--bg-secondary); 
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius); 
+    font-family: var(--font-family); 
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+    font-size: 0.875rem;
+}
+
+input:focus, 
+select:focus, 
+textarea:focus { 
+    outline: none; 
+    border-color: var(--primary-accent); 
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background: var(--bg-primary);
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+    border-color: var(--border-color-hover);
+}
+
+textarea { 
+    resize: vertical; 
+    min-height: 60px;
+    font-family: var(--font-family);
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.toggle-input {
+    appearance: none;
+    width: 44px;
+    height: 24px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.toggle-input:checked {
+    background: var(--primary-accent);
+    border-color: var(--primary-accent);
+}
+
+.toggle-input::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    transition: transform var(--transition-fast);
+    box-shadow: var(--shadow-soft);
+}
+
+.toggle-input:checked::before {
+    transform: translateX(20px);
+}
+
+/* Buttons */
+.btn { 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 0.5rem; 
+    font-weight: var(--font-semibold); 
+    padding: 0.75rem 1.5rem; 
+    border: none; 
+    border-radius: var(--border-radius); 
+    cursor: pointer; 
+    transition: all var(--transition-fast);
+    font-size: 0.875rem;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left var(--transition-fast);
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn-primary { 
+    background: var(--gradient-primary);
+    color: var(--primary-text);
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:hover { 
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn-secondary { 
+    background: var(--bg-secondary); 
+    color: var(--text-primary); 
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover { 
+    background: var(--bg-tertiary);
+    border-color: var(--border-color-hover);
+    transform: translateY(-1px);
+}
+
+.btn-icon { 
+    padding: 0.75rem;
+}
+
+.btn-icon-only { 
+    background: none; 
+    border: none; 
+    padding: 0.5rem; 
+    color: var(--text-secondary); 
+    cursor: pointer;
+    border-radius: var(--border-radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.btn-icon-only:hover { 
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+}
+
+.btn-full { 
+    width: 100%; 
+    justify-content: flex-start; 
+    background: transparent; 
+    border: 1px solid transparent; 
+    color: var(--text-primary);
+    padding: 1rem;
+}
+
+.btn-full:hover { 
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+}
+
+.btn-tiny {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    border-radius: var(--border-radius-sm);
+}
+
+.theme-toggle {
+    position: relative;
+}
+
+/* Line Items */
+.line-items-section { 
+    border: 1px solid var(--border-color); 
+    border-radius: var(--border-radius);
+    background: var(--bg-elevated);
+    overflow: hidden;
+}
+
+.line-items-toolbar { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 1.5rem 2rem; 
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+}
+
+.line-items-toolbar h4 { 
+    font-size: 1.125rem; 
+    font-weight: var(--font-semibold); 
+    margin: 0;
+}
+
+.line-items-toolbar .toolbar-actions { 
+    display: flex; 
+    gap: 0.75rem; 
+}
+
+.line-item-header, .line-item-row { 
+    display: grid; 
+    grid-template-columns: 40px 3fr 1fr 1fr 1fr 1fr 1.2fr 40px; 
+    align-items: start; 
+    padding: 0 2rem; 
+    gap: 1rem; 
+}
+
+.line-item-header { 
+    padding: 1rem 2rem; 
+    background: var(--bg-tertiary); 
+    font-size: 0.75rem; 
+    text-transform: uppercase; 
+    color: var(--text-secondary);
+    font-weight: var(--font-semibold);
+    letter-spacing: 0.05em;
+}
+
+.line-item-row { 
+    padding: 1.5rem 2rem; 
+    border-bottom: 1px solid var(--border-color);
+    transition: all var(--transition-fast);
+}
+
+.line-item-row:hover {
+    background: var(--bg-secondary);
+}
+
+.line-item-row:last-child { 
+    border-bottom: none; 
+}
+
+.line-item-row .col-drag { 
+    cursor: grab; 
+    color: var(--text-secondary); 
+    padding-top: 0.75rem;
+    transition: color var(--transition-fast);
+}
+
+.line-item-row .col-drag:hover {
+    color: var(--text-primary);
+}
+
+.line-item-row .col-total { 
+    font-weight: var(--font-semibold); 
+    padding-top: 0.75rem; 
+    text-align: right;
+    font-size: 0.875rem;
+}
+
+.line-item-row .col-desc input {
+    font-weight: var(--font-medium);
+    margin-bottom: 0.5rem;
+}
+
+.line-item-row .col-desc textarea {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.vehicle-details-block { 
+    display: flex; 
+    gap: 0.75rem; 
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.vehicle-details-block input { 
+    font-size: 0.8rem; 
+    padding: 0.5rem 0.75rem;
+    flex: 1;
+    min-width: 120px;
+}
+
+.vehicle-row {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(59, 130, 246, 0.02));
+    border-left: 3px solid var(--primary-accent);
+}
+
+/* Summary & Actions Sidebar */
+.summary-card, .actions-card { 
+    padding: 2rem; 
+    background: var(--bg-elevated); 
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-medium);
+}
+
+.summary-card h4, .actions-card h4 {
+    font-size: 1.125rem;
+    font-weight: var(--font-semibold);
+    margin: 0 0 1.5rem 0;
+    color: var(--text-primary);
+}
+
+.summary-row { 
+    display: flex; 
+    justify-content: space-between; 
+    padding: 0.875rem 0; 
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.3);
+}
+
+.summary-row:last-child {
+    border-bottom: none;
+}
+
+.summary-row span:first-child {
+    color: var(--text-secondary);
+}
+
+.summary-row span:last-child { 
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+}
+
+.grand-total { 
+    font-size: 1.25rem; 
+    font-weight: var(--font-bold); 
+    padding: 1.5rem 0; 
+    border-top: 2px solid var(--border-color); 
+    border-bottom: 2px solid var(--border-color); 
+    margin: 1rem 0;
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius-sm);
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.balance-due { 
+    font-size: 1.1rem; 
+    color: var(--primary-accent);
+    font-weight: var(--font-bold);
+}
+
+.paid {
+    color: var(--success-color);
+}
+
+.actions-card { 
+    padding: 1.5rem; 
+}
+
+.actions-card .btn-full {
+    margin-bottom: 0.5rem;
+}
+
+.actions-card .btn-full:last-child {
+    margin-bottom: 0;
+}
+
+/* Footer Styles */
+.modal-footer {
+    padding: 2rem;
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border-color);
+}
+
+.notes-footer {
+    margin: 0;
+}
+
+.notes-footer .form-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.notes-footer textarea {
+    min-height: 80px;
+}
+
+/* ==========================================================================
+   4. RESPONSIVENESS
+   ========================================================================== */
+@media (max-width: 1400px) {
+    .modal-column-client {
+        flex: 0 0 280px;
+    }
+}
+
+@media (max-width: 1400px) {
+    .modal-layout {
+        flex-direction: column;
+    }
+    
+    .preview-container {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    .a4-preview {
+        transform: scale(1);
+        width: 100%;
+    }
+}
+
+@media (max-width: 1200px) {
+    .modal-body { 
+        flex-direction: column; 
+        gap: 1.5rem;
+    }
+    
+    .modal-column-client {
+        flex: none;
+        order: 1;
+    }
+    
+    .modal-column-main {
+        order: 2;
+    }
+    
+    .modal-column-sidebar { 
+        order: 3;
+        position: static; 
+        flex-direction: row;
+        max-height: none;
+        flex: none;
+    }
+    
+    .summary-card, .actions-card { 
+        flex: 1; 
+    }
+    
+    .client-sidebar {
+        position: static;
+        max-height: none;
+    }
+    
+    .client-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+    
+    .line-item-header, .line-item-row {
+        grid-template-columns: 30px 2fr 1fr 1fr 1fr 1fr 1fr 30px;
+    }
+    
+    .notes-footer .form-grid-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    body { 
+        margin: 0;
+        padding: 1rem;
+    }
+    
+    .modal-layout {
+        flex-direction: column;
+    }
+    
+    .modal-container { 
+        max-height: 80vh; 
+        border-radius: var(--border-radius);
+    }
+    
+    .preview-container {
+        display: none;
+    }
+    
+    .modal-header {
+        padding: 1rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .modal-body {
+        padding: 1rem;
+    }
+    
+    .form-grid-4, .form-grid-2 { 
+        grid-template-columns: 1fr; 
+    }
+    
+    .modal-column-sidebar { 
+        flex-direction: column; 
+    }
+    
+    .line-item-header, .line-item-row { 
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .line-item-header > div:not(.col-desc),
+    .line-item-row > div:not(.col-desc) { 
+        display: none; 
+    }
+    
+    .line-item-row .col-desc {
+        grid-column: 1;
+    }
+    
+    .vehicle-details-block {
+        flex-direction: column;
+    }
+    
+    .vehicle-details-block input {
+        min-width: auto;
+    }
+    
+    .notes-footer .form-grid-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================================================
+   5. ANIMATIONS & MICRO-INTERACTIONS
+   ========================================================================== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.card {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-container {
+    animation: fadeIn 0.4s ease-out;
+}
+
+.line-item-row {
+    animation: slideIn 0.2s ease-out;
+}
+
+/* Dark mode specific adjustments */
+.theme-dark .vehicle-row {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+}
+
+.theme-dark .toggle-input::before {
+    background: var(--bg-primary);
+}
+
+.theme-dark .autosave-indicator {
+    background: var(--bg-tertiary);
+}
+
+
+// Universal Document Modal - Enhanced Functionality
+class UniversalDocumentModal {
+    constructor() {
+        this.state = {
+            documentType: 'invoice',
+            client: { type: 'business', name: '', email: '' },
+            details: { docNumber: 'INV-2025-001', issueDate: '2025-08-02', dueDate: '2025-09-01' },
+            lineItems: [
+                { id: 1, type: 'standard', description: 'Web Design Services', detail: 'Initial wireframes and mockups for the new homepage.', qty: 25, price: 80.00, discount: '5%', vat: '15%' },
+                { id: 2, type: 'vehicle', description: '2023 Toyota Hilux 2.8 GD-6', vin: 'VIN123456789', regNo: 'GP 987 654', qty: 1, price: 650000.00, discount: '0', vat: '15%' }
+            ],
+            summary: { subtotal: 651900.00, discount: 100.00, vat: 97770.00, total: 749570.00, paid: 0.00, balanceDue: 749570.00 },
+            isSaving: false
+        };
+
+        this.documentConfig = {
+            invoice: {
+                title: 'Invoice',
+                prefix: 'INV-',
+                status: 'draft',
+                fields: ['issueDate', 'dueDate'],
+                actions: ['save', 'finalize', 'download', 'print', 'email']
+            },
+            quotation: {
+                title: 'Quotation', 
+                prefix: 'QUO-',
+                status: 'draft',
+                fields: ['issueDate', 'expiryDate'],
+                actions: ['save', 'convert', 'download', 'print', 'email']
+            },
+            credit_note: {
+                title: 'Credit Note',
+                prefix: 'CRN-',
+                status: 'draft', 
+                fields: ['issueDate', 'originalRef'],
+                actions: ['save', 'apply', 'download', 'print', 'email']
+            },
+            refund: {
+                title: 'Refund',
+                prefix: 'REF-',
+                status: 'pending',
+                fields: ['issueDate', 'refundReason'],
+                actions: ['save', 'process', 'download', 'print', 'email']
+            },
+            recurring: {
+                title: 'Recurring Invoice',
+                prefix: 'REC-',
+                status: 'active',
+                fields: ['issueDate', 'frequency', 'endDate'],
+                actions: ['save', 'activate', 'download', 'print', 'email']
+            },
+            vehicle_quote: {
+                title: 'Vehicle Quotation',
+                prefix: 'VQ-',
+                status: 'draft',
+                fields: ['issueDate', 'expiryDate', 'deliveryDate'],
+                actions: ['save', 'convert', 'download', 'print', 'email']
+            }
+        };
+
+        this.init();
+    }
+
+    init() {
+        this.bindEvents();
+        this.updateUI();
+        this.setupAutoSave();
+        
+        // Initialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+
+    bindEvents() {
+        // Document type change
+        const docTypeSelect = document.getElementById('docType');
+        if (docTypeSelect) {
+            docTypeSelect.addEventListener('change', (e) => {
+                this.handleDocumentTypeChange(e.target.value);
+            });
+        }
+
+        // Client type toggle
+        const clientToggle = document.getElementById('clientTypeToggle');
+        if (clientToggle) {
+            clientToggle.addEventListener('change', (e) => {
+                this.state.client.type = e.target.checked ? 'individual' : 'business';
+                this.updateClientUI();
+            });
+        }
+
+        // Theme toggle (add button for this)
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'd') {
+                e.preventDefault();
+                this.toggleTheme();
+            }
+        });
+
+        // Auto-save on input changes
+        document.addEventListener('input', (e) => {
+            if (e.target.matches('input, select, textarea')) {
+                this.handleInputChange(e);
+            }
+        });
+    }
+
+    handleDocumentTypeChange(newType) {
+        this.state.documentType = newType;
+        const config = this.documentConfig[newType];
+        
+        // Update document number
+        this.state.details.docNumber = this.generateDocNumber(config.prefix);
+        
+        // Update title and status
+        document.getElementById('documentTitle').textContent = `New ${config.title}`;
+        const statusBadge = document.getElementById('documentStatus');
+        statusBadge.textContent = config.status.charAt(0).toUpperCase() + config.status.slice(1);
+        statusBadge.className = `status-badge status-${config.status}`;
+        
+        // Update document type indicator
+        const indicator = document.querySelector('.document-type-indicator');
+        indicator.setAttribute('data-doc-type', newType);
+        
+        // Update convert button text
+        const convertBtn = document.getElementById('convertToInvoice');
+        if (convertBtn && newType !== 'invoice') {
+            convertBtn.innerHTML = `<i data-lucide="arrow-right-left"></i> Convert to ${this.documentConfig.invoice.title}`;
+        }
+        
+        // Update document number input
+        document.getElementById('docNumber').value = this.state.details.docNumber;
+        
+        // Re-initialize icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+        
+        this.updateUI();
+    }
+
+    generateDocNumber(prefix) {
+        const year = new Date().getFullYear();
+        const random = Math.floor(Math.random() * 999) + 1;
+        return `${prefix}${year}-${random.toString().padStart(3, '0')}`;
+    }
+
+    updateClientUI() {
+        const label = document.querySelector('label[for="clientName"]');
+        if (label) {
+            label.textContent = this.state.client.type === 'business' ? 'Client / Company Name' : 'Client Name';
+        }
+    }
+
+    handleInputChange(e) {
+        // Trigger auto-save indicator
+        this.showSavingIndicator();
+        
+        // Update state based on input
+        const { id, value } = e.target;
+        if (id in this.state.details) {
+            this.state.details[id] = value;
+        } else if (id in this.state.client) {
+            this.state.client[id] = value;
+        }
+        
+        // Recalculate if it's a line item change
+        if (e.target.closest('.line-item-row')) {
+            this.recalculateSummary();
+        }
+    }
+
+    showSavingIndicator() {
+        const indicator = document.getElementById('autosaveIndicator');
+        if (indicator) {
+            indicator.style.opacity = '1';
+            setTimeout(() => {
+                indicator.style.opacity = '0';
+            }, 2000);
+        }
+    }
+
+    setupAutoSave() {
+        setInterval(() => {
+            this.showSavingIndicator();
+        }, 10000);
+    }
+
+    recalculateSummary() {
+        // Simple calculation for demo
+        const summaryTotal = document.getElementById('grandTotal');
+        if (summaryTotal) {
+            summaryTotal.textContent = `R${this.state.summary.total.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`;
+        }
+    }
+
+    toggleTheme() {
+        const body = document.body;
+        if (body.classList.contains('theme-light')) {
+            body.classList.remove('theme-light');
+            body.classList.add('theme-dark');
+        } else {
+            body.classList.remove('theme-dark');
+            body.classList.add('theme-light');
+        }
+    }
+
+    toggleClientSidebar() {
+        const sidebar = document.querySelector('.client-sidebar');
+        const icon = document.querySelector('#toggle-client-sidebar i');
+        
+        if (sidebar) {
+            sidebar.classList.toggle('collapsed');
+            
+            // Update icon based on state
+            if (sidebar.classList.contains('collapsed')) {
+                icon.setAttribute('data-lucide', 'panel-right');
+            } else {
+                icon.setAttribute('data-lucide', 'panel-left');
+            }
+            
+            // Re-initialize lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+    }
+
+    updateUI() {
+        // Update any UI elements that depend on current state
+        this.updateClientUI();
+        this.recalculateSummary();
+    }
+
+    init() {
+        // Initialize event listeners
+        const toggleBtn = document.getElementById('toggle-client-sidebar');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => this.toggleClientSidebar());
+        }
+    }
+}
+
+// Initialize the modal when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof DocumentModal !== 'undefined') {
+        const modal = new DocumentModal();
+        modal.init();
+    }
+});
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    // Add theme toggle button to header
+    const headerRight = document.querySelector('.header-right');
+    if (headerRight) {
+        const themeToggle = document.createElement('button');
+        themeToggle.className = 'btn-icon-only theme-toggle';
+        themeToggle.innerHTML = '<i data-lucide="moon"></i>';
+        themeToggle.title = 'Toggle dark mode (Ctrl+D)';
+        themeToggle.addEventListener('click', () => {
+            modal.toggleTheme();
+            const icon = themeToggle.querySelector('i');
+            const isDark = document.body.classList.contains('theme-dark');
+            icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+        
+        headerRight.insertBefore(themeToggle, headerRight.lastElementChild);
+    }
+    
+    // Initialize preview toggle
+    const togglePreview = document.getElementById('toggle-preview');
+    if (togglePreview) {
+        togglePreview.addEventListener('click', () => {
+            const preview = document.getElementById('live-preview-modal');
+            const icon = togglePreview.querySelector('i');
+            
+            if (preview.style.display === 'none') {
+                preview.style.display = 'block';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                preview.style.display = 'none';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    }
+    
+    // Initialize the modal
+    window.modal = new UniversalDocumentModal();
+    
+    // Initialize live preview updates
+    initLivePreview();
+    
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+});
+
+// Live Preview Functions
+function initLivePreview() {
+    // Update preview when inputs change
+    document.addEventListener('input', updatePreview);
+    document.addEventListener('change', updatePreview);
+    
+    // Initial preview update
+    updatePreview();
+}
+
+function updatePreview() {
+    // Update document type and number
+    const docType = document.getElementById('document-type')?.value || 'invoice';
+    const docNumber = document.getElementById('document-number')?.value || 'INV-2025-001';
+    const issueDate = document.getElementById('current-date')?.value || '2025-08-02';
+    
+    document.getElementById('preview-title').textContent = docType.toUpperCase().replace('-', ' ');
+    document.getElementById('preview-number').textContent = docNumber;
+    document.getElementById('preview-date').textContent = issueDate;
+    
+    // Update client info
+    const clientName = document.getElementById('client-name')?.value || 'Client Name';
+    const clientAddress = document.getElementById('client-address-1')?.value || 'Client Address';
+    
+    document.getElementById('preview-client-name').textContent = clientName;
+    document.getElementById('preview-client-address').textContent = clientAddress;
+    
+    // Update totals from summary
+    const subtotal = document.getElementById('subtotal')?.textContent || 'R0.00';
+    const tax = document.getElementById('tax-total')?.textContent || 'R0.00';
+    const total = document.getElementById('final-total')?.textContent || 'R0.00';
+    
+    document.getElementById('preview-subtotal').textContent = subtotal;
+    document.getElementById('preview-tax').textContent = tax;
+    document.getElementById('preview-total').textContent = total;
+}

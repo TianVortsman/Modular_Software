@@ -38,7 +38,7 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../../../public/assets/js/toggle-theme.js" type="module"></script>
-    <link rel="stylesheet" href="../css/invoice-modal.css">
+    <link rel="stylesheet" href="../css/document-modal.css">
     <link rel="stylesheet" href="../css/client-search-dropdown.css">
 </head>
 <body id="invoice-dashboard">
@@ -171,9 +171,12 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
     <footer>
         <p>&copy; 2024 Modular Software. All rights reserved.</p>
     </footer>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <?php include('../modals/document-modal.php'); ?>
     <?php include '../../../src/UI/response-modal.php'; ?>
     <?php include '../../../src/UI/loading-modal.php'; ?>
+    <script type="module" src="../js/document-form.js"></script>
+    <script type="module" src="../js/document-modal.js"></script>
     <script type="module" src="../js/dashboard.js"></script>
     <script src="../../../public/assets/js/sidebar.js"></script>
     <script>var multipleAccounts = <?= json_encode($multiple_accounts); ?>; </script>

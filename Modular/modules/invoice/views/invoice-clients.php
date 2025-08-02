@@ -46,10 +46,12 @@ error_log("Multiple accounts: " . ($multiple_accounts ? 'true' : 'false'));
     <link rel="stylesheet" href="../css/invoice-clients.css">
     <link rel="stylesheet" href="../css/invoice-modal.css">
     <link rel="stylesheet" href="../css/client-search-dropdown.css">
+    <link rel="stylesheet" href="../../../public/assets/css/table.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../../../public/assets/js/toggle-theme.js" type="module"></script>
     <script src="../../../public/assets/js/sidebar.js"></script>
+    <script src="../../../public/assets/js/table.js"></script>
 </head>
 <body id="invoice-clients">
 <div class="screen-container">
@@ -67,72 +69,13 @@ error_log("Multiple accounts: " . ($multiple_accounts ? 'true' : 'false'));
                 <button class="clientSectionButton2" id="clientSectionButton2" >Business</button>
                 </div>
 
-                    <!-- Search Container -->
-                    <div class="search-container">
-                        <span class="material-icons search-icon">search</span>
-                        <input type="text" id="client-search" placeholder="Search by Client Name or ID...">
-                    </div>
-                
-                <!-- Table for Client Data -->
-                <div class="client-section1 active" id="client-section1">
-                    <label for="rows-per-page">Show:</label>
-                        <select id="rows-per-page" class="rows-per-page">
-                            <option value="5">5</option>
-                            <option value="10" selected>10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>
-                    <div class="table-container">
-                        <div class="client-table-container">
-                            <table class="client-table">
-                                <thead>
-                                    <tr>
-                                        <th>Client ID</th>
-                                        <th>Client Name</th>
-                                        <th>Email</th>
-                                        <th>Phone</th>
-                                        <th>Last Invoice Date</th>
-                                        <th>Outstanding Balance</th>
-                                        <th>Total Invoices</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="client-body-private">
-                                </tbody>
-                                <div id="pagination-container1" class="pagination-container"></div>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="client-section2" id="client-section2">
-                <label for="rows-per-page">Show:</label>
-                        <select id="rows-per-page" class="rows-per-page">
-                            <option value="5">5</option>
-                            <option value="10" selected>10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                        </select>
-                    <div class="table-container">
-                        <div class="client-table-container">
-                            <table class="client-table">
-                                <thead>
-                                    <tr>
-                                        <th>Company ID</th>
-                                        <th>Company Name</th>
-                                        <th>Email</th>
-                                        <th>Phone</th>
-                                        <th>Last Invoice Date</th>
-                                        <th>Outstanding Balance</th>
-                                        <th>Total Invoices</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="client-body-business">
-                                </tbody>
-                                <div id="pagination-container2" class="pagination-container"></div>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+            <!-- NOVA Table Containers -->
+            <div class="client-section1 active" id="client-section1">
+                <div id="nova-table-private" class="nova-table-container"></div>
+            </div>
+            <div class="client-section2" id="client-section2">
+                <div id="nova-table-business" class="nova-table-container"></div>
+            </div>
             </div>
         </div>
     </div>

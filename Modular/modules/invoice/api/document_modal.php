@@ -1,4 +1,5 @@
 <?php
+error_log('[DOCUMENT_API] API endpoint accessed - ' . date('Y-m-d H:i:s'));
 require_once __DIR__ . '/../../../src/Utils/errorHandler.php';
 require_once __DIR__ . '/../../../src/Core/Database/ClientDatabase.php';
 use App\Core\Database\ClientDatabase;
@@ -25,6 +26,9 @@ try {
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $action = $_GET['action'] ?? '';
     $method = $_SERVER['REQUEST_METHOD'];
+    
+    error_log('[DOCUMENT_API] Action: ' . $action . ', Method: ' . $method);
+    error_log('[DOCUMENT_API] GET params: ' . json_encode($_GET));
 
     switch ($action) {
         case 'save_document':
@@ -124,10 +128,66 @@ try {
             echo json_encode($result);
             break;
 
+        case 'get_next_quotation_number':
+        case 'get_next_invoice_number':
+        case 'get_next_credit_note_number':
+        case 'get_next_refund_number':
+        case 'get_next_proforma_number':
+            error_log('[DOCUMENT_API] Document numbering action detected: ' . $action);
+            error_log('[DOCUMENT_API] Method: ' . $method);
+            error_log('[DOCUMENT_API] Request data: ' . json_encode($_GET));
+            
+            if ($method !== 'GET') {
+                error_log('[DOCUMENT_API] Invalid method, sending error response');
+                sendApiErrorResponse('GET method required for document numbering action', $_GET, 'Document API Method Validation', 'INVALID_METHOD', 405);
+            }
+            
+            $action = $_GET['action'];
+            error_log('[DOCUMENT_API] Getting next document number for action: ' . $action);
+            
+            try {
+                error_log('[DOCUMENT_API] About to call get_next_document_number');
+                $result = App\modules\invoice\controllers\get_next_document_number($action);
+                error_log('[DOCUMENT_API] Result received: ' . json_encode($result));
+                
+                if ($result === null) {
+                    error_log('[DOCUMENT_API] Result is null, sending fallback');
+                    $result = [
+                        'success' => true,
+                        'message' => 'Next document number generated successfully (fallback)',
+                        'data' => [
+                            'number' => 'DOC-' . time(),
+                            'next_number' => 1,
+                            'prefix' => 'DOC'
+                        ]
+                    ];
+                }
+                
+                error_log('[DOCUMENT_API] About to echo JSON response');
+                echo json_encode($result);
+                error_log('[DOCUMENT_API] JSON response sent');
+                
+            } catch (Exception $e) {
+                error_log('[DOCUMENT_API] Exception caught: ' . $e->getMessage());
+                error_log('[DOCUMENT_API] Exception stack trace: ' . $e->getTraceAsString());
+                
+                $errorResponse = [
+                    'success' => false,
+                    'message' => 'Error getting document number: ' . $e->getMessage(),
+                    'data' => null,
+                    'error_code' => 'DOCUMENT_NUMBER_ERROR'
+                ];
+                
+                error_log('[DOCUMENT_API] Sending error response: ' . json_encode($errorResponse));
+                echo json_encode($errorResponse);
+            }
+            break;
+
         default:
+            error_log('[DOCUMENT_API] Invalid action: ' . $action);
             sendApiErrorResponse("Invalid action: $action", [
                 'action' => $action, 
-                'available_actions' => ['save_document', 'update_document', 'get_document', 'delete_document', 'get_related_documents', 'get_available_invoices_for_credit_refund']
+                'available_actions' => ['save_document', 'update_document', 'get_document', 'delete_document', 'get_related_documents', 'get_available_invoices_for_credit_refund', 'get_next_quotation_number', 'get_next_invoice_number', 'get_next_credit_note_number', 'get_next_refund_number', 'get_next_proforma_number']
             ], 'Document API Action Validation', 'INVALID_ACTION', 400);
     }
     

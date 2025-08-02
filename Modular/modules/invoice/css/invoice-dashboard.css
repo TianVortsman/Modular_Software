@@ -155,7 +155,7 @@ table th {
 }
 
 table td {
-    color: var(--color-text-light);
+    color: var(--color-text-dark);
 }
 
 .status {
@@ -186,15 +186,6 @@ table td {
 
 .action-button:hover {
     background-color: var(--color-hover);
-}
-
-footer {
-    text-align: center;
-    padding: var(--spacing-medium) 0;
-    color: var(--color-primary);
-    border-top: 2px solid var(--color-primary);
-    width: 100%;
-    margin-top: 200px;
 }
 
 .invoice-analytics {
