@@ -17,6 +17,16 @@ CREATE TABLE IF NOT EXISTS settings.invoice_settings (
     quotation_starting_number INTEGER DEFAULT 1,
     quotation_current_number INTEGER,
 
+    -- Vehicle Quotation Numbering Settings
+    vehicle_quotation_prefix VARCHAR(50),
+    vehicle_quotation_starting_number INTEGER DEFAULT 1,
+    vehicle_quotation_current_number INTEGER,
+
+    -- Vehicle Invoice Numbering Settings
+    vehicle_invoice_prefix VARCHAR(50),
+    vehicle_invoice_starting_number INTEGER DEFAULT 1,
+    vehicle_invoice_current_number INTEGER,
+
     -- Credit Note Numbering Settings
     credit_note_prefix VARCHAR(50),
     credit_note_starting_number INTEGER DEFAULT 1,

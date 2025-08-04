@@ -13,6 +13,7 @@
   --color-error: #F44336;
   --color-warning: #FFC107;
   --color-danger: #FF0000;
+  --color-danger-hover: #ff000082;
 
   /* Fonts */
   --font-primary: 'Roboto', sans-serif;

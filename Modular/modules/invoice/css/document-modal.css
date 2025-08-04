@@ -13,14 +13,15 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 10000;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(8px);
     padding: 1rem;
     gap: 1rem;
+    animation: fadeIn 0.3s ease-out;
 }
 
 /* Client Panel (Left Side) */
@@ -32,12 +33,13 @@
     width: 320px;
     background: var(--bg-elevated);
     border-radius: var(--border-radius-lg);
-    box-shadow: var(--shadow-large);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.1);
     border: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     z-index: 10001;
     height: fit-content;
+    animation: slideInLeft 0.4s ease-out;
 }
 
 .client-panel-header {
@@ -70,7 +72,7 @@
 .modal-container {
     background-color: var(--bg-elevated);
     border-radius: var(--border-radius-lg);
-    box-shadow: var(--shadow-large);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2), 0 12px 24px rgba(0, 0, 0, 0.15);
     border: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
@@ -82,6 +84,7 @@
     backdrop-filter: blur(20px);
     margin-left: 320px; /* Space for client panel */
     margin-right: 400px; /* Space for preview panel */
+    animation: slideInUp 0.4s ease-out;
 }
 
 .modal-header {
@@ -90,7 +93,7 @@
     align-items: center;
     padding: 1.5rem 2rem;
     border-bottom: 1px solid var(--border-color);
-    background: var(--bg-elevated);
+    background: linear-gradient(135deg, var(--bg-elevated), var(--bg-secondary));
     position: sticky;
     top: 0;
     z-index: 10;
@@ -250,7 +253,6 @@
     border: 1px solid var(--border-color); 
     border-radius: var(--border-radius);
     background: var(--bg-elevated);
-    overflow: hidden;
 }
 
 /* Vehicle Section Container */
@@ -325,9 +327,10 @@
     z-index: 10001;
     display: flex;
     flex-direction: column;
-    box-shadow: var(--shadow-large);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.1);
     transition: transform var(--transition-smooth);
     height: fit-content;
+    animation: slideInRight 0.4s ease-out;
 }
 
 .preview-container.hidden {
@@ -651,16 +654,17 @@
 .card {
     background: var(--bg-elevated);
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-lg);
     padding: 2rem;
-    box-shadow: var(--shadow-medium);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transition: all var(--transition-fast);
     position: relative;
 }
 
 .card:hover {
-    box-shadow: var(--shadow-large);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     border-color: var(--border-color-hover);
+    transform: translateY(-2px);
 }
 
 .card-header { 
@@ -711,14 +715,15 @@ input[type="number"],
 select, 
 textarea {
     width: 100%; 
-    padding: 0.875rem 1rem; 
+    padding: 1rem 1.25rem; 
     background: var(--bg-secondary); 
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius); 
+    border-radius: var(--border-radius-lg); 
     font-family: var(--font-family); 
     color: var(--text-primary);
     transition: all var(--transition-fast);
     font-size: 0.875rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 input:focus, 
@@ -726,8 +731,9 @@ select:focus,
 textarea:focus { 
     outline: none; 
     border-color: var(--primary-accent); 
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 4px 8px rgba(0, 0, 0, 0.1);
     background: var(--bg-primary);
+    transform: translateY(-1px);
 }
 
 input:hover,
@@ -749,15 +755,16 @@ textarea {
     justify-content: center; 
     gap: 0.5rem; 
     font-weight: var(--font-semibold); 
-    padding: 0.75rem 1.5rem; 
+    padding: 0.875rem 1.75rem; 
     border: none; 
-    border-radius: var(--border-radius); 
+    border-radius: var(--border-radius-lg); 
     cursor: pointer; 
     transition: all var(--transition-fast);
     font-size: 0.875rem;
     text-decoration: none;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn::before {
@@ -782,8 +789,8 @@ textarea {
 }
 
 .btn-primary:hover { 
-    transform: translateY(-1px);
-    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(59, 130, 246, 0.4);
 }
 
 .btn-secondary { 
@@ -795,7 +802,8 @@ textarea {
 .btn-secondary:hover { 
     background: var(--bg-tertiary);
     border-color: var(--border-color-hover);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .btn-icon { 
@@ -854,6 +862,8 @@ textarea {
 .line-items-table {
     width: 100%;
     border-collapse: collapse;
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .line-items-table th,
@@ -882,7 +892,9 @@ textarea {
 }
 
 .line-item-row:hover {
-    background: var(--bg-secondary);
+    background: linear-gradient(135deg, var(--primary-accent-fade), rgba(59, 130, 246, 0.02));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .line-item-row:last-child td { 
@@ -1100,6 +1112,21 @@ textarea {
     to { transform: translateX(0); opacity: 1; }
 }
 
+@keyframes slideInLeft {
+    from { transform: translateX(-50px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(50px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
 .card {
     animation: fadeIn 0.3s ease-out;
 }
@@ -1201,7 +1228,15 @@ textarea {
     transform: translateY(-1px);
 }
 
-/* Preserve existing search dropdown styles */
+.total {
+    color: var(--text-primary);
+}
+
+.total-cell {
+    position:relative;
+}
+
+/* Enhanced search dropdown styles */
 .search-dropdown1,
 .search-dropdown2,
 .search-dropdown3,
@@ -1213,14 +1248,17 @@ textarea {
     top: 100%;
     left: 0;
     right: 0;
-    background: var(--surface-primary);
+    background: var(--bg-elevated);
+    color: var(--text-primary);
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-lg);
-    max-height: 200px;
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-height: 240px;
     overflow-y: auto;
     display: none;
-    z-index: 9999;
+    z-index: 100000;
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.2s ease-out;
 }
 
 .search-dropdown1.active,
@@ -1240,10 +1278,22 @@ textarea {
 .search-dropdown5 div,
 .search-dropdown6 div,
 .credit-search-dropdown div {
-    padding: 0.75rem 1rem;
+    padding: 0.875rem 1.25rem;
     cursor: pointer;
     border-bottom: 1px solid var(--border-color);
-    transition: background-color var(--transition-fast);
+    transition: all var(--transition-fast);
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.search-dropdown1 div:first-child,
+.search-dropdown2 div:first-child,
+.search-dropdown3 div:first-child,
+.search-dropdown4 div:first-child,
+.search-dropdown5 div:first-child,
+.search-dropdown6 div:first-child,
+.credit-search-dropdown div:first-child {
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
 }
 
 .search-dropdown1 div:hover,
@@ -1253,7 +1303,9 @@ textarea {
 .search-dropdown5 div:hover,
 .search-dropdown6 div:hover,
 .credit-search-dropdown div:hover {
-    background: var(--bg-secondary);
+    background: var(--primary-accent-fade);
+    color: var(--primary-accent);
+    transform: translateX(4px);
 }
 
 .search-dropdown1 div:last-child,
@@ -1264,7 +1316,44 @@ textarea {
 .search-dropdown6 div:last-child,
 .credit-search-dropdown div:last-child {
     border-bottom: none;
+}
+
+/* Product search result styling */
+.search-result-product {
+    padding: 0.875rem 1.25rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+    transition: all var(--transition-fast);
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.search-result-product:first-child {
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+}
+
+.search-result-product:hover {
+    background: var(--primary-accent-fade);
+    color: var(--primary-accent);
+    transform: translateX(4px);
+}
+
+.search-result-product:last-child {
+    border-bottom: none;
+}
+
+.search-result-product.highlight {
+    background: var(--primary-accent-fade);
+    color: var(--primary-accent);
 } 
+
+.search-result-item li{
+    background: var(--bg-elevated);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    color: var(--text-primary);
+    z-index: 9999;
+}
 
 .preview-items-body{
     background: var(--surface-primary);
@@ -1280,6 +1369,43 @@ textarea {
     box-shadow: var(--shadow-lg);
     color: var(--text-primary);
     z-index: 9999;
+}
+
+/* Line item remove button styling */
+.remove-row-btn {
+    display: none;
+    background: var(--color-danger);
+    color: var(--color-light);
+    border: none;
+    border-radius: 20%;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+    transition: all var(--transition-fast);
+    position: absolute;
+    top: 13px; /* Move the button up by 16px, adjust as needed */
+    right: 13px; /* Optional: keep it near the right edge */
+}
+
+.remove-row-btn:hover {
+    background: var(--color-danger-hover);
+    transform: scale(1.1);
+}
+
+/* Show remove button only on row hover */
+.document-item-row:hover .remove-row-btn,
+.vehicle-part-row:hover .remove-row-btn,
+.credit-note-item-row:hover .remove-row-btn {
+    display: inline-block;
+}
+
+/* Hide remove button for first line item */
+.document-item-row:first-child .remove-row-btn,
+.vehicle-part-row:first-child .remove-row-btn,
+.credit-note-item-row:first-child .remove-row-btn {
+    display: none !important;
 }
 
 

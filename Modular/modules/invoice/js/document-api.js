@@ -140,7 +140,42 @@ async function fetchAndSetDocument(documentId) {
             credentials: 'include'
         });
         const result = await response.json();
-        window.handleApiResponse(result);
+        
+        if (result.success && result.data) {
+            // Populate the form with document data
+            if (typeof window.setDocumentFormData === 'function') {
+                window.setDocumentFormData(result.data);
+            } else if (typeof setDocumentFormData === 'function') {
+                setDocumentFormData(result.data);
+            } else {
+                console.error('setDocumentFormData function not available');
+            }
+            
+            // Check if document is finalized and adjust the mode accordingly
+            const status = result.data.document_status?.toLowerCase();
+            const finalizedStatuses = ['unpaid', 'approved', 'paid', 'sent'];
+            const actualMode = finalizedStatuses.includes(status) ? 'view' : 'edit';
+            
+            // Set the appropriate modal mode
+            if (typeof window.setModalMode === 'function') {
+                window.setModalMode(actualMode);
+            }
+            
+            // Re-setup row listeners after data population
+            if (typeof window.setupRowListeners === 'function') {
+                window.setupRowListeners();
+            }
+            
+            // Update totals after data is loaded
+            if (typeof window.updateTotals === 'function') {
+                window.updateTotals();
+            }
+            
+            if (typeof LoadingModal !== 'undefined') LoadingModal.hide();
+        } else {
+            // Handle error response
+            window.handleApiResponse(result);
+        }
     } catch (err) {
         if (typeof LoadingModal !== 'undefined') LoadingModal.hide();
         if (typeof ResponseModal !== 'undefined') {

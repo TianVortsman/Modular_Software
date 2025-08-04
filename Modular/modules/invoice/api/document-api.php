@@ -138,7 +138,7 @@ try {
                         p.product_id,
                         p.sku,
                         p.product_name,
-                        p.product_description,
+                        COALESCE(p.product_description, '') as product_description,
                         p.product_price,
                         COALESCE(tr.rate, 0) as tax_rate
                     FROM core.products p
@@ -146,14 +146,23 @@ try {
                     WHERE p.product_status = 'active'
                     AND (
                         p.product_name ILIKE :search 
-                        OR p.product_description ILIKE :search
+                        OR COALESCE(p.product_description, '') ILIKE :search
                         OR p.sku ILIKE :search
                     )
-                    ORDER BY p.product_name
-                    LIMIT 10";
+                    ORDER BY 
+                        CASE 
+                            WHEN p.product_name ILIKE :exact THEN 1
+                            WHEN p.sku ILIKE :exact THEN 2
+                            ELSE 3
+                        END,
+                        p.product_name
+                    LIMIT 8";
             
             $stmt = $conn->prepare($sql);
-            $stmt->execute(['search' => $searchTerm]);
+            $stmt->execute([
+                'search' => $searchTerm,
+                'exact' => trim($query) . '%'
+            ]);
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             echo json_encode($results);
@@ -577,12 +586,25 @@ try {
             $stmt = $conn->prepare('SELECT quotation_prefix, quotation_current_number, quotation_starting_number FROM settings.invoice_settings WHERE id = 1');
             $stmt->execute();
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            $prefix = $row['quotation_prefix'] ?? 'Q-';
+            $prefix = $row['quotation_prefix'] ?? 'QUO-';
             $current = $row['quotation_current_number'] ?? null;
             $start = $row['quotation_starting_number'] ?? 1;
             $next = $current ? $current + 1 : $start;
             echo json_encode(['success' => true, 'number' => $prefix . $next]);
-                break;
+            break;
+        case 'preview_vehicle_quotation_number':
+            if ($method !== 'GET') {
+                throw new Exception('GET method required for preview_vehicle_quotation_number action');
+            }
+            $stmt = $conn->prepare('SELECT vehicle_quotation_prefix, vehicle_quotation_current_number, vehicle_quotation_starting_number FROM settings.invoice_settings WHERE id = 1');
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $prefix = $row['vehicle_quotation_prefix'] ?? 'VQUO-';
+            $current = $row['vehicle_quotation_current_number'] ?? null;
+            $start = $row['vehicle_quotation_starting_number'] ?? 1;
+            $next = $current ? $current + 1 : $start;
+            echo json_encode(['success' => true, 'number' => $prefix . $next]);
+            break;
         case 'preview_invoice_number':
             if ($method !== 'GET') {
                 throw new Exception('GET method required for preview_invoice_number action');
@@ -593,6 +615,58 @@ try {
             $prefix = $row['invoice_prefix'] ?? 'INV-';
             $current = $row['invoice_current_number'] ?? null;
             $start = $row['invoice_starting_number'] ?? 1;
+            $next = $current ? $current + 1 : $start;
+            echo json_encode(['success' => true, 'number' => $prefix . $next]);
+            break;
+        case 'preview_vehicle_invoice_number':
+            if ($method !== 'GET') {
+                throw new Exception('GET method required for preview_vehicle_invoice_number action');
+            }
+            $stmt = $conn->prepare('SELECT vehicle_invoice_prefix, vehicle_invoice_current_number, vehicle_invoice_starting_number FROM settings.invoice_settings WHERE id = 1');
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $prefix = $row['vehicle_invoice_prefix'] ?? 'VINV-';
+            $current = $row['vehicle_invoice_current_number'] ?? null;
+            $start = $row['vehicle_invoice_starting_number'] ?? 1;
+            $next = $current ? $current + 1 : $start;
+            echo json_encode(['success' => true, 'number' => $prefix . $next]);
+            break;
+        case 'preview_credit_note_number':
+            if ($method !== 'GET') {
+                throw new Exception('GET method required for preview_credit_note_number action');
+            }
+            $stmt = $conn->prepare('SELECT credit_note_prefix, credit_note_current_number, credit_note_starting_number FROM settings.invoice_settings WHERE id = 1');
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $prefix = $row['credit_note_prefix'] ?? 'CN-';
+            $current = $row['credit_note_current_number'] ?? null;
+            $start = $row['credit_note_starting_number'] ?? 1;
+            $next = $current ? $current + 1 : $start;
+            echo json_encode(['success' => true, 'number' => $prefix . $next]);
+            break;
+        case 'preview_refund_number':
+            if ($method !== 'GET') {
+                throw new Exception('GET method required for preview_refund_number action');
+            }
+            $stmt = $conn->prepare('SELECT refund_prefix, refund_current_number, refund_starting_number FROM settings.invoice_settings WHERE id = 1');
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $prefix = $row['refund_prefix'] ?? 'REF-';
+            $current = $row['refund_current_number'] ?? null;
+            $start = $row['refund_starting_number'] ?? 1;
+            $next = $current ? $current + 1 : $start;
+            echo json_encode(['success' => true, 'number' => $prefix . $next]);
+            break;
+        case 'preview_proforma_number':
+            if ($method !== 'GET') {
+                throw new Exception('GET method required for preview_proforma_number action');
+            }
+            $stmt = $conn->prepare('SELECT proforma_prefix, proforma_current_number, proforma_starting_number FROM settings.invoice_settings WHERE id = 1');
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $prefix = $row['proforma_prefix'] ?? 'PRO-';
+            $current = $row['proforma_current_number'] ?? null;
+            $start = $row['proforma_starting_number'] ?? 1;
             $next = $current ? $current + 1 : $start;
             echo json_encode(['success' => true, 'number' => $prefix . $next]);
             break;
@@ -668,7 +742,9 @@ try {
             break;
             
         case 'get_next_quotation_number':
+        case 'get_next_vehicle_quotation_number':
         case 'get_next_invoice_number':
+        case 'get_next_vehicle_invoice_number':
         case 'get_next_credit_note_number':
         case 'get_next_refund_number':
         case 'get_next_proforma_number':

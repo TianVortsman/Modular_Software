@@ -2,7 +2,7 @@
 // All modal logic, event handlers, and line item management now use new IDs/classes from document-modal.php
 // All logic is mapped to the unified invoicing.clients and invoicing.documents schema
 
-import { searchClients, searchSalespeople, searchProducts, saveDocumentApi, previewDocumentPDF, generateFinalPDF } from './document-api.js';
+import { searchClients, searchSalespeople, searchProducts, saveDocumentApi, previewDocumentPDF, generateFinalPDF, fetchAndSetDocument } from './document-api.js';
 
 // Initialize Lucide icons when available
 function initializeLucideIcons() {
@@ -365,11 +365,15 @@ function updateSectionVisibility() {
     }
     
     // Handle credit note specific logic
-    if (type === 'credit-note' || type === 'refund') {
+    if (type === 'credit-note') {
         // Show credit note table, hide regular document table
         if (documentTable) documentTable.style.display = 'none';
         const creditNoteTable = document.getElementById('credit-note-table');
         if (creditNoteTable) creditNoteTable.style.display = '';
+        
+        // Hide refund table
+        const refundTable = document.getElementById('refund-table');
+        if (refundTable) refundTable.style.display = 'none';
         
         // Show related document number field
         const relatedDocDisplay = document.getElementById('related-document-number-display');
@@ -385,10 +389,36 @@ function updateSectionVisibility() {
         if (relatedDocId) {
             loadOriginalInvoiceProducts(relatedDocId);
         }
-    } else {
-        // Hide credit note table and related document fields
+    } else if (type === 'refund') {
+        // Show refund table, hide regular document table and credit note table
+        if (documentTable) documentTable.style.display = 'none';
         const creditNoteTable = document.getElementById('credit-note-table');
         if (creditNoteTable) creditNoteTable.style.display = 'none';
+        
+        const refundTable = document.getElementById('refund-table');
+        if (refundTable) refundTable.style.display = '';
+        
+        // Show related document number field
+        const relatedDocDisplay = document.getElementById('related-document-number-display');
+        const relatedDocInfo = document.getElementById('related-document-info');
+        if (relatedDocDisplay) relatedDocDisplay.style.display = 'block';
+        if (relatedDocInfo) relatedDocInfo.style.display = 'block';
+        
+        // Set up refund row listeners
+        setupInitialRefundListeners();
+        
+        // Load original invoice products if we have a related document
+        const relatedDocId = document.getElementById('related-document-id').value;
+        if (relatedDocId) {
+            loadOriginalInvoiceProducts(relatedDocId);
+        }
+    } else {
+        // Hide credit note table, refund table and related document fields
+        const creditNoteTable = document.getElementById('credit-note-table');
+        if (creditNoteTable) creditNoteTable.style.display = 'none';
+        
+        const refundTable = document.getElementById('refund-table');
+        if (refundTable) refundTable.style.display = 'none';
         
         const relatedDocDisplay = document.getElementById('related-document-number-display');
         const relatedDocInfo = document.getElementById('related-document-info');
@@ -416,6 +446,9 @@ function openDocumentModal(mode = 'create', documentId = null) {
     initializeLivePreview();
     initializeClientPanel();
     
+    // Load issuer details from database
+    loadIssuerDetails();
+    
     // Reset form if creating new document
     if (mode === 'create') {
         resetDocumentForm();
@@ -423,7 +456,7 @@ function openDocumentModal(mode = 'create', documentId = null) {
     
     // Load document data if editing
     if (mode === 'edit' && documentId) {
-        loadDocumentData(documentId);
+        fetchAndSetDocument(documentId);
     }
     
     // Update live preview
@@ -436,17 +469,26 @@ async function previewNextDocumentNumber() {
     let endpoint = '';
     switch (docType) {
         case 'quotation':
-        case 'vehicle-quotation':
             endpoint = '../api/document-api.php?action=preview_quotation_number';
+            break;
+        case 'vehicle-quotation':
+            endpoint = '../api/document-api.php?action=preview_vehicle_quotation_number';
             break;
         case 'invoice':
         case 'standard-invoice':
+            endpoint = '../api/document-api.php?action=preview_invoice_number';
+            break;
         case 'vehicle-invoice':
+            endpoint = '../api/document-api.php?action=preview_vehicle_invoice_number';
+            break;
         case 'recurring-invoice':
             endpoint = '../api/document-api.php?action=preview_invoice_number';
             break;
         case 'credit-note':
             endpoint = '../api/document-api.php?action=preview_credit_note_number';
+            break;
+        case 'refund':
+            endpoint = '../api/document-api.php?action=preview_refund_number';
             break;
         case 'pro-forma':
             endpoint = '../api/document-api.php?action=preview_proforma_number';
@@ -528,6 +570,18 @@ function handleDocumentTypeChange() {
 
 window.openDocumentModal = openDocumentModalWithPreview;
 function closeDocumentModal() {
+    // Clear related document ID when closing modal
+    const relatedDocInput = document.getElementById('related-document-id');
+    if (relatedDocInput) {
+        relatedDocInput.value = '';
+    }
+    
+    // Hide related document info
+    const relatedDocInfo = document.getElementById('related-document-info');
+    if (relatedDocInfo) {
+        relatedDocInfo.style.display = 'none';
+    }
+    
     document.getElementById('document-modal').style.display = 'none';
     // Optionally refresh dashboard or list
 }
@@ -612,6 +666,23 @@ function removeItem(event) {
     const button = event.target;
     const row = button.closest('tr');
     if (row) {
+        // Check if this is the first line item
+        const tableBody = row.parentNode;
+        const allRows = tableBody.querySelectorAll('.document-item-row, .vehicle-part-row, .credit-note-item-row');
+        
+        if (allRows.length <= 1) {
+            // Don't remove the last remaining row
+            showResponseModal('Cannot remove the last line item. At least one item must remain.', 'warning');
+            return;
+        }
+        
+        // Check if this is the first row (index 0)
+        const rowIndex = Array.from(allRows).indexOf(row);
+        if (rowIndex === 0) {
+            showResponseModal('Cannot remove the first line item.', 'warning');
+            return;
+        }
+        
         row.remove();
         updateTotals();
     }
@@ -747,25 +818,23 @@ function searchItem(inputElement) {
     searchProducts(searchTerm, function(results) {
         resultsContainer.innerHTML = '';
         if (results.length > 0) {
-            const ul = document.createElement('ul');
-            ul.classList.add('search-results-list');
             results.forEach((result, idx) => {
-                const li = document.createElement('li');
-                li.classList.add('search-result-item');
+                const div = document.createElement('div');
+                div.classList.add('search-result-product');
                 // For item code column, show SKU if available, otherwise show product name
                 if (isDescription) {
-                    li.textContent = result.product_description || 'No description';
+                    div.textContent = result.product_description || result.product_name;
                 } else {
                     // Item code column - prioritize SKU, fallback to product name
                     if (result.sku && result.sku.trim()) {
-                        li.textContent = `${result.sku} - ${result.product_name}`;
+                        div.textContent = `${result.sku} - ${result.product_name}`;
                     } else {
-                        li.textContent = result.product_name;
+                        div.textContent = result.product_name;
                     }
                 }
-                li.tabIndex = -1; // allow focus for accessibility
-                li.dataset.idx = idx;
-                li.addEventListener('click', () => {
+                div.tabIndex = -1; // allow focus for accessibility
+                div.dataset.idx = idx;
+                div.addEventListener('click', () => {
                     autofillRow(row, {
                         item_code: result.sku || result.product_name || '',
                         product_description: result.product_description || '',
@@ -778,23 +847,22 @@ function searchItem(inputElement) {
                     const next = row.querySelector('.quantity');
                     if (next && typeof next.focus === 'function') next.focus();
                 });
-                ul.appendChild(li);
+                resultsContainer.appendChild(div);
             });
-            resultsContainer.appendChild(ul);
 
             // Highlight the first result by default
             let currentIdx = 0;
-            const items = ul.querySelectorAll('.search-result-item');
+            const items = resultsContainer.querySelectorAll('.search-result-product');
             if (items.length > 0) items[0].classList.add('highlight');
 
             // Keyboard navigation handler
             const keydownHandler = function(event) {
                 if (!resultsContainer || resultsContainer.style.display !== 'block') return;
-                const items = ul.querySelectorAll('.search-result-item');
+                const items = resultsContainer.querySelectorAll('.search-result-product');
                 if (!items.length) return;
 
                 // Find the currently highlighted index
-                let highlightIdx = Array.from(items).findIndex(li => li.classList.contains('highlight'));
+                let highlightIdx = Array.from(items).findIndex(div => div.classList.contains('highlight'));
                 if (highlightIdx === -1) highlightIdx = 0;
 
                 if (event.key === 'ArrowDown') {
@@ -1193,7 +1261,38 @@ async function createDocument() {
         
         try {
             console.log('[createDocument] Getting document number for type:', docType);
-            const response = await fetch(`../api/document-api.php?action=get_next_${docType.replace('-', '_')}_number`, {
+            let endpoint = '';
+            switch (docType) {
+                case 'quotation':
+                    endpoint = '../api/document-api.php?action=get_next_quotation_number';
+                    break;
+                case 'vehicle-quotation':
+                    endpoint = '../api/document-api.php?action=get_next_vehicle_quotation_number';
+                    break;
+                case 'invoice':
+                case 'standard-invoice':
+                    endpoint = '../api/document-api.php?action=get_next_invoice_number';
+                    break;
+                case 'vehicle-invoice':
+                    endpoint = '../api/document-api.php?action=get_next_vehicle_invoice_number';
+                    break;
+                case 'recurring-invoice':
+                    endpoint = '../api/document-api.php?action=get_next_invoice_number';
+                    break;
+                case 'credit-note':
+                    endpoint = '../api/document-api.php?action=get_next_credit_note_number';
+                    break;
+                case 'refund':
+                    endpoint = '../api/document-api.php?action=get_next_refund_number';
+                    break;
+                case 'pro-forma':
+                    endpoint = '../api/document-api.php?action=get_next_proforma_number';
+                    break;
+                default:
+                    endpoint = '../api/document-api.php?action=get_next_invoice_number';
+            }
+            
+            const response = await fetch(endpoint, {
                 credentials: 'include'
             });
             
@@ -1301,6 +1400,7 @@ function clearDocument() {
         document.getElementById('client-address-1').value = '';
         document.getElementById('client-address-2').value = '';
         document.getElementById('related-document-id').value = '';
+        document.getElementById('document-id').value = '';
         document.getElementById('document-number').value = '';
         document.getElementById('purchase-order-number').value = '';
         document.getElementById('salesperson').value = '';
@@ -1341,6 +1441,7 @@ function resetDocumentForm() {
     document.getElementById('client-address-1').value = '';
     document.getElementById('client-address-2').value = '';
     document.getElementById('related-document-id').value = '';
+    document.getElementById('document-id').value = '';
     document.getElementById('document-number').value = '';
     document.getElementById('purchase-order-number').value = '';
     document.getElementById('salesperson').value = '';
@@ -1373,6 +1474,13 @@ function resetDocumentForm() {
     if (creditNoteTableBody) {
         creditNoteTableBody.innerHTML = '';
         addCreditNoteItem(); // Add one empty row
+    }
+    
+    // Clear refund table
+    const refundTableBody = document.getElementById('refund-rows');
+    if (refundTableBody) {
+        refundTableBody.innerHTML = '';
+        addRefundItem(); // Add one empty row
     }
     
     // Clear vehicle parts table
@@ -1571,6 +1679,23 @@ function calculateVehiclePartRowTotal(row) {
 }
 
 function removeVehiclePart(row) {
+    // Check if this is the first vehicle part
+    const tableBody = row.parentNode;
+    const allRows = tableBody.querySelectorAll('.vehicle-part-row');
+    
+    if (allRows.length <= 1) {
+        // Don't remove the last remaining row
+        showResponseModal('Cannot remove the last vehicle part. At least one part must remain.', 'warning');
+        return;
+    }
+    
+    // Check if this is the first row (index 0)
+    const rowIndex = Array.from(allRows).indexOf(row);
+    if (rowIndex === 0) {
+        showResponseModal('Cannot remove the first vehicle part.', 'warning');
+        return;
+    }
+    
     row.remove();
     updateVehicleTotals();
 }
@@ -1652,6 +1777,23 @@ function addCreditNoteItem() {
 function removeCreditNoteItem(event) {
     const row = event.target.closest('tr');
     if (row && row.parentNode.children.length > 1) {
+        // Check if this is the first credit note item
+        const tableBody = row.parentNode;
+        const allRows = tableBody.querySelectorAll('.credit-note-item-row');
+        
+        if (allRows.length <= 1) {
+            // Don't remove the last remaining row
+            showResponseModal('Cannot remove the last credit note item. At least one item must remain.', 'warning');
+            return;
+        }
+        
+        // Check if this is the first row (index 0)
+        const rowIndex = Array.from(allRows).indexOf(row);
+        if (rowIndex === 0) {
+            showResponseModal('Cannot remove the first credit note item.', 'warning');
+            return;
+        }
+        
         row.remove();
         updateCreditNoteTotals();
     }
@@ -1832,6 +1974,196 @@ function getCreditNoteFormData() {
     return items;
 }
 
+// --- Issuer Details Functions ---
+async function loadIssuerDetails() {
+    try {
+        const response = await fetch('../api/document-api.php?action=get_company_info', {
+            credentials: 'include'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success && data.data) {
+            const companyInfo = data.data;
+            
+            // Update issuer info display
+            const issuerNameDisplay = document.getElementById('issuer-name-display');
+            const issuerAddressDisplay = document.getElementById('issuer-address-display');
+            const issuerEmailDisplay = document.getElementById('issuer-email-display');
+            const issuerPhoneDisplay = document.getElementById('issuer-phone-display');
+            const issuerVatDisplay = document.getElementById('issuer-vat-display');
+            
+            if (issuerNameDisplay) issuerNameDisplay.textContent = companyInfo.company_name || 'Your Company';
+            if (issuerAddressDisplay) issuerAddressDisplay.textContent = companyInfo.company_address || '123 Main Street, Alberton';
+            if (issuerEmailDisplay) issuerEmailDisplay.textContent = companyInfo.company_email || 'contact@yourcompany.com';
+            if (issuerPhoneDisplay) issuerPhoneDisplay.textContent = companyInfo.company_phone || '011 555 1234';
+            if (issuerVatDisplay) issuerVatDisplay.textContent = `VAT: ${companyInfo.vat_number || '4001234567'}`;
+            
+            // Update preview company info
+            const previewCompany = document.querySelector('.preview-company');
+            if (previewCompany) {
+                previewCompany.innerHTML = `
+                    <strong>${companyInfo.company_name || 'Your Company'}</strong><br>
+                    ${companyInfo.company_address || '123 Main Street, Alberton'}<br>
+                    ${companyInfo.company_email || 'contact@yourcompany.com'}
+                `;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading issuer details:', error);
+        // Keep default values if loading fails
+    }
+}
+
+// --- Refund Functions ---
+function addRefundItem() {
+    const tableBody = document.getElementById('refund-rows');
+    if (!tableBody) return;
+    
+    const row = document.createElement('tr');
+    row.classList.add('refund-item-row');
+    row.innerHTML = `
+        <td>
+            <select class="refund-type">
+                <option value="full">Full Refund</option>
+                <option value="partial">Partial Refund</option>
+            </select>
+        </td>
+        <td>
+            <div class="search-container" style="position: relative;">
+                <input type="text" placeholder="Search original product" class="original-product" autocomplete="off">
+                <div class="refund-search-dropdown"></div>
+            </div>
+        </td>
+        <td><input type="text" value="R0.00" class="refund-amount" oninput="removeR(this)" onblur="formatPrice(this)" onfocus="removeR(this)"></td>
+        <td class="total-cell">
+            <button type="button" class="remove-row-btn" title="Remove Line">&#10006;</button>
+        </td>
+    `;
+    
+    tableBody.appendChild(row);
+    setupRefundRowListeners(row);
+}
+
+function removeRefundItem(event) {
+    const button = event.target;
+    const row = button.closest('tr');
+    if (row) {
+        const tableBody = row.parentNode;
+        const allRows = tableBody.querySelectorAll('.refund-item-row');
+        
+        if (allRows.length <= 1) {
+            showResponseModal('Cannot remove the last refund item. At least one item must remain.', 'warning');
+            return;
+        }
+        
+        const rowIndex = Array.from(allRows).indexOf(row);
+        if (rowIndex === 0) {
+            showResponseModal('Cannot remove the first refund item.', 'warning');
+            return;
+        }
+        
+        row.remove();
+        updateRefundTotals();
+    }
+}
+
+function setupRefundRowListeners(row) {
+    const refundAmountInput = row.querySelector('.refund-amount');
+    const originalProductInput = row.querySelector('.original-product');
+    const refundTypeSelect = row.querySelector('.refund-type');
+    const removeBtn = row.querySelector('.remove-row-btn');
+    
+    if (refundAmountInput) {
+        refundAmountInput.addEventListener('input', () => {
+            removeR(refundAmountInput);
+        });
+        refundAmountInput.addEventListener('blur', () => {
+            formatPrice(refundAmountInput);
+        });
+        refundAmountInput.addEventListener('focus', () => {
+            removeR(refundAmountInput);
+        });
+    }
+    
+    if (originalProductInput) {
+        originalProductInput.addEventListener('input', () => {
+            searchOriginalProducts(originalProductInput, originalProductInput.value);
+        });
+    }
+    
+    if (refundTypeSelect) {
+        refundTypeSelect.addEventListener('change', () => {
+            updateRefundTotals();
+        });
+    }
+    
+    if (removeBtn) {
+        removeBtn.addEventListener('click', removeRefundItem);
+    }
+}
+
+function updateRefundTotals() {
+    const refundRows = document.querySelectorAll('#refund-rows .refund-item-row');
+    let totalRefund = 0;
+    
+    refundRows.forEach(row => {
+        const amountInput = row.querySelector('.refund-amount');
+        if (amountInput) {
+            const amount = parseFloat(amountInput.value.replace(/[^\d.-]/g, '')) || 0;
+            totalRefund += amount;
+        }
+    });
+    
+    // Update any refund total display
+    const refundTotalElement = document.getElementById('refund-total');
+    if (refundTotalElement) {
+        refundTotalElement.textContent = `R${totalRefund.toFixed(2)}`;
+    }
+}
+
+function getRefundFormData() {
+    const refundRows = document.querySelectorAll('#refund-rows .refund-item-row');
+    const refundItems = [];
+    
+    refundRows.forEach(row => {
+        const refundType = row.querySelector('.refund-type')?.value || 'full';
+        const originalProduct = row.querySelector('.original-product')?.value || '';
+        const refundAmount = row.querySelector('.refund-amount')?.value || 'R0.00';
+        
+        if (originalProduct && refundAmount !== 'R0.00') {
+            refundItems.push({
+                refund_type: refundType,
+                original_product: originalProduct,
+                refund_amount: refundAmount
+            });
+        }
+    });
+    
+    return refundItems;
+}
+
+function setupInitialRefundListeners() {
+    console.log('[setupInitialRefundListeners] Setting up initial refund listeners');
+    
+    const refundRows = document.querySelectorAll('#refund-rows .refund-item-row');
+    console.log('[setupInitialRefundListeners] Found refund rows:', refundRows.length);
+    
+    refundRows.forEach(row => {
+        setupRefundRowListeners(row);
+    });
+    
+    // Add button listener
+    const addRefundItemBtn = document.getElementById('add-refund-item-btn');
+    if (addRefundItemBtn) {
+        addRefundItemBtn.addEventListener('click', addRefundItem);
+    }
+}
+
 export {
     openDocumentModal,
     closeDocumentModal,
@@ -1851,7 +2183,8 @@ export {
     getCreditNoteFormData,
     initializeLivePreview,
     updateLivePreview,
-    initializeClientPanel
+    initializeClientPanel,
+    loadIssuerDetails
 };
 
 // Ensure global functions are available immediately and after DOM loads
@@ -1888,6 +2221,15 @@ function attachGlobalFunctions() {
     window.searchOriginalProducts = searchOriginalProducts;
     window.updateCreditNoteTotals = updateCreditNoteTotals;
     window.getCreditNoteFormData = getCreditNoteFormData;
+    window.loadIssuerDetails = loadIssuerDetails;
+
+    // Add refund functions to global scope
+    window.addRefundItem = addRefundItem;
+    window.removeRefundItem = removeRefundItem;
+    window.setupRefundRowListeners = setupRefundRowListeners;
+    window.updateRefundTotals = updateRefundTotals;
+    window.getRefundFormData = getRefundFormData;
+    window.setupInitialRefundListeners = setupInitialRefundListeners;
 
     // Add live preview functions to global scope
     window.initializeLivePreview = initializeLivePreview;

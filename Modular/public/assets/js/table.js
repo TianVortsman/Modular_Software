@@ -503,16 +503,20 @@ class NovaTable {
     }
   
     handleRowDoubleClick(event, rowId) {
-      console.log('handleRowDoubleClick called:', rowId);
+      console.log('handleRowDoubleClick called with rowId:', rowId);
+      console.log('Available data rows:', this.config.data.map(r => ({ id: this.getRowId(r), document_id: r.document_id })));
+      
       event.preventDefault();
       event.stopPropagation();
       
       const row = this.config.data.find(r => this.getRowId(r) === rowId);
       if (!row) {
-        console.log('Row not found for double-click:', rowId);
+        console.log('Row not found for double-click. Looking for rowId:', rowId);
+        console.log('Available rowIds:', this.config.data.map(r => this.getRowId(r)));
         return;
       }
       
+      console.log('Found row for double-click:', row);
       console.log('Executing onDoubleClick callback');
       if (this.config.onDoubleClick && typeof this.config.onDoubleClick === 'function') {
         this.config.onDoubleClick(row);
@@ -520,6 +524,7 @@ class NovaTable {
     }
   
     handleRightClick(event, rowId) {
+      console.log('handleRightClick called with rowId:', rowId);
       event.preventDefault();
       event.stopPropagation();
       
@@ -528,20 +533,33 @@ class NovaTable {
       
       // Get row data
       const row = this.config.data.find(r => this.getRowId(r) === rowId);
-      if (!row) return;
+      if (!row) {
+        console.log('Row not found for right-click. Looking for rowId:', rowId);
+        console.log('Available rowIds:', this.config.data.map(r => this.getRowId(r)));
+        return;
+      }
+      
+      console.log('Found row for right-click:', row);
       
       // Create context menu
       const contextMenu = document.createElement('div');
       contextMenu.className = 'nova-context-menu';
       
-      // Use custom actions if provided, otherwise use defaults
-      const actions = this.config.contextMenuActions || [
-        { action: 'edit', label: 'Edit', icon: '✏️' },
-        { action: 'view', label: 'View Details', icon: '👁️' },
-        { action: 'duplicate', label: 'Duplicate', icon: '📋' },
-        { action: 'export', label: 'Export', icon: '📤' },
-        { action: 'delete', label: 'Delete', icon: '🗑️' }
-      ];
+      // Use dynamic actions if provided, otherwise use static actions, otherwise use defaults
+      let actions;
+      if (this.config.getContextMenuActions && typeof this.config.getContextMenuActions === 'function') {
+        actions = this.config.getContextMenuActions(row);
+      } else if (this.config.contextMenuActions) {
+        actions = this.config.contextMenuActions;
+      } else {
+        actions = [
+          { action: 'edit', label: 'Edit', icon: '✏️' },
+          { action: 'view', label: 'View Details', icon: '👁️' },
+          { action: 'duplicate', label: 'Duplicate', icon: '📋' },
+          { action: 'export', label: 'Export', icon: '📤' },
+          { action: 'delete', label: 'Delete', icon: '🗑️' }
+        ];
+      }
       
       const menuItems = actions.map((item, index) => {
         if (item.action === 'separator') {
@@ -692,8 +710,18 @@ class NovaTable {
   
     // Utility methods
     getRowId(row) {
-      const id = row.id || row._id || JSON.stringify(row);
-      return String(id); // Ensure it's always a string for consistent comparison
+      // For document data, use document_id as the primary identifier
+      if (row.document_id) {
+        return String(row.document_id);
+      }
+      // Fallback to other common ID fields
+      const id = row.id || row._id || row.document_id || row.invoice_id || row.quotation_id;
+      if (id) {
+        return String(id);
+      }
+      // Last resort: use a hash of the row data
+      const rowString = JSON.stringify(row);
+      return String(rowString.length) + '_' + rowString.substring(0, 50);
     }
   
     getNestedValue(obj, path) {

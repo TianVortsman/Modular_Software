@@ -1364,7 +1364,9 @@ function get_next_document_number(string $action): array {
         // Map action to document type and settings fields
         $documentTypeMap = [
             'get_next_quotation_number' => ['type' => 'quotation', 'prefix_field' => 'quotation_prefix', 'current_field' => 'quotation_current_number'],
+            'get_next_vehicle_quotation_number' => ['type' => 'vehicle_quotation', 'prefix_field' => 'vehicle_quotation_prefix', 'current_field' => 'vehicle_quotation_current_number'],
             'get_next_invoice_number' => ['type' => 'invoice', 'prefix_field' => 'invoice_prefix', 'current_field' => 'invoice_current_number'],
+            'get_next_vehicle_invoice_number' => ['type' => 'vehicle_invoice', 'prefix_field' => 'vehicle_invoice_prefix', 'current_field' => 'vehicle_invoice_current_number'],
             'get_next_credit_note_number' => ['type' => 'credit_note', 'prefix_field' => 'credit_note_prefix', 'current_field' => 'credit_note_current_number'],
             'get_next_refund_number' => ['type' => 'refund', 'prefix_field' => 'refund_prefix', 'current_field' => 'refund_current_number'],
             'get_next_proforma_number' => ['type' => 'proforma', 'prefix_field' => 'proforma_prefix', 'current_field' => 'proforma_current_number']
@@ -1418,7 +1420,7 @@ function get_next_document_number(string $action): array {
             error_log('[GET_NEXT_DOCUMENT_NUMBER] No settings found, creating default settings');
             try {
                 // Create default settings if none exist
-                $insertStmt = $conn->prepare("INSERT INTO settings.invoice_settings (invoice_prefix, invoice_current_number, quotation_prefix, quotation_current_number, credit_note_prefix, credit_note_current_number, proforma_prefix, proforma_current_number, refund_prefix, refund_current_number) VALUES ('INV', 1, 'QUO', 1, 'CN', 1, 'PRO', 1, 'REF', 1)");
+                $insertStmt = $conn->prepare("INSERT INTO settings.invoice_settings (invoice_prefix, invoice_current_number, quotation_prefix, quotation_current_number, vehicle_quotation_prefix, vehicle_quotation_current_number, vehicle_invoice_prefix, vehicle_invoice_current_number, credit_note_prefix, credit_note_current_number, proforma_prefix, proforma_current_number, refund_prefix, refund_current_number) VALUES ('INV', 1, 'QUO', 1, 'VQUO', 1, 'VINV', 1, 'CN', 1, 'PRO', 1, 'REF', 1)");
                 $insertStmt->execute();
                 error_log('[GET_NEXT_DOCUMENT_NUMBER] Default settings created successfully');
                 
@@ -1455,8 +1457,14 @@ function get_next_document_number(string $action): array {
                 case 'quotation':
                     $prefix = 'QUO';
                     break;
+                case 'vehicle_quotation':
+                    $prefix = 'VQUO';
+                    break;
                 case 'invoice':
                     $prefix = 'INV';
+                    break;
+                case 'vehicle_invoice':
+                    $prefix = 'VINV';
                     break;
                 case 'credit_note':
                     $prefix = 'CN';

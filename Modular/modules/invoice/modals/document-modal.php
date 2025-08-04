@@ -218,7 +218,7 @@
                     </div>
                 </section>
 
-                <section class="line-items-section" id="credit-note-table" data-show-on="credit-note,refund" style="display: none;">
+                <section class="line-items-section" id="credit-note-table" data-show-on="credit-note" style="display: none;">
                     <div class="line-items-content">
                         <div class="line-items-toolbar"><h4>Credit Items</h4></div>
                         <table class="line-items-table">
@@ -236,6 +236,29 @@
                         </table>
                         <div class="line-items-footer">
                             <button class="btn btn-secondary" id="add-credit-note-item-btn"><i data-lucide="plus"></i> Add Credit Item</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Refund Items Section -->
+                <section class="line-items-section" id="refund-table" data-show-on="refund" style="display: none;">
+                    <div class="line-items-content">
+                        <div class="line-items-toolbar"><h4>Refund Items</h4></div>
+                        <table class="line-items-table">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Original Product</th>
+                                    <th>Amount</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="refund-rows">
+                                <!-- Dynamic content will be inserted here by JavaScript -->
+                            </tbody>
+                        </table>
+                        <div class="line-items-footer">
+                            <button class="btn btn-secondary" id="add-refund-item-btn"><i data-lucide="plus"></i> Add Refund Item</button>
                         </div>
                     </div>
                 </section>

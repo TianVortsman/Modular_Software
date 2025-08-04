@@ -117,6 +117,86 @@ body {
     transform: translateY(-1px);
 }
 
+/* Integrated Tab System - Makes tabs look like part of the table */
+.integrated-tab-system {
+    background: var(--color-background);
+    border-radius: var(--radius-medium) var(--radius-medium) 0 0;
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    margin-bottom: 0;
+    overflow: hidden;
+}
+
+.main-tabs {
+    display: flex;
+    background: var(--color-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0;
+    margin: 0;
+}
+
+.main-tabs .tab-button {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: var(--spacing-medium) var(--spacing-large);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    font-weight: 500;
+    position: relative;
+    margin: 0;
+}
+
+.main-tabs .tab-button:hover {
+    background: var(--color-background-alt);
+    color: var(--color-primary);
+}
+
+.main-tabs .tab-button.active {
+    background: var(--color-background);
+    color: var(--color-primary);
+    border-bottom: 2px solid var(--color-primary);
+}
+
+.status-subtabs-container {
+    background: var(--color-background);
+    padding: var(--spacing-medium);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.status-subtabs {
+    display: flex;
+    gap: var(--spacing-small);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.status-subtabs .subtab-button {
+    padding: var(--spacing-small) var(--spacing-medium);
+    background: var(--color-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    font-size: var(--font-size-small);
+    font-weight: 500;
+}
+
+.status-subtabs .subtab-button:hover {
+    background: var(--color-primary-fade);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.status-subtabs .subtab-button.active {
+    background: var(--color-primary);
+    color: var(--color-text-dark);
+    border-color: var(--color-primary);
+}
+
+/* Legacy tab styles - keeping for backward compatibility */
 .document-tabs-container {
     display: flex;
     gap: var(--spacing-small);
@@ -248,7 +328,6 @@ body {
     display: flex;
     align-items: center;
     gap: var(--spacing-small);
-    margin-left: auto;
 }
 
 .search-container input {
@@ -269,6 +348,81 @@ body {
     overflow-x: auto;
     width: 100%;
     box-sizing: border-box;
+}
+
+/* Nova Table Integration */
+.nova-table-container {
+    width: 100%;
+    min-height: 400px;
+    background: var(--color-background);
+    border-radius: 0 0 var(--radius-medium) var(--radius-medium);
+    border: 1px solid var(--border-color);
+    border-top: none;
+    overflow: hidden;
+    margin-top: 0;
+}
+
+/* Ensure Nova tables fit properly in document sections */
+.document-section .nova-table-container {
+    margin-top: var(--spacing-medium);
+}
+
+/* Override Nova table styles to match document screen theme */
+.nova-table-container .nova-table-wrapper {
+    border: none;
+    box-shadow: none;
+}
+
+.nova-table-container .nova-table {
+    background: transparent;
+}
+
+.nova-table-container .nova-table thead th {
+    background: var(--color-secondary);
+    color: var(--color-text);
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+}
+
+.nova-table-container .nova-table tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color var(--transition-speed);
+}
+
+.nova-table-container .nova-table tbody tr:hover {
+    background-color: var(--color-background-alt);
+}
+
+.nova-table-container .nova-table tbody tr.selected,
+.nova-table-container .nova-table tbody tr.nova-table-selected {
+    background: rgba(59, 130, 246, 0.15) !important;
+    box-shadow: inset 4px 0 0 var(--color-primary) !important;
+    border: 1px solid rgba(59, 130, 246, 0.3) !important;
+}
+
+.nova-table-container .nova-table tbody tr.selected:hover,
+.nova-table-container .nova-table tbody tr.nova-table-selected:hover {
+    background: rgba(59, 130, 246, 0.25) !important;
+}
+
+/* Context menu styling for Nova tables */
+.nova-table-container .nova-context-menu {
+    background: var(--color-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-small);
+    box-shadow: 0 8px 24px var(--shadow-dark);
+    font-family: var(--font-primary);
+    color: var(--color-text);
+}
+
+.nova-table-container .nova-context-menu-item {
+    transition: background-color var(--transition-speed);
+    color: var(--color-text);
+}
+
+.nova-table-container .nova-context-menu-item:hover {
+    background: var(--color-primary-fade);
+    color: var(--color-primary);
 }
 
 .invoice-table-container {

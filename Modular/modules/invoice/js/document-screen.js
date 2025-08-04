@@ -1,62 +1,397 @@
-// Tab switching and document fetching logic for document sections
+// Document Screen Logic: Handles main screen rendering, event binding, and table updates
+// Now using NOVA Table component for enhanced functionality while preserving existing features
 import { buildQueryParams } from '../../../public/assets/js/helpers.js';
 import { searchClients } from './document-api.js';
 import { fetchAndSetDocument } from './document-api.js';
 
+// NOVA Table instances for each document type
+let novaTableInstances = {
+    'invoices-section': null,
+    'recurring-invoices-section': null,
+    'quotations-section': null,
+    'vehicle-quotations-section': null,
+    'vehicle-invoices-section': null
+};
+
+// NOVA Table configurations for each document type
+const tableConfigs = {
+    'invoices-section': {
+        columns: [
+            { key: 'document_number', label: 'Invoice #', sortable: true, filterable: true },
+            { key: 'client_name', label: 'Client', sortable: true, filterable: true },
+            { key: 'issue_date', label: 'Date Created', sortable: true, filterable: true },
+            { key: 'updated_at', label: 'Last Modified', sortable: true, filterable: true },
+            { key: 'document_status', label: 'Status', sortable: true, filterable: true },
+            { key: 'total_amount', label: 'Total', sortable: true, filterable: true },
+            { key: 'due_date', label: 'Due Date', sortable: true, filterable: true }
+        ],
+        rowsPerPage: 15,
+        rowsPerPageOptions: [10, 15, 25, 50, 100],
+        searchable: true,
+        sortable: true,
+        filterable: true,
+        selectable: true,
+        exportable: true,
+        pagination: true,
+        stickyHeader: true,
+        maxHeight: '60vh',
+        onDoubleClick: (row) => {
+            console.log(`Double-click triggered for invoices:`, row);
+            if (row.document_id) {
+                console.log(`Opening invoice for edit: ${row.document_id}`);
+                openDocumentForEdit(row.document_id);
+            }
+        },
+        onSelectionChange: (selectedRows) => {
+            console.log('Selected invoices:', selectedRows);
+        },
+        getContextMenuActions: (row) => {
+            const status = row.document_status?.toLowerCase();
+            const isFinalized = ['unpaid', 'paid', 'sent', 'approved'].includes(status);
+            const isDraft = status === 'draft';
+            
+            const actions = [];
+            
+            if (isDraft) {
+                actions.push(
+                    { action: 'edit', label: 'Edit Invoice', icon: '✏️' },
+                    { action: 'delete', label: 'Delete Invoice', icon: '🗑️' }
+                );
+            } else if (isFinalized) {
+                actions.push(
+                    { action: 'view', label: 'View Details', icon: '👁️' },
+                    { action: 'send', label: 'Send Invoice', icon: '📧' },
+                    { action: 'payment', label: 'Record Payment', icon: '💰' },
+                    { action: 'credit_note', label: 'Create Credit Note', icon: '📝' },
+                    { action: 'refund', label: 'Create Refund', icon: '↩️' },
+                    { action: 'reminder', label: 'Send Reminder', icon: '⏰' },
+                    { action: 'delete', label: 'Delete Invoice', icon: '🗑️' }
+                );
+            } else {
+                actions.push(
+                    { action: 'edit', label: 'Edit Invoice', icon: '✏️' },
+                    { action: 'view', label: 'View Details', icon: '👁️' },
+                    { action: 'delete', label: 'Delete Invoice', icon: '🗑️' }
+                );
+            }
+            
+            return actions;
+        }
+    },
+    'recurring-invoices-section': {
+        columns: [
+            { key: 'document_number', label: 'Invoice #', sortable: true, filterable: true },
+            { key: 'client_name', label: 'Client', sortable: true, filterable: true },
+            { key: 'start_date', label: 'Start Date', sortable: true, filterable: true },
+            { key: 'next_generation_date', label: 'Next Generation', sortable: true, filterable: true },
+            { key: 'frequency', label: 'Frequency', sortable: true, filterable: true },
+            { key: 'document_status', label: 'Status', sortable: true, filterable: true }
+        ],
+        rowsPerPage: 15,
+        rowsPerPageOptions: [10, 15, 25, 50, 100],
+        searchable: true,
+        sortable: true,
+        filterable: true,
+        selectable: true,
+        exportable: true,
+        pagination: true,
+        stickyHeader: true,
+        maxHeight: '60vh',
+        onDoubleClick: (row) => {
+            console.log(`Double-click triggered for recurring invoices:`, row);
+            if (row.document_id) {
+                console.log(`Opening recurring invoice for edit: ${row.document_id}`);
+                openDocumentForEdit(row.document_id);
+            }
+        },
+        onSelectionChange: (selectedRows) => {
+            console.log('Selected recurring invoices:', selectedRows);
+        },
+        contextMenuActions: [
+            { action: 'edit', label: 'Edit Recurring Invoice', icon: '✏️' },
+            { action: 'view', label: 'View Details', icon: '👁️' },
+            { action: 'pause', label: 'Pause', icon: '⏸️' },
+            { action: 'resume', label: 'Resume', icon: '▶️' },
+            { action: 'cancel', label: 'Cancel', icon: '❌' },
+            { action: 'delete', label: 'Delete', icon: '🗑️' }
+        ]
+    },
+    'quotations-section': {
+        columns: [
+            { key: 'document_number', label: 'Quotation #', sortable: true, filterable: true },
+            { key: 'client_name', label: 'Client', sortable: true, filterable: true },
+            { key: 'issue_date', label: 'Date Created', sortable: true, filterable: true },
+            { key: 'document_status', label: 'Status', sortable: true, filterable: true },
+            { key: 'total_amount', label: 'Total', sortable: true, filterable: true }
+        ],
+        rowsPerPage: 15,
+        rowsPerPageOptions: [10, 15, 25, 50, 100],
+        searchable: true,
+        sortable: true,
+        filterable: true,
+        selectable: true,
+        exportable: true,
+        pagination: true,
+        stickyHeader: true,
+        maxHeight: '60vh',
+        onDoubleClick: (row) => {
+            console.log(`Double-click triggered for quotations:`, row);
+            if (row.document_id) {
+                console.log(`Opening quotation for edit: ${row.document_id}`);
+                openDocumentForEdit(row.document_id);
+            }
+        },
+        onSelectionChange: (selectedRows) => {
+            console.log('Selected quotations:', selectedRows);
+        },
+        getContextMenuActions: (row) => {
+            const status = row.document_status?.toLowerCase();
+            const isFinalized = ['approved', 'rejected'].includes(status);
+            const isDraft = status === 'draft';
+            
+            const actions = [];
+            
+            if (isDraft) {
+                actions.push(
+                    { action: 'edit', label: 'Edit Quotation', icon: '✏️' },
+                    { action: 'delete', label: 'Delete', icon: '🗑️' }
+                );
+            } else if (isFinalized) {
+                actions.push(
+                    { action: 'view', label: 'View Details', icon: '👁️' },
+                    { action: 'convert', label: 'Convert to Invoice', icon: '📄' },
+                    { action: 'delete', label: 'Delete', icon: '🗑️' }
+                );
+            } else {
+                actions.push(
+                    { action: 'edit', label: 'Edit Quotation', icon: '✏️' },
+                    { action: 'view', label: 'View Details', icon: '👁️' },
+                    { action: 'approve', label: 'Approve', icon: '✅' },
+                    { action: 'reject', label: 'Reject', icon: '❌' },
+                    { action: 'delete', label: 'Delete', icon: '🗑️' }
+                );
+            }
+            
+            return actions;
+        }
+    },
+    'vehicle-quotations-section': {
+        columns: [
+            { key: 'document_number', label: 'Vehicle Quotation #', sortable: true, filterable: true },
+            { key: 'client_name', label: 'Client', sortable: true, filterable: true },
+            { key: 'vehicle_info', label: 'Vehicle', sortable: true, filterable: true },
+            { key: 'issue_date', label: 'Date Created', sortable: true, filterable: true },
+            { key: 'document_status', label: 'Status', sortable: true, filterable: true },
+            { key: 'total_amount', label: 'Total', sortable: true, filterable: true }
+        ],
+        rowsPerPage: 15,
+        rowsPerPageOptions: [10, 15, 25, 50, 100],
+        searchable: true,
+        sortable: true,
+        filterable: true,
+        selectable: true,
+        exportable: true,
+        pagination: true,
+        stickyHeader: true,
+        maxHeight: '60vh',
+        onDoubleClick: (row) => {
+            console.log(`Double-click triggered for vehicle quotations:`, row);
+            if (row.document_id) {
+                console.log(`Opening vehicle quotation for edit: ${row.document_id}`);
+                openDocumentForEdit(row.document_id);
+            }
+        },
+        onSelectionChange: (selectedRows) => {
+            console.log('Selected vehicle quotations:', selectedRows);
+        },
+        getContextMenuActions: (row) => {
+            const status = row.document_status?.toLowerCase();
+            const isFinalized = ['approved', 'rejected'].includes(status);
+            const isDraft = status === 'draft';
+            
+            const actions = [];
+            
+            if (isDraft) {
+                actions.push(
+                    { action: 'edit', label: 'Edit Vehicle Quotation', icon: '✏️' },
+                    { action: 'delete', label: 'Delete', icon: '🗑️' }
+                );
+            } else if (isFinalized) {
+                actions.push(
+                    { action: 'view', label: 'View Details', icon: '👁️' },
+                    { action: 'convert', label: 'Convert to Vehicle Invoice', icon: '📄' },
+                    { action: 'delete', label: 'Delete', icon: '🗑️' }
+                );
+            } else {
+                actions.push(
+                    { action: 'edit', label: 'Edit Vehicle Quotation', icon: '✏️' },
+                    { action: 'view', label: 'View Details', icon: '👁️' },
+                    { action: 'approve', label: 'Approve', icon: '✅' },
+                    { action: 'reject', label: 'Reject', icon: '❌' },
+                    { action: 'delete', label: 'Delete', icon: '🗑️' }
+                );
+            }
+            
+            return actions;
+        }
+    },
+    'vehicle-invoices-section': {
+        columns: [
+            { key: 'document_number', label: 'Vehicle Invoice #', sortable: true, filterable: true },
+            { key: 'client_name', label: 'Client', sortable: true, filterable: true },
+            { key: 'vehicle_info', label: 'Vehicle', sortable: true, filterable: true },
+            { key: 'issue_date', label: 'Date Created', sortable: true, filterable: true },
+            { key: 'document_status', label: 'Status', sortable: true, filterable: true },
+            { key: 'total_amount', label: 'Total', sortable: true, filterable: true }
+        ],
+        rowsPerPage: 15,
+        rowsPerPageOptions: [10, 15, 25, 50, 100],
+        searchable: true,
+        sortable: true,
+        filterable: true,
+        selectable: true,
+        exportable: true,
+        pagination: true,
+        stickyHeader: true,
+        maxHeight: '60vh',
+        onDoubleClick: (row) => {
+            console.log(`Double-click triggered for vehicle invoices:`, row);
+            if (row.document_id) {
+                console.log(`Opening vehicle invoice for edit: ${row.document_id}`);
+                openDocumentForEdit(row.document_id);
+            }
+        },
+        onSelectionChange: (selectedRows) => {
+            console.log('Selected vehicle invoices:', selectedRows);
+        },
+        getContextMenuActions: (row) => {
+            const status = row.document_status?.toLowerCase();
+            const isFinalized = ['unpaid', 'paid', 'sent', 'approved'].includes(status);
+            const isDraft = status === 'draft';
+            
+            const actions = [];
+            
+            if (isDraft) {
+                actions.push(
+                    { action: 'edit', label: 'Edit Vehicle Invoice', icon: '✏️' },
+                    { action: 'delete', label: 'Delete', icon: '🗑️' }
+                );
+            } else if (isFinalized) {
+                actions.push(
+                    { action: 'view', label: 'View Details', icon: '👁️' },
+                    { action: 'send', label: 'Send Invoice', icon: '📧' },
+                    { action: 'payment', label: 'Record Payment', icon: '💰' },
+                    { action: 'credit_note', label: 'Create Credit Note', icon: '📝' },
+                    { action: 'refund', label: 'Create Refund', icon: '↩️' },
+                    { action: 'reminder', label: 'Send Reminder', icon: '⏰' },
+                    { action: 'delete', label: 'Delete', icon: '🗑️' }
+                );
+            } else {
+                actions.push(
+                    { action: 'edit', label: 'Edit Vehicle Invoice', icon: '✏️' },
+                    { action: 'view', label: 'View Details', icon: '👁️' },
+                    { action: 'delete', label: 'Delete', icon: '🗑️' }
+                );
+            }
+            
+            return actions;
+        }
+    }
+};
+
 document.addEventListener('DOMContentLoaded', function() {
-    const mainTabButtons = document.querySelectorAll('.tab-button');
+    const mainTabButtons = document.querySelectorAll('.main-tabs .tab-button');
     const sections = document.querySelectorAll('.document-section');
+    
     // Show only the first section by default
     sections.forEach((sec, idx) => {
         sec.style.display = idx === 0 ? '' : 'none';
     });
+    
+    // Show only the first subtab group by default
+    const subtabGroups = document.querySelectorAll('.status-subtabs');
+    subtabGroups.forEach((group, idx) => {
+        group.style.display = idx === 0 ? 'flex' : 'none';
+    });
+    
     mainTabButtons.forEach((btn, idx) => {
         btn.classList.toggle('active', idx === 0);
-        btn.addEventListener('click', function() {
-            mainTabButtons.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            sections.forEach(sec => {
-                if (sec.id === this.dataset.section) {
-                    sec.style.display = '';
-                    // Re-apply filter values for this section
-                    applySectionFilters(sec.id);
+                    btn.addEventListener('click', function() {
+                console.log(`Tab clicked: ${this.dataset.section}`);
+                mainTabButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show/hide sections
+                sections.forEach(sec => {
+                    if (sec.id === this.dataset.section) {
+                        console.log(`Showing section: ${sec.id}`);
+                        sec.style.display = '';
+                        // Initialize Nova table for this section if not already done
+                        initializeNovaTableForSection(this.dataset.section);
+                    } else {
+                        console.log(`Hiding section: ${sec.id}`);
+                        sec.style.display = 'none';
+                    }
+                });
+            
+            // Show/hide corresponding subtab group
+            const sectionName = this.dataset.section.replace('-section', '');
+            console.log(`Looking for subtab group: ${sectionName}-subtabs`);
+            subtabGroups.forEach(group => {
+                if (group.id === `${sectionName}-subtabs`) {
+                    console.log(`Found and showing subtab group: ${group.id}`);
+                    group.style.display = 'flex';
+                    // Activate first subtab
+                    const firstSubtab = group.querySelector('.subtab-button');
+                    if (firstSubtab) {
+                        group.querySelectorAll('.subtab-button').forEach(st => st.classList.remove('active'));
+                        firstSubtab.classList.add('active');
+                        const status = firstSubtab.dataset.status;
+                        console.log(`Activating first subtab with status: ${status}`);
+                        fetchAndRenderDocuments(this.dataset.section, status);
+                    } else {
+                        console.log('No subtabs found in group');
+                    }
                 } else {
-                    sec.style.display = 'none';
+                    console.log(`Hiding subtab group: ${group.id}`);
+                    group.style.display = 'none';
                 }
             });
-            // Find and activate the first subtab in this section
-            const section = document.getElementById(this.dataset.section);
-            if (section) {
-                const subtabs = section.querySelectorAll('.subtab-button');
-                subtabs.forEach((st, i) => st.classList.toggle('active', i === 0));
-                const status = subtabs.length > 0 ? subtabs[0].dataset.status : undefined;
-                // Always restore filters before fetching
-                applySectionFilters(this.dataset.section);
-                fetchAndRenderDocuments(this.dataset.section, status, filterState[this.dataset.section]);
-            }
         });
     });
+    
     // Subtab logic for all sections
-    document.querySelectorAll('.document-section').forEach(section => {
-        const subtabs = section.querySelectorAll('.subtab-button');
+    document.querySelectorAll('.status-subtabs').forEach(subtabGroup => {
+        const subtabs = subtabGroup.querySelectorAll('.subtab-button');
         subtabs.forEach(subtab => {
             subtab.addEventListener('click', function() {
                 subtabs.forEach(st => st.classList.remove('active'));
                 this.classList.add('active');
-                const sectionId = section.id;
-                const status = this.dataset.status;
-                fetchAndRenderDocuments(sectionId, status);
+                
+                // Find the active main tab
+                const activeMainTab = document.querySelector('.main-tabs .tab-button.active');
+                if (activeMainTab) {
+                    const sectionId = activeMainTab.dataset.section;
+                    const status = this.dataset.status;
+                    fetchAndRenderDocuments(sectionId, status);
+                }
             });
         });
     });
+    
+    // Initialize Nova tables for all sections
+    initializeAllNovaTables();
+    
     // Initial fetch for the first section's first subtab
     const firstSection = sections[0];
     if (firstSection) {
-        const firstSubtab = firstSection.querySelector('.subtab-button');
+        const firstSubtabGroup = document.querySelector('.status-subtabs');
+        const firstSubtab = firstSubtabGroup ? firstSubtabGroup.querySelector('.subtab-button') : null;
         const status = firstSubtab ? firstSubtab.dataset.status : undefined;
         fetchAndRenderDocuments(firstSection.id, status);
     }
-    setupFilters();
+    
+    // Filters are now handled by Nova table's built-in filtering system
 });
 
 // Map section IDs to document types for API
@@ -68,324 +403,245 @@ const sectionTypeMap = {
     'vehicle-invoices-section': 'vehicle-invoice'
 };
 
-// --- Filter state ---
-const filterState = {
-    'invoices-section': {},
-    'recurring-invoices-section': {},
-    'quotations-section': {},
-    'vehicle-quotations-section': {},
-    'vehicle-invoices-section': {}
-};
+// Filter functionality is now handled by Nova table's built-in filtering system
 
-// Helper: section to client filter IDs
-const sectionClientIds = {
-    'invoices-section': {
-        input: 'client-name-invoices',
-        hidden: 'client-id-invoices',
-        dropdown: 'search-results-client-invoices'
-    },
-    'recurring-invoices-section': {
-        input: 'client-name-recurring',
-        hidden: 'client-id-recurring',
-        dropdown: 'search-results-client-recurring'
-    },
-    'quotations-section': {
-        input: 'client-name-quotations',
-        hidden: 'client-id-quotations',
-        dropdown: 'search-results-client-quotations'
-    },
-    'vehicle-quotations-section': {
-        input: 'client-name-vehicle-quotations',
-        hidden: 'client-id-vehicle-quotations',
-        dropdown: 'search-results-client-vehicle-quotations'
-    },
-    'vehicle-invoices-section': {
-        input: 'client-name-vehicle-invoices',
-        hidden: 'client-id-vehicle-invoices',
-        dropdown: 'search-results-client-vehicle-invoices'
-    }
-};
-
-function applySectionFilters(sectionId) {
-    const ids = sectionClientIds[sectionId];
-    const state = filterState[sectionId] || {};
-    // Date filters
-    const section = document.getElementById(sectionId);
-    if (!section) return;
-    const dateFrom = section.querySelector('input[type="date"][id$="date-from"]');
-    const dateTo = section.querySelector('input[type="date"][id$="date-to"]');
-    if (dateFrom && state.date_from !== undefined) dateFrom.value = state.date_from;
-    if (dateTo && state.date_to !== undefined) dateTo.value = state.date_to;
-    // Client filter
-    if (ids) {
-        const clientInput = document.getElementById(ids.input);
-        const clientIdInput = document.getElementById(ids.hidden);
-        if (clientInput && state.client_name !== undefined) clientInput.value = state.client_name;
-        if (clientIdInput && state.client_id !== undefined) clientIdInput.value = state.client_id;
-    }
-}
-
-function setupFilters() {
-    document.querySelectorAll('.document-section').forEach(section => {
-        const sectionId = section.id;
-        // Date filters
-        const dateFrom = section.querySelector('input[type="date"][id$="date-from"]');
-        const dateTo = section.querySelector('input[type="date"][id$="date-to"]');
-        if (dateFrom) {
-            dateFrom.addEventListener('change', function() {
-                filterState[sectionId].date_from = this.value;
-                dateFrom.value = this.value;
-                triggerSectionFetch(sectionId);
-            });
-        }
-        if (dateTo) {
-            dateTo.addEventListener('change', function() {
-                filterState[sectionId].date_to = this.value;
-                dateTo.value = this.value;
-                triggerSectionFetch(sectionId);
-            });
-        }
-        // Client filter
-        const ids = sectionClientIds[sectionId];
-        if (ids) {
-            const clientInput = document.getElementById(ids.input);
-            const clientIdInput = document.getElementById(ids.hidden);
-            const dropdown = document.getElementById(ids.dropdown);
-            if (clientInput && clientIdInput && dropdown) {
-                clientInput.addEventListener('input', function() {
-                    customSectionClientSearch(sectionId, clientInput, clientIdInput, dropdown);
-                });
-                clientIdInput.addEventListener('change', function() {
-                    filterState[sectionId].client_id = this.value;
-                    clientIdInput.value = this.value;
-                    triggerSectionFetch(sectionId);
-                });
-            }
-        }
-        // Add Clear Filters button
-        let clearBtn = section.querySelector('.clear-filters-btn');
-        if (!clearBtn) {
-            clearBtn = document.createElement('button');
-            clearBtn.textContent = 'Clear Filters';
-            clearBtn.className = 'clear-filters-btn';
-            clearBtn.type = 'button';
-            clearBtn.style.marginLeft = 'auto';
-            clearBtn.onclick = function() {
-                // Reset filter state and inputs
-                filterState[sectionId] = {};
-                applySectionFilters(sectionId);
-                triggerSectionFetch(sectionId);
-            };
-            const filterBar = section.querySelector('.invoice-filter');
-            if (filterBar) filterBar.appendChild(clearBtn);
-        }
+/**
+ * Initialize all Nova tables
+ */
+function initializeAllNovaTables() {
+    Object.keys(tableConfigs).forEach(sectionId => {
+        initializeNovaTableForSection(sectionId);
     });
 }
 
-function customSectionClientSearch(sectionId, input, hidden, dropdown) {
-    const query = input.value.trim();
-    if (query.length < 2) {
-        dropdown.style.display = 'none';
-        dropdown.classList.remove('active');
-        dropdown.innerHTML = '';
-        hidden.value = '';
-        filterState[sectionId].client_id = '';
-        // Do NOT clear input.value here, so user can type
-        // Do NOT clear client_name here, so it persists
-        triggerSectionFetch(sectionId);
+/**
+ * Initialize Nova table for a specific section
+ */
+function initializeNovaTableForSection(sectionId) {
+    if (novaTableInstances[sectionId]) {
+        console.log(`Nova table already initialized for ${sectionId}`);
+        return; // Already initialized
+    }
+    
+    const containerId = `nova-table-${sectionId.replace('-section', '')}`;
+    const container = document.getElementById(containerId);
+    
+    if (!container) {
+        console.warn(`Container ${containerId} not found for section ${sectionId}`);
         return;
     }
-    searchClients(query, function(results) {
-        dropdown.innerHTML = '';
-        if (results && results.length > 0) {
-            dropdown.style.display = 'block';
-            dropdown.classList.add('active');
-            results.forEach((item, idx) => {
-                const div = document.createElement('div');
-                div.classList.add('search-result-client');
-                
-                // Create better display text based on client type
-                let displayText = '';
-                let subtitleText = '';
-                
-                if (item.client_type === 'business') {
-                    displayText = item.client_name;
-                    subtitleText = 'Business Client';
-                } else {
-                    // Private client
-                    displayText = item.client_name;
-                    if (item.first_name && item.last_name) {
-                        subtitleText = `${item.first_name} ${item.last_name}`;
-                    }
-                }
-                
-                // Add email if available
-                if (item.client_email) {
-                    subtitleText += subtitleText ? ` • ${item.client_email}` : item.client_email;
-                }
-                
-                // Create HTML structure
-                div.innerHTML = `
-                    <div class="client-result-name">${displayText}</div>
-                    ${subtitleText ? `<div class="client-result-details">${subtitleText}</div>` : ''}
-                `;
-                
-                div.onclick = function () {
-                    hidden.value = item.client_id;
-                    input.value = item.client_name;
-                    filterState[sectionId].client_id = item.client_id;
-                    filterState[sectionId].client_name = item.client_name;
-                    dropdown.style.display = 'none';
-                    dropdown.classList.remove('active');
-                    triggerSectionFetch(sectionId);
-                };
-                if (idx === 0) div.classList.add('highlight');
-                dropdown.appendChild(div);
-            });
-        } else {
-            dropdown.style.display = 'block';
-            dropdown.classList.add('active');
-            const noResults = document.createElement('div');
-            noResults.classList.add('search-no-results');
-            noResults.textContent = 'No clients found';
-            dropdown.appendChild(noResults);
+    
+    console.log(`Initializing Nova table for ${sectionId} with container ${containerId}`);
+    console.log(`Table config:`, tableConfigs[sectionId]);
+    
+    const config = {
+        ...tableConfigs[sectionId],
+        onContextMenuAction: (action, row) => {
+            console.log(`Context menu action triggered: ${action} for row:`, row);
+            handleContextMenuAction(action, row, sectionId);
         }
+    };
+    
+    try {
+        novaTableInstances[sectionId] = new NovaTable(containerId, config);
+        console.log(`Nova table successfully initialized for ${sectionId}`);
+    } catch (error) {
+        console.error(`Failed to initialize Nova table for ${sectionId}:`, error);
+    }
+}
+
+/**
+ * Format document data for Nova table
+ */
+function formatDocumentDataForNovaTable(documents, sectionId) {
+    return documents.map(doc => {
+        const formattedDoc = {
+            document_id: doc.document_id,
+            document_number: doc.document_number || '',
+            client_name: doc.client_name || '',
+            issue_date: doc.issue_date || '',
+            updated_at: doc.updated_at || '',
+            document_status: doc.document_status || '',
+            total_amount: doc.total_amount ? `R${parseFloat(doc.total_amount).toFixed(2)}` : 'R0.00',
+            due_date: doc.due_date || '',
+            start_date: doc.start_date || '',
+            next_generation_date: doc.next_generation || '',
+            frequency: doc.frequency || '',
+            vehicle_info: doc.vehicle || ''
+        };
+        
+        // Add any additional fields based on section
+        if (sectionId === 'invoices-section') {
+            formattedDoc.balance_due = doc.balance_due ? `R${parseFloat(doc.balance_due).toFixed(2)}` : 'R0.00';
+        }
+        
+        return formattedDoc;
     });
 }
 
-function triggerSectionFetch(sectionId) {
-    // Find active subtab
-    const section = document.getElementById(sectionId);
-    const activeSubtab = section ? section.querySelector('.subtab-button.active') : null;
-    const status = activeSubtab ? activeSubtab.dataset.status : undefined;
-    fetchAndRenderDocuments(sectionId, status, filterState[sectionId]);
+/**
+ * Refresh Nova table for a specific section
+ */
+function refreshNovaTable(sectionId) {
+    const novaTable = novaTableInstances[sectionId];
+    if (novaTable) {
+        novaTable.refresh();
+    }
 }
 
-// Patch fetchAndRenderDocuments to accept filters
-function fetchAndRenderDocuments(sectionId, status, filters = {}) {
+/**
+ * Get current Nova table instance for a section
+ */
+function getCurrentNovaTable(sectionId) {
+    return novaTableInstances[sectionId];
+}
+
+/**
+ * Handle context menu actions
+ */
+function handleContextMenuAction(action, row, sectionId) {
+    console.log(`handleContextMenuAction called: action=${action}, sectionId=${sectionId}, row:`, row);
+    
+    switch (action) {
+        case 'edit':
+            console.log(`Edit action triggered for document_id: ${row.document_id}`);
+            if (row.document_id) {
+                openDocumentForEdit(row.document_id);
+            }
+            break;
+        case 'view':
+            if (row.document_id) {
+                openDocumentForEdit(row.document_id, 'view');
+            }
+            break;
+        case 'send':
+            sendInvoice(row);
+            break;
+        case 'payment':
+            loadPayment(row);
+            break;
+        case 'credit_note':
+            createCreditNote(row);
+            break;
+        case 'refund':
+            refundInvoice(row);
+            break;
+        case 'reminder':
+            sendPaymentReminder(row);
+            break;
+        case 'convert':
+            convertToInvoice(row);
+            break;
+        case 'approve':
+            requestApproval(row);
+            break;
+        case 'reject':
+            // Handle reject action
+            break;
+        case 'pause':
+            // Handle pause action for recurring invoices
+            break;
+        case 'resume':
+            // Handle resume action for recurring invoices
+            break;
+        case 'cancel':
+            // Handle cancel action for recurring invoices
+            break;
+        case 'delete':
+            deleteDocument(row);
+            break;
+        default:
+            console.log(`Unknown action: ${action}`);
+    }
+}
+
+// Filter functionality is now handled by Nova table's built-in filtering system
+
+// Fetch and render documents for Nova table
+function fetchAndRenderDocuments(sectionId, status) {
     const type = sectionTypeMap[sectionId];
-    if (!type) return;
+    if (!type) {
+        console.error(`No type mapping found for section: ${sectionId}`);
+        return;
+    }
+    
+    console.log(`Fetching documents for section: ${sectionId}, type: ${type}, status: ${status}`);
+    
+    // Get the Nova table instance for this section
+    const novaTable = novaTableInstances[sectionId];
+    if (!novaTable) {
+        console.warn(`Nova table not initialized for section: ${sectionId}`);
+        return;
+    }
+    
     const paramsObj = { action: 'list_documents', type };
     if (status && status !== 'all') paramsObj.status = status;
-    if (filters.date_from) paramsObj.date_from = filters.date_from;
-    if (filters.date_to) paramsObj.date_to = filters.date_to;
-    if (filters.client_id) paramsObj.client_id = filters.client_id;
     const params = buildQueryParams(paramsObj);
     const url = `../api/document-api.php?${params.toString()}`;
+    
+    console.log(`API URL: ${url}`);
+    
+    // Show loading state in Nova table
+    novaTable.loadData([]);
+    
     fetch(url)
-        .then(res => res.json().catch(() => {
-            if (window.showResponseModal) {
-                window.showResponseModal('Server error: Invalid response format', 'error');
-            }
-            renderDocumentRows(sectionId, []);
-            throw new Error('Invalid JSON');
-        }))
+        .then(res => {
+            console.log(`API Response status: ${res.status}`);
+            return res.json().catch(() => {
+                if (window.showResponseModal) {
+                    window.showResponseModal('Server error: Invalid response format', 'error');
+                }
+                novaTable.loadData([]);
+                throw new Error('Invalid JSON');
+            });
+        })
         .then(data => {
+            console.log(`API Response data:`, data);
+            
             if (!data.success || !Array.isArray(data.data)) {
+                console.error(`API Error:`, data);
                 if (typeof window.handleApiResponse === 'function') {
                     window.handleApiResponse(data);
                 } else if (window.showResponseModal) {
                     window.showResponseModal(data.message || 'Failed to load documents', 'error');
                 }
-                renderDocumentRows(sectionId, []);
+                novaTable.loadData([]);
                 return;
             }
-            renderDocumentRows(sectionId, data.data);
+            
+            console.log(`Raw documents data:`, data.data);
+            
+            // Format data for Nova table and load it
+            const formattedData = formatDocumentDataForNovaTable(data.data, sectionId);
+            console.log(`Formatted data for Nova table:`, formattedData);
+            
+            novaTable.loadData(formattedData);
         })
         .catch((err) => {
+            console.error(`Fetch error:`, err);
             if (window.showResponseModal) {
                 window.showResponseModal(err.message || 'Failed to load documents', 'error');
             }
-            renderDocumentRows(sectionId, []);
+            novaTable.loadData([]);
         });
 }
 
 function renderDocumentRows(sectionId, documents) {
-    let tbodyId = '';
-    switch (sectionId) {
-        case 'invoices-section': tbodyId = 'invoice-body'; break;
-        case 'recurring-invoices-section': tbodyId = 'recurring-invoice-body'; break;
-        case 'quotations-section': tbodyId = 'quotation-body'; break;
-        case 'vehicle-quotations-section': tbodyId = 'vehicle-quotation-body'; break;
-        case 'vehicle-invoices-section': tbodyId = 'vehicle-invoice-body'; break;
-        default: return;
+    // This function is kept for backward compatibility
+    // Nova tables handle the rendering automatically
+    const novaTable = novaTableInstances[sectionId];
+    if (novaTable) {
+        const formattedData = formatDocumentDataForNovaTable(documents, sectionId);
+        novaTable.loadData(formattedData);
+    } else {
+        console.warn(`Nova table not available for section: ${sectionId}`);
     }
-    const tbody = document.getElementById(tbodyId);
-    if (!tbody) return;
-    tbody.innerHTML = '';
-    if (!documents.length) {
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        td.colSpan = 10;
-        td.textContent = 'No documents found.';
-        tr.appendChild(td);
-        tbody.appendChild(tr);
-        return;
-    }
-    documents.forEach(doc => {
-        const tr = document.createElement('tr');
-        // Render columns based on section, no Actions column
-        if (sectionId === 'invoices-section') {
-            tr.innerHTML = `
-                <td>${doc.document_number || ''}</td>
-                <td>${doc.client_name || ''}</td>
-                <td>${doc.issue_date || ''}</td>
-                <td>${doc.updated_at || ''}</td>
-                <td>${doc.document_status || ''}</td>
-                <td>${doc.total_amount || ''}</td>
-                <td>${doc.due_date || ''}</td>
-            `;
-        } else if (sectionId === 'recurring-invoices-section') {
-            tr.innerHTML = `
-                <td>${doc.document_number || ''}</td>
-                <td>${doc.client_name || ''}</td>
-                <td>${doc.start_date || ''}</td>
-                <td>${doc.next_generation || ''}</td>
-                <td>${doc.frequency || ''}</td>
-                <td>${doc.document_status || ''}</td>
-            `;
-        } else if (sectionId === 'quotations-section') {
-            tr.innerHTML = `
-                <td>${doc.document_number || ''}</td>
-                <td>${doc.client_name || ''}</td>
-                <td>${doc.issue_date || ''}</td>
-                <td>${doc.document_status || ''}</td>
-                <td>${doc.total_amount || ''}</td>
-            `;
-        } else if (sectionId === 'vehicle-quotations-section') {
-            tr.innerHTML = `
-                <td>${doc.document_number || ''}</td>
-                <td>${doc.client_name || ''}</td>
-                <td>${doc.vehicle || ''}</td>
-                <td>${doc.issue_date || ''}</td>
-                <td>${doc.document_status || ''}</td>
-                <td>${doc.total_amount || ''}</td>
-            `;
-        } else if (sectionId === 'vehicle-invoices-section') {
-            tr.innerHTML = `
-                <td>${doc.document_number || ''}</td>
-                <td>${doc.client_name || ''}</td>
-                <td>${doc.vehicle || ''}</td>
-                <td>${doc.issue_date || ''}</td>
-                <td>${doc.document_status || ''}</td>
-                <td>${doc.total_amount || ''}</td>
-            `;
-        }
-        // Add double-click event to open modal and autofill
-        tr.addEventListener('dblclick', function() {
-            openDocumentForEdit(doc.document_id);
-        });
-        // Add context menu event
-        tr.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            showDocumentContextMenu(e, doc, sectionId);
-        });
-        tbody.appendChild(tr);
-    });
 }
 
 // Helper to fetch and open document in modal
 async function openDocumentForEdit(documentId) {
+    console.log(`openDocumentForEdit called with documentId: ${documentId}`);
+    
     try {
         // Show loading modal while fetching data
         if (typeof window.showLoadingModal === 'function') {
@@ -758,3 +1014,22 @@ function viewRelatedDocuments(doc) {
         window.showResponseModal('Error fetching related documents: ' + err.message, 'error');
     });
 }
+
+/**
+ * Refresh the current active table after document operations
+ */
+function refreshCurrentTable() {
+    const activeMainTab = document.querySelector('.main-tabs .tab-button.active');
+    if (activeMainTab) {
+        const sectionId = activeMainTab.dataset.section;
+        const activeSubtab = document.querySelector('.status-subtabs[style*="display: flex"] .subtab-button.active');
+        const status = activeSubtab ? activeSubtab.dataset.status : undefined;
+        
+        fetchAndRenderDocuments(sectionId, status);
+    }
+}
+
+// Export functions for use in other modules
+window.refreshCurrentTable = refreshCurrentTable;
+window.getCurrentNovaTable = getCurrentNovaTable;
+window.refreshNovaTable = refreshNovaTable;

@@ -487,8 +487,9 @@ function getDocumentFormData() {
     // Get related document ID for credit notes and refunds
     const related_document_id = document.getElementById('related-document-id')?.value || '';
     
+    // Only include document_id if it's not empty and not a new document
     const payload = {
-        document_id,
+        ...(document_id && document_id !== '' && document_id !== '0' ? { document_id } : {}),
         client_id,
         client_name,
         client_email,
@@ -501,8 +502,7 @@ function getDocumentFormData() {
         ...(isDraft && draftNumber ? { document_number: draftNumber } : {}),
         issue_date,
         document_status,
-        pay_in_days,
-        client_purchase_order_number,
+        client_purchase_order_number: client_purchase_order_number && client_purchase_order_number.trim() !== '' ? client_purchase_order_number.trim() : null,
         salesperson_name,
         salesperson_id,
         public_note,
@@ -545,44 +545,41 @@ function searchItem(inputElement) {
     searchProducts(searchTerm, function(results) {
         resultsContainer.innerHTML = '';
         if (Array.isArray(results) && results.length > 0) {
-            const ul = document.createElement('ul');
-            ul.classList.add('search-results-list');
             results.forEach((item, idx) => {
-                const li = document.createElement('li');
-                li.classList.add('search-result-product');
+                const div = document.createElement('div');
+                div.classList.add('search-result-product');
                 // For item code column, show SKU if available, otherwise show product name
                 if (isDescription) {
-                    li.textContent = item.product_description || 'No description';
+                    div.textContent = item.product_description || item.product_name;
                 } else {
                     // Item code column - prioritize SKU, fallback to product name
                     if (item.sku && item.sku.trim()) {
-                        li.textContent = `${item.sku} - ${item.product_name}`;
+                        div.textContent = `${item.sku} - ${item.product_name}`;
                     } else {
-                        li.textContent = item.product_name;
+                        div.textContent = item.product_name;
                     }
                 }
-                li.tabIndex = -1;
-                li.dataset.idx = idx;
-                li.addEventListener('mousedown', () => {
+                div.tabIndex = -1;
+                div.dataset.idx = idx;
+                div.addEventListener('mousedown', () => {
                     autofillProductRow(row, item);
                     resultsContainer.style.display = 'none';
                     // Move focus to next logical field (quantity)
                     const next = row.querySelector('.quantity');
                     if (next && typeof next.focus === 'function') next.focus();
                 });
-                ul.appendChild(li);
+                resultsContainer.appendChild(div);
             });
-            resultsContainer.appendChild(ul);
 
             // Highlight the first result by default
             let currentIdx = 0;
-            const items = ul.querySelectorAll('.search-result-product');
+            const items = resultsContainer.querySelectorAll('.search-result-product');
             if (items.length > 0) items[0].classList.add('highlight');
 
             // Keyboard navigation handler
             const keydownHandler = function(event) {
                 if (!resultsContainer || resultsContainer.style.display !== 'block') return;
-                const items = ul.querySelectorAll('.search-result-product');
+                const items = resultsContainer.querySelectorAll('.search-result-product');
                 if (!items.length) return;
 
                 // Find the currently highlighted index
