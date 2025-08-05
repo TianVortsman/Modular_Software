@@ -83,6 +83,10 @@ error_log("Multiple accounts: " . ($multiple_accounts ? 'true' : 'false'));
 <?php include('../modals/clientModals.php') ?>
 <?php include('../../../src/UI/loading-modal.php') ?>
 <?php include('../../../src/UI/response-modal.php') ?>
-<script type="module" src="../js/client-screen.js"></script>
+        <script src="../../../public/assets/js/helpers.js"></script>
+        <script src="../js/client-api.js"></script>
+        <script src="../js/client-modal.js"></script>
+        <script src="../js/client-form.js"></script>
+        <script src="../js/client-screen.js"></script>
 </body>
 </html>

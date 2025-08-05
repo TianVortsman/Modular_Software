@@ -1,16 +1,14 @@
 // Client API: Handles all API calls for client CRUD and list operations
-// Usage: import { fetchClients, fetchClientDetails, createClient, updateClient, deleteClient } from './client-api.js';
-
-import { buildQueryParams } from '../../../public/assets/js/helpers.js';
+// All functions are now globally available via window object
 
 /**
  * Fetch a paginated, filtered list of clients
  * @param {Object} options - {search, type, page, limit, sort_by, sort_dir}
  * @returns {Promise<Object>} Modal-compatible response
  */
-export async function fetchClients({ page = 1, limit = 10, type = 'private', search = '' } = {}) {
+async function fetchClients({ page = 1, limit = 10, type = 'private', search = '' } = {}) {
     try {
-        const params = buildQueryParams(
+        const params = window.buildQueryParams(
             { action: 'list_clients' },
             { type },
             search,
@@ -25,7 +23,7 @@ export async function fetchClients({ page = 1, limit = 10, type = 'private', sea
         }
         return json;
     } catch (e) {
-        showResponseModal(e.message, 'error');
+        window.showResponseModal(e.message, 'error');
         return { success: false, message: 'Failed to fetch clients', data: [], total: 0 };
     }
 }
@@ -35,9 +33,9 @@ export async function fetchClients({ page = 1, limit = 10, type = 'private', sea
  * @param {number} clientId
  * @returns {Promise<Object>} Modal-compatible response
  */
-export async function fetchClientDetails(clientId) {
+async function fetchClientDetails(clientId) {
     try {
-        const params = buildQueryParams(
+        const params = window.buildQueryParams(
             { action: 'get_client_details' },
             { client_id: clientId }
         );
@@ -46,7 +44,7 @@ export async function fetchClientDetails(clientId) {
         window.handleApiResponse(json);
         return json;
     } catch (e) {
-        showResponseModal(e.message, 'error');
+        window.showResponseModal(e.message, 'error');
         return { success: false, message: 'Failed to fetch client details', data: null };
     }
 }
@@ -56,9 +54,9 @@ export async function fetchClientDetails(clientId) {
  * @param {Object} data - Client data
  * @returns {Promise<Object>} Modal-compatible response
  */
-export async function createClient(data) {
+async function createClient(data) {
     try {
-        const params = buildQueryParams({ action: 'create_client' });
+        const params = window.buildQueryParams({ action: 'create_client' });
         const res = await fetch(`/modules/invoice/api/client-api.php?${params.toString()}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -68,7 +66,7 @@ export async function createClient(data) {
         window.handleApiResponse(json);
         return json;
     } catch (e) {
-        showResponseModal(e.message, 'error');
+        window.showResponseModal(e.message, 'error');
         return { success: false, message: 'Failed to create client', data: null };
     }
 }
@@ -79,9 +77,9 @@ export async function createClient(data) {
  * @param {Object} data - Updated client data
  * @returns {Promise<Object>} Modal-compatible response
  */
-export async function updateClient(clientId, data) {
+async function updateClient(clientId, data) {
     try {
-        const params = buildQueryParams({ action: 'update_client', client_id: clientId });
+        const params = window.buildQueryParams({ action: 'update_client', client_id: clientId });
         const res = await fetch(`/modules/invoice/api/client-api.php?${params.toString()}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -91,7 +89,7 @@ export async function updateClient(clientId, data) {
         window.handleApiResponse(json);
         return json;
     } catch (e) {
-        showResponseModal(e.message, 'error');
+        window.showResponseModal(e.message, 'error');
         return { success: false, message: 'Failed to update client', data: null };
     }
 }
@@ -102,6 +100,13 @@ export async function updateClient(clientId, data) {
  * @param {number} deletedBy - User ID
  * @returns {Promise<Object>} Modal-compatible response
  */
-export async function deleteClient(clientId, deletedBy) {
+async function deleteClient(clientId, deletedBy) {
     // TODO: Implement API call to backend (delete_client)
 }
+
+// Make functions available globally
+window.fetchClients = fetchClients;
+window.fetchClientDetails = fetchClientDetails;
+window.createClient = createClient;
+window.updateClient = updateClient;
+window.deleteClient = deleteClient;

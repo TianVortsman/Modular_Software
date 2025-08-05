@@ -1,5 +1,4 @@
-import { ProductAPI } from './product-api.js';
-import './product-modals.js';
+// Product modals are now loaded globally
 console.log('product-screen.js loaded');
 // --- ProductScreenManager: Handles product screen (view, grid, filters, cards, etc.) ---
 class ProductScreenManager {
@@ -174,7 +173,7 @@ class ProductScreenManager {
         const properCaseType = sectionType.charAt(0).toUpperCase() + sectionType.slice(1).toLowerCase();
         const typeId = sectionTypeToTypeId[properCaseType];
         const filters = typeId ? { type: typeId } : {};
-        ProductAPI.fetchProducts(filters).then(data => {
+        window.ProductAPI.fetchProducts(filters).then(data => {
             if (data.success && Array.isArray(data.data)) {
                 this.allProducts = data.data;
                 this.applyFilters();
@@ -252,7 +251,7 @@ class ProductScreenManager {
                     const ext = file.name.split('.').pop().toLowerCase();
                     // Determine type/category for upload
                     let uploadType = (product.product_type_name || type || 'Product');
-                    ProductAPI.uploadImage(file, productId, uploadType).then(res => {
+                    window.ProductAPI.uploadImage(file, productId, uploadType).then(res => {
                         if (res.success && res.url) {
                             overlay.textContent = 'Image uploaded!';
                             const img = productCard.querySelector('img');
@@ -376,7 +375,7 @@ class ProductScreenManager {
         const categoryFilter = document.getElementById('category-filter');
         if (!categoryFilter) return;
         console.log('[populateCategoryDropdown] typeId:', typeId);
-        const res = await ProductAPI.fetchProductCategories(typeId);
+        const res = await window.ProductAPI.fetchProductCategories(typeId);
         categoryFilter.innerHTML = '<option value="">All Categories</option>';
         if (res.success && Array.isArray(res.data)) {
             res.data.forEach(cat => {
@@ -396,7 +395,7 @@ class ProductScreenManager {
         if (!subcategoryFilter) return;
         subcategoryFilter.innerHTML = '<option value="">All Subcategories</option>';
         if (!categoryId) return;
-        const res = await ProductAPI.fetchProductSubcategories(categoryId);
+        const res = await window.ProductAPI.fetchProductSubcategories(categoryId);
         if (res.success && Array.isArray(res.data)) {
             res.data.forEach(sub => {
                 const option = document.createElement('option');
@@ -428,7 +427,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'Discontinued': 'add-discontinued-open-btn',
         'Disabled': 'add-disabled-open-btn',
     };
-    const typeRes = await ProductAPI.fetchProductTypes();
+    const typeRes = await window.ProductAPI.fetchProductTypes();
     if (typeRes.success && Array.isArray(typeRes.data)) {
         // Map type name (capitalized) to id
         const typeMap = {};
@@ -491,7 +490,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const ext = file.name.split('.').pop().toLowerCase();
                         // Determine type/category for upload
                         let uploadType = (product.product_type_name || type || 'Product');
-                        ProductAPI.uploadImage(file, productId, uploadType).then(res => {
+                        window.ProductAPI.uploadImage(file, productId, uploadType).then(res => {
                             if (res.success && res.url) {
                                 overlay.textContent = 'Image uploaded!';
                                 const img = card.querySelector('img');
@@ -638,28 +637,28 @@ function showProductContextMenu(x, y, productId) {
     };
     if (contextMenuEl.querySelector('.reactivate')) {
         contextMenuEl.querySelector('.reactivate').onclick = async () => {
-            await ProductAPI.updateStatus(productId, 'active');
+            await window.ProductAPI.updateStatus(productId, 'active');
             if (window.productScreenManager) window.productScreenManager.refreshProductList();
             contextMenuEl.remove();
         };
     }
     if (contextMenuEl.querySelector('.restore')) {
         contextMenuEl.querySelector('.restore').onclick = async () => {
-            await ProductAPI.updateStatus(productId, 'active');
+            await window.ProductAPI.updateStatus(productId, 'active');
             if (window.productScreenManager) window.productScreenManager.refreshProductList();
             contextMenuEl.remove();
         };
     }
     if (contextMenuEl.querySelector('.deactivate')) {
         contextMenuEl.querySelector('.deactivate').onclick = async () => {
-            await ProductAPI.updateStatus(productId, 'inactive');
+            await window.ProductAPI.updateStatus(productId, 'inactive');
             if (window.productScreenManager) window.productScreenManager.refreshProductList();
             contextMenuEl.remove();
         };
     }
     if (contextMenuEl.querySelector('.discontinue')) {
         contextMenuEl.querySelector('.discontinue').onclick = async () => {
-            await ProductAPI.updateStatus(productId, 'discontinued');
+            await window.ProductAPI.updateStatus(productId, 'discontinued');
             if (window.productScreenManager) window.productScreenManager.refreshProductList();
             contextMenuEl.remove();
         };
@@ -678,7 +677,7 @@ window.addEventListener('click', e => {
 let sectionTypeToTypeId = {};
 
 async function updateSectionTypeToTypeIdMap() {
-    const typeRes = await ProductAPI.fetchProductTypes();
+    const typeRes = await window.ProductAPI.fetchProductTypes();
     if (typeRes.success && Array.isArray(typeRes.data)) {
         // Proper case type names for mapping
         typeRes.data.forEach(type => {

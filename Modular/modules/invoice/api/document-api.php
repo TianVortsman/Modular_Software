@@ -90,6 +90,54 @@ try {
         exit;
     }
     
+    if ($action === 'get_documents') {
+        $document_type = $_GET['type'] ?? null;
+        if (!$document_type) {
+            echo json_encode(['success' => false, 'message' => 'Document type required']);
+            exit;
+        }
+        
+        try {
+            $sql = "SELECT 
+                        d.document_id,
+                        d.document_number,
+                        d.document_type,
+                        d.issue_date,
+                        d.due_date,
+                        d.total_amount,
+                        d.balance_due,
+                        d.total_paid,
+                        d.document_status,
+                        d.notes,
+                        c.client_id,
+                        c.client_name,
+                        c.client_email,
+                        c.client_cell,
+                        c.client_tell,
+                        c.vat_number
+                    FROM invoicing.documents d
+                    JOIN invoicing.clients c ON d.client_id = c.client_id
+                    WHERE d.document_type = :document_type 
+                    AND d.deleted_at IS NULL
+                    ORDER BY d.issue_date DESC, d.created_at DESC";
+            
+            $stmt = $conn->prepare($sql);
+            $stmt->bindValue(':document_type', $document_type, PDO::PARAM_STR);
+            $stmt->execute();
+            $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                'success' => true,
+                'data' => $documents,
+                'message' => ucfirst($document_type) . 's retrieved successfully'
+            ]);
+        } catch (Exception $e) {
+            error_log('Error getting documents: ' . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Error retrieving documents']);
+        }
+        exit;
+    }
+    
     if ($action === 'get_original_invoice_products') {
         $invoice_id = $_GET['invoice_id'] ?? null;
         if (!$invoice_id) {

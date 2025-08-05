@@ -175,9 +175,10 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
     <?php include('../modals/document-modal.php'); ?>
     <?php include '../../../src/UI/response-modal.php'; ?>
     <?php include '../../../src/UI/loading-modal.php'; ?>
-    <script type="module" src="../js/document-form.js"></script>
-    <script type="module" src="../js/document-modal.js"></script>
-    <script type="module" src="../js/dashboard.js"></script>
+            <script src="../../../public/assets/js/helpers.js"></script>
+        <script src="../js/document-form.js"></script>
+        <script src="../js/document-modal.js"></script>
+        <script src="../js/dashboard.js"></script>
     <script src="../../../public/assets/js/sidebar.js"></script>
     <script>var multipleAccounts = <?= json_encode($multiple_accounts); ?>; </script>
 </body>

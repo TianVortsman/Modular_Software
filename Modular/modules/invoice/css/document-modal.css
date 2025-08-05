@@ -1408,5 +1408,242 @@ textarea {
     display: none !important;
 }
 
+/* ==========================================================================
+   CREDIT NOTE & RELATED INVOICE STYLES
+   ========================================================================== */
 
- 
+/* Credit Note Search Dropdown */
+.credit-search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+}
+
+.credit-search-dropdown.active {
+    display: block;
+}
+
+.credit-search-dropdown .search-result {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s ease;
+}
+
+.credit-search-dropdown .search-result:last-child {
+    border-bottom: none;
+}
+
+.credit-search-dropdown .search-result:hover,
+.credit-search-dropdown .search-result.selected {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.credit-search-dropdown .search-result.no-results {
+    color: var(--text-muted);
+    cursor: default;
+    font-style: italic;
+}
+
+.credit-search-dropdown .search-result.error {
+    color: var(--error-color);
+    cursor: default;
+    font-weight: var(--font-medium);
+}
+
+/* Product Search Results */
+.credit-search-dropdown .search-result .product-name {
+    font-weight: var(--font-medium);
+    margin-bottom: 0.25rem;
+}
+
+.credit-search-dropdown .search-result .product-details {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.875rem;
+    color: inherit;
+    opacity: 0.8;
+}
+
+.credit-search-dropdown .search-result .product-details span {
+    display: inline-block;
+}
+
+/* Related Invoice Selection */
+.search-invoice-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.related-invoice-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 0.25rem;
+}
+
+.related-invoice-dropdown .loading {
+    padding: 1rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.related-invoice-dropdown .no-results {
+    padding: 1rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.related-invoice-dropdown .error {
+    padding: 1rem;
+    text-align: center;
+    color: var(--error-color);
+    font-weight: var(--font-medium);
+}
+
+.related-invoice-dropdown .invoice-option {
+    padding: 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s ease;
+}
+
+.related-invoice-dropdown .invoice-option:last-child {
+    border-bottom: none;
+}
+
+.related-invoice-dropdown .invoice-option:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.related-invoice-dropdown .invoice-option .invoice-number {
+    font-weight: var(--font-semibold);
+    margin-bottom: 0.5rem;
+}
+
+.related-invoice-dropdown .invoice-option .invoice-details {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.875rem;
+    opacity: 0.8;
+}
+
+.related-invoice-dropdown .invoice-option .invoice-details span {
+    display: inline-block;
+}
+
+/* Credit Note Table Styles */
+#credit-note-table {
+    margin-top: 1.5rem;
+}
+
+#credit-note-table .line-items-table th {
+    background: var(--bg-secondary);
+    font-weight: var(--font-medium);
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 2px solid var(--border-color);
+}
+
+#credit-note-table .line-items-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: top;
+}
+
+.credit-note-item-row {
+    transition: background-color 0.2s ease;
+}
+
+.credit-note-item-row:hover {
+    background-color: var(--bg-secondary);
+}
+
+.credit-note-item-row .credit-type {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+}
+
+.credit-note-item-row .credit-reason {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    position: relative;
+}
+
+.credit-note-item-row .credit-amount {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    text-align: right;
+}
+
+.remove-credit-row-btn {
+    background: var(--error-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    transition: background-color 0.2s ease;
+}
+
+.remove-credit-row-btn:hover {
+    background: var(--error-color-dark);
+}
+
+/* Credit Note Summary */
+#credit-note-total {
+    font-weight: var(--font-semibold);
+    color: var(--primary-color);
+}
+
+/* Responsive adjustments for credit note functionality */
+@media (max-width: 1200px) {
+    .credit-search-dropdown,
+    .related-invoice-dropdown {
+        max-width: 300px;
+    }
+    
+    .related-invoice-dropdown .invoice-option .invoice-details {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+}

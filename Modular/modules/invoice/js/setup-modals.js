@@ -1,6 +1,6 @@
 // --- Supplier Modal Logic ---
 
-export function openSupplierModal(supplierId = null) {
+function openSupplierModal(supplierId = null) {
     const modal = document.getElementById('supplierModal');
     const title = document.getElementById('supplierModalTitle');
     const form = document.getElementById('supplierForm');
@@ -16,14 +16,14 @@ export function openSupplierModal(supplierId = null) {
     modal.style.display = 'block';
 }
 
-export function closeSupplierModal() {
+function closeSupplierModal() {
     const modal = document.getElementById('supplierModal');
     modal.style.display = 'none';
 }
 
-export async function loadSupplierData(supplierId) {
+async function loadSupplierData(supplierId) {
     // Use SetupAPI to fetch supplier data and autofill form
-    const { getSupplier } = await import('./setup-api.js');
+    const { getSupplier } = window.SetupAPI;
     const res = await getSupplier(supplierId);
     if (res.success && res.data) {
         document.getElementById('supplier-id').value = res.data.supplier_id;
@@ -37,7 +37,7 @@ export async function loadSupplierData(supplierId) {
 
 // --- Sales Target Modal Logic ---
 
-export function openSalesTargetModal(targetId = null) {
+function openSalesTargetModal(targetId = null) {
     const modal = document.getElementById('salesTargetModal');
     const title = document.getElementById('salesTargetModalTitle');
     const form = document.getElementById('salesTargetForm');
@@ -54,14 +54,14 @@ export function openSalesTargetModal(targetId = null) {
     modal.style.display = 'block';
 }
 
-export function closeSalesTargetModal() {
+function closeSalesTargetModal() {
     const modal = document.getElementById('salesTargetModal');
     modal.style.display = 'none';
 }
 
-export async function loadUsersForSalesTarget() {
+async function loadUsersForSalesTarget() {
     // Use SetupAPI to fetch users and populate dropdown
-    const { getSalesUsers } = await import('./setup-api.js');
+    const { getSalesUsers } = window.SetupAPI;
     const res = await getSalesUsers();
     const userSelect = document.getElementById('sales-target-user');
     if (!userSelect) return;
@@ -76,9 +76,9 @@ export async function loadUsersForSalesTarget() {
     }
 }
 
-export async function loadSalesTargetData(targetId) {
+async function loadSalesTargetData(targetId) {
     // Use SetupAPI to fetch sales target data and autofill form
-    const { getSalesTarget } = await import('./setup-api.js');
+    const { getSalesTarget } = window.SetupAPI;
     const res = await getSalesTarget(targetId);
     if (res.success && res.data) {
         document.getElementById('sales-target-id').value = res.data.sales_target_id;
@@ -94,7 +94,7 @@ export async function loadSalesTargetData(targetId) {
 const creditReasonModal = document.getElementById('creditReasonModal');
 const creditReasonForm = document.getElementById('creditReasonForm');
 
-export function openCreditReasonModal(mode = 'add', data = null) {
+function openCreditReasonModal(mode = 'add', data = null) {
     if (!creditReasonModal || !creditReasonForm) return;
     creditReasonModal.setAttribute('data-mode', mode);
     creditReasonForm.reset();
@@ -107,7 +107,7 @@ export function openCreditReasonModal(mode = 'add', data = null) {
     creditReasonModal.style.display = 'block';
 }
 
-export function closeCreditReasonModal() {
+function closeCreditReasonModal() {
     if (!creditReasonModal) return;
     creditReasonForm.reset();
     creditReasonModal.removeAttribute('data-mode');

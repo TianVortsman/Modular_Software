@@ -468,6 +468,11 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
     <?php include '../../../src/UI/response-modal.php'; ?>
     <?php include '../../../src/UI/loading-modal.php'; ?>
 
-    <script type="module" src="../js/setup-screen.js"></script>
+            <script src="../../../public/assets/js/helpers.js"></script>
+            <script src="../js/product-api.js"></script>
+            <script src="../js/setup-api.js"></script>
+            <script src="../js/setup-modals.js"></script>
+            <script src="../js/setup-form.js"></script>
+            <script src="../js/setup-screen.js"></script>
 </body>
 </html>

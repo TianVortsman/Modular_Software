@@ -75,6 +75,15 @@ async function saveDocumentApi(formData, recurringDetails = {}) {
     if (recurringDetails.mode) {
         data.mode = recurringDetails.mode;
     }
+    
+    // Ensure mode is properly set based on document status if not explicitly provided
+    if (!data.mode) {
+        if (isDraft) {
+            data.mode = 'draft';
+        } else if (formData.document_status && formData.document_status.toLowerCase() === 'unpaid') {
+            data.mode = 'finalize';
+        }
+    }
     try {
         let response;
         const hasDocumentId = formData.document_id && formData.document_id !== '' && formData.document_id !== '0';
@@ -201,20 +210,25 @@ async function fetchNextInvoiceNumberPreview() {
 }
 
 // Add dashboard-related API functions for dashboard.js
-
 async function fetchDashboardCards(range) {
     try {
         const res = await fetch(`../api/dashboard-api.php?action=get_dashboard_cards&range=${encodeURIComponent(range)}`);
         const data = await res.json();
-        window.handleApiResponse(data);
+        if (typeof window.handleApiResponse === 'function') {
+            window.handleApiResponse(data);
+        }
         return data;
     } catch (err) {
-        if (typeof ResponseModal !== 'undefined') {
-            ResponseModal.error('Failed to load dashboard cards: ' + (err.message || err));
-        } else {
-            alert('Failed to load dashboard cards: ' + (err.message || err));
-        }
-        return { success: false, message: err.message };
+        console.error('Failed to load dashboard cards:', err);
+        return { 
+            total_invoices: 0, 
+            total_revenue: 0, 
+            unpaid_invoices: 0, 
+            pending_payments: 0, 
+            expenses_this_month: 0, 
+            taxes_due: 0, 
+            recurring_invoices: 0 
+        };
     }
 }
 
@@ -259,7 +273,7 @@ async function fetchInvoiceChartData(range) {
 }
 
 // --- PDF Preview ---
-export async function previewDocumentPDF(formData) {
+async function previewDocumentPDF(formData) {
     const payload = {
         ...formData,
         preview: true
@@ -273,7 +287,7 @@ export async function previewDocumentPDF(formData) {
 }
 
 // --- Final PDF Generation ---
-export async function generateFinalPDF(formData) {
+async function generateFinalPDF(formData) {
     const payload = {
         ...formData,
         preview: false
@@ -315,17 +329,25 @@ export async function generateFinalPDF(formData) {
     }
 }
 
-export {
-    searchClients,
-    searchSalespeople,
-    searchProducts,
-    saveDocumentApi,
-    fetchAndSetDocument,
-    fetchDashboardCards,
-    fetchInvoices,
-    fetchRecurringInvoices,
-    fetchInvoiceChartData,
-};
+// Make functions available globally
+window.searchClients = searchClients;
+window.searchSalespeople = searchSalespeople;
+window.searchProducts = searchProducts;
+window.saveDocumentApi = saveDocumentApi;
+window.fetchAndSetDocument = fetchAndSetDocument;
+window.fetchDashboardCards = fetchDashboardCards;
+window.fetchInvoices = fetchInvoices;
+window.fetchRecurringInvoices = fetchRecurringInvoices;
+window.fetchInvoiceChartData = fetchInvoiceChartData;
+window.previewDocumentPDF = previewDocumentPDF;
+window.generateFinalPDF = generateFinalPDF;
+
+// Add aliases for backward compatibility
+window.searchClient = searchClients; // Alias for searchClient
+window.searchSalesperson = searchSalespeople; // Alias for searchSalesperson
+
+// All functions are now globally available via window object
+// No ES6 exports needed for regular script loading
 
 
 

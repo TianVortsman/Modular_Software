@@ -6,7 +6,7 @@
  * @param {HTMLFormElement} form
  * @returns {Object} Serialized data
  */
-export function serializeForm(form) {
+function serializeForm(form) {
     const data = {};
     const formData = new FormData(form);
     for (const [key, value] of formData.entries()) {
@@ -20,7 +20,7 @@ export function serializeForm(form) {
  * @param {Object} data
  * @returns {Object} { valid: boolean, errors: Object }
  */
-export function validateForm(data) {
+function validateForm(data) {
     const errors = {};
     // Company modal (edit)
     if (data.companyName !== undefined) {
@@ -65,7 +65,7 @@ export function validateForm(data) {
  * Reset form fields to default/empty values
  * @param {HTMLFormElement} form
  */
-export function resetForm(form) {
+function resetForm(form) {
     form.reset();
     // Remove error classes/messages
     form.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
@@ -76,7 +76,7 @@ export function resetForm(form) {
  * @param {Event} event
  * @param {string} mode - 'add' or 'edit'
  */
-export async function handleFormSubmit(event, mode) {
+async function handleFormSubmit(event, mode) {
     event.preventDefault();
     const form = event.target;
     const data = serializeForm(form);
@@ -194,9 +194,9 @@ export async function handleFormSubmit(event, mode) {
     try {
         if (mode === 'edit') {
             const clientId = data.companyId || data.customerId;
-            res = await updateClient(clientId, payload);
-        } else {
-            res = await createClient(payload);
+                    res = await window.updateClient(clientId, payload);
+    } else {
+        res = await window.createClient(payload);
         }
     } catch (err) {
         // For all API/fetch calls, after await res.json(), call window.handleApiResponse(data).

@@ -65,13 +65,13 @@ switch ($action) {
         break;
     case 'getSuppliers':
         require_once __DIR__ . '/../controllers/SupplierController.php';
-        $result = App\modules\product\controllers\list_suppliers();
+        $result = App\modules\invoice\controllers\list_suppliers();
         echo json_encode($result);
         break;
     case 'getSupplier':
         require_once __DIR__ . '/../controllers/SupplierController.php';
         $supplier_id = $_GET['supplier_id'] ?? null;
-        $result = $supplier_id ? App\modules\product\controllers\get_supplier((int)$supplier_id) : ['success' => false, 'message' => 'Missing supplier_id'];
+        $result = $supplier_id ? App\modules\invoice\controllers\get_supplier((int)$supplier_id) : ['success' => false, 'message' => 'Missing supplier_id'];
         echo json_encode($result);
         break;
     case 'saveSupplier':
@@ -79,9 +79,9 @@ switch ($action) {
         $user_id = $_SESSION['user_id'] ?? ($_SESSION['tech_id'] ?? null);
         $supplier_id = $_POST['supplier_id'] ?? null;
         if ($supplier_id) {
-            $result = App\modules\product\controllers\update_supplier((int)$supplier_id, $_POST, $user_id);
+            $result = App\modules\invoice\controllers\update_supplier((int)$supplier_id, $_POST, $user_id);
         } else {
-            $result = App\modules\product\controllers\add_supplier($_POST, $user_id);
+            $result = App\modules\invoice\controllers\add_supplier($_POST, $user_id);
         }
         echo json_encode($result);
         break;
@@ -89,7 +89,7 @@ switch ($action) {
         require_once __DIR__ . '/../controllers/SupplierController.php';
         $supplier_id = $_GET['supplier_id'] ?? null;
         if ($supplier_id) {
-            $result = App\modules\product\controllers\get_supplier_contacts((int)$supplier_id);
+            $result = App\modules\invoice\controllers\get_supplier_contacts((int)$supplier_id);
         } else {
             $result = ['success' => false, 'message' => 'Missing supplier_id'];
         }
@@ -98,7 +98,7 @@ switch ($action) {
     case 'addSupplierContact':
         require_once __DIR__ . '/../controllers/SupplierController.php';
         $user_id = $_SESSION['user_id'] ?? ($_SESSION['tech_id'] ?? null);
-        $result = App\modules\product\controllers\add_supplier_contact($_POST, $user_id);
+        $result = App\modules\invoice\controllers\add_supplier_contact($_POST, $user_id);
         echo json_encode($result);
         break;
     case 'updateSupplierContact':
@@ -106,7 +106,7 @@ switch ($action) {
         $user_id = $_SESSION['user_id'] ?? ($_SESSION['tech_id'] ?? null);
         $contact_id = $_POST['contact_person_id'] ?? null;
         if ($contact_id) {
-            $result = App\modules\product\controllers\update_supplier_contact((int)$contact_id, $_POST, $user_id);
+            $result = App\modules\invoice\controllers\update_supplier_contact((int)$contact_id, $_POST, $user_id);
         } else {
             $result = ['success' => false, 'message' => 'Missing contact_person_id'];
         }
@@ -117,7 +117,7 @@ switch ($action) {
         $user_id = $_SESSION['user_id'] ?? ($_SESSION['tech_id'] ?? null);
         $contact_id = $_POST['contact_person_id'] ?? null;
         if ($contact_id) {
-            $result = App\modules\product\controllers\delete_supplier_contact((int)$contact_id, $user_id);
+            $result = App\modules\invoice\controllers\delete_supplier_contact((int)$contact_id, $user_id);
         } else {
             $result = ['success' => false, 'message' => 'Missing contact_person_id'];
         }
@@ -195,6 +195,34 @@ switch ($action) {
     case 'saveDocumentNumbering':
         $data = $_POST;
         $result = App\modules\invoice\controllers\save_document_numbering($data);
+        echo json_encode($result);
+        break;
+    case 'getBankInfo':
+        $result = App\modules\invoice\controllers\get_bank_info();
+        echo json_encode($result);
+        break;
+    case 'saveBankInfo':
+        // Accept POST only
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'POST required']);
+            break;
+        }
+        $data = $_POST;
+        $result = App\modules\invoice\controllers\save_bank_info($data);
+        echo json_encode($result);
+        break;
+    case 'getCompanyInfo':
+        $result = App\modules\invoice\controllers\get_company_info();
+        echo json_encode($result);
+        break;
+    case 'saveCompanyInfo':
+        // Accept POST only
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'POST required']);
+            break;
+        }
+        $data = $_POST;
+        $result = App\modules\invoice\controllers\save_company_info($data);
         echo json_encode($result);
         break;
     // Add other actions as needed...

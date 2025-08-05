@@ -1018,7 +1018,7 @@ function save_product_category(array $data): array {
             return ['success' => true, 'message' => 'Category updated'];
         } else {
             // Insert
-            $sql = "INSERT INTO core.product_categories (category_name, category_description, product_type_id, created_at) VALUES (:name, :desc, :type_id, NOW()) RETURNING category_id";
+            $sql = "INSERT INTO core.product_categories (category_name, category_description, product_type_id, created_at, updated_at) VALUES (:name, :desc, :type_id, NOW(), NOW()) RETURNING category_id";
             $stmt = $conn->prepare($sql);
             $stmt->execute([
                 'name' => $name,
@@ -1060,7 +1060,7 @@ function save_product_subcategory(array $data): array {
             return ['success' => true, 'message' => 'Subcategory updated'];
         } else {
             // Insert
-            $sql = "INSERT INTO core.product_subcategories (subcategory_name, subcategory_description, category_id, created_at) VALUES (:name, :desc, :category_id, NOW()) RETURNING subcategory_id";
+            $sql = "INSERT INTO core.product_subcategories (subcategory_name, subcategory_description, category_id, created_at, updated_at) VALUES (:name, :desc, :category_id, NOW(), NOW()) RETURNING subcategory_id";
             $stmt = $conn->prepare($sql);
             $stmt->execute([
                 'name' => $name,

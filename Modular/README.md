@@ -253,7 +253,7 @@ const confirmed = await showResponseModal('Are you sure?', 'warning', false, tru
 ```
 ```javascript
 // Show loading
-showLoadingModal('Processing...');
+window.showLoadingModal('Processing...');
 
 // Hide loading
 hideLoadingModal();

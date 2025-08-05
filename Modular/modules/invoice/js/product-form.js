@@ -1,5 +1,3 @@
-import { ProductAPI } from './product-api.js';
-
     // --- ProductModalForm: Handles form logic (form state, validation, field population, etc.) ---
     class ProductModalForm {
         constructor(modalElement) {
@@ -122,7 +120,7 @@ import { ProductAPI } from './product-api.js';
         async populateSupplierDropdown(selectedId = null) {
             const supplierDropdown = this.supplierDropdown;
             if (!supplierDropdown) return;
-            const res = await ProductAPI.fetchSuppliers();
+            const res = await window.ProductAPI.fetchSuppliers();
             supplierDropdown.innerHTML = '<option value="">Select Supplier</option>';
             if (res.success && Array.isArray(res.data)) {
                 res.data.forEach(supplier => {
@@ -137,7 +135,7 @@ import { ProductAPI } from './product-api.js';
         async populateTypeDropdown(selectedId = null) {
             const typeDropdown = this.typeDropdown;
             if (!typeDropdown) return;
-            const res = await ProductAPI.fetchProductTypes();
+            const res = await window.ProductAPI.fetchProductTypes();
             typeDropdown.innerHTML = '<option value="">Select Type</option>';
             if (res.success && Array.isArray(res.data)) {
                 res.data.forEach(type => {
@@ -166,7 +164,7 @@ import { ProductAPI } from './product-api.js';
         async populateCategoryDropdown(typeId = null, selectedId = null) {
             const categoryDropdown = this.categoryDropdown;
             if (!categoryDropdown) return;
-            const res = await ProductAPI.fetchProductCategories(typeId);
+            const res = await window.ProductAPI.fetchProductCategories(typeId);
             categoryDropdown.innerHTML = '<option value="">Select Category</option>';
             if (res.success && Array.isArray(res.data)) {
                 res.data.forEach(cat => {
@@ -189,7 +187,7 @@ import { ProductAPI } from './product-api.js';
                 subcategoryDropdown.innerHTML = '<option value="">Select Subcategory</option>';
                 return;
             }
-            const res = await ProductAPI.fetchProductSubcategories(categoryId);
+            const res = await window.ProductAPI.fetchProductSubcategories(categoryId);
             subcategoryDropdown.innerHTML = '<option value="">Select Subcategory</option>';
             if (res.success && Array.isArray(res.data)) {
                 res.data.forEach(sub => {
@@ -204,7 +202,7 @@ import { ProductAPI } from './product-api.js';
         async populateTaxRateDropdown(selectedId = null) {
             const taxRateDropdown = this.form.querySelector('[name="tax_rate_id"]');
             if (!taxRateDropdown) return;
-            const res = await ProductAPI.fetchTaxRates();
+            const res = await window.ProductAPI.fetchTaxRates();
             taxRateDropdown.innerHTML = '<option value="">Select Tax Rate</option>';
             if (res.success && Array.isArray(res.data)) {
                 res.data.forEach(rate => {

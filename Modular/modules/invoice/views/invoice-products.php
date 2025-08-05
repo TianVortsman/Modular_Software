@@ -181,9 +181,10 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
 <?php include('../../../src/UI/loading-modal.php') ?>
 <?php include('../../../src/UI/response-modal.php') ?>
 <?php include('../modals/product-modals.php') ?>
-<script type="module" src="../js/product-api.js"></script>
-<script type="module" src="../js/product-form.js"></script>
-<script type="module" src="../js/product-screen.js"></script>
-<script type="module" src="../js/product-modals.js"></script>
+        <script src="../../../public/assets/js/helpers.js"></script>
+        <script src="../js/product-api.js"></script>
+        <script src="../js/product-form.js"></script>
+        <script src="../js/product-screen.js"></script>
+        <script src="../js/product-modals.js"></script>
 </body>
 </html>

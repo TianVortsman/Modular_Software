@@ -584,6 +584,14 @@ console.log('🌐 Setting global functions...');
 window.showResponseModal = showResponseModal;
 window.closeResponseModal = closeResponseModal;
 window.handleApiResponse = handleApiResponse;
+
+// Add loading modal functions to global scope if they exist
+if (typeof showLoadingModal !== 'undefined') {
+    window.showLoadingModal = showLoadingModal;
+}
+if (typeof hideLoadingModal !== 'undefined') {
+    window.hideLoadingModal = hideLoadingModal;
+}
 console.log('✅ Global functions set:', {
     'window.showResponseModal': typeof window.showResponseModal,
     'window.closeResponseModal': typeof window.closeResponseModal,
@@ -654,6 +662,10 @@ document.addEventListener('DOMContentLoaded', function () {
         ],
         "payments":[
             { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
+            { href: "#", icon: "add_circle", text: "Add Payment", onclick: "callIfExists('openPaymentModal', 'create')" },
+            { href: "#", icon: "receipt_long", text: "Add Credit Note", onclick: "callIfExists('openDocumentModal', 'create', null, 'credit-note')" },
+            { href: "#", icon: "money_off", text: "Add Refund", onclick: "callIfExists('openDocumentModal', 'create', null, 'refund')" },
+            { href: "#", icon: "history", text: "Payment History", onclick: "callIfExists('showPaymentHistory')" },
         ],
         "sales-reps":[
             { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
@@ -684,13 +696,13 @@ document.addEventListener('DOMContentLoaded', function () {
         ],
         "invoice-setup": [
             { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
-            { href: "#", icon: "inventory", text: "Product Setup", tab: "products", class: "tab", onclick: "invoiceSetup.switchTab('products')" },
-            { href: "#", icon: "account_balance", text: "Bank & Company", tab: "banking", class: "tab", onclick: "invoiceSetup.switchTab('banking')" },
-            { href: "#", icon: "trending_up", text: "Sales Configuration", tab: "sales", class: "tab", onclick: "invoiceSetup.switchTab('sales')" },
-            { href: "#", icon: "business", text: "Suppliers", tab: "suppliers", class: "tab", onclick: "invoiceSetup.switchTab('suppliers')" },
-            { href: "#", icon: "receipt_long", text: "Credit Notes", tab: "credit", class: "tab", onclick: "invoiceSetup.switchTab('credit')" },
-            { href: "#", icon: "format_list_numbered", text: "Invoice Numbering", tab: "numbering", class: "tab", onclick: "invoiceSetup.switchTab('numbering')" },
-            { href: "#", icon: "description", text: "Terms & Footer", tab: "terms", class: "tab", onclick: "invoiceSetup.switchTab('terms')" }
+            { href: "#", icon: "inventory", text: "Product Setup", tab: "products", class: "tab", onclick: "callIfExists('switchTab', 'products')" },
+            { href: "#", icon: "account_balance", text: "Bank & Company", tab: "banking", class: "tab", onclick: "callIfExists('switchTab', 'banking')" },
+            { href: "#", icon: "trending_up", text: "Sales Configuration", tab: "sales", class: "tab", onclick: "callIfExists('switchTab', 'sales')" },
+            { href: "#", icon: "business", text: "Suppliers", tab: "suppliers", class: "tab", onclick: "callIfExists('switchTab', 'suppliers')" },
+            { href: "#", icon: "receipt_long", text: "Credit Notes", tab: "credit", class: "tab", onclick: "callIfExists('switchTab', 'credit')" },
+            { href: "#", icon: "format_list_numbered", text: "Invoice Numbering", tab: "numbering", class: "tab", onclick: "callIfExists('switchTab', 'numbering')" },
+            { href: "#", icon: "description", text: "Terms & Footer", tab: "terms", class: "tab", onclick: "callIfExists('switchTab', 'terms')" }
         ],
         "TandA": [
             { href: "/public/views/dashboard.php", icon: "home", text: "Home" },

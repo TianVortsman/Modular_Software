@@ -1,7 +1,6 @@
 // Client Screen Logic: Handles main screen rendering, event binding, and table updates
 // Now using NOVA Table component for enhanced functionality
-import { openClientModal, closeModal } from './client-modal.js';
-import { fetchClients } from './client-api.js';
+// All functions are now globally available via window object
 
 let isLoading = false;
 let currentType = 'private';
@@ -31,7 +30,7 @@ const privateTableConfig = {
     maxHeight: null, // Let CSS handle the height
     onDoubleClick: (row) => {
         if (row.client_id) {
-            openClientModal(row.client_id);
+            window.openClientModal(row.client_id);
         }
     },
     onSelectionChange: (selectedRows) => {
@@ -73,7 +72,7 @@ const businessTableConfig = {
     maxHeight: null, // Let CSS handle the height
     onDoubleClick: (row) => {
         if (row.client_id) {
-            openClientModal(row.client_id);
+            window.openClientModal(row.client_id);
         }
     },
     onSelectionChange: (selectedRows) => {
@@ -95,7 +94,7 @@ const businessTableConfig = {
 /**
  * Initialize the client screen (on page load)
  */
-export async function initClientScreen() {
+async function initClientScreen() {
     console.log('Initializing client screen with NOVA tables...');
     
     // Initialize NOVA tables
@@ -184,7 +183,7 @@ function getCurrentNovaTable() {
  * @param {Array} clients
  * @param {number} total
  */
-export function renderClientTable(clients, total = 0) {
+function renderClientTable(clients, total = 0) {
     const novaTable = getCurrentNovaTable();
     if (!novaTable) {
         console.error('NOVA table not initialized for type:', currentType);
@@ -203,7 +202,7 @@ export function renderClientTable(clients, total = 0) {
 /**
  * Bind all event listeners (tab switching, etc.)
  */
-export function bindEvents() {
+function bindEvents() {
     // Tab switching
     const privateBtn = document.getElementById('clientSectionButton1');
     const businessBtn = document.getElementById('clientSectionButton2');
@@ -237,7 +236,7 @@ export function bindEvents() {
 /**
  * Handle search functionality (now handled by NOVA table)
  */
-export function handleSearch(event) {
+function handleSearch(event) {
     // Search is now handled internally by NOVA table
     console.log('Search handled by NOVA table');
 }
@@ -245,7 +244,7 @@ export function handleSearch(event) {
 /**
  * Handle filter functionality (now handled by NOVA table)
  */
-export function handleFilter(event) {
+function handleFilter(event) {
     // Filtering is now handled internally by NOVA table
     console.log('Filter handled by NOVA table');
 }
@@ -253,7 +252,7 @@ export function handleFilter(event) {
 /**
  * Handle pagination (now handled by NOVA table)
  */
-export function handlePagination(page) {
+function handlePagination(page) {
     // Pagination is now handled internally by NOVA table
     console.log('Pagination handled by NOVA table');
 }
@@ -261,7 +260,7 @@ export function handlePagination(page) {
 /**
  * Handle row click (now handled by NOVA table)
  */
-export function handleRowClick(event) {
+function handleRowClick(event) {
     // Row clicks are now handled internally by NOVA table
     console.log('Row click handled by NOVA table');
 }
@@ -269,7 +268,7 @@ export function handleRowClick(event) {
 /**
  * Refresh the client table with current data
  */
-export async function refreshClientTable() {
+async function refreshClientTable() {
     if (isLoading) return;
     
     isLoading = true;
@@ -285,7 +284,7 @@ export async function refreshClientTable() {
         }
 
         // Fetch data from API
-        const response = await fetchClients({
+        const response = await window.fetchClients({
             type: currentType,
             page: 1,
             limit: 1000 // Get all data, let NOVA table handle pagination
@@ -309,7 +308,7 @@ export async function refreshClientTable() {
 /**
  * Get selected clients from the current table
  */
-export function getSelectedClients() {
+function getSelectedClients() {
     const novaTable = getCurrentNovaTable();
     if (novaTable) {
         return novaTable.getSelectedRows();
@@ -320,7 +319,7 @@ export function getSelectedClients() {
 /**
  * Export selected clients
  */
-export function exportSelectedClients() {
+function exportSelectedClients() {
     const novaTable = getCurrentNovaTable();
     if (novaTable) {
         novaTable.exportSelected();
@@ -330,7 +329,7 @@ export function exportSelectedClients() {
 /**
  * Clear selection in current table
  */
-export function clearSelection() {
+function clearSelection() {
     const novaTable = getCurrentNovaTable();
     if (novaTable) {
         novaTable.clearSelection();
@@ -340,7 +339,7 @@ export function clearSelection() {
 /**
  * Refresh both tables (useful after data changes)
  */
-export async function refreshAllTables() {
+async function refreshAllTables() {
     await refreshClientTable();
 }
 
@@ -363,3 +362,17 @@ function waitForNovaTableAndInit() {
 
 // Start the initialization process
 waitForNovaTableAndInit();
+
+// Make functions available globally
+window.initClientScreen = initClientScreen;
+window.renderClientTable = renderClientTable;
+window.bindEvents = bindEvents;
+window.handleSearch = handleSearch;
+window.handleFilter = handleFilter;
+window.handlePagination = handlePagination;
+window.handleRowClick = handleRowClick;
+window.refreshClientTable = refreshClientTable;
+window.getSelectedClients = getSelectedClients;
+window.exportSelectedClients = exportSelectedClients;
+window.clearSelection = clearSelection;
+window.refreshAllTables = refreshAllTables;

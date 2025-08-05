@@ -128,4 +128,8 @@
             modal.style.visibility = 'hidden';
         }, 300); // Match transition duration
     }
+
+    // Make functions globally available
+    window.showLoadingModal = showLoadingModal;
+    window.hideLoadingModal = hideLoadingModal;
 </script>

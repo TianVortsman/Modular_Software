@@ -1,7 +1,5 @@
 console.log('Loading product-modals.js');
-import { ProductAPI } from './product-api.js';
-import { makeModalDraggable } from '../../../public/assets/js/helpers.js';
-window.ProductAPI = ProductAPI;
+// Product modals functionality - all functions are now available globally
 
 // --- ProductModalUI: Handles modal open/close, tab switching, and modal-specific UI logic ---
 class ProductModalUI {
@@ -126,7 +124,7 @@ class ProductModalUI {
         // Always populate tax rate dropdown before showing modal
         await this.formManager.populateTaxRateDropdown();
         if (mode === 'edit' && productId) {
-            ProductAPI.fetchProductDetails(productId).then(async result => {
+            window.ProductAPI.fetchProductDetails(productId).then(async result => {
                 if (result.success) {
                     // Populate dropdowns with correct values from product data
                     await this.formManager.populateTypeDropdown(result.data.product_type_id);
@@ -250,8 +248,8 @@ class ProductModalUI {
         const isEditMode = this.mode === 'edit';
         showLoadingModal(isEditMode ? 'Saving changes...' : 'Adding product...');
         let apiCall = isEditMode
-            ? ProductAPI.editProduct(this.productId, formData)
-            : ProductAPI.addProduct(formData);
+            ? window.ProductAPI.editProduct(this.productId, formData)
+            : window.ProductAPI.addProduct(formData);
         apiCall.then(async data => {
             console.log('[ProductModalUI] API call result:', data);
             hideLoadingModal();
@@ -280,7 +278,7 @@ class ProductModalUI {
             return;
         }
         showLoadingModal('Deleting product...');
-        ProductAPI.deleteProduct(productId).then(result => {
+        window.ProductAPI.deleteProduct(productId).then(result => {
             hideLoadingModal();
             if (!result.success) {
                 this.closeModal();
@@ -304,7 +302,7 @@ class ProductModalUI {
         if (!container) return;
         container.innerHTML = '<div class="loading">Loading suppliers...</div>';
         try {
-            const data = await ProductAPI.fetchProductSuppliersAndStock(productId);
+            const data = await window.ProductAPI.fetchProductSuppliersAndStock(productId);
             if (!data.success || !Array.isArray(data.data) || data.data.length === 0) {
                 container.innerHTML = '<div class="empty-state">No suppliers linked to this product.</div>';
                 return;
@@ -360,7 +358,7 @@ class ProductModalUI {
         if (!container) return;
         container.innerHTML = '<div class="loading">Loading stock history...</div>';
         try {
-            const data = await ProductAPI.fetchProductSuppliersAndStock(productId);
+            const data = await window.ProductAPI.fetchProductSuppliersAndStock(productId);
             if (!data.success || !Array.isArray(data.data)) {
                 container.innerHTML = '<div class="error">Failed to load stock history.</div>';
                 return;
@@ -421,7 +419,7 @@ class ProductModalUI {
         if (!this.productId) return;
         supplierSelect.innerHTML = '<option value="">Loading...</option>';
         try {
-            const data = await ProductAPI.fetchProductSuppliersAndStock(this.productId);
+            const data = await window.ProductAPI.fetchProductSuppliersAndStock(this.productId);
             if (data.success && Array.isArray(data.data) && data.data.length > 0) {
                 supplierSelect.innerHTML = '';
                 this.lastSuppliersForStock = data.data;
@@ -550,8 +548,8 @@ document.addEventListener('DOMContentLoaded', () => {
         window.productModalUI = new ProductModalUI(modal);
     }
     // Make only the modal content boxes draggable
-    makeModalDraggable('.universal-product-modal-content', '.universal-product-modal-title');
-    makeModalDraggable('.adjust-stock-modal-content', '.adjust-stock-modal-content h4');
+    window.makeModalDraggable('.universal-product-modal-content', '.universal-product-modal-title');
+    window.makeModalDraggable('.adjust-stock-modal-content', '.adjust-stock-modal-content h4');
 });
 
 // Export for use in other files
@@ -643,7 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // --- Dynamic typeId to typeName mapping for modal titles ---
 let typeIdToNameMap = {};
 async function updateTypeIdToNameMap() {
-    const typeRes = await ProductAPI.fetchProductTypes();
+    const typeRes = await window.ProductAPI.fetchProductTypes();
     if (typeRes.success && Array.isArray(typeRes.data)) {
         typeRes.data.forEach(type => {
             typeIdToNameMap[type.product_type_id] = type.product_type_name;

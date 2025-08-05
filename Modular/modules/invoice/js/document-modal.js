@@ -2,8 +2,6 @@
 // All modal logic, event handlers, and line item management now use new IDs/classes from document-modal.php
 // All logic is mapped to the unified invoicing.clients and invoicing.documents schema
 
-import { searchClients, searchSalespeople, searchProducts, saveDocumentApi, previewDocumentPDF, generateFinalPDF, fetchAndSetDocument } from './document-api.js';
-
 // Initialize Lucide icons when available
 function initializeLucideIcons() {
     if (typeof lucide !== 'undefined') {
@@ -21,14 +19,16 @@ function initializeLivePreview() {
             const preview = document.getElementById('live-preview-modal');
             const icon = togglePreview.querySelector('i');
             
-            if (preview.classList.contains('hidden')) {
+            if (preview && preview.classList.contains('hidden')) {
                 preview.classList.remove('hidden');
-                icon.setAttribute('data-lucide', 'eye');
-            } else {
+                if (icon) icon.setAttribute('data-lucide', 'eye');
+            } else if (preview) {
                 preview.classList.add('hidden');
-                icon.setAttribute('data-lucide', 'eye-off');
+                if (icon) icon.setAttribute('data-lucide', 'eye-off');
             }
-            lucide.createIcons();
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
         });
     }
     
@@ -568,7 +568,7 @@ function handleDocumentTypeChange() {
     updateSectionVisibility();
 }
 
-window.openDocumentModal = openDocumentModalWithPreview;
+window.openDocumentModal = openDocumentModal;
 function closeDocumentModal() {
     // Clear related document ID when closing modal
     const relatedDocInput = document.getElementById('related-document-id');
@@ -922,10 +922,15 @@ function searchItem(inputElement) {
 }
 
 function autofillRow(row, result) {
-    row.querySelector('.item-code').value = result.item_code;
-    row.querySelector('.description').value = result.product_description;
-    row.querySelector('.unit-price').value = result.unit_price;
-    row.querySelector('.product-id').value = result.product_id;
+    const itemCode = row.querySelector('.item-code');
+    const description = row.querySelector('.description');
+    const unitPrice = row.querySelector('.unit-price');
+    const productId = row.querySelector('.product-id');
+    
+    if (itemCode) itemCode.value = result.item_code || '';
+    if (description) description.value = result.product_description || '';
+    if (unitPrice) unitPrice.value = result.unit_price || '';
+    if (productId) productId.value = result.product_id || '';
     const taxDropdown = row.querySelector('.tax');
     const taxRateIdField = row.querySelector('.tax-rate-id');
     if (taxDropdown) {
@@ -1159,7 +1164,7 @@ function setupInitialCreditNoteListeners() {
  */
 async function previewDocument() {
     try {
-        showLoadingModal('Generating PDF preview...');
+        window.showLoadingModal('Generating PDF preview...');
         const formData = window.getDocumentFormData();
         
                             // For preview, use a simple draft number
@@ -1194,9 +1199,9 @@ async function previewDocument() {
             showResponseModal('Error generating PDF preview: ' + (err.message || err), 'error');
         }
         
-        hideLoadingModal();
+        window.hideLoadingModal();
     } catch (err) {
-        hideLoadingModal();
+        window.hideLoadingModal();
         showResponseModal('Error generating PDF preview: ' + (err.message || err), 'error');
     }
 }
@@ -1206,13 +1211,13 @@ async function previewDocument() {
  */
 async function saveDocument() {
     try {
-        showLoadingModal('Saving draft...');
+        window.showLoadingModal('Saving draft...');
         const formData = window.getDocumentFormData();
         formData.document_status = 'Draft';
         
         // Pass mode parameter for draft
         const result = await saveDocumentApi(formData, { mode: 'draft' });
-        hideLoadingModal();
+        window.hideLoadingModal();
         
         console.log('[saveDocument] API result:', result);
         
@@ -1238,7 +1243,7 @@ async function saveDocument() {
         }
         
     } catch (err) {
-        hideLoadingModal();
+        window.hideLoadingModal();
         console.error('[saveDocument] Error:', err);
         showResponseModal('Error saving draft: ' + (err.message || err), 'error');
     }
@@ -1249,7 +1254,7 @@ async function saveDocument() {
  */
 async function createDocument() {
     try {
-        showLoadingModal('Finalizing document...');
+        window.showLoadingModal('Finalizing document...');
         const formData = window.getDocumentFormData();
         
         // Set document status to Unpaid (which means finalized)
@@ -1335,15 +1340,15 @@ async function createDocument() {
         const result = await saveDocumentApi(formDataForSave, { mode: 'finalize' });
         
         if (result.success === false) {
-            hideLoadingModal();
+            window.hideLoadingModal();
             window.handleApiResponse(result);
             return;
         }
         
         // Generate final PDF
-        showLoadingModal('Generating final PDF...');
+        window.showLoadingModal('Generating final PDF...');
         const pdfResult = await generateFinalPDF(formDataForPDF);
-        hideLoadingModal();
+        window.hideLoadingModal();
         
         if (pdfResult.success && pdfResult.url) {
             let msg = 'Document finalized successfully';
@@ -1379,7 +1384,7 @@ async function createDocument() {
         }
         
     } catch (err) {
-        hideLoadingModal();
+        window.hideLoadingModal();
         console.error('[createDocument] Error:', err);
         showResponseModal('Error finalizing document: ' + (err.message || err), 'error');
     }
@@ -1812,6 +1817,8 @@ function setupCreditNoteRowListeners(row) {
             input.removeEventListener('input', updateCreditNoteTotals);
             input.removeEventListener('change', updateLivePreview);
             input.removeEventListener('input', updateLivePreview);
+            input.removeEventListener('input', handleCreditNoteSearch);
+            input.removeEventListener('change', handleCreditNoteSearch);
         }
     });
     
@@ -1819,6 +1826,7 @@ function setupCreditNoteRowListeners(row) {
     if (creditTypeSelect) {
         creditTypeSelect.addEventListener('change', updateCreditNoteTotals);
         creditTypeSelect.addEventListener('change', updateLivePreview);
+        creditTypeSelect.addEventListener('change', handleCreditTypeChange);
     }
     
     if (creditReasonInput) {
@@ -1826,6 +1834,11 @@ function setupCreditNoteRowListeners(row) {
         creditReasonInput.addEventListener('change', updateCreditNoteTotals);
         creditReasonInput.addEventListener('input', updateLivePreview);
         creditReasonInput.addEventListener('change', updateLivePreview);
+        creditReasonInput.addEventListener('input', handleCreditNoteSearch);
+        creditReasonInput.addEventListener('change', handleCreditNoteSearch);
+        
+        // Add keyboard navigation for search dropdown
+        creditReasonInput.addEventListener('keydown', handleCreditNoteSearchKeydown);
     }
     
     if (creditAmountInput) {
@@ -1833,11 +1846,126 @@ function setupCreditNoteRowListeners(row) {
         creditAmountInput.addEventListener('change', updateCreditNoteTotals);
         creditAmountInput.addEventListener('input', updateLivePreview);
         creditAmountInput.addEventListener('change', updateLivePreview);
+        creditAmountInput.addEventListener('input', validateCreditAmount);
     }
     
     if (removeBtn) {
         removeBtn.addEventListener('click', removeCreditNoteItem);
     }
+}
+
+// Handle credit type change (reason vs product)
+function handleCreditTypeChange(event) {
+    const row = event.target.closest('tr');
+    const creditTypeSelect = event.target;
+    const creditReasonInput = row.querySelector('.credit-reason');
+    const creditAmountInput = row.querySelector('.credit-amount');
+    
+    // Clear previous values
+    creditReasonInput.value = '';
+    creditAmountInput.value = 'R0.00';
+    
+    // Update placeholder based on type
+    if (creditTypeSelect.value === 'reason') {
+        creditReasonInput.placeholder = 'Search credit reason...';
+    } else if (creditTypeSelect.value === 'product') {
+        creditReasonInput.placeholder = 'Search original product...';
+    }
+    
+    // Clear dropdown
+    const dropdown = creditReasonInput.nextElementSibling;
+    if (dropdown) {
+        dropdown.innerHTML = '';
+    }
+    
+    updateCreditNoteTotals();
+    updateLivePreview();
+}
+
+// Handle credit note search (reasons or products)
+function handleCreditNoteSearch(event) {
+    const input = event.target;
+    const query = input.value.trim();
+    const row = input.closest('tr');
+    const creditTypeSelect = row.querySelector('.credit-type');
+    
+    // Clear dropdown if query is too short
+    if (query.length < 2) {
+        const dropdown = input.nextElementSibling;
+        if (dropdown) {
+            dropdown.innerHTML = '';
+        }
+        return;
+    }
+    
+    // Search based on credit type
+    if (creditTypeSelect.value === 'reason') {
+        searchCreditReasons(input, query);
+    } else if (creditTypeSelect.value === 'product') {
+        searchOriginalProducts(input, query);
+    }
+}
+
+// Handle keyboard navigation for credit note search
+function handleCreditNoteSearchKeydown(event) {
+    const input = event.target;
+    const dropdown = input.nextElementSibling;
+    const results = dropdown.querySelectorAll('.search-result');
+    const currentIndex = Array.from(results).findIndex(result => result.classList.contains('selected'));
+    
+    switch (event.key) {
+        case 'ArrowDown':
+            event.preventDefault();
+            if (currentIndex < results.length - 1) {
+                if (currentIndex >= 0) results[currentIndex].classList.remove('selected');
+                results[currentIndex + 1].classList.add('selected');
+            } else if (results.length > 0) {
+                if (currentIndex >= 0) results[currentIndex].classList.remove('selected');
+                results[0].classList.add('selected');
+            }
+            break;
+        case 'ArrowUp':
+            event.preventDefault();
+            if (currentIndex > 0) {
+                results[currentIndex].classList.remove('selected');
+                results[currentIndex - 1].classList.add('selected');
+            } else if (results.length > 0) {
+                results[currentIndex].classList.remove('selected');
+                results[results.length - 1].classList.add('selected');
+            }
+            break;
+        case 'Enter':
+            event.preventDefault();
+            const selectedResult = dropdown.querySelector('.search-result.selected');
+            if (selectedResult) {
+                selectedResult.click();
+            }
+            break;
+        case 'Escape':
+            dropdown.innerHTML = '';
+            input.blur();
+            break;
+    }
+}
+
+// Validate credit amount against original invoice
+function validateCreditAmount(event) {
+    const input = event.target;
+    const row = input.closest('tr');
+    const creditTypeSelect = row.querySelector('.credit-type');
+    const creditReasonInput = row.querySelector('.credit-reason');
+    const amount = parseFloat(input.value.replace(/[^\d.-]/g, '') || 0);
+    
+    // If this is a product credit, validate against original line total
+    if (creditTypeSelect.value === 'product') {
+        const originalLineTotal = parseFloat(creditReasonInput.getAttribute('data-original-line-total') || 0);
+        if (amount > originalLineTotal) {
+            showResponseModal('warning', 'Warning', `Credit amount (R${amount.toFixed(2)}) exceeds original line total (R${originalLineTotal.toFixed(2)})`);
+        }
+    }
+    
+    // Format the amount
+    formatPrice(input);
 }
 
 function searchCreditReasons(inputElement, query) {
@@ -1855,21 +1983,47 @@ function searchCreditReasons(inputElement, query) {
         const dropdown = inputElement.nextElementSibling;
         dropdown.innerHTML = '';
         
-        if (data.success && data.results) {
-            data.results.forEach(reason => {
+        if (data.success && data.results && data.results.length > 0) {
+            data.results.forEach((reason, index) => {
                 const div = document.createElement('div');
                 div.className = 'search-result';
                 div.textContent = reason.reason;
+                div.setAttribute('data-reason-id', reason.credit_reason_id);
+                
+                // Highlight first result
+                if (index === 0) {
+                    div.classList.add('selected');
+                }
+                
                 div.addEventListener('click', () => {
                     inputElement.value = reason.reason;
+                    inputElement.setAttribute('data-reason-id', reason.credit_reason_id);
                     dropdown.innerHTML = '';
+                    
+                    // Update totals and preview
+                    updateCreditNoteTotals();
+                    updateLivePreview();
                 });
+                
+                div.addEventListener('mouseenter', () => {
+                    dropdown.querySelectorAll('.search-result').forEach(r => r.classList.remove('selected'));
+                    div.classList.add('selected');
+                });
+                
                 dropdown.appendChild(div);
             });
+        } else {
+            // Show no results message
+            const div = document.createElement('div');
+            div.className = 'search-result no-results';
+            div.textContent = 'No credit reasons found';
+            dropdown.appendChild(div);
         }
     })
     .catch(error => {
         console.error('Error searching credit reasons:', error);
+        const dropdown = inputElement.nextElementSibling;
+        dropdown.innerHTML = '<div class="search-result error">Error searching credit reasons</div>';
     });
 }
 
@@ -1879,6 +2033,8 @@ function searchOriginalProducts(inputElement, query) {
     const relatedDocId = document.getElementById('related-document-id').value;
     if (!relatedDocId) {
         console.error('No related document ID found');
+        const dropdown = inputElement.nextElementSibling;
+        dropdown.innerHTML = '<div class="search-result error">Please select a related invoice first</div>';
         return;
     }
     
@@ -1896,31 +2052,78 @@ function searchOriginalProducts(inputElement, query) {
         const dropdown = inputElement.nextElementSibling;
         dropdown.innerHTML = '';
         
-        if (data.success && data.results) {
-            data.results.forEach(product => {
-                const div = document.createElement('div');
-                div.className = 'search-result';
-                div.textContent = `${product.product_description || product.product_name} (${product.sku || 'No SKU'})`;
-                div.addEventListener('click', () => {
-                    inputElement.value = product.product_description || product.product_name;
-                    inputElement.setAttribute('data-product-id', product.product_id);
-                    inputElement.setAttribute('data-original-price', product.unit_price);
-                    inputElement.setAttribute('data-original-line-total', product.line_total);
-                    
-                    // Auto-fill amount with original line total
-                    const amountInput = inputElement.closest('tr').querySelector('.credit-amount');
-                    amountInput.value = `R${parseFloat(product.line_total).toFixed(2)}`;
-                    formatPrice(amountInput);
-                    
-                    dropdown.innerHTML = '';
-                    updateCreditNoteTotals();
-                });
-                dropdown.appendChild(div);
+        if (data.success && data.results && data.results.length > 0) {
+            // Filter results based on query
+            const filteredResults = data.results.filter(product => {
+                const productName = (product.product_description || product.product_name || '').toLowerCase();
+                const sku = (product.sku || '').toLowerCase();
+                const searchQuery = query.toLowerCase();
+                return productName.includes(searchQuery) || sku.includes(searchQuery);
             });
+            
+            if (filteredResults.length > 0) {
+                filteredResults.forEach((product, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'search-result';
+                    div.innerHTML = `
+                        <div class="product-name">${product.product_description || product.product_name}</div>
+                        <div class="product-details">
+                            <span class="sku">SKU: ${product.sku || 'No SKU'}</span>
+                            <span class="price">R${parseFloat(product.unit_price).toFixed(2)}</span>
+                            <span class="line-total">Total: R${parseFloat(product.line_total).toFixed(2)}</span>
+                        </div>
+                    `;
+                    div.setAttribute('data-product-id', product.product_id);
+                    div.setAttribute('data-original-price', product.unit_price);
+                    div.setAttribute('data-original-line-total', product.line_total);
+                    
+                    // Highlight first result
+                    if (index === 0) {
+                        div.classList.add('selected');
+                    }
+                    
+                    div.addEventListener('click', () => {
+                        inputElement.value = product.product_description || product.product_name;
+                        inputElement.setAttribute('data-product-id', product.product_id);
+                        inputElement.setAttribute('data-original-price', product.unit_price);
+                        inputElement.setAttribute('data-original-line-total', product.line_total);
+                        
+                        // Auto-fill amount with original line total
+                        const amountInput = inputElement.closest('tr').querySelector('.credit-amount');
+                        amountInput.value = `R${parseFloat(product.line_total).toFixed(2)}`;
+                        formatPrice(amountInput);
+                        
+                        dropdown.innerHTML = '';
+                        updateCreditNoteTotals();
+                        updateLivePreview();
+                    });
+                    
+                    div.addEventListener('mouseenter', () => {
+                        dropdown.querySelectorAll('.search-result').forEach(r => r.classList.remove('selected'));
+                        div.classList.add('selected');
+                    });
+                    
+                    dropdown.appendChild(div);
+                });
+            } else {
+                // Show no results message
+                const div = document.createElement('div');
+                div.className = 'search-result no-results';
+                div.textContent = 'No products found matching your search';
+                dropdown.appendChild(div);
+            }
+        } else {
+            // Show no results message
+            const div = document.createElement('div');
+            div.className = 'search-result no-results';
+            div.textContent = 'No products found in original invoice';
+            dropdown.appendChild(div);
         }
     })
     .catch(error => {
         console.error('Error searching original products:', error);
+        const dropdown = inputElement.nextElementSibling;
+        dropdown.innerHTML = '<div class="search-result error">Error searching original products</div>';
     });
 }
 
@@ -1941,10 +2144,32 @@ function updateCreditNoteTotals() {
         }
     });
     
-    // Update display
-    const totalElement = document.getElementById('credit-note-total');
-    if (totalElement) {
-        totalElement.textContent = total.toFixed(2);
+    // Update credit note total display
+    const creditNoteTotalElement = document.getElementById('credit-note-total');
+    if (creditNoteTotalElement) {
+        creditNoteTotalElement.textContent = `R${total.toFixed(2)}`;
+    }
+    
+    // Update main summary totals for credit notes
+    const documentType = document.getElementById('document-type').value;
+    if (documentType === 'credit-note') {
+        // Update subtotal (same as total for credit notes)
+        const subtotalElement = document.getElementById('subtotal');
+        if (subtotalElement) {
+            subtotalElement.textContent = `R${total.toFixed(2)}`;
+        }
+        
+        // Update tax total (0 for credit notes)
+        const taxTotalElement = document.getElementById('tax-total');
+        if (taxTotalElement) {
+            taxTotalElement.textContent = 'R0.00';
+        }
+        
+        // Update final total (negative for credit notes)
+        const finalTotalElement = document.getElementById('final-total');
+        if (finalTotalElement) {
+            finalTotalElement.textContent = `-R${total.toFixed(2)}`;
+        }
     }
     
     // Update live preview
@@ -2164,28 +2389,80 @@ function setupInitialRefundListeners() {
     }
 }
 
-export {
-    openDocumentModal,
-    closeDocumentModal,
-    setModalMode,
-    addDocumentItem,
-    addDocumentDiscount,
-    removeItem,
-    searchItem,
-    autofillRow,
-    previewDocument,
-    saveDocument,
-    createDocument,
-    clearDocument,
-    addCreditNoteItem,
-    removeCreditNoteItem,
-    setupCreditNoteRowListeners,
-    getCreditNoteFormData,
-    initializeLivePreview,
-    updateLivePreview,
-    initializeClientPanel,
-    loadIssuerDetails
-};
+// Related Invoice Selection Functions
+function openRelatedInvoiceSelector() {
+    const clientId = document.getElementById('client-id').value;
+    if (!clientId) {
+        showResponseModal('error', 'Error', 'Please select a client first before selecting a related invoice.');
+        return;
+    }
+    
+    const dropdown = document.getElementById('related-invoice-dropdown');
+    dropdown.style.display = 'block';
+    dropdown.innerHTML = '<div class="loading">Loading invoices...</div>';
+    
+    // Fetch available invoices for this client
+    fetch(`../api/document-api.php?action=get_available_invoices_for_credit_refund&client_id=${clientId}`, {
+        credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+        dropdown.innerHTML = '';
+        
+        if (data.success && data.data && data.data.length > 0) {
+            data.data.forEach(invoice => {
+                const div = document.createElement('div');
+                div.className = 'invoice-option';
+                div.innerHTML = `
+                    <div class="invoice-number">${invoice.document_number}</div>
+                    <div class="invoice-details">
+                        <span class="invoice-date">${invoice.issue_date}</span>
+                        <span class="invoice-amount">R${parseFloat(invoice.total_amount).toFixed(2)}</span>
+                        <span class="invoice-balance">Balance: R${parseFloat(invoice.balance_due).toFixed(2)}</span>
+                    </div>
+                `;
+                
+                div.addEventListener('click', () => {
+                    selectRelatedInvoice(invoice);
+                });
+                
+                dropdown.appendChild(div);
+            });
+        } else {
+            dropdown.innerHTML = '<div class="no-results">No invoices found for this client</div>';
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching invoices:', error);
+        dropdown.innerHTML = '<div class="error">Error loading invoices</div>';
+    });
+}
+
+function selectRelatedInvoice(invoice) {
+    // Set the related document ID and display
+    document.getElementById('related-document-id').value = invoice.document_id;
+    document.getElementById('related-document-number-display').value = invoice.document_number;
+    
+    // Hide the dropdown
+    document.getElementById('related-invoice-dropdown').style.display = 'none';
+    
+    // Update credit note totals and preview
+    updateCreditNoteTotals();
+    updateLivePreview();
+    
+    // Show success message
+    showResponseModal('success', 'Success', `Selected invoice ${invoice.document_number} as related document.`);
+}
+
+// Add click outside handler for related invoice dropdown
+document.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('related-invoice-dropdown');
+    const selectBtn = document.getElementById('select-related-invoice-btn');
+    
+    if (dropdown && !e.target.closest('.search-invoice-container') && !e.target.closest('.related-invoice-dropdown')) {
+        dropdown.style.display = 'none';
+    }
+});
 
 // Ensure global functions are available immediately and after DOM loads
 function attachGlobalFunctions() {
@@ -2230,6 +2507,10 @@ function attachGlobalFunctions() {
     window.updateRefundTotals = updateRefundTotals;
     window.getRefundFormData = getRefundFormData;
     window.setupInitialRefundListeners = setupInitialRefundListeners;
+    
+    // Add related invoice functions to global scope
+    window.openRelatedInvoiceSelector = openRelatedInvoiceSelector;
+    window.selectRelatedInvoice = selectRelatedInvoice;
 
     // Add live preview functions to global scope
     window.initializeLivePreview = initializeLivePreview;
@@ -2237,6 +2518,13 @@ function attachGlobalFunctions() {
 
     // Add client panel functions to global scope
     window.initializeClientPanel = initializeClientPanel;
+    
+    // Add missing functions that were causing errors
+    window.resetDocumentForm = resetDocumentForm;
+    window.initializeLogoUpload = function() {
+        // Placeholder function to prevent errors
+        console.log('Logo upload initialization - placeholder');
+    };
 }
 
 // Attach functions immediately

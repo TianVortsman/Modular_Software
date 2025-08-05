@@ -230,4 +230,78 @@ function save_document_numbering($data): array {
         error_log('[save_document_numbering] ' . $e->getMessage());
         return [ 'success' => false, 'message' => 'Failed to save document numbering', 'data' => null ];
     }
+}
+
+// BANK INFO
+function get_bank_info(): array {
+    global $conn;
+    try {
+        $stmt = $conn->query('SELECT bank_name, bank_branch, account_number, swift_code FROM settings.invoice_settings LIMIT 1');
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        return [ 'success' => true, 'message' => 'Bank info loaded', 'data' => $data ];
+    } catch (Exception $e) {
+        error_log('[get_bank_info] ' . $e->getMessage());
+        return [ 'success' => false, 'message' => 'Failed to load bank info', 'data' => null ];
+    }
+}
+
+function save_bank_info($data): array {
+    global $conn;
+    try {
+        $stmt = $conn->prepare('UPDATE settings.invoice_settings SET
+            bank_name = :bank_name,
+            bank_branch = :bank_branch,
+            account_number = :account_number,
+            swift_code = :swift_code,
+            updated_at = NOW()
+            WHERE id = (SELECT id FROM settings.invoice_settings LIMIT 1)');
+        $stmt->bindValue(':bank_name', $data['bank_name'] ?? '', PDO::PARAM_STR);
+        $stmt->bindValue(':bank_branch', $data['bank_branch'] ?? '', PDO::PARAM_STR);
+        $stmt->bindValue(':account_number', $data['account_number'] ?? '', PDO::PARAM_STR);
+        $stmt->bindValue(':swift_code', $data['swift_code'] ?? '', PDO::PARAM_STR);
+        $stmt->execute();
+        return [ 'success' => true, 'message' => 'Bank info saved', 'data' => $data ];
+    } catch (Exception $e) {
+        error_log('[save_bank_info] ' . $e->getMessage());
+        return [ 'success' => false, 'message' => 'Failed to save bank info', 'data' => null ];
+    }
+}
+
+// COMPANY INFO
+function get_company_info(): array {
+    global $conn;
+    try {
+        $stmt = $conn->query('SELECT company_name, company_address, company_phone, company_email, vat_number, registration_number FROM settings.invoice_settings LIMIT 1');
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        return [ 'success' => true, 'message' => 'Company info loaded', 'data' => $data ];
+    } catch (Exception $e) {
+        error_log('[get_company_info] ' . $e->getMessage());
+        return [ 'success' => false, 'message' => 'Failed to load company info', 'data' => null ];
+    }
+}
+
+function save_company_info($data): array {
+    global $conn;
+    try {
+        $stmt = $conn->prepare('UPDATE settings.invoice_settings SET
+            company_name = :company_name,
+            company_address = :company_address,
+            company_phone = :company_phone,
+            company_email = :company_email,
+            vat_number = :vat_number,
+            registration_number = :registration_number,
+            updated_at = NOW()
+            WHERE id = (SELECT id FROM settings.invoice_settings LIMIT 1)');
+        $stmt->bindValue(':company_name', $data['company_name'] ?? '', PDO::PARAM_STR);
+        $stmt->bindValue(':company_address', $data['company_address'] ?? '', PDO::PARAM_STR);
+        $stmt->bindValue(':company_phone', $data['company_phone'] ?? '', PDO::PARAM_STR);
+        $stmt->bindValue(':company_email', $data['company_email'] ?? '', PDO::PARAM_STR);
+        $stmt->bindValue(':vat_number', $data['vat_number'] ?? '', PDO::PARAM_STR);
+        $stmt->bindValue(':registration_number', $data['registration_number'] ?? '', PDO::PARAM_STR);
+        $stmt->execute();
+        return [ 'success' => true, 'message' => 'Company info saved', 'data' => $data ];
+    } catch (Exception $e) {
+        error_log('[save_company_info] ' . $e->getMessage());
+        return [ 'success' => false, 'message' => 'Failed to save company info', 'data' => null ];
+    }
 } 

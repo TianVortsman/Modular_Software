@@ -6,10 +6,9 @@
  * @param {number} clientId
  * @param {string} [type] - 'company' or 'customer' (optional, can be inferred from data)
  */
-export async function openClientModal(clientId, type = null) {
+async function openClientModal(clientId, type = null) {
     // Determine modal type by fetching details
-    const { fetchClientDetails } = await import('./client-api.js');
-    const res = await fetchClientDetails(clientId);
+    const res = await window.fetchClientDetails(clientId);
     if (!res.success || !res.data) {
         const errorMsg = res.error || res.message || 'Failed to load client details';
         window.ResponseModal && window.ResponseModal.error(errorMsg);
@@ -26,9 +25,9 @@ export async function openClientModal(clientId, type = null) {
  * @param {string} modalId
  * @param {Object} [data] - Optional data to autofill
  */
-import { handleFormSubmit } from './client-form.js';
+// All functions are now globally available via window object
 
-export function openModal(modalId, data = null) {
+function openModal(modalId, data = null) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
     modal.style.display = 'block';
@@ -76,7 +75,7 @@ export function openModal(modalId, data = null) {
     if (form) {
         form.onsubmit = null;
         const mode = modal.getAttribute('data-mode') === 'edit' ? 'edit' : 'add';
-        form.onsubmit = (e) => handleFormSubmit(e, mode);
+        form.onsubmit = (e) => window.handleFormSubmit(e, mode);
     }
 }
 
@@ -84,7 +83,7 @@ export function openModal(modalId, data = null) {
  * Close a modal
  * @param {string} modalId
  */
-export function closeModal(modalId) {
+function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
     modal.style.display = 'none';
@@ -101,7 +100,7 @@ export function closeModal(modalId) {
  * @param {string} modalId
  * @param {Object} data
  */
-export function autofillModal(modalId, data) {
+function autofillModal(modalId, data) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
     if (modalId === 'companyModal') {
@@ -176,7 +175,7 @@ export function autofillModal(modalId, data) {
  * Reset modal state (clear fields, errors, etc.)
  * @param {string} modalId
  */
-export function resetModalState(modalId) {
+function resetModalState(modalId) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
     // Reset all input fields
@@ -209,10 +208,14 @@ function switchTab(modalId, tabName) {
     });
 }
 
-// Expose openClientModal and openModal globally for use in client-screen.js and inline HTML
+// Expose all functions globally for use in client-screen.js and inline HTML
 if (typeof window !== 'undefined') {
     window.openClientModal = openClientModal;
     window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.autofillModal = autofillModal;
+    window.resetModalState = resetModalState;
+    window.switchTab = switchTab;
 }
 
 // Add global functions for sidebar add buttons

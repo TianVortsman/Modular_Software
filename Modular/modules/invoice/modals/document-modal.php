@@ -138,7 +138,15 @@
                             </div>
                              <div class="form-group" id="related-document-info" data-show-on="credit-note,refund" style="display: none;">
                                 <label for="related-document-number-display">Related Invoice</label>
-                                <input type="text" id="related-document-number-display" placeholder="Click to select invoice" readonly>
+                                <div class="search-container search-invoice-container">
+                                    <input type="text" id="related-document-number-display" placeholder="Click to select invoice" readonly>
+                                    <button type="button" class="btn btn-secondary btn-sm" id="select-related-invoice-btn" style="margin-left: 0.5rem;">
+                                        <i data-lucide="search"></i> Select Invoice
+                                    </button>
+                                </div>
+                                <div class="related-invoice-dropdown" id="related-invoice-dropdown" style="display: none;">
+                                    <!-- Invoice search results will be displayed here -->
+                                </div>
                             </div>
                         </div>
                     </section>

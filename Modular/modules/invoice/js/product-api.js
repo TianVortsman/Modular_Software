@@ -1,12 +1,12 @@
 // --- ProductModalAPI: Handles all API calls for products ---
-import { buildQueryParams } from '../../../public/assets/js/helpers.js';
+// Product API functionality - buildQueryParams is now available globally from helpers.js
 
-export class ProductAPI {
+class ProductAPI {
     // Fetch all products, optionally with filters
     static fetchProducts(filters = {}) {
         // Use the shared buildQueryParams helper for consistency
         // Accepts: { type, limit, page, search, category, subcategory, supplier_id, sort_by, sort_dir }
-        const params = buildQueryParams(
+        const params = window.buildQueryParams(
             { action: 'list' },
             filters,
             filters.search || '',
@@ -137,3 +137,6 @@ export class ProductAPI {
         }).then(res => res.json());
     }
 }
+
+// Make ProductAPI available globally
+window.ProductAPI = ProductAPI;

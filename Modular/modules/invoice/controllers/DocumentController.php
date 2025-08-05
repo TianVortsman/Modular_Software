@@ -325,8 +325,14 @@ function create_document(array $options): array {
         // Handle draft vs finalize
         if ($mode === 'draft') {
             // Generate a draft document_number (e.g., "DRAFT-YYYYMMDD-HHMMSS")
-            $draftNumber = 'DRAFT-' . date('Ymd-His');
-            $document_number = $draftNumber;
+            // Only generate new draft number if one doesn't already exist
+            if (empty($documentData['document_number']) || strpos($documentData['document_number'], 'DRAFT-') !== 0) {
+                $draftNumber = 'DRAFT-' . date('Ymd-His');
+                $document_number = $draftNumber;
+            } else {
+                // Preserve existing draft number
+                $document_number = $documentData['document_number'];
+            }
             $document_status = 'draft';
         } elseif ($mode === 'finalize') {
             // Fetch and increment document number from settings.invoice_settings
@@ -719,7 +725,8 @@ function update_document(int $document_id, array $options): array {
     // Handle draft vs finalize
     if ($mode === 'draft') {
         $document_status = 'draft';
-        // Do not update document_number if it's a draft update
+        // For draft mode, preserve existing draft number or keep current number
+        // Do not assign a permanent document number for draft updates
     } elseif ($mode === 'finalize') {
         // Use the document_status from form data if provided and it's 'Unpaid' (finalized), otherwise use options status or default to 'Unpaid'
         $document_status = (!empty($documentData['document_status']) && $documentData['document_status'] === 'Unpaid') 
@@ -729,13 +736,16 @@ function update_document(int $document_id, array $options): array {
         // Default case - use document_status from documentData or keep current status
         $document_status = $documentData['document_status'] ?? $currentStatus ?? 'draft';
     }
-            // Prevent editing if already finalized
-            $finalizedStatuses = ['unpaid', 'Unpaid', 'approved', 'paid', 'sent'];
-            if (in_array($currentStatus, $finalizedStatuses)) {
-                throw new Exception('Cannot edit a finalized document.');
-            }
-            // Assign a new document_number if not set or is a draft
-            if (empty($currentNumber) || strpos($currentNumber, 'DRAFT-') === 0) {
+    
+    // Prevent editing if already finalized
+    $finalizedStatuses = ['unpaid', 'Unpaid', 'approved', 'paid', 'sent'];
+    if (in_array($currentStatus, $finalizedStatuses)) {
+        throw new Exception('Cannot edit a finalized document.');
+    }
+    
+    // Only assign a new permanent document_number when finalizing (mode === 'finalize')
+    // For draft mode, preserve the existing draft number
+    if ($mode === 'finalize' && (empty($currentNumber) || strpos($currentNumber, 'DRAFT-') === 0)) {
                 $type = strtolower($documentData['document_type'] ?? $currentType ?? 'invoice');
                 $numberField = '';
                 $prefixField = '';

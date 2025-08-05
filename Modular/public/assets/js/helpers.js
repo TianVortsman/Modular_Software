@@ -10,7 +10,7 @@
  * @param {Object} sorting - Sorting (e.g. {sortBy: 'name', sortDir: 'asc'})
  * @returns {URLSearchParams}
  */
-export function buildQueryParams(base = {}, filters = {}, search = '', pagination = {}, sorting = {}) {
+function buildQueryParams(base = {}, filters = {}, search = '', pagination = {}, sorting = {}) {
     const params = new URLSearchParams();
 
     // Add base params (action, module, details, etc.)
@@ -48,7 +48,7 @@ export function buildQueryParams(base = {}, filters = {}, search = '', paginatio
 /**
  * Fetch with timeout helper
  */
-export async function fetchWithTimeout(resource, options = {}, timeout = 5000) {
+async function fetchWithTimeout(resource, options = {}, timeout = 5000) {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
     try {
@@ -66,7 +66,7 @@ export async function fetchWithTimeout(resource, options = {}, timeout = 5000) {
  * @param {string} modalSelector - CSS selector for the modal
  * @param {string} dragHandleSelector - CSS selector for the drag handle within the modal
  */
-export function makeModalDraggable(modalSelector, dragHandleSelector) {
+function makeModalDraggable(modalSelector, dragHandleSelector) {
     const modal = document.querySelector(modalSelector);
     if (!modal) return console.warn(`Modal not found: ${modalSelector}`);
   
@@ -113,4 +113,9 @@ export function makeModalDraggable(modalSelector, dragHandleSelector) {
 // Note: Error handling and modal functions are now handled by sidebar.js
 // This file focuses on pure utility functions for API operations
 console.log('📦 Helper utilities loaded - Error handling managed by sidebar.js');
+
+// Make functions globally available
+window.buildQueryParams = buildQueryParams;
+window.fetchWithTimeout = fetchWithTimeout;
+window.makeModalDraggable = makeModalDraggable;
   

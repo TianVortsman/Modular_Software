@@ -1,13 +1,8 @@
 /**
  * Invoice Setup JavaScript
  * Handles all setup functionality including tabs, forms, and API interactions
+ * All functions are now globally available via window object
  */
-
-import * as SetupAPI from './setup-api.js';
-import { ProductAPI } from './product-api.js';
-import { openCreditReasonModal } from './setup-modals.js';
-import { loadCreditPolicyForm } from './setup-form.js';
-import { loadDocumentNumberingForm } from './setup-form.js';
 
 class InvoiceSetup {
     constructor() {
@@ -36,6 +31,8 @@ class InvoiceSetup {
     }
 
     switchTab(tabName) {
+        console.log('Switching to tab:', tabName);
+        
         // --- HARD RESET: Remove any extra .tab-panel elements not matching original tab IDs ---
         const validTabIds = ['products','banking','sales','suppliers','credit','numbering','terms'];
         document.querySelectorAll('.tab-panel').forEach(panel => {
@@ -74,6 +71,7 @@ class InvoiceSetup {
     }
 
     loadTabData(tabName) {
+        console.log('Loading data for tab:', tabName);
         switch(tabName) {
             case 'banking':
                 this.loadBankInfo();
@@ -83,6 +81,7 @@ class InvoiceSetup {
                 this.loadSalesTargets();
                 break;
             case 'suppliers':
+                console.log('Loading suppliers tab data');
                 this.loadSuppliers();
                 break;
             case 'credit':
@@ -90,7 +89,11 @@ class InvoiceSetup {
                 this.loadCreditReasons();
                 break;
             case 'numbering':
-                loadDocumentNumberingForm(); // Use the correct loader from setup-form.js
+                if (window.loadDocumentNumberingForm) {
+                    window.loadDocumentNumberingForm(); // Use the correct loader from setup-form.js
+                } else {
+                    console.warn('loadDocumentNumberingForm not available');
+                }
                 break;
             case 'terms':
                 this.loadTermsSettings();
@@ -139,7 +142,7 @@ class InvoiceSetup {
     // Banking & Company
     async loadBankInfo() {
         try {
-            const data = await SetupAPI.getBankInfo();
+            const data = await (window.SetupAPI ? window.SetupAPI.getBankInfo() : Promise.resolve({ success: false, data: {} }));
             if (data.success && data.data) {
                 this.populateBankForm(data.data);
             }
@@ -160,24 +163,24 @@ class InvoiceSetup {
 
     async saveBankInfo() {
         try {
-            showLoadingModal('Saving bank information...');
+            window.showLoadingModal('Saving bank information...');
             const formData = new FormData(document.getElementById('bank-info-form'));
-            const data = await SetupAPI.saveBankInfo(formData);
-            hideLoadingModal();
+            const data = await (window.SetupAPI ? window.SetupAPI.saveBankInfo(formData) : Promise.resolve({ success: false, message: 'SetupAPI not available' }));
+            window.hideLoadingModal();
             if (data.success) {
-                showResponseModal('Success', 'Bank information saved successfully', 'success');
+                window.showResponseModal('Success', 'Bank information saved successfully', 'success');
             } else {
-                showResponseModal('Error', data.message, 'error');
+                window.showResponseModal('Error', data.message, 'error');
             }
         } catch (error) {
-            hideLoadingModal();
-            showResponseModal('Error', 'Failed to save bank information', 'error');
+            window.hideLoadingModal();
+            window.showResponseModal('Error', 'Failed to save bank information', 'error');
         }
     }
 
     async loadCompanyInfo() {
         try {
-            const data = await SetupAPI.getCompanyInfo();
+            const data = await (window.SetupAPI ? window.SetupAPI.getCompanyInfo() : Promise.resolve({ success: false, data: {} }));
             if (data.success && data.data) {
                 this.populateCompanyForm(data.data);
             }
@@ -198,19 +201,19 @@ class InvoiceSetup {
 
     async saveCompanyInfo() {
         try {
-            showLoadingModal('Saving company information...');
+            window.showLoadingModal('Saving company information...');
             const formData = new FormData(document.getElementById('company-info-form'));
-            const data = await SetupAPI.saveCompanyInfo(formData);
-            hideLoadingModal();
+            const data = await (window.SetupAPI ? window.SetupAPI.saveCompanyInfo(formData) : Promise.resolve({ success: false, message: 'SetupAPI not available' }));
+            window.hideLoadingModal();
             if (data.success) {
-                showResponseModal('Success', 'Company information saved successfully', 'success');
+                window.showResponseModal('Success', 'Company information saved successfully', 'success');
             } else {
                 const errorMsg = data.error || data.message || 'Failed to save company information';
-                showResponseModal('Error', errorMsg, 'error');
+                window.showResponseModal('Error', errorMsg, 'error');
             }
         } catch (error) {
-            hideLoadingModal();
-            showResponseModal('Error', 'Failed to save company information', 'error');
+            window.hideLoadingModal();
+            window.showResponseModal('Error', 'Failed to save company information', 'error');
         }
     }
 
@@ -223,20 +226,20 @@ class InvoiceSetup {
         // TODO: Implement using existing controller/API
     }
     async loadSuppliers() {
-        console.log('loadSuppliers called (stub)');
-        // TODO: Implement using existing controller/API
+        console.log('loadSuppliers called');
+        await window.loadSuppliersList();
     }
     async loadCreditPolicy() {
-        console.log('loadCreditPolicy called (stub)');
-        // TODO: Implement using existing controller/API
+        console.log('loadCreditPolicy called');
+        await window.loadCreditPolicyForm();
     }
     async loadCreditReasons() {
-        console.log('loadCreditReasons called (stub)');
-        // TODO: Implement using existing controller/API
+        console.log('loadCreditReasons called');
+        await window.loadCreditReasons();
     }
     async loadTermsSettings() {
-        console.log('loadTermsSettings called (stub)');
-        // TODO: Implement using existing controller/API
+        console.log('loadTermsSettings called');
+        // TODO: Implement terms settings loading
     }
 }
 
@@ -319,7 +322,7 @@ function closeSupplierModal() {
 window.closeSupplierModal = closeSupplierModal;
 
 async function loadSupplierData(supplierId) {
-    const data = await SetupAPI.getSupplier(supplierId);
+    const data = await (window.SetupAPI ? window.SetupAPI.getSupplier(supplierId) : Promise.resolve({ success: false, data: {} }));
     if (data.success && data.data) {
         document.getElementById('supplier-id').value = data.data.supplier_id;
         document.getElementById('supplier-name').value = data.data.supplier_name || '';
@@ -334,55 +337,64 @@ async function loadSupplierData(supplierId) {
 }
 window.loadSupplierData = loadSupplierData;
 
-const supplierForm = document.getElementById('supplierForm');
-if (supplierForm) {
-    supplierForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        try {
-            showLoadingModal('Saving supplier...');
-            const formData = new FormData(supplierForm);
-            const data = await SetupAPI.saveSupplier(formData);
-            hideLoadingModal();
-            if (data.success) {
-                showResponseModal('Success', 'Supplier saved successfully', 'success');
-                closeSupplierModal();
-                loadSuppliersList();
-            } else {
-                showResponseModal('Error', data.message, 'error');
-            }
-        } catch (error) {
-            hideLoadingModal();
-            showResponseModal('Error', 'Failed to save supplier', 'error');
-        }
-    });
-}
+// Supplier form handler is now managed by setup-form.js
 
 async function loadSuppliersList() {
+    console.log('loadSuppliersList function called');
     const container = document.getElementById('suppliers-list');
-    if (!container) return;
-    const data = await SetupAPI.getSuppliers();
-    if (!data.success || !Array.isArray(data.data) || data.data.length === 0) {
-        container.innerHTML = `<div class="empty-state"><span class="material-icons">local_shipping</span><h3>No Suppliers</h3><p>Add your first supplier to get started</p></div>`;
+    if (!container) {
+        console.log('Suppliers container not found');
         return;
     }
-    container.innerHTML = data.data.map(supplier => `
-        <div class="data-item supplier-item" data-id="${supplier.supplier_id}">
-            <div class="data-item-info">
-                <div class="data-item-title">${supplier.supplier_name}</div>
-                <div class="data-item-subtitle">Email: ${supplier.supplier_email || ''}</div>
-                <div class="data-item-subtitle">Contact: ${supplier.supplier_contact || ''}</div>
-                ${supplier.supplier_address ? `<div class="data-item-description">${supplier.supplier_address}</div>` : ''}
-                ${supplier.website_url ? `<div class="data-item-description">Website: <a href="${supplier.website_url}" target="_blank">${supplier.website_url}</a></div>` : ''}
+    
+    console.log('Loading suppliers...');
+    console.log('SetupAPI available:', !!window.SetupAPI);
+    
+    try {
+        window.showLoadingModal('Loading suppliers...');
+        const data = await (window.SetupAPI ? window.SetupAPI.getSuppliers() : Promise.resolve({ success: false, data: [] }));
+        window.hideLoadingModal();
+        
+        console.log('Suppliers API response:', data);
+        console.log('Data success:', data.success);
+        console.log('Data array:', Array.isArray(data.data));
+        console.log('Data length:', data.data ? data.data.length : 'data.data is null/undefined');
+        console.log('Container element:', container);
+        
+        if (!data.success || !Array.isArray(data.data) || data.data.length === 0) {
+            console.log('Showing empty state');
+            container.innerHTML = `<div class="empty-state"><span class="material-icons">local_shipping</span><h3>No Suppliers</h3><p>Add your first supplier to get started</p></div>`;
+            return;
+        }
+        const suppliersHtml = data.data.map(supplier => `
+            <div class="data-item supplier-item" data-id="${supplier.supplier_id}">
+                <div class="data-item-info">
+                    <div class="data-item-title">${supplier.supplier_name}</div>
+                    <div class="data-item-subtitle">Email: ${supplier.supplier_email || ''}</div>
+                    <div class="data-item-subtitle">Contact: ${supplier.supplier_contact || ''}</div>
+                    ${supplier.supplier_address ? `<div class="data-item-description">${supplier.supplier_address}</div>` : ''}
+                    ${supplier.website_url ? `<div class="data-item-description">Website: <a href="${supplier.website_url}" target="_blank">${supplier.website_url}</a></div>` : ''}
+                </div>
             </div>
-        </div>
-    `).join('');
-    // Add double-click event listeners for edit
-    container.querySelectorAll('.supplier-item').forEach(item => {
-        item.addEventListener('dblclick', () => {
-            const id = item.getAttribute('data-id');
-            openSupplierModal(id);
+        `).join('');
+        
+        console.log('Generated HTML:', suppliersHtml);
+        container.innerHTML = suppliersHtml;
+        // Add double-click event listeners for edit
+        container.querySelectorAll('.supplier-item').forEach(item => {
+            item.addEventListener('dblclick', () => {
+                const id = item.getAttribute('data-id');
+                window.openSupplierModal(id);
+            });
         });
-    });
+        
+        console.log(`Loaded ${data.data.length} suppliers successfully`);
+    } catch (error) {
+        window.hideLoadingModal();
+        console.error('Error loading suppliers:', error);
+        window.showResponseModal('Error loading suppliers: ' + error.message, 'error');
+        container.innerHTML = `<div class="empty-state"><span class="material-icons">error</span><h3>Error Loading Suppliers</h3><p>Please try again</p></div>`;
+    }
 }
 window.loadSuppliersList = loadSuppliersList;
 
@@ -421,7 +433,7 @@ async function populateCategoryTypeFilter() {
     const select = document.getElementById('category-type-filter');
     if (!select) return;
     select.innerHTML = '<option value="">All Types</option>';
-    const data = await ProductAPI.fetchProductTypes();
+    const data = await window.ProductAPI.fetchProductTypes();
     if (data.success && Array.isArray(data.data)) {
         data.data.forEach(type => {
             const option = document.createElement('option');
@@ -436,7 +448,7 @@ async function populateSubcategoryTypeFilter() {
     const select = document.getElementById('subcategory-type-filter');
     if (!select) return;
     select.innerHTML = '<option value="">All Types</option>';
-    const data = await ProductAPI.fetchProductTypes();
+    const data = await window.ProductAPI.fetchProductTypes();
         if (data.success && Array.isArray(data.data)) {
         data.data.forEach(type => {
             const option = document.createElement('option');
@@ -491,9 +503,9 @@ function applySubcategoryFilter() {
 async function loadProductSetupData() {
     // Fetch all data in parallel
     const [typesRes, categoriesRes, subcategoriesRes] = await Promise.all([
-        ProductAPI.fetchProductTypes(),
-        SetupAPI.getCategories(),
-        SetupAPI.getSubcategories()
+        window.ProductAPI.fetchProductTypes(),
+        window.SetupAPI ? window.SetupAPI.getCategories() : Promise.resolve({ success: false, data: [] }),
+        window.SetupAPI ? window.SetupAPI.getSubcategories() : Promise.resolve({ success: false, data: [] })
     ]);
     const types = typesRes.success ? typesRes.data : [];
     const categories = categoriesRes.success ? categoriesRes.data : [];
@@ -608,7 +620,7 @@ function populateSubcategoryCategoryDropdown() {
     const select = document.getElementById('subcategory-category');
     if (!select) return;
     select.innerHTML = '<option value="">Select Category</option>';
-    SetupAPI.getCategories().then(data => {
+            (window.SetupAPI ? window.SetupAPI.getCategories() : Promise.resolve({ success: false, data: [] })).then(data => {
         if (data.success && Array.isArray(data.data)) {
             data.data.forEach(category => {
                 const option = document.createElement('option');
@@ -626,7 +638,7 @@ async function loadCategoryData(categoryId) {
         populateProductTypeDropdown();
         setTimeout(resolve, 100); // Wait for dropdown to populate
     });
-    const data = await SetupAPI.getCategories();
+    const data = await (window.SetupAPI ? window.SetupAPI.getCategories() : Promise.resolve({ success: false, data: [] }));
     if (data.success && Array.isArray(data.data)) {
         const cat = data.data.find(c => c.category_id == categoryId);
         if (cat) {
@@ -645,7 +657,7 @@ async function loadSubcategoryData(subcategoryId) {
         populateSubcategoryCategoryDropdown();
         setTimeout(resolve, 100); // Wait for dropdown to populate
     });
-    const data = await SetupAPI.getSubcategories();
+    const data = await (window.SetupAPI ? window.SetupAPI.getSubcategories() : Promise.resolve({ success: false, data: [] }));
     if (data.success && Array.isArray(data.data)) {
         const sub = data.data.find(s => s.subcategory_id == subcategoryId);
         if (sub) {
@@ -663,7 +675,7 @@ function populateProductTypeDropdown() {
     const select = document.getElementById('category-type');
     if (!select) return;
     select.innerHTML = '<option value="">Select Product Type</option>';
-    ProductAPI.fetchProductTypes().then(data => {
+    window.ProductAPI.fetchProductTypes().then(data => {
         if (data.success && Array.isArray(data.data)) {
             data.data.forEach(type => {
                 const option = document.createElement('option');
@@ -692,7 +704,7 @@ if (categoryForm) {
         try {
             showLoadingModal('Saving category...');
             const formData = new FormData(categoryForm);
-            const data = await SetupAPI.saveCategory(formData);
+            const data = await (window.SetupAPI ? window.SetupAPI.saveCategory(formData) : Promise.resolve({ success: false, message: 'SetupAPI not available' }));
             hideLoadingModal();
             const duration = performance.now() - actionStartTime;
             if (data.success) {
@@ -723,7 +735,7 @@ if (subcategoryForm) {
         try {
             showLoadingModal('Saving subcategory...');
             const formData = new FormData(subcategoryForm);
-            const data = await SetupAPI.saveSubcategory(formData);
+            const data = await (window.SetupAPI ? window.SetupAPI.saveSubcategory(formData) : Promise.resolve({ success: false, message: 'SetupAPI not available' }));
             hideLoadingModal();
             const duration = performance.now() - actionStartTime;
             if (data.success) {
@@ -787,7 +799,7 @@ async function loadSupplierContactsList(supplierId) {
     const container = document.getElementById('supplier-contacts-list');
     if (!container) return;
     container.innerHTML = '<div class="loading">Loading contacts...</div>';
-    const data = await SetupAPI.getSupplierContacts(supplierId);
+    const data = await (window.SetupAPI ? window.SetupAPI.getSupplierContacts(supplierId) : Promise.resolve({ success: false, data: [] }));
     if (!data.success || !Array.isArray(data.data) || data.data.length === 0) {
         container.innerHTML = `<div class="empty-state"><span class="material-icons">person_off</span><h4>No Contacts</h4><p>Add a contact person for this supplier</p></div>`;
         return;
@@ -830,7 +842,7 @@ function closeSupplierContactModal() {
 window.closeSupplierContactModal = closeSupplierContactModal;
 
 async function editSupplierContact(contactId, supplierId) {
-    const data = await SetupAPI.getSupplierContacts(supplierId);
+    const data = await (window.SetupAPI ? window.SetupAPI.getSupplierContacts(supplierId) : Promise.resolve({ success: false, data: [] }));
     if (data.success && Array.isArray(data.data)) {
         const contact = data.data.find(c => c.contact_person_id == contactId);
         if (contact) {
@@ -855,7 +867,7 @@ async function deleteSupplierContact(contactId, supplierId) {
     showLoadingModal('Deleting contact...');
     const formData = new FormData();
     formData.append('contact_person_id', contactId);
-    const data = await SetupAPI.deleteSupplierContact(formData);
+    const data = await (window.SetupAPI ? window.SetupAPI.deleteSupplierContact(formData) : Promise.resolve({ success: false, message: 'SetupAPI not available' }));
     hideLoadingModal();
     if (data.success) {
         showResponseModal('Success', 'Contact deleted', 'success');
@@ -875,9 +887,9 @@ if (supplierContactForm) {
             const formData = new FormData(supplierContactForm);
             let data;
             if (formData.get('contact_person_id')) {
-                data = await SetupAPI.updateSupplierContact(formData);
+                data = await (window.SetupAPI ? window.SetupAPI.updateSupplierContact(formData) : Promise.resolve({ success: false, message: 'SetupAPI not available' }));
             } else {
-                data = await SetupAPI.addSupplierContact(formData);
+                data = await (window.SetupAPI ? window.SetupAPI.addSupplierContact(formData) : Promise.resolve({ success: false, message: 'SetupAPI not available' }));
             }
             hideLoadingModal();
             if (data.success) {
@@ -901,7 +913,7 @@ const addCreditReasonBtn = document.getElementById('addCreditReasonBtn');
 async function loadCreditReasons() {
     if (!creditReasonsList) return;
     showLoadingModal('Loading credit reasons...');
-    const res = await SetupAPI.getCreditReasons();
+    const res = await window.SetupAPI ? window.SetupAPI.getCreditReasons() : { success: false, data: [] };
     hideLoadingModal();
     creditReasonsList.innerHTML = '';
     if (!res.success || !Array.isArray(res.data)) {
@@ -931,7 +943,7 @@ async function loadCreditReasons() {
             const id = btn.getAttribute('data-id');
             if (!confirm('Delete this credit reason?')) return;
             showLoadingModal('Deleting...');
-            const delRes = await SetupAPI.deleteCreditReason(id);
+            const delRes = await window.SetupAPI ? window.SetupAPI.deleteCreditReason(id) : { success: false, message: 'SetupAPI not available' };
             hideLoadingModal();
             if (delRes.success) {
                 showResponseModal('Credit reason deleted', 'success');
@@ -971,4 +983,19 @@ document.addEventListener('DOMContentLoaded', function() {
             loadDocumentNumberingForm();
         });
     }
+});
+
+// Initialize InvoiceSetup class
+let invoiceSetup;
+document.addEventListener('DOMContentLoaded', function() {
+    invoiceSetup = new InvoiceSetup();
+    window.invoiceSetup = invoiceSetup;
+    window.switchTab = function(tabName) {
+        if (invoiceSetup) {
+            invoiceSetup.switchTab(tabName);
+        } else {
+            console.warn('InvoiceSetup not available');
+        }
+    };
+    console.log('InvoiceSetup initialized');
 });

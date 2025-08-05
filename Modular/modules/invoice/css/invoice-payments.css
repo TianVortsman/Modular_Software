@@ -26,28 +26,46 @@ h2{
     display: flex;
     border-bottom: 2px solid var(--color-secondary);
     margin-bottom: var(--spacing-medium);
+    background-color: var(--color-secondary);
+    border-radius: var(--radius-medium) var(--radius-medium) 0 0;
+    padding: var(--spacing-small);
 }
 
 .tab-btn {
     flex: 1;
-    padding: var(--spacing-small);
+    padding: var(--spacing-medium);
     text-align: center;
     cursor: pointer;
     font-weight: bold;
-    background-color: var(--color-secondary);
+    background-color: transparent;
     color: var(--color-text-light);
-    transition: background-color 0.3s ease;
-    border: 1px solid var(--color-primary);
-    border-radius: 5px;
+    transition: all 0.3s ease;
+    border: none;
+    border-radius: var(--radius-small);
+    margin: 0 var(--spacing-small);
+    position: relative;
 }
 
 .tab-btn:hover {
     background-color: var(--color-primary-fade);
+    transform: translateY(-2px);
 }
 
 .tab-btn.active {
     background-color: var(--color-primary);
     color: var(--color-text-dark);
+    box-shadow: var(--shadow-medium);
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: var(--color-primary);
+    border-radius: var(--radius-small) var(--radius-small) 0 0;
 }
 
 .tab-content {
@@ -63,6 +81,152 @@ h2{
     display: block;
     border: 1px solid var(--border-color);
     background-color: var(--color-secondary);
+}
+
+/* Tab Header with Actions */
+.tab-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-medium);
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: var(--spacing-medium);
+}
+
+.tab-header h2 {
+    margin: 0;
+    color: var(--color-primary);
+    font-size: var(--font-size-large);
+}
+
+.tab-actions {
+    display: flex;
+    gap: var(--spacing-small);
+}
+
+.tab-actions .btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-small);
+    padding: var(--spacing-small) var(--spacing-medium);
+    border: none;
+    border-radius: var(--radius-small);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-size: var(--font-size-small);
+}
+
+.tab-actions .btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-text-dark);
+}
+
+.tab-actions .btn-primary:hover {
+    background-color: var(--color-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-medium);
+}
+
+.tab-actions .btn-secondary {
+    background-color: var(--color-secondary);
+    color: var(--color-text-light);
+    border: 1px solid var(--border-color);
+}
+
+.tab-actions .btn-secondary:hover {
+    background-color: var(--color-primary-fade);
+}
+
+.tab-actions .btn i {
+    font-size: var(--font-size-small);
+}
+
+/* Action Buttons in Tables */
+.action-buttons {
+    display: flex;
+    gap: var(--spacing-small);
+    justify-content: center;
+}
+
+.action-buttons .btn {
+    padding: var(--spacing-small);
+    border: none;
+    border-radius: var(--radius-small);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+}
+
+.action-buttons .btn-sm {
+    padding: var(--spacing-small);
+    font-size: var(--font-size-small);
+}
+
+.action-buttons .btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-text-dark);
+}
+
+.action-buttons .btn-secondary {
+    background-color: var(--color-secondary);
+    color: var(--color-text-light);
+    border: 1px solid var(--border-color);
+}
+
+.action-buttons .btn-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.action-buttons .btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.action-buttons .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-light);
+}
+
+/* Badge Styles */
+.badge {
+    padding: var(--spacing-small) var(--spacing-medium);
+    border-radius: var(--radius-small);
+    font-size: var(--font-size-small);
+    font-weight: 500;
+    text-align: center;
+    display: inline-block;
+}
+
+.badge-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.badge-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.badge-info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.badge-secondary {
+    background-color: #6c757d;
+    color: white;
 }
 
 /* Filters/Search Section */

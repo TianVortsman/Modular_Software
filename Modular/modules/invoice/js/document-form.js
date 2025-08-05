@@ -1,5 +1,5 @@
 // Form function: handles UI and populates fields
-import { searchClients, searchSalespeople, searchProducts, saveDocumentApi } from './document-api.js';
+// All functions are now available globally from document-api.js
 
 // Refactored for new modal structure and DB schema
 // All field selectors, data extraction, and population logic now use new IDs/classes from document-modal.php
@@ -642,8 +642,7 @@ function autofillProductRow(row, item) {
     updateTotals();
 }
 
-export { searchClient, searchSalesperson, setDocumentFormData, getDocumentFormData };
-window.setDocumentFormData = setDocumentFormData;
-window.getDocumentFormData = getDocumentFormData;
 window.searchClient = searchClient;
 window.searchSalesperson = searchSalesperson;
+window.setDocumentFormData = setDocumentFormData;
+window.getDocumentFormData = getDocumentFormData;

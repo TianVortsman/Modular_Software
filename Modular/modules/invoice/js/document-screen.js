@@ -1,8 +1,6 @@
 // Document Screen Logic: Handles main screen rendering, event binding, and table updates
 // Now using NOVA Table component for enhanced functionality while preserving existing features
-import { buildQueryParams } from '../../../public/assets/js/helpers.js';
-import { searchClients } from './document-api.js';
-import { fetchAndSetDocument } from './document-api.js';
+// Document screen functionality - all functions are now available globally
 
 // NOVA Table instances for each document type
 let novaTableInstances = {
@@ -576,7 +574,7 @@ function fetchAndRenderDocuments(sectionId, status) {
     
     const paramsObj = { action: 'list_documents', type };
     if (status && status !== 'all') paramsObj.status = status;
-    const params = buildQueryParams(paramsObj);
+            const params = window.buildQueryParams(paramsObj);
     const url = `../api/document-api.php?${params.toString()}`;
     
     console.log(`API URL: ${url}`);
