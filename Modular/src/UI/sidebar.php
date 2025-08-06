@@ -31,6 +31,11 @@ $isAccountClickable = $sidebarManager->isAccountClickable();
                 <?php else: ?>
                     <p><strong>Account:</strong> <?= htmlspecialchars($accountNumber) ?></p>
                 <?php endif; ?>
+                <!-- WhatsApp Button -->
+                <div class="whatsapp-button" id="whatsapp-button" title="WhatsApp Status">
+                    <i class="material-icons">whatsapp</i>
+                    <span class="whatsapp-status-indicator" id="whatsapp-status-indicator"></span>
+                </div>
                 <!-- Tutorial Button -->
                 <div class="tutorial-button" id="tutorial-button">
                     <i class="material-icons">help_outline</i>
@@ -87,6 +92,46 @@ $isAccountClickable = $sidebarManager->isAccountClickable();
             </div>
             <div class="notifications-footer">
                 <button id="load-more-notifications" class="load-more">Load More</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WhatsApp QR Code Modal -->
+    <div id="whatsapp-modal" class="whatsapp-modal hidden">
+        <div class="whatsapp-content">
+            <div class="whatsapp-header">
+                <h2>WhatsApp Connection</h2>
+                <span class="close-whatsapp">&times;</span>
+            </div>
+            <div class="whatsapp-body">
+                <div class="whatsapp-status" id="whatsapp-status">
+                    <div class="status-indicator">
+                        <span class="status-dot" id="whatsapp-status-dot"></span>
+                        <span class="status-text" id="whatsapp-status-text">Checking status...</span>
+                    </div>
+                </div>
+                <div class="qr-container" id="qr-container">
+                    <div class="qr-placeholder">
+                        <i class="material-icons">qr_code</i>
+                        <p>QR Code will appear here</p>
+                    </div>
+                    <img id="qr-code-image" class="qr-code-image hidden" alt="WhatsApp QR Code">
+                </div>
+                <div class="whatsapp-actions">
+                    <button id="initialize-whatsapp" class="btn btn-primary">Initialize WhatsApp</button>
+                    <button id="logout-whatsapp" class="btn btn-secondary hidden">Logout WhatsApp</button>
+                    <button id="refresh-qr" class="btn btn-outline hidden">Refresh QR Code</button>
+                </div>
+                <div class="whatsapp-info">
+                    <p><strong>Instructions:</strong></p>
+                    <ol>
+                        <li>Click "Initialize WhatsApp" to generate a QR code</li>
+                        <li>Open WhatsApp on your phone</li>
+                        <li>Go to Settings > Linked Devices > Link a Device</li>
+                        <li>Scan the QR code with your phone</li>
+                        <li>Wait for the connection to be established</li>
+                    </ol>
+                </div>
             </div>
         </div>
     </div>
@@ -340,6 +385,247 @@ $isAccountClickable = $sidebarManager->isAccountClickable();
         /* When tutorial is completed */
         [data-tutorial-completed="true"] .tutorial-button {
             opacity: 0.5;
+        }
+        
+        /* WhatsApp Button Styles */
+        .whatsapp-button {
+            position: absolute;
+            top: 15px;
+            right: 75px; /* Position it to the left of the tutorial button */
+            cursor: pointer;
+            color: var(--color-text-light);
+            transition: color 0.3s ease;
+        }
+        
+        .whatsapp-button:hover {
+            color: #25D366; /* WhatsApp green */
+        }
+        
+        .whatsapp-status-indicator {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ccc;
+            border: 1px solid var(--color-background);
+        }
+        
+        .whatsapp-status-indicator.connected {
+            background: #25D366;
+        }
+        
+        .whatsapp-status-indicator.disconnected {
+            background: #dc3545;
+        }
+        
+        .whatsapp-status-indicator.qr-ready {
+            background: #ffc107;
+        }
+        
+        /* WhatsApp Modal Styles */
+        .whatsapp-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1002;
+            pointer-events: auto;
+            backdrop-filter: blur(2px);
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        .whatsapp-modal.hidden {
+            display: none !important;
+        }
+        
+        .whatsapp-content {
+            background: var(--color-background);
+            color: var(--color-text-dark);
+            padding: 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            width: 90%;
+            max-width: 450px;
+            min-width: 350px;
+            animation: slide-down 0.3s ease-in-out;
+            position: relative;
+            z-index: 1003;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .whatsapp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            background: #f8f9fa;
+        }
+        
+        .whatsapp-header h2 {
+            margin: 0;
+            color: #25D366;
+            font-size: 1.3rem;
+        }
+        
+        .close-whatsapp {
+            font-size: 1.5rem;
+            color: var(--color-text-light);
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        
+        .close-whatsapp:hover {
+            color: var(--color-primary);
+        }
+        
+        .whatsapp-body {
+            padding: 20px;
+        }
+        
+        .whatsapp-status {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #25D366;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ccc;
+        }
+        
+        .status-dot.connected {
+            background: #25D366;
+        }
+        
+        .status-dot.disconnected {
+            background: #dc3545;
+        }
+        
+        .status-dot.qr-ready {
+            background: #ffc107;
+        }
+        
+        .status-text {
+            font-weight: 500;
+            color: var(--color-text-dark);
+        }
+        
+        .qr-container {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .qr-placeholder {
+            color: #999;
+        }
+        
+        .qr-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .qr-code-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .whatsapp-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background: #25D366;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #128C7E;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #25D366;
+            border: 1px solid #25D366;
+        }
+        
+        .btn-outline:hover {
+            background: #25D366;
+            color: white;
+        }
+        
+        .whatsapp-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .whatsapp-info p {
+            margin: 0 0 10px 0;
+            font-weight: 500;
+        }
+        
+        .whatsapp-info ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .whatsapp-info li {
+            margin-bottom: 5px;
+            color: var(--color-text-dark);
+        }
+        
+        .hidden {
+            display: none !important;
         }
     </style>
 

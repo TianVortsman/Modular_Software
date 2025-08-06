@@ -266,7 +266,17 @@ async function loadCreditNotesData() {
     try {
         window.showLoadingModal('Loading credit notes...');
         
-        const response = await fetch('../api/document-api.php?action=get_documents&type=credit-note', {
+        // Use buildQueryParams for consistent parameter handling
+        const paramsObj = { 
+            action: 'get_documents', 
+            type: 'credit-note' 
+        };
+        const params = window.buildQueryParams(paramsObj);
+        const url = `../api/document-api.php?${params.toString()}`;
+        
+        console.log('Loading credit notes with URL:', url);
+        
+        const response = await fetch(url, {
             method: 'GET',
             credentials: 'include'
         });
@@ -304,7 +314,17 @@ async function loadRefundsData() {
     try {
         window.showLoadingModal('Loading refunds...');
         
-        const response = await fetch('../api/document-api.php?action=get_documents&type=refund', {
+        // Use buildQueryParams for consistent parameter handling
+        const paramsObj = { 
+            action: 'get_documents', 
+            type: 'refund' 
+        };
+        const params = window.buildQueryParams(paramsObj);
+        const url = `../api/document-api.php?${params.toString()}`;
+        
+        console.log('Loading refunds with URL:', url);
+        
+        const response = await fetch(url, {
             method: 'GET',
             credentials: 'include'
         });
@@ -391,7 +411,7 @@ function formatRefundsDataForNovaTable(refunds) {
  * Generate payment actions HTML
  */
 function generatePaymentActions(payment) {
-    return `
+    const actions = `
         <div class="action-buttons">
             <button class="btn btn-sm btn-secondary" onclick="viewPaymentDetails(${payment.payment_id})" title="View Details">
                 <i class="material-icons">visibility</i>
@@ -404,6 +424,17 @@ function generatePaymentActions(payment) {
             </button>
         </div>
     `;
+    
+    // Add link button only for unlinked payments
+    if (!payment.document_id || payment.document_id === '') {
+        return actions.replace('</div>', `
+            <button class="btn btn-sm btn-info" onclick="linkPaymentToInvoice(${payment.payment_id})" title="Link to Invoice">
+                <i class="material-icons">link</i>
+            </button>
+        </div>`);
+    }
+    
+    return actions;
 }
 
 /**
@@ -580,6 +611,139 @@ function deletePayment(paymentId) {
     }
 }
 
+function linkPaymentToInvoice(paymentId) {
+    console.log('Linking payment to invoice:', paymentId);
+    // Show invoice selection modal
+    showInvoiceSelectionModal(paymentId);
+}
+
+function showInvoiceSelectionModal(paymentId) {
+    // Create a simple modal for invoice selection
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    `;
+    
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+    modalContent.style.cssText = `
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        min-width: 400px;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+    `;
+    
+    modalContent.innerHTML = `
+        <h3>Link Payment to Invoice</h3>
+        <p>Select an invoice to link this payment to:</p>
+        <select id="invoice-select-modal" style="width: 100%; margin: 10px 0; padding: 8px;">
+            <option value="">Loading invoices...</option>
+        </select>
+        <div style="margin-top: 20px; text-align: right;">
+            <button onclick="closeInvoiceSelectionModal()" style="margin-right: 10px;">Cancel</button>
+            <button onclick="confirmLinkPayment(${paymentId})" class="btn btn-primary">Link Payment</button>
+        </div>
+    `;
+    
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+    
+    // Load available invoices
+    loadInvoicesForLinking();
+}
+
+function closeInvoiceSelectionModal() {
+    const modal = document.querySelector('.modal-overlay');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+async function loadInvoicesForLinking() {
+    try {
+        // Use buildQueryParams for consistent parameter handling
+        const paramsObj = { 
+            action: 'list_documents', 
+            type: 'invoice', 
+            status: 'sent' 
+        };
+        const params = window.buildQueryParams(paramsObj);
+        const url = `../api/document-api.php?${params.toString()}`;
+        
+        console.log('Loading invoices for linking with URL:', url);
+        
+        const response = await fetch(url);
+        const result = await response.json();
+        
+        const select = document.getElementById('invoice-select-modal');
+        if (result.success && result.data) {
+            select.innerHTML = '<option value="">Select an invoice...</option>';
+            result.data.forEach(invoice => {
+                const option = document.createElement('option');
+                option.value = invoice.document_id;
+                option.textContent = `${invoice.document_number} - ${invoice.client_name} (R${parseFloat(invoice.balance_due || 0).toFixed(2)} due)`;
+                select.appendChild(option);
+            });
+        } else {
+            select.innerHTML = '<option value="">No unpaid invoices available</option>';
+        }
+    } catch (error) {
+        console.error('Error loading invoices:', error);
+        const select = document.getElementById('invoice-select-modal');
+        select.innerHTML = '<option value="">Error loading invoices</option>';
+    }
+}
+
+async function confirmLinkPayment(paymentId) {
+    const invoiceSelect = document.getElementById('invoice-select-modal');
+    const documentId = invoiceSelect.value;
+    
+    if (!documentId) {
+        window.showResponseModal('Please select an invoice to link the payment to', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch('../api/payment-api.php?action=link_payment_to_invoice', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                payment_id: paymentId,
+                document_id: documentId
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            window.showResponseModal('Payment linked to invoice successfully', 'success');
+            closeInvoiceSelectionModal();
+            // Refresh the payments table
+            loadPaymentsData();
+        } else {
+            window.showResponseModal(result.message || 'Failed to link payment', 'error');
+        }
+    } catch (error) {
+        console.error('Error linking payment:', error);
+        window.showResponseModal('Error linking payment to invoice', 'error');
+    }
+}
+
 function viewCreditNoteDetails(documentId) {
     console.log('Viewing credit note details:', documentId);
     window.openDocumentModal('view', documentId);
@@ -611,11 +775,19 @@ function approveRefund(documentId) {
 }
 
 // Global functions for sidebar integration
-window.openPaymentModal = function(mode, paymentId = null) {
-    console.log('Opening payment modal:', mode, paymentId);
-    if (typeof window.PaymentModal !== 'undefined') {
-        window.PaymentModal.open(mode, paymentId);
-    } else {
+// Note: window.openPaymentModal is already defined in payment-modal.js
+// This function is for sidebar integration and should call the actual modal
+window.openPaymentModalFromSidebar = function(mode, paymentId = null) {
+    console.log('Opening payment modal from sidebar:', mode, paymentId);
+    try {
+        // Call the actual payment modal function
+        if (typeof window.paymentModal !== 'undefined' && window.paymentModal.openModal) {
+            window.paymentModal.openModal(mode, paymentId);
+        } else {
+            window.showResponseModal('Payment modal not available', 'error');
+        }
+    } catch (error) {
+        console.error('Error opening payment modal:', error);
         window.showResponseModal('Payment modal not available', 'error');
     }
 };
@@ -640,6 +812,184 @@ function waitForNovaTableAndInit() {
     
     console.log('DOM ready and NovaTable available, initializing payments screen...');
     initializePaymentsScreen();
+}
+
+// Invoice selection modal for credit notes and refunds
+let selectedInvoiceForDocument = null;
+let currentDocumentType = null;
+
+function showInvoiceSelectionForDocument(documentType) {
+    console.log('Showing invoice selection for document type:', documentType);
+    currentDocumentType = documentType;
+    selectedInvoiceForDocument = null;
+    
+    // Create modal
+    const modal = document.createElement('div');
+    modal.id = 'invoice-selection-modal';
+    modal.className = 'modal-overlay';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    `;
+    
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+    modalContent.style.cssText = `
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        min-width: 500px;
+        max-width: 700px;
+        max-height: 80vh;
+        overflow-y: auto;
+    `;
+    
+    const documentTypeLabel = documentType === 'credit-note' ? 'Credit Note' : 'Refund';
+    
+    modalContent.innerHTML = `
+        <h3>Select Invoice for ${documentTypeLabel}</h3>
+        <p>Choose an invoice to create a ${documentTypeLabel.toLowerCase()} for:</p>
+        
+        <div style="margin: 20px 0;">
+            <label for="invoice-search-input" style="display: block; margin-bottom: 8px; font-weight: bold;">Search Invoice:</label>
+            <input type="text" id="invoice-search-input" placeholder="Search by invoice number or client name..." 
+                   style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <label for="invoice-select-modal" style="display: block; margin-bottom: 8px; font-weight: bold;">Select Invoice:</label>
+            <select id="invoice-select-modal" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="">Loading invoices...</option>
+            </select>
+        </div>
+        
+        <div style="margin-top: 20px; text-align: right;">
+            <button onclick="closeInvoiceSelectionForDocument()" style="margin-right: 10px; padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; background: #f5f5f5;">Cancel</button>
+            <button onclick="confirmInvoiceSelectionForDocument()" class="btn btn-primary" style="padding: 8px 16px;">Next</button>
+        </div>
+    `;
+    
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+    
+    // Load invoices and setup search
+    loadInvoicesForDocumentSelection();
+    setupInvoiceSearch();
+}
+
+function closeInvoiceSelectionForDocument() {
+    const modal = document.getElementById('invoice-selection-modal');
+    if (modal) {
+        modal.remove();
+    }
+    selectedInvoiceForDocument = null;
+    currentDocumentType = null;
+}
+
+async function loadInvoicesForDocumentSelection() {
+    try {
+        // Use buildQueryParams for consistent parameter handling
+        const paramsObj = { 
+            action: 'list_documents', 
+            type: 'invoice', 
+            status: 'sent' 
+        };
+        const params = window.buildQueryParams(paramsObj);
+        const url = `../api/document-api.php?${params.toString()}`;
+        
+        console.log('Loading invoices with URL:', url);
+        
+        const response = await fetch(url);
+        const result = await response.json();
+        
+        if (result.success) {
+            populateInvoiceSelectForDocument(result.data);
+        } else {
+            throw new Error(result.message || 'Failed to load invoices');
+        }
+    } catch (error) {
+        console.error('Error loading invoices for document selection:', error);
+        const select = document.getElementById('invoice-select-modal');
+        if (select) {
+            select.innerHTML = '<option value="">Error loading invoices</option>';
+        }
+    }
+}
+
+function populateInvoiceSelectForDocument(invoices) {
+    const select = document.getElementById('invoice-select-modal');
+    if (!select) return;
+    
+    select.innerHTML = '<option value="">Select an invoice...</option>';
+    
+    invoices.forEach(invoice => {
+        const option = document.createElement('option');
+        option.value = invoice.document_id;
+        option.textContent = `${invoice.document_number} - ${invoice.client_name} (R${parseFloat(invoice.total_amount).toFixed(2)})`;
+        option.dataset.invoice = JSON.stringify(invoice);
+        select.appendChild(option);
+    });
+}
+
+function setupInvoiceSearch() {
+    const searchInput = document.getElementById('invoice-search-input');
+    const select = document.getElementById('invoice-select-modal');
+    
+    if (!searchInput || !select) return;
+    
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const options = select.querySelectorAll('option');
+        
+        options.forEach(option => {
+            if (option.value === '') return; // Skip placeholder options
+            
+            const text = option.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+                option.style.display = '';
+            } else {
+                option.style.display = 'none';
+            }
+        });
+    });
+    
+    // Handle selection change
+    select.addEventListener('change', function() {
+        if (this.value) {
+            const selectedOption = this.options[this.selectedIndex];
+            selectedInvoiceForDocument = JSON.parse(selectedOption.dataset.invoice);
+        } else {
+            selectedInvoiceForDocument = null;
+        }
+    });
+}
+
+function confirmInvoiceSelectionForDocument() {
+    if (!selectedInvoiceForDocument) {
+        window.showResponseModal('Please select an invoice first', 'warning');
+        return;
+    }
+    
+    console.log('Selected invoice for document:', selectedInvoiceForDocument);
+    console.log('Document type:', currentDocumentType);
+    
+    // Close the invoice selection modal
+    closeInvoiceSelectionForDocument();
+    
+    // Open the document modal with the selected invoice and document type
+    if (typeof window.openDocumentModal === 'function') {
+        window.openDocumentModal('create', selectedInvoiceForDocument.document_id, currentDocumentType);
+    } else {
+        window.showResponseModal('Document modal not available', 'error');
+    }
 }
 
 // Start initialization

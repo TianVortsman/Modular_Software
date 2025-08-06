@@ -431,7 +431,7 @@ function updateSectionVisibility() {
 }
 
 // --- Open/Close Modal ---
-function openDocumentModal(mode = 'create', documentId = null) {
+function openDocumentModal(mode = 'create', documentId = null, documentType = null) {
     const modal = document.getElementById('document-modal');
     if (!modal) return;
 
@@ -452,6 +452,27 @@ function openDocumentModal(mode = 'create', documentId = null) {
     // Reset form if creating new document
     if (mode === 'create') {
         resetDocumentForm();
+        
+        // Set document type if provided
+        if (documentType) {
+            const docTypeSelect = document.getElementById('document-type');
+            if (docTypeSelect) {
+                docTypeSelect.value = documentType;
+                // Trigger change event to update related fields
+                const event = new Event('change');
+                docTypeSelect.dispatchEvent(event);
+            }
+        }
+        
+        // Set related document ID if provided (for credit notes and refunds)
+        if (documentId && documentType && (documentType === 'credit-note' || documentType === 'refund')) {
+            const relatedDocIdInput = document.getElementById('related-document-id');
+            if (relatedDocIdInput) {
+                relatedDocIdInput.value = documentId;
+                // Trigger update of related document info
+                updateRelatedDocumentInfo();
+            }
+        }
     }
     
     // Load document data if editing

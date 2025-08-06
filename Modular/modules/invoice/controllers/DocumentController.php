@@ -55,7 +55,7 @@ function list_documents(array $options = []): array {
                 LEFT JOIN invoicing.recurring_invoices r ON d.recurring_template_id = r.recurring_id
                 WHERE d.is_recurring = TRUE AND d.document_type = 'recurring_invoice'";
     } else {
-        $sql = "SELECT d.document_id, d.client_id, d.document_number, d.document_status, d.document_type, d.issue_date, d.due_date, d.total_amount, d.salesperson_id, c.client_id, c.client_name, e.employee_id
+        $sql = "SELECT d.document_id, d.client_id, d.document_number, d.document_status, d.document_type, d.issue_date, d.due_date, d.total_amount, d.salesperson_id, c.client_id, c.client_name, c.client_email, c.client_cell, c.client_tell, e.employee_id
                 FROM invoicing.documents d
                 JOIN invoicing.clients c ON d.client_id = c.client_id
                 JOIN core.employees e ON d.salesperson_id = e.employee_id

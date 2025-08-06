@@ -126,6 +126,11 @@ try {
             $stmt->execute();
             $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
+            // Debug: Log the first document to see what data we're getting
+            if (!empty($documents)) {
+                error_log('[DOCUMENT_API] First document data: ' . json_encode($documents[0]));
+            }
+            
             echo json_encode([
                 'success' => true,
                 'data' => $documents,

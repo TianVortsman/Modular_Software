@@ -346,6 +346,76 @@ function update_client(array $data): array {
         
         $stmt->execute();
         
+        // Handle address update if provided
+        if (!empty($data['addresses']) && is_array($data['addresses'])) {
+            foreach ($data['addresses'] as $address) {
+                if (empty($address['address_line1'])) continue;
+                
+                // Get existing address for this client
+                $existingAddressSql = "SELECT a.address_id FROM invoicing.address a 
+                                      JOIN invoicing.client_addresses ca ON a.address_id = ca.address_id 
+                                      WHERE ca.client_id = :client_id AND (a.deleted_at IS NULL OR a.deleted_at > NOW())
+                                      LIMIT 1";
+                $existingAddressStmt = $conn->prepare($existingAddressSql);
+                $existingAddressStmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+                $existingAddressStmt->execute();
+                $existingAddressId = $existingAddressStmt->fetchColumn();
+                
+                if ($existingAddressId) {
+                    // Update existing address
+                    $updateAddressSql = "UPDATE invoicing.address SET 
+                                        address_line1 = :address_line1,
+                                        address_line2 = :address_line2,
+                                        city = :city,
+                                        suburb = :suburb,
+                                        province = :province,
+                                        country = :country,
+                                        postal_code = :postal_code,
+                                        updated_by = :updated_by,
+                                        updated_at = NOW()
+                                        WHERE address_id = :address_id";
+                                        
+                    $updateAddressStmt = $conn->prepare($updateAddressSql);
+                    $updateAddressStmt->bindValue(':address_id', $existingAddressId, PDO::PARAM_INT);
+                    $updateAddressStmt->bindValue(':address_line1', sanitize_input($address['address_line1']));
+                    $updateAddressStmt->bindValue(':address_line2', sanitize_input($address['address_line2'] ?? null));
+                    $updateAddressStmt->bindValue(':city', sanitize_input($address['city'] ?? null));
+                    $updateAddressStmt->bindValue(':suburb', sanitize_input($address['suburb'] ?? null));
+                    $updateAddressStmt->bindValue(':province', sanitize_input($address['province'] ?? null));
+                    $updateAddressStmt->bindValue(':country', sanitize_input($address['country'] ?? null));
+                    $updateAddressStmt->bindValue(':postal_code', sanitize_input($address['postal_code'] ?? null));
+                    $updateAddressStmt->bindValue(':updated_by', $_SESSION['user_id'] ?? null, PDO::PARAM_INT);
+                    $updateAddressStmt->execute();
+                } else {
+                    // Create new address
+                    $newAddressSql = "INSERT INTO invoicing.address (address_line1, address_line2, city, suburb, province, country, postal_code, created_by, updated_by) 
+                                     VALUES (:address_line1, :address_line2, :city, :suburb, :province, :country, :postal_code, :created_by, :updated_by) 
+                                     RETURNING address_id";
+                                     
+                    $newAddressStmt = $conn->prepare($newAddressSql);
+                    $newAddressStmt->bindValue(':address_line1', sanitize_input($address['address_line1']));
+                    $newAddressStmt->bindValue(':address_line2', sanitize_input($address['address_line2'] ?? null));
+                    $newAddressStmt->bindValue(':city', sanitize_input($address['city'] ?? null));
+                    $newAddressStmt->bindValue(':suburb', sanitize_input($address['suburb'] ?? null));
+                    $newAddressStmt->bindValue(':province', sanitize_input($address['province'] ?? null));
+                    $newAddressStmt->bindValue(':country', sanitize_input($address['country'] ?? null));
+                    $newAddressStmt->bindValue(':postal_code', sanitize_input($address['postal_code'] ?? null));
+                    $newAddressStmt->bindValue(':created_by', $_SESSION['user_id'] ?? null, PDO::PARAM_INT);
+                    $newAddressStmt->bindValue(':updated_by', $_SESSION['user_id'] ?? null, PDO::PARAM_INT);
+                    
+                    $newAddressStmt->execute();
+                    $newAddressId = $newAddressStmt->fetchColumn();
+                    
+                    // Link new address to client
+                    $linkSql = "INSERT INTO invoicing.client_addresses (client_id, address_id) VALUES (:client_id, :address_id)";
+                    $linkStmt = $conn->prepare($linkSql);
+                    $linkStmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+                    $linkStmt->bindValue(':address_id', $newAddressId, PDO::PARAM_INT);
+                    $linkStmt->execute();
+                }
+            }
+        }
+        
         $conn->commit();
         
         // Log the action

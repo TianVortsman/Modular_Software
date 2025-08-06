@@ -21,12 +21,27 @@ services:
     ports:
       - "3000:3000"
 
+  websocket-server:
+    build:
+      context: ./Modular/websocket-server
+    restart: always
+    env_file:
+      - ./Modular/websocket-server/.env
+    depends_on:
+      - postgres
+    ports:
+      - "3002:3001"
+    volumes:
+      - ./Modular/websocket-server/logs:/app/logs
+      - ./Modular/websocket-server/sessions:/app/sessions
+
   modular:
     build:
       context: ./Modular
     restart: always
     depends_on:
       - postgres
+      - websocket-server
     ports:
       - "80:80"
     volumes:

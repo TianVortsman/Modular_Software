@@ -58,8 +58,11 @@ const tableConfigs = {
             } else if (isFinalized) {
                 actions.push(
                     { action: 'view', label: 'View Details', icon: '👁️' },
-                    { action: 'send', label: 'Send Invoice', icon: '📧' },
+                    { action: 'send_email', label: 'Send by Email', icon: '📧' },
+                    { action: 'send_whatsapp', label: 'Send by WhatsApp', icon: '📱' },
+                    { action: 'send', label: 'Send Invoice', icon: '📤' },
                     { action: 'payment', label: 'Record Payment', icon: '💰' },
+                    { action: 'link_payment', label: 'Link to Payment', icon: '🔗' },
                     { action: 'credit_note', label: 'Create Credit Note', icon: '📝' },
                     { action: 'refund', label: 'Create Refund', icon: '↩️' },
                     { action: 'reminder', label: 'Send Reminder', icon: '⏰' },
@@ -157,6 +160,8 @@ const tableConfigs = {
             } else if (isFinalized) {
                 actions.push(
                     { action: 'view', label: 'View Details', icon: '👁️' },
+                    { action: 'send_email', label: 'Send by Email', icon: '📧' },
+                    { action: 'send_whatsapp', label: 'Send by WhatsApp', icon: '📱' },
                     { action: 'convert', label: 'Convert to Invoice', icon: '📄' },
                     { action: 'delete', label: 'Delete', icon: '🗑️' }
                 );
@@ -164,6 +169,8 @@ const tableConfigs = {
                 actions.push(
                     { action: 'edit', label: 'Edit Quotation', icon: '✏️' },
                     { action: 'view', label: 'View Details', icon: '👁️' },
+                    { action: 'send_email', label: 'Send by Email', icon: '📧' },
+                    { action: 'send_whatsapp', label: 'Send by WhatsApp', icon: '📱' },
                     { action: 'approve', label: 'Approve', icon: '✅' },
                     { action: 'reject', label: 'Reject', icon: '❌' },
                     { action: 'delete', label: 'Delete', icon: '🗑️' }
@@ -217,6 +224,8 @@ const tableConfigs = {
             } else if (isFinalized) {
                 actions.push(
                     { action: 'view', label: 'View Details', icon: '👁️' },
+                    { action: 'send_email', label: 'Send by Email', icon: '📧' },
+                    { action: 'send_whatsapp', label: 'Send by WhatsApp', icon: '📱' },
                     { action: 'convert', label: 'Convert to Vehicle Invoice', icon: '📄' },
                     { action: 'delete', label: 'Delete', icon: '🗑️' }
                 );
@@ -224,6 +233,8 @@ const tableConfigs = {
                 actions.push(
                     { action: 'edit', label: 'Edit Vehicle Quotation', icon: '✏️' },
                     { action: 'view', label: 'View Details', icon: '👁️' },
+                    { action: 'send_email', label: 'Send by Email', icon: '📧' },
+                    { action: 'send_whatsapp', label: 'Send by WhatsApp', icon: '📱' },
                     { action: 'approve', label: 'Approve', icon: '✅' },
                     { action: 'reject', label: 'Reject', icon: '❌' },
                     { action: 'delete', label: 'Delete', icon: '🗑️' }
@@ -277,7 +288,9 @@ const tableConfigs = {
             } else if (isFinalized) {
                 actions.push(
                     { action: 'view', label: 'View Details', icon: '👁️' },
-                    { action: 'send', label: 'Send Invoice', icon: '📧' },
+                    { action: 'send_email', label: 'Send by Email', icon: '📧' },
+                    { action: 'send_whatsapp', label: 'Send by WhatsApp', icon: '📱' },
+                    { action: 'send', label: 'Send Invoice', icon: '📤' },
                     { action: 'payment', label: 'Record Payment', icon: '💰' },
                     { action: 'credit_note', label: 'Create Credit Note', icon: '📝' },
                     { action: 'refund', label: 'Create Refund', icon: '↩️' },
@@ -457,9 +470,13 @@ function formatDocumentDataForNovaTable(documents, sectionId) {
             document_id: doc.document_id,
             document_number: doc.document_number || '',
             client_name: doc.client_name || '',
+            client_email: doc.client_email || '',
+            client_cell: doc.client_cell || '',
+            client_tell: doc.client_tell || '',
             issue_date: doc.issue_date || '',
             updated_at: doc.updated_at || '',
             document_status: doc.document_status || '',
+            document_type: doc.document_type || '',
             total_amount: doc.total_amount ? `R${parseFloat(doc.total_amount).toFixed(2)}` : 'R0.00',
             due_date: doc.due_date || '',
             start_date: doc.start_date || '',
@@ -515,8 +532,53 @@ function handleContextMenuAction(action, row, sectionId) {
         case 'send':
             sendInvoice(row);
             break;
+        case 'send_email':
+            console.log('send_email action - row data:', row);
+            console.log('client_email value:', row.client_email);
+            const emailCheck = documentSendingService.checkClientContact(row, 'email');
+            if (emailCheck.hasContact) {
+                documentSendingService.sendWithConfirmation(row.document_id, 'email', row.document_number, row.client_name).catch(error => {
+                    console.error('Error in sendWithConfirmation:', error);
+                });
+            } else {
+                if (typeof window.handleApiResponse === 'function') {
+                    window.handleApiResponse({
+                        success: false,
+                        message: 'No Email',
+                        details: emailCheck.errorMessage
+                    });
+                } else if (typeof window.showResponseModal === 'function') {
+                    window.showResponseModal('error', 'No Email', emailCheck.errorMessage);
+                } else {
+                    alert(emailCheck.errorMessage);
+                }
+            }
+            break;
+        case 'send_whatsapp':
+            const phoneCheck = documentSendingService.checkClientContact(row, 'whatsapp');
+            if (phoneCheck.hasContact) {
+                documentSendingService.sendWithConfirmation(row.document_id, 'whatsapp', row.document_number, row.client_name).catch(error => {
+                    console.error('Error in sendWithConfirmation:', error);
+                });
+            } else {
+                if (typeof window.handleApiResponse === 'function') {
+                    window.handleApiResponse({
+                        success: false,
+                        message: 'No Phone',
+                        details: phoneCheck.errorMessage
+                    });
+                } else if (typeof window.showResponseModal === 'function') {
+                    window.showResponseModal('error', 'No Phone', phoneCheck.errorMessage);
+                } else {
+                    alert(phoneCheck.errorMessage);
+                }
+            }
+            break;
         case 'payment':
-            loadPayment(row);
+            recordPaymentForDocument(row);
+            break;
+        case 'link_payment':
+            linkInvoiceToPayment(row);
             break;
         case 'credit_note':
             createCreditNote(row);
@@ -574,7 +636,7 @@ function fetchAndRenderDocuments(sectionId, status) {
     
     const paramsObj = { action: 'list_documents', type };
     if (status && status !== 'all') paramsObj.status = status;
-            const params = window.buildQueryParams(paramsObj);
+            const params = buildQueryParams(paramsObj);
     const url = `../api/document-api.php?${params.toString()}`;
     
     console.log(`API URL: ${url}`);
@@ -848,22 +910,185 @@ function requestApproval(doc) {
 }
 
 function loadPayment(doc) { 
-    window.showResponseModal('Payment loading functionality coming soon', 'info'); 
+    recordPaymentForDocument(doc);
+}
+
+function recordPaymentForDocument(doc) {
+    console.log('Recording payment for document:', doc);
+    console.log('Document type:', doc.document_type, 'Type of:', typeof doc.document_type);
+    console.log('Document type length:', doc.document_type ? doc.document_type.length : 'null');
+    console.log('Document type trimmed:', doc.document_type ? doc.document_type.trim() : 'null');
+    
+    // Check if document can accept payments
+    const allowedTypes = ['invoice', 'vehicle_invoice', 'recurring_invoice'];
+    console.log('Allowed types:', allowedTypes);
+    console.log('Document type in allowed types:', allowedTypes.includes(doc.document_type));
+    console.log('Document type trimmed in allowed types:', allowedTypes.includes(doc.document_type ? doc.document_type.trim() : ''));
+    
+    // Try with trimmed document type
+    const documentType = doc.document_type ? doc.document_type.trim() : '';
+    
+    if (!allowedTypes.includes(documentType)) {
+        window.showResponseModal(`Payments can only be recorded for invoices. Document type: "${doc.document_type}"`, 'error');
+        return;
+    }
+    
+    // Check if document is already paid
+    if (doc.document_status === 'paid') {
+        window.showResponseModal('This document is already fully paid', 'info');
+        return;
+    }
+    
+    // Open payment modal with document pre-loaded
+    if (typeof window.openPaymentModal === 'function') {
+        window.openPaymentModal('create', doc.document_id);
+    } else {
+        window.showResponseModal('Payment modal not available', 'error');
+    }
+}
+
+function linkInvoiceToPayment(doc) {
+    console.log('Linking invoice to payment:', doc);
+    
+    // Check if document can accept payments
+    const allowedTypes = ['invoice', 'vehicle_invoice', 'recurring_invoice'];
+    if (!allowedTypes.includes(doc.document_type)) {
+        window.showResponseModal('Only invoices can be linked to payments', 'error');
+        return;
+    }
+    
+    // Check if document is already paid
+    if (doc.document_status === 'paid') {
+        window.showResponseModal('This document is already fully paid', 'info');
+        return;
+    }
+    
+    // Show payment selection modal
+    showPaymentSelectionModal(doc);
+}
+
+function showPaymentSelectionModal(doc) {
+    // Create a simple modal for payment selection
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    `;
+    
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+    modalContent.style.cssText = `
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        min-width: 400px;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+    `;
+    
+    modalContent.innerHTML = `
+        <h3>Link Invoice to Payment</h3>
+        <p>Select a payment to link to invoice ${doc.document_number}:</p>
+        <select id="payment-select-modal" style="width: 100%; margin: 10px 0; padding: 8px;">
+            <option value="">Loading payments...</option>
+        </select>
+        <div style="margin-top: 20px; text-align: right;">
+            <button onclick="closePaymentSelectionModal()" style="margin-right: 10px;">Cancel</button>
+            <button onclick="confirmLinkInvoice(${doc.document_id})" class="btn btn-primary">Link Invoice</button>
+        </div>
+    `;
+    
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+    
+    // Load available payments
+    loadPaymentsForLinking();
+}
+
+function closePaymentSelectionModal() {
+    const modal = document.querySelector('.modal-overlay');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+async function loadPaymentsForLinking() {
+    try {
+        const response = await fetch('../api/payment-api.php?action=get_unlinked_payments');
+        const result = await response.json();
+        
+        const select = document.getElementById('payment-select-modal');
+        if (result.success && result.data) {
+            select.innerHTML = '<option value="">Select a payment...</option>';
+            result.data.forEach(payment => {
+                const option = document.createElement('option');
+                option.value = payment.document_payment_id;
+                option.textContent = `R${parseFloat(payment.payment_amount).toFixed(2)} - ${payment.payment_method_name || 'Unknown'} (${payment.payment_date})`;
+                select.appendChild(option);
+            });
+        } else {
+            select.innerHTML = '<option value="">No unlinked payments available</option>';
+        }
+    } catch (error) {
+        console.error('Error loading payments:', error);
+        const select = document.getElementById('payment-select-modal');
+        select.innerHTML = '<option value="">Error loading payments</option>';
+    }
+}
+
+async function confirmLinkInvoice(documentId) {
+    const paymentSelect = document.getElementById('payment-select-modal');
+    const paymentId = paymentSelect.value;
+    
+    if (!paymentId) {
+        window.showResponseModal('Please select a payment to link the invoice to', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch('../api/payment-api.php?action=link_payment_to_invoice', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                payment_id: paymentId,
+                document_id: documentId
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            window.showResponseModal('Invoice linked to payment successfully', 'success');
+            closePaymentSelectionModal();
+            // Refresh the current table
+            refreshCurrentTable();
+        } else {
+            window.showResponseModal(result.message || 'Failed to link invoice', 'error');
+        }
+    } catch (error) {
+        console.error('Error linking invoice:', error);
+        window.showResponseModal('Error linking invoice to payment', 'error');
+    }
 }
 
 function createCreditNote(doc) { 
     // Open modal in credit note mode with invoice data
-    window.openDocumentModal('create');
+    window.openDocumentModal('create', doc.document_id, 'credit-note');
     
     // Wait for modal to load, then set up credit note
     setTimeout(() => {
-        // Set document type to credit note
-        const typeSelect = document.getElementById('document-type');
-        if (typeSelect) {
-            typeSelect.value = 'credit-note';
-            // Trigger change event to update form
-            typeSelect.dispatchEvent(new Event('change'));
-        }
         
         // Use existing client search to populate full client details
         if (doc.client_name) {
@@ -926,17 +1151,10 @@ function createCreditNote(doc) {
 
 function refundInvoice(doc) { 
     // Open modal in refund mode
-    window.openDocumentModal('create');
+    window.openDocumentModal('create', doc.document_id, 'refund');
     
     // Wait for modal to load, then set up refund
     setTimeout(() => {
-        // Set document type to refund
-        const typeSelect = document.getElementById('document-type');
-        if (typeSelect) {
-            typeSelect.value = 'refund';
-            // Trigger change event to update form
-            typeSelect.dispatchEvent(new Event('change'));
-        }
         
         // Pre-populate with invoice client data
         if (doc.client_id) {

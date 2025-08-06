@@ -53,7 +53,8 @@ try {
                 sendApiErrorResponse('GET method required for list_categories action', $_GET, 'Product API Method Validation', 'INVALID_METHOD', 405);
             }
             
-            $result = \App\modules\invoice\controllers\get_product_categories();
+            $productTypeId = isset($_GET['product_type_id']) ? (int)$_GET['product_type_id'] : null;
+            $result = \App\modules\invoice\controllers\get_product_categories($productTypeId);
             echo json_encode($result);
             break;
             
@@ -109,11 +110,18 @@ try {
                 sendApiErrorResponse('POST method required for add action', $_POST, 'Product API Method Validation', 'INVALID_METHOD', 405);
             }
             
-            $rawData = file_get_contents('php://input');
-            $data = json_decode($rawData, true);
+            // Handle both JSON and FormData
+            $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+            if (strpos($contentType, 'application/json') !== false) {
+                $rawData = file_get_contents('php://input');
+                $data = json_decode($rawData, true);
+            } else {
+                // Handle FormData
+                $data = $_POST;
+            }
             
-            if (!$data) {
-                sendApiErrorResponse('Missing or invalid product data', ['raw_input' => $rawData], 'Product API Data Validation', 'PRODUCT_DATA_REQUIRED', 400);
+            if (!$data || empty($data)) {
+                sendApiErrorResponse('Missing or invalid product data', ['raw_input' => $rawData ?? 'FormData', 'content_type' => $contentType], 'Product API Data Validation', 'PRODUCT_DATA_REQUIRED', 400);
             }
             
             $user_id = $_SESSION['user_id'] ?? null;
@@ -131,10 +139,19 @@ try {
                 sendApiErrorResponse('POST method required for edit action', $_POST, 'Product API Method Validation', 'INVALID_METHOD', 405);
             }
             
-            $data = $_POST;
+            // Handle both JSON and FormData
+            $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+            if (strpos($contentType, 'application/json') !== false) {
+                $rawData = file_get_contents('php://input');
+                $data = json_decode($rawData, true);
+            } else {
+                // Handle FormData
+                $data = $_POST;
+            }
+            
             $product_id = $data['product_id'] ?? null;
             if (!$product_id || !is_numeric($product_id)) {
-                sendApiErrorResponse('Missing or invalid product_id parameter', $_POST, 'Product API Parameter Validation', 'PRODUCT_ID_REQUIRED', 400);
+                sendApiErrorResponse('Missing or invalid product_id parameter', $data, 'Product API Parameter Validation', 'PRODUCT_ID_REQUIRED', 400);
             }
             
             $user_id = $_SESSION['user_id'] ?? null;
@@ -155,9 +172,19 @@ try {
                 sendApiErrorResponse('POST method required for delete action', $_POST, 'Product API Method Validation', 'INVALID_METHOD', 405);
             }
             
-            $product_id = $_POST['product_id'] ?? null;
+            // Handle both JSON and FormData
+            $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+            if (strpos($contentType, 'application/json') !== false) {
+                $rawData = file_get_contents('php://input');
+                $data = json_decode($rawData, true);
+            } else {
+                // Handle FormData
+                $data = $_POST;
+            }
+            
+            $product_id = $data['product_id'] ?? null;
             if (!$product_id || !is_numeric($product_id)) {
-                sendApiErrorResponse('Missing or invalid product_id parameter', $_POST, 'Product API Parameter Validation', 'PRODUCT_ID_REQUIRED', 400);
+                sendApiErrorResponse('Missing or invalid product_id parameter', $data, 'Product API Parameter Validation', 'PRODUCT_ID_REQUIRED', 400);
             }
             
             $user_id = $_SESSION['user_id'] ?? null;
@@ -175,11 +202,18 @@ try {
                 sendApiErrorResponse('POST method required for adjust_stock action', $_POST, 'Product API Method Validation', 'INVALID_METHOD', 405);
             }
             
-            $rawData = file_get_contents('php://input');
-            $data = json_decode($rawData, true);
+            // Handle both JSON and FormData
+            $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+            if (strpos($contentType, 'application/json') !== false) {
+                $rawData = file_get_contents('php://input');
+                $data = json_decode($rawData, true);
+            } else {
+                // Handle FormData
+                $data = $_POST;
+            }
             
-            if (!$data) {
-                sendApiErrorResponse('Missing or invalid stock adjustment data', ['raw_input' => $rawData], 'Product API Data Validation', 'STOCK_DATA_REQUIRED', 400);
+            if (!$data || empty($data)) {
+                sendApiErrorResponse('Missing or invalid stock adjustment data', ['raw_input' => $rawData ?? 'FormData', 'content_type' => $contentType], 'Product API Data Validation', 'STOCK_DATA_REQUIRED', 400);
             }
             
             $user_id = $_SESSION['user_id'] ?? null;
@@ -202,16 +236,23 @@ try {
                 sendApiErrorResponse('POST method required for update_status action', $_POST, 'Product API Method Validation', 'INVALID_METHOD', 405);
             }
             
-            $product_id = $_GET['product_id'] ?? $_GET['id'] ?? null;
-            if (!$product_id || !is_numeric($product_id)) {
-                sendApiErrorResponse('Missing or invalid product_id parameter', $_GET, 'Product API Parameter Validation', 'PRODUCT_ID_REQUIRED', 400);
+            // Handle both JSON and FormData
+            $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+            if (strpos($contentType, 'application/json') !== false) {
+                $rawData = file_get_contents('php://input');
+                $data = json_decode($rawData, true);
+            } else {
+                // Handle FormData
+                $data = $_POST;
             }
             
-            $rawData = file_get_contents('php://input');
-            $data = json_decode($rawData, true);
+            $product_id = $data['product_id'] ?? null;
+            if (!$product_id || !is_numeric($product_id)) {
+                sendApiErrorResponse('Missing or invalid product_id parameter', $data, 'Product API Parameter Validation', 'PRODUCT_ID_REQUIRED', 400);
+            }
             
-            if (!$data || !isset($data['status'])) {
-                sendApiErrorResponse('Missing or invalid status data', ['raw_input' => $rawData], 'Product API Data Validation', 'STATUS_DATA_REQUIRED', 400);
+            if (!$data || !isset($data['product_status'])) {
+                sendApiErrorResponse('Missing or invalid status data', ['raw_input' => $rawData ?? 'FormData', 'content_type' => $contentType], 'Product API Data Validation', 'STATUS_DATA_REQUIRED', 400);
             }
             
             $user_id = $_SESSION['user_id'] ?? null;
@@ -219,7 +260,7 @@ try {
                 sendApiErrorResponse('User session invalid - cannot determine user', $_SESSION, 'Product API Session Validation', 'INVALID_SESSION', 401);
             }
             
-            $result = \App\modules\invoice\controllers\update_product_status((int)$product_id, $data['status'], $user_id);
+            $result = \App\modules\invoice\controllers\update_product_status((int)$product_id, $data['product_status'], $user_id);
             echo json_encode($result);
             break;
             

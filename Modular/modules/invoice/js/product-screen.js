@@ -361,11 +361,31 @@ class ProductScreenManager {
     }
     async populateFilterDropdownsForSection(sectionType) {
         if (!sectionTypeToTypeId['Product']) await updateSectionTypeToTypeIdMap();
-        // Always use Proper Case for lookup
-        const properCaseType = sectionType.charAt(0).toUpperCase() + sectionType.slice(1).toLowerCase();
-        const typeId = sectionTypeToTypeId[properCaseType] || sectionTypeToTypeId['Product'];
-        console.log('[populateFilterDropdownsForSection] sectionType:', sectionType, 'properCaseType:', properCaseType, 'typeId:', typeId, 'sectionTypeToTypeId:', sectionTypeToTypeId);
-        await this.populateCategoryDropdown(typeId);
+        
+        // Map section types to product type names (case-insensitive)
+        const sectionTypeMap = {
+            'product': 'Product',
+            'part': 'Part', 
+            'service': 'Service',
+            'extra': 'Extra',
+            'discontinued': 'Discontinued',
+            'disabled': 'Disabled'
+        };
+        
+        // Get the proper product type name
+        const productTypeName = sectionTypeMap[sectionType.toLowerCase()] || 'Product';
+        const typeId = sectionTypeToTypeId[productTypeName];
+        
+        console.log('[populateFilterDropdownsForSection] sectionType:', sectionType, 'productTypeName:', productTypeName, 'typeId:', typeId, 'sectionTypeToTypeId:', sectionTypeToTypeId);
+        
+        if (typeId) {
+            await this.populateCategoryDropdown(typeId);
+        } else {
+            console.warn('[populateFilterDropdownsForSection] No typeId found for sectionType:', sectionType);
+            // Fallback to Product type
+            await this.populateCategoryDropdown(sectionTypeToTypeId['Product']);
+        }
+        
         const subcategoryFilter = document.getElementById('subcategory-filter');
         if (subcategoryFilter) {
             subcategoryFilter.innerHTML = '<option value="">All Subcategories</option>';
@@ -375,16 +395,30 @@ class ProductScreenManager {
         const categoryFilter = document.getElementById('category-filter');
         if (!categoryFilter) return;
         console.log('[populateCategoryDropdown] typeId:', typeId);
-        const res = await window.ProductAPI.fetchProductCategories(typeId);
+        
+        let res;
+        if (!typeId) {
+            console.warn('[populateCategoryDropdown] No typeId provided, showing all categories');
+            // If no typeId, show all categories
+            res = await window.ProductAPI.fetchProductCategories();
+        } else {
+            res = await window.ProductAPI.fetchProductCategories(typeId);
+            console.log('[populateCategoryDropdown] API response:', res);
+        }
+        
         categoryFilter.innerHTML = '<option value="">All Categories</option>';
         if (res.success && Array.isArray(res.data)) {
+            console.log('[populateCategoryDropdown] Found', res.data.length, 'categories for typeId:', typeId);
             res.data.forEach(cat => {
                 const option = document.createElement('option');
                 option.value = cat.category_id;
                 option.textContent = cat.category_name;
                 categoryFilter.appendChild(option);
             });
+        } else {
+            console.warn('[populateCategoryDropdown] No categories found or API error for typeId:', typeId, 'Response:', res);
         }
+        
         const subcategoryFilter = document.getElementById('subcategory-filter');
         if (subcategoryFilter) {
             subcategoryFilter.innerHTML = '<option value="">All Subcategories</option>';

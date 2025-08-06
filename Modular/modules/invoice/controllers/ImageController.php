@@ -1,5 +1,5 @@
 <?php
-namespace App\modules\product\controllers;
+namespace App\modules\invoice\controllers;
 
 use PDO;
 use Exception;

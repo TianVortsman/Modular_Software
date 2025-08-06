@@ -62,7 +62,34 @@
             <div class="modal-content-wrapper">
                 <!-- Document Info Section (Row 1, Col 1) -->
                 <div class="modal-main-content">
-                    <section class="card">
+                    <!-- Client Search Section (shown when no document is pre-selected) -->
+                    <section class="card" id="client-search-section" style="display: none;">
+                        <div class="card-header">
+                            <h4>Client Information</h4>
+                        </div>
+                        <div class="form-group">
+                            <label for="payment-client-search">Search Client</label>
+                            <input type="text" id="payment-client-search" placeholder="Start typing client name...">
+                            <div id="search-results-client" class="search-results-client"></div>
+                            <small class="form-help">Search for a client to record a payment for.</small>
+                        </div>
+                    </section>
+
+                    <!-- Invoice Selection Section (shown when no document is pre-selected) -->
+                    <section class="card" id="invoice-selection-section" style="display: none;">
+                        <div class="card-header">
+                            <h4>Link Payment to Invoice</h4>
+                        </div>
+                        <div class="form-group">
+                            <label for="invoice-select">Select Invoice (Optional)</label>
+                            <select id="invoice-select">
+                                <option value="">Select an invoice to link payment to (optional)</option>
+                            </select>
+                            <small class="form-help">You can record a payment without linking it to an invoice, or select an invoice to automatically link the payment.</small>
+                        </div>
+                    </section>
+
+                    <section class="card" id="document-info-section">
                         <div class="card-header">
                             <h4>Document Information</h4>
                         </div>

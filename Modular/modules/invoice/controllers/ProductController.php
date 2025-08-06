@@ -234,7 +234,7 @@ function update_product(array $data, int $user_id): array {
         ];
     }
     // Permission check
-    if (!check_user_permission($user_id, 'update_document')) {
+    if (!check_user_permission($user_id, 'update_product')) {
         require_once __DIR__ . '/../../../src/Helpers/helpers.php';
         $msg = get_friendly_error("Permission denied for user $user_id to update product");
         error_log('[update_product] ' . $msg);
@@ -283,6 +283,26 @@ function update_product(array $data, int $user_id): array {
                 $subcategoryId = null;
             }
         }
+        
+        // Check for SKU uniqueness if SKU is being set
+        if (isset($data['sku']) && !empty($data['sku']) && $data['sku'] !== '') {
+            $checkSkuSql = "SELECT COUNT(*) FROM core.products WHERE sku = :sku AND product_id != :product_id";
+            $checkSkuStmt = $conn->prepare($checkSkuSql);
+            $checkSkuStmt->execute(['sku' => $data['sku'], 'product_id' => $productId]);
+            if ($checkSkuStmt->fetchColumn() > 0) {
+                $conn->rollBack();
+                $msg = 'SKU already exists for another product';
+                error_log('[update_product] ' . $msg);
+                log_user_action($user_id, 'update_product', $productId, $msg);
+                return [
+                    'success' => false,
+                    'message' => $msg,
+                    'data'    => null,
+                    'error_code' => 'SKU_ALREADY_EXISTS'
+                ];
+            }
+        }
+        
         // For now, just update the core product table
         $sql = "UPDATE core.products SET
             product_name = :product_name,
@@ -306,7 +326,7 @@ function update_product(array $data, int $user_id): array {
             'product_description'=> $data['product_description'] ?? null,
             'product_price'      => $data['product_price'] !== '' ? $data['product_price'] : 0,
             'product_status'     => $data['product_status'] ?? 'active',
-            'sku'                => $data['sku'] ?? null,
+            'sku'                => (!empty($data['sku']) && $data['sku'] !== '') ? $data['sku'] : null,
             'barcode'            => (isset($data['barcode']) && $data['barcode'] !== '') ? $data['barcode'] : null,
             'product_type_id'    => is_numeric($newTypeId) ? (int)$newTypeId : null,
             'category_id'        => is_numeric($categoryId) ? (int)$categoryId : null,
@@ -360,7 +380,7 @@ function update_product(array $data, int $user_id): array {
             
             // Use existing function to link product to supplier (has ON CONFLICT DO NOTHING)
             require_once __DIR__ . '/SupplierController.php';
-            $linkResult = \App\modules\product\controllers\link_product_to_supplier($productId, $supplier_id, $user_id);
+            $linkResult = \App\modules\invoice\controllers\link_product_to_supplier($productId, $supplier_id, $user_id);
             
             if (!$linkResult['success']) {
                 error_log("[update_product] Failed to link supplier $supplier_id to product $productId: " . $linkResult['message']);
@@ -417,7 +437,7 @@ function add_product(array $data, int $user_id): array {
         ];
     }
     // Permission check
-    if (!check_user_permission($user_id, 'create_document')) {
+    if (!check_user_permission($user_id, 'add_product')) {
         require_once __DIR__ . '/../../../src/Helpers/helpers.php';
         $msg = get_friendly_error("Permission denied for user $user_id to add product");
         error_log('[add_product] ' . $msg);
@@ -436,10 +456,23 @@ function add_product(array $data, int $user_id): array {
         // Insert core product
         $productId = insert_product($data);
         if (!$productId) {
-            $msg = 'Failed to insert product';
-            error_log('[add_product] ' . $msg);
-            log_user_action($user_id, 'add_product', null, $msg);
-            throw new Exception($msg);
+            // Check if it's a SKU duplication error
+            if (isset($data['sku']) && !empty($data['sku'])) {
+                $msg = 'SKU already exists for another product';
+                error_log('[add_product] ' . $msg . ' - SKU: ' . $data['sku']);
+                log_user_action($user_id, 'add_product', null, $msg);
+                return [
+                    'success' => false,
+                    'message' => $msg,
+                    'data'    => null,
+                    'error_code' => 'SKU_ALREADY_EXISTS'
+                ];
+            } else {
+                $msg = 'Failed to insert product';
+                error_log('[add_product] ' . $msg);
+                log_user_action($user_id, 'add_product', null, $msg);
+                throw new Exception($msg);
+            }
         }
         // Insert inventory
         if (!insert_product_inventory($productId, $data)) {
@@ -671,6 +704,17 @@ function get_product_subcategories(?int $categoryId = null): array {
 function insert_product(array $data): ?int {
     global $conn;
 
+    // Check for SKU uniqueness if SKU is being set
+    if (isset($data['sku']) && !empty($data['sku']) && $data['sku'] !== '') {
+        $checkSkuSql = "SELECT COUNT(*) FROM core.products WHERE sku = :sku";
+        $checkSkuStmt = $conn->prepare($checkSkuSql);
+        $checkSkuStmt->execute(['sku' => $data['sku']]);
+        if ($checkSkuStmt->fetchColumn() > 0) {
+            error_log('[insert_product] SKU already exists: ' . $data['sku']);
+            return null;
+        }
+    }
+
     $sql = "INSERT INTO core.products (
                 product_name, product_description, product_price, product_status,
                 sku, barcode, product_type_id, category_id, subcategory_id,
@@ -730,7 +774,7 @@ function update_product_status(int $productId, string $status, int $user_id): ar
     global $conn;
 
     // Permission check
-    if (!check_user_permission($user_id, 'update_document')) {
+    if (!check_user_permission($user_id, 'update_product')) {
         error_log("Permission denied for user $user_id to update product status");
         return [
             'success' => false,
@@ -784,7 +828,7 @@ function delete_product(int $productId, int $user_id): array {
     global $conn;
 
     // Permission check
-    if (!check_user_permission($user_id, 'delete_document')) {
+    if (!check_user_permission($user_id, 'delete_product')) {
         error_log("Permission denied for user $user_id to delete product");
         return [
             'success' => false,

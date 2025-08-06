@@ -21,6 +21,12 @@ function getFriendlyMessageFromAI($error, $formData = null, $context = null) {
         if (!$endpoint) {
             return null;
         }
+        
+        // Check if endpoint is accessible (simple check)
+        $parsed = parse_url($endpoint);
+        if (!$parsed || !isset($parsed['host'])) {
+            return null;
+        }
 
         // Use the model name from LM Studio or fallback
         $model = getenv('AI_MODEL') ?: 'nous-hermes-2-mistral-7b-dpo';
@@ -50,7 +56,7 @@ If the error is not fixable by the user (like database errors, server errors, mi
 - In production: Just say 'Something went wrong. Please contact support.'
 - In development: You can mention the technical issue briefly
 
-Always keep responses concise (max 1-2 sentences) and actionable.";
+Always keep responses concise (max 10 words) and actionable.";
 
         $data = [
             "model" => $model,
@@ -68,7 +74,7 @@ Always keep responses concise (max 1-2 sentences) and actionable.";
                 'header'  => "Content-type: application/json",
                 'method'  => 'POST',
                 'content' => json_encode($data),
-                'timeout' => 10, // Increased timeout for AI response
+                'timeout' => 5, // Reduced timeout to prevent hanging
                 'ignore_errors' => true
             ]
         ];
@@ -78,31 +84,30 @@ Always keep responses concise (max 1-2 sentences) and actionable.";
         // Suppress all errors to prevent cascading failures
         $result = @file_get_contents($endpoint, false, $context);
 
-        if (!$result) return null;
+        if (!$result || $result === false) {
+            return null;
+        }
 
-        // Log the raw AI response for debugging
-        error_log('[AI_DEBUG] Raw AI response: ' . $result);
-        
         $json = json_decode($result, true);
         
-        // Log the parsed JSON for debugging
-        error_log('[AI_DEBUG] Parsed JSON: ' . json_encode($json));
+        if (!$json || !isset($json['choices'][0]['message']['content'])) {
+            return null;
+        }
         
-        $content = $json['choices'][0]['message']['content'] ?? null;
-        
-        // Log the extracted content
-        error_log('[AI_DEBUG] Extracted content: ' . ($content ?: 'NULL'));
+        $content = $json['choices'][0]['message']['content'];
         
         // Only return content if it's a helpful response (not just "Sorry," or similar)
         if ($content && strlen(trim($content)) > 5 && !preg_match('/^(Sorry|Error|Oops|Failed)$/i', trim($content))) {
-            return $content;
+            return trim($content);
         }
         
-        error_log('[AI_DEBUG] Content too short or incomplete, returning null');
         return null;
         
     } catch (Exception $e) {
-        // Completely silent failure - no logging at all
+        // Silent failure - don't log or cause cascading errors
+        return null;
+    } catch (Throwable $e) {
+        // Catch any other throwable to prevent cascading failures
         return null;
     }
 }
@@ -118,6 +123,11 @@ Always keep responses concise (max 1-2 sentences) and actionable.";
  * @param int $httpCode - HTTP status code (default 500)
  */
 function sendApiErrorResponse($error, $formData = null, $context = null, $errorCode = null, $httpCode = 500) {
+    // Prevent multiple responses - check if headers already sent
+    if (headers_sent()) {
+        return;
+    }
+    
     $config = require __DIR__ . '/../Config/app.php';
     $env = $config['APP_ENV'] ?? 'Production';
     
@@ -134,13 +144,18 @@ function sendApiErrorResponse($error, $formData = null, $context = null, $errorC
     
     file_put_contents(__DIR__ . '/../../storage/logs/php_errors.log', $logEntry, FILE_APPEND);
 
-    // Get AI-friendly message (now enabled)
-    $friendlyMessage = getFriendlyMessageFromAI($error, $formData, $context);
-    
-    // Log the AI response if available
-    if ($friendlyMessage) {
-        $aiLogEntry = date('c') . " | Code: $errorCode | AI Response: $friendlyMessage\n";
-        file_put_contents(__DIR__ . '/../../storage/logs/php_errors.log', $aiLogEntry, FILE_APPEND);
+    // Get AI-friendly message (silently - don't let AI errors cause cascading failures)
+    $friendlyMessage = null;
+    try {
+        $friendlyMessage = getFriendlyMessageFromAI($error, $formData, $context);
+        
+        // Log the AI response if available
+        if ($friendlyMessage) {
+            $aiLogEntry = date('c') . " | Code: $errorCode | AI Response: $friendlyMessage\n";
+            file_put_contents(__DIR__ . '/../../storage/logs/php_errors.log', $aiLogEntry, FILE_APPEND);
+        }
+    } catch (Throwable $aiError) {
+        // If AI fails, just continue without it - don't log or cause more errors
     }
 
     http_response_code($httpCode);
@@ -236,7 +251,11 @@ function handleFatalError() {
     }
 }
 
-// Register all error handlers globally
-set_error_handler('handleError');
-set_exception_handler('handleException');
-register_shutdown_function('handleFatalError'); 
+// Register all error handlers globally (only once)
+static $handlersRegistered = false;
+if (!$handlersRegistered) {
+    set_error_handler('handleError');
+    set_exception_handler('handleException');
+    register_shutdown_function('handleFatalError');
+    $handlersRegistered = true;
+} 

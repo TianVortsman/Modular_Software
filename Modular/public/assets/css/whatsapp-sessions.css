@@ -1,0 +1,286 @@
+/* WhatsApp Sessions Manager Styles */
+
+.whatsapp-sessions-container {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.whatsapp-sessions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.whatsapp-sessions-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.whatsapp-sessions-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 5px 0 0 0;
+}
+
+.whatsapp-status-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.whatsapp-status {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.whatsapp-status-not_initialized {
+    background-color: var(--warning-light);
+    color: var(--warning-dark);
+    border: 1px solid var(--warning-color);
+}
+
+.whatsapp-status-qr_ready {
+    background-color: var(--info-light);
+    color: var(--info-dark);
+    border: 1px solid var(--info-color);
+}
+
+.whatsapp-status-authenticated {
+    background-color: var(--success-light);
+    color: var(--success-dark);
+    border: 1px solid var(--success-color);
+}
+
+.whatsapp-status-ready {
+    background-color: var(--success-light);
+    color: var(--success-dark);
+    border: 1px solid var(--success-color);
+}
+
+.whatsapp-status-disconnected {
+    background-color: var(--error-light);
+    color: var(--error-dark);
+    border: 1px solid var(--error-color);
+}
+
+.whatsapp-status-auth_failed {
+    background-color: var(--error-light);
+    color: var(--error-dark);
+    border: 1px solid var(--error-color);
+}
+
+.whatsapp-status-logged_out {
+    background-color: var(--warning-light);
+    color: var(--warning-dark);
+    border: 1px solid var(--warning-color);
+}
+
+.whatsapp-last-updated {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.whatsapp-qr-container {
+    display: none;
+    text-align: center;
+    margin: 20px 0;
+    padding: 20px;
+    background: var(--surface-secondary);
+    border-radius: 8px;
+    border: 2px dashed var(--border-color);
+}
+
+.whatsapp-qr-container.show {
+    display: block;
+}
+
+.whatsapp-qr-code {
+    max-width: 300px;
+    max-height: 300px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.whatsapp-qr-instructions {
+    margin-top: 15px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.whatsapp-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.whatsapp-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.whatsapp-btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.whatsapp-btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.whatsapp-btn-secondary {
+    background-color: var(--surface-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.whatsapp-btn-secondary:hover {
+    background-color: var(--surface-tertiary);
+    transform: translateY(-1px);
+}
+
+.whatsapp-btn-danger {
+    background-color: var(--error-color);
+    color: white;
+}
+
+.whatsapp-btn-danger:hover {
+    background-color: var(--error-dark);
+    transform: translateY(-1px);
+}
+
+.whatsapp-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.whatsapp-btn:disabled:hover {
+    transform: none;
+}
+
+.whatsapp-loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: whatsapp-spin 1s linear infinite;
+}
+
+@keyframes whatsapp-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.whatsapp-error {
+    background-color: var(--error-light);
+    color: var(--error-dark);
+    border: 1px solid var(--error-color);
+    border-radius: 6px;
+    padding: 12px;
+    margin: 15px 0;
+    font-size: 14px;
+}
+
+.whatsapp-success {
+    background-color: var(--success-light);
+    color: var(--success-dark);
+    border: 1px solid var(--success-color);
+    border-radius: 6px;
+    padding: 12px;
+    margin: 15px 0;
+    font-size: 14px;
+}
+
+.whatsapp-info {
+    background-color: var(--info-light);
+    color: var(--info-dark);
+    border: 1px solid var(--info-color);
+    border-radius: 6px;
+    padding: 12px;
+    margin: 15px 0;
+    font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .whatsapp-sessions-container {
+        padding: 15px;
+        margin: 15px 0;
+    }
+    
+    .whatsapp-sessions-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .whatsapp-status-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .whatsapp-actions {
+        flex-direction: column;
+    }
+    
+    .whatsapp-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .whatsapp-qr-code {
+        max-width: 250px;
+        max-height: 250px;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .whatsapp-sessions-container {
+        background: var(--surface-dark);
+        border-color: var(--border-dark);
+    }
+    
+    .whatsapp-qr-container {
+        background: var(--surface-secondary-dark);
+        border-color: var(--border-dark);
+    }
+    
+    .whatsapp-btn-secondary {
+        background-color: var(--surface-secondary-dark);
+        color: var(--text-primary-dark);
+        border-color: var(--border-dark);
+    }
+    
+    .whatsapp-btn-secondary:hover {
+        background-color: var(--surface-tertiary-dark);
+    }
+} 

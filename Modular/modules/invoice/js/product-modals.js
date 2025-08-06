@@ -165,6 +165,15 @@ class ProductModalUI {
         const selectedPane = this.modal?.querySelector(`#upm-tab-${tabId}`);
         if (selectedTab) selectedTab.classList.add('upm-active');
         if (selectedPane) selectedPane.classList.add('upm-active');
+        
+        // Refresh tab content when switching tabs
+        if (this.productId) {
+            if (tabId === 'suppliers') {
+                this.populateSuppliersTab(this.productId);
+            } else if (tabId === 'stock-history') {
+                this.populateStockHistoryTab(this.productId);
+            }
+        }
     }
     async handleSubmit(e) {
         console.log('[ProductModalUI] handleSubmit called', e);
@@ -478,8 +487,9 @@ class ProductModalUI {
             if (result.success) {
                 showResponseModal(result.message || 'Stock adjustment successful.', 'success');
                 adjustModal.style.display = 'none';
-                // Refresh stock history tab
+                // Refresh both stock history and suppliers tabs
                 this.populateStockHistoryTab(this.productId);
+                this.populateSuppliersTab(this.productId);
             } else {
                 // Use AI-friendly error message from backend
                 showResponseModal(result.message || 'Failed to adjust stock.', 'error');

@@ -662,7 +662,7 @@ document.addEventListener('DOMContentLoaded', function () {
         ],
         "payments":[
             { href: "/modules/invoice/views/invoice-dashboard.php", icon: "dashboard", text: "Dashboard" },
-            { href: "#", icon: "add_circle", text: "Add Payment", onclick: "callIfExists('openPaymentModal', 'create')" },
+            { href: "#", icon: "add_circle", text: "Add Payment", onclick: "callIfExists('openPaymentModal', 'create', null)" },
             { href: "#", icon: "receipt_long", text: "Add Credit Note", onclick: "callIfExists('openDocumentModal', 'create', null, 'credit-note')" },
             { href: "#", icon: "money_off", text: "Add Refund", onclick: "callIfExists('openDocumentModal', 'create', null, 'refund')" },
             { href: "#", icon: "history", text: "Payment History", onclick: "callIfExists('showPaymentHistory')" },
@@ -1341,4 +1341,333 @@ async function updateNotificationCount() {
     }
 }
 
+/**
+ * Initialize WhatsApp session management
+ */
+function initializeWhatsAppSessions() {
+    console.log('📱 Initializing WhatsApp sessions...');
+    
+    // Load WhatsApp sessions CSS
+    if (!document.getElementById('whatsapp-sessions-styles')) {
+        const link = document.createElement('link');
+        link.id = 'whatsapp-sessions-styles';
+        link.rel = 'stylesheet';
+        link.href = '/assets/css/whatsapp-sessions.css';
+        document.head.appendChild(link);
+    }
+    
+    // Load WhatsApp sessions JS
+    if (!window.WhatsAppSessionsManager) {
+        const script = document.createElement('script');
+        script.src = '/assets/js/whatsapp-sessions.js';
+        script.onload = function() {
+            if (window.WhatsAppSessionsManager) {
+                window.whatsappSessionsManager = new window.WhatsAppSessionsManager();
+                window.whatsappSessionsManager.initialize();
+            }
+        };
+        document.head.appendChild(script);
+    } else {
+        window.whatsappSessionsManager = new window.WhatsAppSessionsManager();
+        window.whatsappSessionsManager.initialize();
+    }
+}
 
+// Initialize WhatsApp functionality on all pages (since sidebar is on every page)
+document.addEventListener('DOMContentLoaded', function() {
+    initializeWhatsAppFunctionality();
+});
+
+/**
+ * Initialize WhatsApp functionality in the sidebar
+ */
+function initializeWhatsAppFunctionality() {
+    console.log('📱 Initializing WhatsApp functionality in sidebar...');
+    
+    const whatsappButton = document.getElementById('whatsapp-button');
+    const whatsappModal = document.getElementById('whatsapp-modal');
+    const closeWhatsappBtn = document.querySelector('.close-whatsapp');
+    const initializeBtn = document.getElementById('initialize-whatsapp');
+    const logoutBtn = document.getElementById('logout-whatsapp');
+    const refreshQrBtn = document.getElementById('refresh-qr');
+    
+    console.log('🔍 WhatsApp elements found:', {
+        whatsappButton: !!whatsappButton,
+        whatsappModal: !!whatsappModal,
+        closeWhatsappBtn: !!closeWhatsappBtn,
+        initializeBtn: !!initializeBtn,
+        logoutBtn: !!logoutBtn,
+        refreshQrBtn: !!refreshQrBtn
+    });
+    
+    if (!whatsappButton || !whatsappModal) {
+        console.warn('WhatsApp elements not found');
+        return;
+    }
+    
+    // Open WhatsApp modal when button is clicked
+    whatsappButton.addEventListener('click', () => {
+        whatsappModal.classList.remove('hidden');
+        checkWhatsAppStatus();
+    });
+    
+    // Close WhatsApp modal
+    closeWhatsappBtn.addEventListener('click', () => {
+        whatsappModal.classList.add('hidden');
+    });
+    
+    // Close modal when clicking outside
+    whatsappModal.addEventListener('click', (e) => {
+        if (e.target === whatsappModal) {
+            whatsappModal.classList.add('hidden');
+        }
+    });
+    
+    // Initialize WhatsApp session
+    initializeBtn.addEventListener('click', async () => {
+        console.log('🔘 Initialize button clicked!');
+        try {
+            initializeBtn.disabled = true;
+            initializeBtn.textContent = 'Initializing...';
+            
+            console.log('📞 Calling initializeWhatsAppSession()...');
+            await initializeWhatsAppSession();
+            console.log('✅ initializeWhatsAppSession() completed successfully');
+        } catch (error) {
+            console.error('❌ Failed to initialize WhatsApp:', error);
+            showResponseModal('Failed to initialize WhatsApp: ' + error.message, 'error');
+        } finally {
+            initializeBtn.disabled = false;
+            initializeBtn.textContent = 'Initialize WhatsApp';
+        }
+    });
+    
+    // Logout WhatsApp session
+    logoutBtn.addEventListener('click', async () => {
+        try {
+            logoutBtn.disabled = true;
+            logoutBtn.textContent = 'Logging out...';
+            
+            await logoutWhatsAppSession();
+        } catch (error) {
+            console.error('Failed to logout WhatsApp:', error);
+            showResponseModal('Failed to logout WhatsApp: ' + error.message, 'error');
+        } finally {
+            logoutBtn.disabled = false;
+            logoutBtn.textContent = 'Logout WhatsApp';
+        }
+    });
+    
+    // Refresh QR code
+    refreshQrBtn.addEventListener('click', async () => {
+        try {
+            refreshQrBtn.disabled = true;
+            refreshQrBtn.textContent = 'Refreshing...';
+            
+            await refreshQRCode();
+        } catch (error) {
+            console.error('Failed to refresh QR code:', error);
+            showResponseModal('Failed to refresh QR code: ' + error.message, 'error');
+        } finally {
+            refreshQrBtn.disabled = false;
+            refreshQrBtn.textContent = 'Refresh QR Code';
+        }
+    });
+    
+    // Initial status check
+    checkWhatsAppStatus();
+    
+    // Set up periodic status checks
+    setInterval(checkWhatsAppStatus, 30000); // Check every 30 seconds
+}
+
+/**
+ * Check WhatsApp session status
+ */
+async function checkWhatsAppStatus() {
+    try {
+        const response = await fetch('/src/api/whatsapp-sessions.php?action=status');
+        const data = await response.json();
+        
+        if (data.success) {
+            updateWhatsAppStatus(data.status);
+        } else {
+            updateWhatsAppStatus('disconnected');
+        }
+    } catch (error) {
+        console.error('Failed to check WhatsApp status:', error);
+        updateWhatsAppStatus('disconnected');
+    }
+}
+
+/**
+ * Update WhatsApp status display
+ */
+function updateWhatsAppStatus(status) {
+    const statusIndicator = document.getElementById('whatsapp-status-indicator');
+    const statusDot = document.getElementById('whatsapp-status-dot');
+    const statusText = document.getElementById('whatsapp-status-text');
+    const initializeBtn = document.getElementById('initialize-whatsapp');
+    const logoutBtn = document.getElementById('logout-whatsapp');
+    const refreshQrBtn = document.getElementById('refresh-qr');
+    
+    if (!statusIndicator || !statusDot || !statusText) return;
+    
+    // Update status indicator in sidebar
+    statusIndicator.className = `whatsapp-status-indicator ${status}`;
+    
+    // Update status in modal
+    statusDot.className = `status-dot ${status}`;
+    
+    // Update status text and button visibility
+    switch (status) {
+        case 'ready':
+            statusText.textContent = 'Connected and ready to send messages';
+            initializeBtn.classList.add('hidden');
+            logoutBtn.classList.remove('hidden');
+            refreshQrBtn.classList.add('hidden');
+            break;
+        case 'qr_ready':
+            statusText.textContent = 'QR code ready - scan with your phone';
+            initializeBtn.classList.add('hidden');
+            logoutBtn.classList.remove('hidden');
+            refreshQrBtn.classList.remove('hidden');
+            break;
+        case 'authenticated':
+            statusText.textContent = 'Authenticating...';
+            initializeBtn.classList.add('hidden');
+            logoutBtn.classList.remove('hidden');
+            refreshQrBtn.classList.add('hidden');
+            break;
+        case 'disconnected':
+        case 'auth_failed':
+        case 'logged_out':
+        default:
+            statusText.textContent = 'Not connected';
+            initializeBtn.classList.remove('hidden');
+            logoutBtn.classList.add('hidden');
+            refreshQrBtn.classList.add('hidden');
+            break;
+    }
+}
+
+/**
+ * Initialize WhatsApp session
+ */
+async function initializeWhatsAppSession() {
+    console.log('🚀 initializeWhatsAppSession() called');
+    
+    console.log('📡 Making API call to /src/api/whatsapp-sessions.php...');
+    const response = await fetch('/src/api/whatsapp-sessions.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'action=initialize'
+    });
+    
+    console.log('📥 API response received:', response.status, response.statusText);
+    const data = await response.json();
+    console.log('📋 API response data:', data);
+    
+    if (data.success) {
+        console.log('✅ API call successful');
+        console.log('📋 Full response data:', data);
+        
+        // Check for QR code in the correct location
+        const qrCode = data.qr_code;
+        const status = data.status;
+        
+        if (qrCode) {
+            console.log('🖼️ QR code received, displaying...');
+            // Clean up QR code data - remove duplicate prefixes
+            let cleanQrCode = qrCode;
+            if (qrCode.includes('data:image/png;base64,data:image/png;base64,')) {
+                cleanQrCode = qrCode.replace('data:image/png;base64,data:image/png;base64,', 'data:image/png;base64,');
+            }
+            displayQRCode(cleanQrCode);
+            console.log('QR Code displayed:', cleanQrCode.substring(0, 100) + '...');
+        } else {
+            console.log('❌ No QR code found in response');
+        }
+        
+        updateWhatsAppStatus(status);
+        
+        // Don't show success modal if QR code is displayed - let user see the QR code
+        if (!qrCode) {
+            showResponseModal('WhatsApp session initialized successfully', 'success');
+        }
+    } else {
+        console.error('❌ API call failed:', data.message);
+        throw new Error(data.message || 'Failed to initialize WhatsApp session');
+    }
+}
+
+/**
+ * Logout WhatsApp session
+ */
+async function logoutWhatsAppSession() {
+    const response = await fetch('/src/api/whatsapp-sessions.php?action=logout', {
+        method: 'DELETE'
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+        updateWhatsAppStatus('logged_out');
+        hideQRCode();
+        showResponseModal('WhatsApp session logged out successfully', 'success');
+    } else {
+        throw new Error(data.message || 'Failed to logout WhatsApp session');
+    }
+}
+
+/**
+ * Refresh QR code
+ */
+async function refreshQRCode() {
+    const response = await fetch('/src/api/whatsapp-sessions.php?action=qr');
+    
+    const data = await response.json();
+    
+    if (data.success && data.qr_code) {
+        displayQRCode(data.qr_code);
+        showResponseModal('QR code refreshed', 'success');
+    } else {
+        throw new Error(data.message || 'Failed to refresh QR code');
+    }
+}
+
+/**
+ * Display QR code in modal
+ */
+function displayQRCode(qrCodeDataUrl) {
+    console.log('Displaying QR code...');
+    const qrImage = document.getElementById('qr-code-image');
+    const qrPlaceholder = document.querySelector('.qr-placeholder');
+    
+    console.log('QR Image element:', qrImage);
+    console.log('QR Placeholder element:', qrPlaceholder);
+    
+    if (qrImage && qrPlaceholder) {
+        qrImage.src = qrCodeDataUrl;
+        qrImage.classList.remove('hidden');
+        qrPlaceholder.classList.add('hidden');
+        console.log('QR Code displayed successfully');
+    } else {
+        console.error('QR code elements not found:', { qrImage, qrPlaceholder });
+    }
+}
+
+/**
+ * Hide QR code in modal
+ */
+function hideQRCode() {
+    const qrImage = document.getElementById('qr-code-image');
+    const qrPlaceholder = document.querySelector('.qr-placeholder');
+    
+    if (qrImage && qrPlaceholder) {
+        qrImage.classList.add('hidden');
+        qrPlaceholder.classList.remove('hidden');
+    }
+}

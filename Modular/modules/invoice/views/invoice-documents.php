@@ -37,6 +37,7 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
     <link rel="stylesheet" href="../css/client-search-dropdown.css">
     <link rel="stylesheet" href="../css/invoices.css">
     <link rel="stylesheet" href="../css/document-modal.css">
+    <link rel="stylesheet" href="../css/payment-modal.css">
     <link rel="stylesheet" href="../../../public/assets/css/table.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -126,8 +127,11 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
         <script src="../js/document-form.js"></script>
         <script src="../js/document-screen.js"></script>
         <script src="../js/document-modal.js"></script>
+        <script src="../js/payment-modal.js"></script>
+        <script src="../../../public/assets/js/document-sending-service.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <?php include('../modals/document-modal.php')?>
+<?php include('../modals/payment-modal.php')?>
 <?php include('../../../src/UI/response-modal.php'); ?>
 <?php include('../../../src/UI/loading-modal.php'); ?>
 </body>

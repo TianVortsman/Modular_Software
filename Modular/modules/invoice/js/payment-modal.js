@@ -29,6 +29,9 @@ class PaymentModal {
         document.getElementById('payment-allocation-type')?.addEventListener('change', () => this.handleAllocationChange());
         document.getElementById('payment-reference')?.addEventListener('input', () => this.updatePreview());
         document.getElementById('payment-notes')?.addEventListener('input', () => this.updatePreview());
+        
+        // Client search input
+        document.getElementById('payment-client-search')?.addEventListener('input', (e) => this.searchClient(e.target));
 
         // Action buttons
         document.getElementById('clear-payment-btn')?.addEventListener('click', () => this.clearForm());
@@ -81,6 +84,7 @@ class PaymentModal {
             'payment-reference',
             'payment-notes',
             'payment-allocation-type'
+            // Note: payment-client-search is not included to avoid auto-save during search
         ];
 
         formInputs.forEach(inputId => {
@@ -102,14 +106,19 @@ class PaymentModal {
         }, 2000);
     }
 
-    async openModal(documentId = null) {
+    async openModal(mode = 'create', documentId = null) {
         try {
             this.showLoadingModal();
+            
+            // Set modal mode
+            this.currentMode = mode;
             
             if (documentId) {
                 await this.loadDocumentForPayment(documentId);
             } else {
                 this.resetForm();
+                // Load available invoices for linking
+                await this.loadAvailableInvoices();
             }
             
             document.getElementById('payment-modal').style.display = 'flex';
@@ -117,7 +126,11 @@ class PaymentModal {
             
             // Focus on first input
             setTimeout(() => {
-                document.getElementById('payment-amount')?.focus();
+                if (documentId) {
+                    document.getElementById('payment-amount')?.focus();
+                } else {
+                    document.getElementById('payment-client-search')?.focus();
+                }
             }, 100);
             
         } catch (error) {
@@ -134,7 +147,7 @@ class PaymentModal {
 
     async loadDocumentForPayment(documentId) {
         try {
-            const response = await fetch(`api/payment-api.php?action=get_document_for_payment&document_id=${documentId}`);
+            const response = await fetch(`../api/payment-api.php?action=get_document_for_payment&document_id=${documentId}`);
             const result = await handleApiResponse(response);
             
             if (result.success) {
@@ -150,6 +163,65 @@ class PaymentModal {
         } catch (error) {
             throw new Error('Failed to load document: ' + error.message);
         }
+    }
+
+    async loadAvailableInvoices() {
+        try {
+            // Use buildQueryParams for consistent parameter handling
+            const paramsObj = { 
+                action: 'list_documents', 
+                type: 'invoice', 
+                status: 'sent' 
+            };
+            const params = window.buildQueryParams(paramsObj);
+            const url = `../api/document-api.php?${params.toString()}`;
+            
+            console.log('Loading available invoices with URL:', url);
+            
+            const response = await fetch(url);
+            const result = await handleApiResponse(response);
+            
+            if (result.success) {
+                this.populateInvoiceSelect(result.data);
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            console.error('Failed to load available invoices:', error);
+            // Don't throw error, just show empty select
+            this.populateInvoiceSelect([]);
+        }
+    }
+
+    populateInvoiceSelect(invoices) {
+        const select = document.getElementById('invoice-select');
+        if (!select) return;
+
+        // Clear existing options
+        select.innerHTML = '<option value="">Select an invoice to link payment to (optional)</option>';
+        
+        if (invoices.length === 0) {
+            select.innerHTML += '<option value="" disabled>No unpaid invoices available</option>';
+            return;
+        }
+
+        // Add invoice options
+        invoices.forEach(invoice => {
+            const option = document.createElement('option');
+            option.value = invoice.document_id;
+            option.textContent = `${invoice.document_number} - ${invoice.client_name} (R${parseFloat(invoice.balance_due || 0).toFixed(2)} due)`;
+            select.appendChild(option);
+        });
+
+        // Add event listener for invoice selection
+        select.addEventListener('change', (e) => {
+            const selectedInvoiceId = e.target.value;
+            if (selectedInvoiceId) {
+                this.loadDocumentForPayment(selectedInvoiceId);
+            } else {
+                this.resetForm();
+            }
+        });
     }
 
     populateDocumentInfo() {
@@ -173,6 +245,11 @@ class PaymentModal {
         
         // Set default payment date to today
         document.getElementById('payment-date').value = new Date().toISOString().split('T')[0];
+        
+        // Show document info section and hide client search and invoice selection
+        document.getElementById('document-info-section').style.display = 'block';
+        document.getElementById('client-search-section').style.display = 'none';
+        document.getElementById('invoice-selection-section').style.display = 'none';
     }
 
     populateClientInfo() {
@@ -254,7 +331,7 @@ class PaymentModal {
         if (paymentAmount <= 0) return;
 
         try {
-            const response = await fetch('api/payment-api.php?action=validate_payment', {
+            const response = await fetch('../api/payment-api.php?action=validate_payment', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -307,7 +384,7 @@ class PaymentModal {
         if (!this.currentDocument) return;
 
         try {
-            const response = await fetch(`api/payment-api.php?action=get_payment_history&document_id=${this.currentDocument.document_id}`);
+            const response = await fetch(`../api/payment-api.php?action=get_payment_history&document_id=${this.currentDocument.document_id}`);
             const result = await handleApiResponse(response);
             
             if (result.success) {
@@ -357,11 +434,6 @@ class PaymentModal {
     }
 
     async recordPayment() {
-        if (!this.currentDocument) {
-            this.showError('No document selected for payment');
-            return;
-        }
-
         const formData = this.getFormData();
         
         // Validate required fields
@@ -378,10 +450,19 @@ class PaymentModal {
             return;
         }
 
+        // If no document is selected, this is a standalone payment
+        if (!this.currentDocument) {
+            if (!confirm('No invoice is linked to this payment. This will create a standalone payment record. Continue?')) {
+                return;
+            }
+            // Remove document_id from form data for standalone payment
+            delete formData.document_id;
+        }
+
         try {
             this.showLoadingModal();
             
-            const response = await fetch('api/payment-api.php?action=record_payment', {
+            const response = await fetch('../api/payment-api.php?action=record_payment', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -394,8 +475,10 @@ class PaymentModal {
             if (result.success) {
                 this.currentPayment = result.data;
                 this.showConfirmationModal();
-                await this.loadPaymentHistory();
-                this.updateSummary();
+                if (this.currentDocument) {
+                    await this.loadPaymentHistory();
+                    this.updateSummary();
+                }
             } else {
                 throw new Error(result.message);
             }
@@ -465,6 +548,11 @@ class PaymentModal {
         document.getElementById('payment-notes').value = '';
         document.getElementById('payment-allocation-type').value = 'full';
         
+        // Reset client search
+        document.getElementById('payment-client-search').value = '';
+        document.getElementById('search-results-client').innerHTML = '';
+        document.getElementById('search-results-client').style.display = 'none';
+        
         // Reset summary
         document.getElementById('payment-total').textContent = this.currencyFormatter.format(0);
         document.getElementById('remaining-balance').textContent = this.currencyFormatter.format(0);
@@ -478,6 +566,11 @@ class PaymentModal {
         
         // Clear payment history
         document.getElementById('payment-history-rows').innerHTML = '';
+        
+        // Show client search and invoice selection sections, hide document info
+        document.getElementById('client-search-section').style.display = 'block';
+        document.getElementById('invoice-selection-section').style.display = 'block';
+        document.getElementById('document-info-section').style.display = 'none';
         
         // Update preview
         this.updatePreview();
@@ -538,7 +631,7 @@ class PaymentModal {
 
     async loadFullPaymentHistory() {
         try {
-            const response = await fetch('api/payment-api.php?action=get_payment_history');
+            const response = await fetch('../api/payment-api.php?action=get_payment_history');
             const result = await handleApiResponse(response);
             
             if (result.success) {
@@ -614,7 +707,7 @@ class PaymentModal {
         }
 
         try {
-            const response = await fetch(`api/payment-api.php?action=delete_payment&payment_id=${paymentId}`, {
+            const response = await fetch(`../api/payment-api.php?action=delete_payment&payment_id=${paymentId}`, {
                 method: 'DELETE'
             });
 
@@ -700,14 +793,170 @@ class PaymentModal {
             alert('Success: ' + message);
         }
     }
+
+    // Client search functionality (reused from document modal)
+    searchClient(inputElement) {
+        console.log('PaymentModal.searchClient called with:', inputElement);
+        console.log('Input value:', inputElement.value);
+        
+        const query = inputElement.value.trim();
+        const resultsContainer = document.getElementById('search-results-client');
+        const dropdown = document.getElementById('search-results-client');
+        
+        console.log('Query:', query);
+        console.log('Results container:', resultsContainer);
+        console.log('Dropdown:', dropdown);
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!inputElement.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+                dropdown.classList.remove('active');
+            }
+        });
+        
+        if (query.length < 2) {
+            console.log('Query too short, hiding dropdown');
+            dropdown.style.display = 'none';
+            dropdown.classList.remove('active');
+            resultsContainer.innerHTML = '';
+            return;
+        }
+        
+        console.log('Calling window.searchClients with query:', query);
+        
+        // Use the existing searchClients function from document-api.js
+        if (window.searchClients) {
+            console.log('window.searchClients is available');
+            window.searchClients(query, (results) => {
+                console.log('searchClients callback received results:', results);
+                resultsContainer.innerHTML = '';
+                if (results && results.length > 0) {
+                    console.log('Showing results, count:', results.length);
+                    dropdown.style.display = 'block';
+                    dropdown.classList.add('active');
+                    console.log('Dropdown display style:', dropdown.style.display);
+                    console.log('Dropdown classes:', dropdown.className);
+                    console.log('Dropdown position:', dropdown.getBoundingClientRect());
+                    results.forEach((item, idx) => {
+                        console.log('Processing result item:', item);
+                        const div = document.createElement('div');
+                        div.classList.add('search-result-client');
+                        
+                        // Create better display text based on client type
+                        let displayText = '';
+                        let subtitleText = '';
+                        
+                        if (item.client_type === 'business') {
+                            displayText = item.client_name;
+                            subtitleText = 'Business Client';
+                        } else {
+                            // Private client
+                            displayText = item.client_name;
+                            if (item.first_name && item.last_name) {
+                                subtitleText = `${item.first_name} ${item.last_name}`;
+                            }
+                        }
+                        
+                        // Add email if available
+                        if (item.client_email) {
+                            subtitleText += subtitleText ? ` • ${item.client_email}` : item.client_email;
+                        }
+                        
+                        // Create HTML structure
+                        div.innerHTML = `
+                            <div class="client-result-name">${displayText}</div>
+                            ${subtitleText ? `<div class="client-result-details">${subtitleText}</div>` : ''}
+                        `;
+                        
+                        div.onclick = function (e) {
+                            console.log('Client result clicked:', item);
+                            this.fillClientFields(item);
+                            resultsContainer.innerHTML = '';
+                            dropdown.style.display = 'none';
+                            dropdown.classList.remove('active');
+                        }.bind(this);
+                        
+                        if (idx === 0) div.classList.add('highlight');
+                        resultsContainer.appendChild(div);
+                    });
+                } else {
+                    console.log('No results found, showing no results message');
+                    dropdown.style.display = 'block';
+                    dropdown.classList.add('active');
+                    const noResults = document.createElement('div');
+                    noResults.classList.add('search-no-results');
+                    noResults.textContent = 'No clients found';
+                    resultsContainer.appendChild(noResults);
+                }
+            });
+        } else {
+            console.error('window.searchClients is not available');
+        }
+    }
+
+    fillClientFields(item) {
+        const set = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.value = value || '';
+        };
+        
+        // Set client fields in the client panel
+        set('payment-client-name', item.client_name);
+        set('payment-client-email', item.client_email);
+        set('payment-client-phone', item.client_cell || item.client_tell);
+        set('payment-client-vat-number', item.vat_number);
+        
+        // Set hidden client ID
+        set('payment-client-id', item.client_id);
+        
+        // Load available invoices for this client
+        this.loadAvailableInvoicesForClient(item.client_id);
+    }
+
+    async loadAvailableInvoicesForClient(clientId) {
+        try {
+            // Use buildQueryParams for consistent parameter handling
+            const paramsObj = { 
+                action: 'list_documents', 
+                type: 'invoice', 
+                status: 'sent',
+                client_id: clientId
+            };
+            const params = window.buildQueryParams(paramsObj);
+            const url = `../api/document-api.php?${params.toString()}`;
+            
+            console.log('Loading available invoices for client with URL:', url);
+            
+            const response = await fetch(url);
+            const result = await handleApiResponse(response);
+            
+            if (result.success) {
+                this.populateInvoiceSelect(result.data);
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            console.error('Failed to load available invoices for client:', error);
+            this.populateInvoiceSelect([]);
+        }
+    }
 }
 
 // Initialize payment modal
 const paymentModal = new PaymentModal();
 
+// Make payment modal instance globally available
+window.paymentModal = paymentModal;
+
 // Global function to open payment modal
-window.openPaymentModal = (documentId) => {
-    paymentModal.openModal(documentId);
+window.openPaymentModal = (mode, documentId) => {
+    paymentModal.openModal(mode, documentId);
+};
+
+// Global function for client search (reused from document modal)
+window.searchClient = function(inputElement) {
+    paymentModal.searchClient(inputElement);
 };
 
 // Export for use in other modules

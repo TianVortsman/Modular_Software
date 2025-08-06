@@ -46,6 +46,7 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
     <script src="../../../public/assets/js/sidebar.js"></script>
     <script src="../../../public/assets/js/table.js"></script>
     <script src="../../../public/assets/js/helpers.js"></script>
+    <script src="../js/document-api.js"></script>
     <script src="../js/document-modal.js"></script>
     <script src="../js/payment-modal.js"></script>
     <script src="../js/payments-screen.js"></script>
@@ -100,7 +101,7 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
         <div class="tab-header">
             <h2>Incoming Payments</h2>
             <div class="tab-actions">
-                <button class="btn btn-primary" onclick="openPaymentModal('create')">
+                <button class="btn btn-primary" onclick="openPaymentModal('create', null)">
                     <i class="material-icons">add</i> Add Payment
                 </button>
             </div>
@@ -121,7 +122,7 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
         <div class="tab-header">
             <h2>Credit Notes</h2>
             <div class="tab-actions">
-                <button class="btn btn-primary" onclick="openDocumentModal('create', null, 'credit-note')">
+                <button class="btn btn-primary" onclick="showInvoiceSelectionForDocument('credit-note')">
                     <i class="material-icons">receipt_long</i> Add Credit Note
                 </button>
             </div>
@@ -144,7 +145,7 @@ $multiple_accounts = isset($_SESSION['multiple_accounts']) ? $_SESSION['multiple
         <div class="tab-header">
             <h2>Refunds</h2>
             <div class="tab-actions">
-                <button class="btn btn-primary" onclick="openDocumentModal('create', null, 'refund')">
+                <button class="btn btn-primary" onclick="showInvoiceSelectionForDocument('refund')">
                     <i class="material-icons">money_off</i> Add Refund
                 </button>
             </div>

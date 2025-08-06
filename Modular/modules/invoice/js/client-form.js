@@ -107,7 +107,7 @@ async function handleFormSubmit(event, mode) {
             website: data.companyWebsite,
             client_email: data.companyEmail,
             client_tell: data.companyPhone,
-            address: {
+            addresses: [{
                 address_line1: data.addrLine1,
                 address_line2: data.addrLine2,
                 suburb: data.suburb,
@@ -115,19 +115,20 @@ async function handleFormSubmit(event, mode) {
                 province: data.province,
                 postal_code: data.postcode,
                 country: data.country
-            },
-            contact: {
+            }],
+            contacts: [{
                 first_name: data.contactFirstName,
                 last_name: data.contactLastName,
                 email: data.contactEmail,
                 phone: data.contactPhone,
                 position: data.contactPosition
-            }
+            }]
         };
     } else if (data.customerName !== undefined) {
         // Customer modal (edit)
         payload = {
             client_type: 'private',
+            client_name: data.customerName + ' ' + data.customerSurname, // Combine name and surname for client_name
             initials: data.customerInitials,
             title: data.customerTitle,
             first_name: data.customerName,
@@ -135,7 +136,7 @@ async function handleFormSubmit(event, mode) {
             client_email: data.customerEmail,
             client_cell: data.customerCell,
             client_tell: data.customerTel,
-            address: {
+            addresses: [{
                 address_line1: data.custAddrLine1,
                 address_line2: data.custAddrLine2,
                 suburb: data.custSuburb,
@@ -143,7 +144,7 @@ async function handleFormSubmit(event, mode) {
                 province: data.custProvince,
                 postal_code: data.custPostalCode,
                 country: data.custCountry
-            },
+            }],
             dob: data.customerDOB,
             gender: data.customerGender,
             loyalty_level: data.customerLoyalty,
@@ -153,6 +154,7 @@ async function handleFormSubmit(event, mode) {
         // Add modal (legacy)
         payload = {
             client_type: 'private',
+            client_name: data['add-first-name'] + ' ' + data['add-last-name'], // Combine name and surname for client_name
             first_name: data['add-first-name'],
             last_name: data['add-last-name'],
             title: data['add-title'],
@@ -163,7 +165,7 @@ async function handleFormSubmit(event, mode) {
             client_email: data['add-email'],
             client_cell: data['add-phone'],
             client_tell: data['add-tel'],
-            address: {
+            addresses: [{
                 address_line1: data['add-customer-address-line1'],
                 address_line2: data['add-customer-address-line2'],
                 suburb: data['add-customer-suburb'],
@@ -171,7 +173,7 @@ async function handleFormSubmit(event, mode) {
                 province: data['add-customer-province'],
                 postal_code: data['add-customer-postal-code'],
                 country: data['add-customer-country']
-            }
+            }]
         };
     }
     // Add created_by/updated_by if available
@@ -189,14 +191,18 @@ async function handleFormSubmit(event, mode) {
     // Remove mapping: expect client_type to be 'private' or 'business' from the form
     // Do NOT delete payload.client_type
     // Call API
-    const { createClient, updateClient } = await import('./client-api.js');
     let res;
     try {
         if (mode === 'edit') {
             const clientId = data.companyId || data.customerId;
-                    res = await window.updateClient(clientId, payload);
-    } else {
-        res = await window.createClient(payload);
+            if (!clientId) {
+                throw new Error('Client ID not found for update');
+            }
+            // Add client_id to payload for update
+            payload.client_id = clientId;
+            res = await window.updateClient(clientId, payload);
+        } else {
+            res = await window.createClient(payload);
         }
     } catch (err) {
         // For all API/fetch calls, after await res.json(), call window.handleApiResponse(data).

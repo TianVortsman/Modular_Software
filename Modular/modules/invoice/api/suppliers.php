@@ -36,50 +36,50 @@ $user_id = $_SESSION['user_id'] ?? null;
 try {
     switch ($action) {
         case 'list':
-            $result = \App\modules\product\controllers\list_suppliers();
+            $result = \App\modules\invoice\controllers\list_suppliers();
             break;
         case 'get':
             $supplier_id = (int)($_GET['id'] ?? 0);
-            $result = \App\modules\product\controllers\get_supplier($supplier_id);
+            $result = \App\modules\invoice\controllers\get_supplier($supplier_id);
             break;
         case 'add':
             if ($method !== 'POST') throw new Exception('POST required');
             $data = json_decode(file_get_contents('php://input'), true) ?? $_POST;
-            $result = \App\modules\product\controllers\add_supplier($data, $user_id);
+            $result = \App\modules\invoice\controllers\add_supplier($data, $user_id);
             break;
         case 'update':
             if ($method !== 'PUT' && $method !== 'POST') throw new Exception('PUT or POST required');
             $supplier_id = (int)($_GET['id'] ?? ($_POST['supplier_id'] ?? 0));
             $data = json_decode(file_get_contents('php://input'), true) ?? $_POST;
-            $result = \App\modules\product\controllers\update_supplier($supplier_id, $data, $user_id);
+            $result = \App\modules\invoice\controllers\update_supplier($supplier_id, $data, $user_id);
             break;
         case 'delete':
             if ($method !== 'DELETE' && $method !== 'POST') throw new Exception('DELETE or POST required');
             $supplier_id = (int)($_GET['id'] ?? ($_POST['supplier_id'] ?? 0));
-            $result = \App\modules\product\controllers\delete_supplier($supplier_id, $user_id);
+            $result = \App\modules\invoice\controllers\delete_supplier($supplier_id, $user_id);
             break;
         case 'link_product':
             if ($method !== 'POST') throw new Exception('POST required');
             $product_id = (int)($_POST['product_id'] ?? 0);
             $supplier_id = (int)($_POST['supplier_id'] ?? 0);
-            $result = \App\modules\product\controllers\link_product_to_supplier($product_id, $supplier_id, $user_id);
+            $result = \App\modules\invoice\controllers\link_product_to_supplier($product_id, $supplier_id, $user_id);
             break;
         case 'unlink_product':
             if ($method !== 'POST') throw new Exception('POST required');
             $product_id = (int)($_POST['product_id'] ?? 0);
             $supplier_id = (int)($_POST['supplier_id'] ?? 0);
-            $result = \App\modules\product\controllers\unlink_product_from_supplier($product_id, $supplier_id, $user_id);
+            $result = \App\modules\invoice\controllers\unlink_product_from_supplier($product_id, $supplier_id, $user_id);
             break;
         case 'get_product_suppliers':
             $product_id = (int)($_GET['product_id'] ?? 0);
-            $result = \App\modules\product\controllers\get_product_suppliers($product_id);
+            $result = \App\modules\invoice\controllers\get_product_suppliers($product_id);
             break;
         case 'add_price_history':
             if ($method !== 'POST') throw new Exception('POST required');
             $product_id = (int)($_POST['product_id'] ?? 0);
             $supplier_id = (int)($_POST['supplier_id'] ?? 0);
             $purchase_price = (float)($_POST['purchase_price'] ?? 0);
-            $result = \App\modules\product\controllers\add_supplier_price_history($product_id, $supplier_id, $purchase_price, $user_id);
+            $result = \App\modules\invoice\controllers\add_supplier_price_history($product_id, $supplier_id, $purchase_price, $user_id);
             break;
         default:
             throw new Exception('Unknown or missing action');
